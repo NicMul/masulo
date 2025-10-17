@@ -1,0 +1,65 @@
+{
+  "title": "Users",
+  "subtitle": "Manage Users",
+  "description": "Invite users to your account",
+  "button": "Manage Users",
+  "header": {
+    "avatar": "avatar",
+    "name": "name",
+    "email": "email",
+    "date_created": "date created",
+    "permission": "permission",
+    "status": "status"
+  },
+  "new": {
+    "button": "Add User"
+  },
+  "status": {
+    "invited": "Invited",
+    "registered": "Registered",
+    "verified": "Verified"
+  },
+  "invite": {
+    "title": "Add User",
+    "description": "To invite more than one user, separate the emails with a comma.",
+    "form": {
+      "email": {
+        "label": "Email"
+      },
+      "permission": {
+        "label": "Permission"
+      },
+      "button": "Send"
+    },
+    "resent_notification": "Invite re-sent to"
+  },
+  "delete_invite": {
+    "title": "Delete Invite",
+    "description": "Are you sure you want to delete the invite for",
+    "form": {
+      "button": "Delete"
+    }
+  },
+  "edit": {
+    "title": "Edit User",
+    "form": {
+      "name": {
+        "label": "Name"
+      },
+      "email": {
+        "label": "Email"
+      },
+      "permission": {
+        "label": "Permission"
+      },
+      "button": "Save"
+    }
+  },
+  "delete": {
+    "title": "Delete User",
+    "description": "Are you sure you want to delete",
+    "form": {
+      "button": "Delete"
+    }
+  }
+}

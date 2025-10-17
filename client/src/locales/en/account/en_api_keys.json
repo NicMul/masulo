@@ -1,0 +1,58 @@
+{
+  "title": "API Keys",
+  "subtitle": "Your API Keys",
+  "description": "Manage your API keys",
+  "button": "Manage",
+  "list": {
+    "header": {
+      "name": "name",
+      "key": "key",
+      "scope": "scope",
+      "active": "active"
+    },
+    "blank_slate": {
+      "title": "Create an API Key",
+      "description": "You haven't created any API keys yet. Would you like to create one now?",
+      "button": "New API Key"
+    },
+    "revoke": {
+      "title": "Revoke API Key",
+      "description": "Are you sure you want to revoke this API Key? This action cannot be undone.",
+      "button": "Revoke"
+    },
+    "delete": {
+      "title": {
+        "single": "Delete API Key",
+        "plural": "Delete API Keys"
+      },
+      "description": {
+        "single": "Are you sure you want to delete this key?",
+        "plural": "Are you sure you want to delete these keys?"
+      },
+      "button": "Delete"
+    }
+  },
+  "edit": {
+    "breadcrumbs": {
+      "keys": "API Keys",
+      "edit": "Edit",
+      "create": "Create"
+    },
+    "message": {
+      "title": "Your New API Key",
+      "description": "Your API key is below. Please store this somewhere safe.",
+      "button": "Back to API Keys"
+    },
+    "form": {
+      "name": {
+        "label": "Name",
+        "error": "Please provide a descriptive name for your key"
+      },
+      "scope": {
+        "label": "Scope",
+        "error": "Please select at least one scope"
+      },
+      "button": "Save"
+    }
+  }
+}

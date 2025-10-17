@@ -1,0 +1,58 @@
+{
+  "title": "Claves API",
+  "subtitle": "Tus Claves API",
+  "description": "Gestiona tus claves API",
+  "button": "Gestionar",
+  "list": {
+    "header": {
+      "name": "nombre",
+      "key": "clave",
+      "scope": "alcance",
+      "active": "activo"
+    },    
+    "blank_slate": {
+      "title": "Crear una Clave API",
+      "description": "Aún no has creado ninguna clave API. ¿Te gustaría crear una ahora?",
+      "button": "Nueva Clave API"
+    },
+    "revoke": {
+      "title": "Revocar Clave API",
+      "description": "¿Estás seguro de que quieres revocar esta Clave API? Esta acción no se puede deshacer.",
+      "button": "Revocar"
+    },
+    "delete": {
+      "title": {
+        "single": "Eliminar Clave API",
+        "plural": "Eliminar Claves API"
+      },
+      "description": {
+        "single": "¿Estás seguro de que quieres eliminar esta clave?",
+        "plural": "¿Estás seguro de que quieres eliminar estas claves?"
+      },
+      "button": "Eliminar"
+    }
+  },
+  "edit": {
+    "breadcrumbs": {
+      "keys": "Claves API",
+      "edit": "Editar",
+      "create": "Crear"
+    },
+    "message": {
+      "title": "Tu Nueva Clave API",
+      "description": "Tu clave API está abajo. Por favor, guárdala en un lugar seguro.",
+      "button": "Volver a Claves API"
+    },
+    "form": {
+      "name": {
+        "label": "Nombre",
+        "error": "Por favor, proporciona un nombre descriptivo para tu clave."
+      },
+      "scope": {
+        "label": "Alcance",
+        "error": "Por favor, selecciona al menos un alcance"
+      },
+      "button": "Guardar"
+    }
+  }
+}

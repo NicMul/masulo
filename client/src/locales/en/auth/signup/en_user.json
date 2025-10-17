@@ -1,0 +1,20 @@
+{
+  "title": "Create Your Account",
+  "form": {
+    "name": {
+      "label": "First Name",
+      "error": "Please enter your first name"
+    },
+    "email": {
+      "label": "Email"
+    },
+    "password": {
+      "label": "Password"
+    },
+    "button": "Create Account"
+  },
+  "footer": {
+    "text": "Already registered? ",
+    "link_text": "Sign In"
+  }
+}

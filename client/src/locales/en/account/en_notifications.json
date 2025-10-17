@@ -1,0 +1,15 @@
+{
+  "title": "Notifications",
+  "subtitle": "Notification Settings",
+  "description": "Choose which notifications you receive",
+  "button": "Manage",
+  "form": {
+    "options": {
+      "new_signin": "New sign in alert",
+      "plan_updated": "Billing plan updated",
+      "card_updated": "Credit card updated",
+      "invite_accepted": "Invite accepted"
+    },
+    "button": "Save"
+  }
+}

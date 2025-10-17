@@ -1,0 +1,29 @@
+@import 'components/global';
+
+.feature {
+
+  padding-right: $scale;
+
+}
+
+.icon {
+
+  position: relative;
+  float: left;
+  margin-top: 0.2em;
+  margin-right: $scale-2;
+
+}
+
+.title {
+
+  color: $c-dark;
+  font-weight: 700;
+
+}
+
+.description {
+
+  margin-top: $scale-4;
+
+}

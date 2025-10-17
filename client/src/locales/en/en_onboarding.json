@@ -1,0 +1,34 @@
+{
+  "title": "Welcome",
+  "welcome": {
+    "title": "Getting Started",
+    "description": "Welcome",
+    "text": [
+      "This is an example of the user-onboarding flow. You can replace this with your own content, try out the action in the next step or skip the intro entirely.",
+      "Have fun building with Gravity! 🛠"
+    ]
+  },
+  "invite_team": {
+    "title": "Invite your team",
+    "description": "Gravity is more fun when you invite your team.",
+    "form": {
+      "email": {
+        "label": "Email"
+      },
+      "button": "Send"
+    }
+  },
+  "duplicate_user": {
+    "title": "Important!",
+    "message": {
+      "title": "You already have an account",
+      "description": "We noticed you have already registered an account, so we used your original password to save you any confusion in the future."
+    }
+  },
+  "button": {
+    "skip": "Skip Intro",
+    "prev": "Prev",
+    "next": "Next",
+    "finish": "Finish"
+  }
+}

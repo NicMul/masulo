@@ -1,0 +1,10 @@
+@import 'components/global';
+
+.banner {
+
+  display: inline-block;
+  background-color: $c-blue;
+  border-radius: $radius;
+  padding: $scale-2 $scale;
+
+}

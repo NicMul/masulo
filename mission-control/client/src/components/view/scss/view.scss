@@ -1,0 +1,57 @@
+html {
+
+  height: 100%;
+  font-size: 62.5%;
+
+}
+
+#root {
+
+  height: 100%;
+
+}
+
+body {
+
+  color: $c-slate-600;
+  height: 100%;
+  font-size: 1.4rem;
+  font-family: 'Source Sans Pro', helvetica, arial, sans-serif;
+
+  p {
+
+    line-height: 1.3em;
+    margin-bottom: $scale;
+
+    &:last-child {
+
+      margin-bottom: 0;
+
+    }
+  }
+
+  &.disableOverflow {
+
+    overflow-y: hidden;
+
+  }
+
+  @media (min-width: $mobile){
+
+    font-size: 1.5rem;
+
+  }
+
+  @media (min-width: 1200px){
+
+    font-size: 1.6rem;
+
+  }
+}
+
+.dark body {
+
+  color: $c-slate-200;
+  background-color: $c-slate-900;
+
+}

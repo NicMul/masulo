@@ -1,0 +1,14 @@
+{
+  "title": "Enter Verification Code",
+  "description": "Please enter the verification code from your authenticator app.",
+  "form": {
+    "code": {
+      "label": "Verify code"
+    },
+    "button": "Complete Sign In"
+  },
+  "footer": {
+    "text": "Lost access to your authenticator app?",
+    "button": "Enter backup code"
+  }
+}

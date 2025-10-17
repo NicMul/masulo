@@ -1,0 +1,47 @@
+@import 'components/global';
+
+.list {
+
+  li {
+
+    margin-bottom: $scale;
+    line-height: 1.4em;
+
+  }
+}
+
+.ul {
+
+  list-style: disc;
+
+  li {
+
+    margin-left: $scale;
+
+  }
+}
+
+.ol {
+
+  counter-reset: list-counter;
+
+  li {
+
+    &:before {
+
+      counter-increment: list-counter;
+      content: counter(list-counter);
+      display: inline-block;
+      margin-right: 0.75em;
+      width: 1.6em;
+      height: 1.6em;
+      text-align: center;
+      color: white;
+      line-height: 1.6em;
+      font-size: 0.9em;
+      border-radius: 100%;
+      background-color: $c-slate-700;
+
+    }
+  }
+}

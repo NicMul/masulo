@@ -1,0 +1,19 @@
+{
+  "title": "Tablero de Control",
+  "message": {
+    "title": "¡Bienvenido a Gravity!",
+    "text": "Este es un tablero de muestra para comenzar. Por favor, lea la documentación para aprender a construir sus propias características."
+  },
+  "revenue": {
+    "title": "Ingresos"
+  },
+  "goals": {
+    "title": "Objetivos"
+  },
+  "user_types": {
+    "title": "Tipos de Usuario"
+  },
+  "users": {
+    "title": "Usuarios"
+  }
+}

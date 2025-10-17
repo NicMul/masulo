@@ -1,0 +1,17 @@
+@import 'components/global';
+
+.logo {
+
+  display: block;
+  cursor: pointer;
+  width: $scale8;
+  height: $scale2;
+  z-index: 10;
+
+  @media (min-width: $mobile){
+
+    width: $scale9;
+    height: $scale4;
+
+  }
+}

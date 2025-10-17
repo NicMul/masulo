@@ -1,0 +1,36 @@
+{
+  "title": "Bienvenido",
+  "welcome": {
+    "title": "Comenzando",
+    "description": "Bienvenido",
+    "text": [
+      "Este es un ejemplo del flujo de incorporación de usuarios.",
+      "Puede reemplazar esto con su propio contenido, probar la acción",
+      "en el siguiente paso o saltar la introducción por completo.",
+      "¡Diviértase construyendo con Gravity! 🛠"
+    ]
+  },
+  "invite_team": {
+    "title": "Invita a tu equipo",
+    "description": "Gravity es más divertido cuando invitas a tu equipo.",
+    "form": {
+      "email": {
+        "label": "Correo electrónico"
+      },
+      "button": "Enviar"
+    }
+  },
+  "duplicate_user": {
+    "title": "¡Importante!",
+    "message": {
+      "title": "Ya tienes una cuenta",
+      "description": "Hemos notado que ya te has registrado con una cuenta, así que usamos tu contraseña original para evitarte cualquier confusión en el futuro."
+    }
+  },
+  "button": {
+    "skip": "Saltar Introducción",
+    "prev": "Anterior",
+    "next": "Siguiente",
+    "finish": "Finalizar"
+  }
+}

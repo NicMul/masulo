@@ -1,0 +1,30 @@
+{
+  "title": "Sign in to Gravity",
+  "message": {
+    "title": "Check Your Email",
+    "description": "Please click the link in your email inbox to sign in."
+  },
+  "button": {
+    "use_password": "Use password",
+    "use_magic": "Use magic link"
+  },
+  "form": {
+    "email": {
+      "label": "Email"
+    },
+    "password": {
+      "label": "Password"
+    },
+    "forgotpassword": {
+      "text": "Forgot your password?"
+    },
+    "button": {
+      "use_magic": "Send Magic Link",
+      "use_password": "Sign In"
+    }
+  },
+  "footer": {
+    "text": "Dont have an account?",
+    "link": "Sign Up"
+  }
+}

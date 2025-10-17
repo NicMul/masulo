@@ -1,0 +1,18 @@
+{
+  "title": "Ayuda",
+  "subtitle": "Contactar Soporte",
+  "message": {
+    "title": "¿Necesita Ayuda?",
+    "description": "Contacte a nuestro equipo de soporte abajo. También puede habilitar o deshabilitar el permiso para que nuestro equipo de soporte acceda a su cuenta para ayudar a resolver cualquier problema."
+  },
+  "form": {
+    "support_enabled": {
+      "label": "Permitir que el equipo de soporte acceda a mi cuenta"
+    },
+    "message": {
+      "label": "¿En qué podemos ayudar?",
+      "error": "Por favor, introduzca un mensaje"
+    },
+    "button": "Enviar Mensaje"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "title": "Select Your Plan",
+  "form": {
+    "plan": {
+      "label": "Plan"
+    },
+    "token": {
+      "label": "Credit Card"
+    },
+    "button": "Save Plan"
+  },
+  "footer": {
+    "link_text": "Manage Your Account"
+  }
+}

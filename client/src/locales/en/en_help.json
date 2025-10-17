@@ -1,0 +1,18 @@
+{
+  "title": "Help",
+  "subtitle": "Contact Support",
+  "message": {
+    "title": "Need Help?",
+    "description": "Contact our support team below. You can also enable or disable permission for our support team to access your account to help resolve any issues."
+  },
+  "form": {
+    "support_enabled": {
+      "label": "Let support team access my account"
+    },
+    "message": {
+      "label": "What can we help with?",
+      "error": "Please enter a message"
+    },
+    "button": "Send Message"
+  }
+}

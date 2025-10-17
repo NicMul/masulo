@@ -1,0 +1,26 @@
+{
+  "title": "Verifica Tu Dirección de Correo Electrónico",
+  "message": {
+    "info": {
+      "title": "Por Favor Revisa Tu Correo",
+      "description": "Por favor, haz clic en el enlace del correo electrónico que enviamos para verificar tu cuenta.",
+      "button": "Reenviar Correo de Verificación"
+    },
+    "verifying": {
+      "title": "Verificando...",
+      "description": "Por favor espera un momento mientras verificamos tu correo electrónico."
+    },
+    "error": {
+      "title": "El Enlace de Verificación Ha Expirado",
+      "description": "Por favor, reenvía el correo de verificación e inténtalo de nuevo.",
+      "button": "Reenviar Correo de Verificación"
+    },
+    "resent": {
+      "title": "Correo de Verificación Enviado",
+      "description": "Por favor, revisa tu correo para el enlace de verificación."
+    }
+  },
+  "footer": {
+    "link_text": "Gestionar Tu Cuenta"
+  }
+}

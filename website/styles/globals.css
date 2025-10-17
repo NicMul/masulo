@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+
+  font-size: 16px;
+
+} 
+
+* {
+
+  background-repeat: no-repeat;
+
+}
+
+@-webkit-keyframes rotate {
+
+  from {
+
+    transform: rotate(0);
+    -ms-transform: rotate(0);
+
+  }
+  to {
+
+    transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+
+  }
+}
+
+@-moz-keyframes rotate {
+
+  from {
+
+    transform: rotate(0);
+    -ms-transform: rotate(0);
+
+  }
+  to {
+
+    transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+
+  }
+}
+
+@-o-keyframes rotate {
+
+  from {
+    transform: rotate(0);
+    -ms-transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+  }
+}
+
+@keyframes rotate {
+
+  from {
+
+    transform: rotate(0);
+    -ms-transform: rotate(0);
+
+  }
+  to {
+
+    transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+
+  }
+}

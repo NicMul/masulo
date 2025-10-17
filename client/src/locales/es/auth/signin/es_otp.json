@@ -1,0 +1,14 @@
+{
+  "title": "Ingrese el Código de Verificación",
+  "description": "Por favor, ingrese el código de verificación de su aplicación autenticadora.",
+  "form": {
+    "code": {
+      "label": "Verificar código"
+    },
+    "button": "Completar Inicio de Sesión"
+  },
+  "footer": {
+    "text": "¿Perdió el acceso a su aplicación autenticadora?",
+    "button": "Ingrese código de respaldo"
+  }
+}

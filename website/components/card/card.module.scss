@@ -1,0 +1,121 @@
+@import 'components/global';
+
+.card {
+
+  position: relative;
+  padding: $scale2;
+  z-index: 1;
+  color: $c-dark;
+  margin-bottom: $scale2;
+  background: white;
+  border-radius: $radius;
+
+  &:last-of-type {
+
+    margin-bottom: 0;
+
+  }
+}
+
+.header {
+
+  position: relative;
+  text-align: left;
+  margin-bottom: $scale-3;
+
+}
+
+.title {
+
+  margin: 0;
+  display: inline-block;
+  font-size: $scale1;
+  line-height: $scale1;
+  font-weight: bold;
+
+}
+
+.number {
+
+  position: relative;
+  top: -0.1em;
+  color: white;
+  width: $scale2;
+  height: $scale2;
+  border-radius: 100%;
+  font-size: $scale;
+  text-align: center;
+  line-height: $scale2;
+  font-size: $scale-1;
+  font-weight: bold;
+  display: inline-block;
+  margin-right: $scale-3;
+  background: $c-dark;
+
+}
+
+.center {
+
+  margin-left: auto;
+  margin-right: auto;
+
+}
+
+.shadow {
+
+  box-shadow: 0em 0.15em 0.4em rgba(0, 0, 0, 0.05);
+
+}
+
+.loading {
+
+  min-height: $scale13;
+
+  > div {
+
+    margin-top: $scale;
+
+  }
+}
+
+.restrictWidth {
+
+  @media (min-width: $mobile){
+
+    max-width: $scale15;
+
+  }
+}
+
+.noPadding {
+
+  padding: 0;
+
+}
+
+.last {
+
+  margin-bottom: 0;
+
+}
+
+.transparent {
+
+  background-color: transparent !important;
+
+}
+
+:global(.dark) {
+
+  .card {
+
+    background-color: $c-slate-800;
+
+  }
+
+  .header {
+
+    border-bottom-color: $c-slate-700;
+
+  }
+}

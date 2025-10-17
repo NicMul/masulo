@@ -1,0 +1,21 @@
+@import 'components/global';
+
+.content {
+
+  position: relative;
+  height: 100%;
+  max-width: $max-width;
+  margin: 0 $scale1;
+
+  @media (min-width: $mobile){
+
+    margin: 0 $scale2;
+
+  }
+
+  @media (min-width: $max-width + 200px){
+
+    margin: 0 auto;
+
+  }
+}

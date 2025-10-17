@@ -1,0 +1,179 @@
+@import 'components/global';
+
+.base {
+
+  cursor: pointer;
+  text-transform: uppercase;
+
+}
+
+.loading { 
+
+  &:after {
+
+    content: '';
+    position: absolute;
+    width: 17px;
+    height: 17px;
+    right: $scale;
+    top: $scale1;
+    z-index: 3;
+    background-size: contain;
+    background-image: url('/images/icons/ico-loader.svg');
+    transform-origin: center center;
+    -webkit-animation: rotate 1s infinite linear;
+    -moz-animation: rotate 1s infinite linear;
+    -o-animation: rotate 1s infinite linear;
+    animation: rotate 1s infinite linear;
+
+  }
+}
+
+.btn {
+
+  display: inline-block;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  font-weight: 600;
+  padding: $scale-2 $scale5;
+  border-radius: $radius;
+  background-color: $c-green;
+  transition: all 0.4s ease-in-out;
+
+  @media (min-width: $mobile){
+
+    font-size: $scale1;
+
+  }
+
+  &:hover {
+
+    background-color: darken($c-green, 6%);
+    transition: all 0.4s ease-in-out;
+
+  }
+}
+
+.red {
+
+  background-color: $c-red;
+
+  &:hover {
+
+    background-color: darken($c-red, 5%) !important;
+    border-color: darken($c-red, 5%) !important;
+
+  }
+}
+
+.blue {
+
+  background-color: $c-blue;
+
+  &:hover {
+
+    background-color: darken($c-blue, 5%) !important;
+    border-color: darken($c-blue, 5%) !important;
+
+  }
+}
+
+.green {
+
+  background-color: $c-green;
+
+  &:hover {
+
+    background-color: darken($c-green, 5%) !important;
+    border-color: darken($c-green, 5%) !important;
+
+  }
+}
+
+.small {
+
+  font-size: 0.9em;
+  padding: $scale/2 $scale1;
+
+}
+
+.big {
+
+  @media (min-width: $mobile){
+
+    font-size: $scale1;
+
+  }
+}
+
+.outline {
+
+  color: white;
+  background: transparent;
+  border: 1px solid $c-border-dark;
+
+  &:hover {
+
+    color: white;
+    border-color: $c-slate-500;
+    background: $c-slate-500;
+
+  }
+}
+
+.text {
+
+  cursor: pointer;
+  color: $c-text;
+
+}
+
+.iconButton {
+
+  position: relative;
+  display: inline-block;
+  padding: 0;
+  width: $scale1;
+  height: $scale1;
+
+}
+
+.iconText {
+
+  position: relative;
+  padding-left: $scale4 + $scale;
+
+}
+
+.iconTextOnly {
+
+  padding-left: $scale3;
+
+}
+
+button.fullWidth {
+
+  width: 100%;
+
+}
+
+.rounded {
+
+  border-radius: $scale3;
+
+}
+
+.alignRight {
+
+  padding-left: 0;
+  padding-right: $scale2;
+
+}
+
+.alignLeft {
+
+  padding-left: $scale2;
+  padding-right: 0;
+  
+}

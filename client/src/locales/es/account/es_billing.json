@@ -1,0 +1,55 @@
+{
+  "title": "Facturación",
+  "description": "Actualiza tu plan o tarjeta de crédito",
+  "button": "Gestionar",
+  "tabs": {
+    "plan": "Plan",
+    "card": "Tarjeta",
+    "invoices": "Facturas"
+  },
+  "plan": {
+    "title": "Tu Plan de Suscripción",
+    "usage_helper": "Has utilizado",
+    "downgrade_helper": "Al cambiar a la versión gratuita, se cancelará tu suscripción al final de tu periodo de facturación el {{end}}. Seguirás teniendo acceso a las funcionalidades de tu plan hasta entonces.",
+    "seats_helper": {
+      "title": "Total: {{currency}}{{total}}/{{interval}}",
+      "description_single": "Tienes {{volume}} usuario a {{currency}}{{price}}/{{interval}}.",
+      "description_plural": "Tienes {{volume}} usuarios a {{currency}}{{price}}/{{interval}} cada uno."
+    },
+    "form": {
+      "button": "Actualizar Plan"
+    },
+    "billing_cycle": "Tu ciclo de facturación es",
+    "subscription_ends": "Tu suscripción se cancelará el {{end}} y pasarás al plan gratuito."
+  },
+  "card": {
+    "title": "Actualizar tus Detalles de Tarjeta",
+    "expires": "VENCE",
+    "form": {
+      "button": "Guardar Tarjeta"
+    }
+  },
+  "invoice": {
+    "title": "Tus Facturas",
+    "header": {
+      "number": "número",
+      "date": "fecha",
+      "status": "estado",
+      "total": "total"
+    }
+	},	
+  "message": {
+    "requires_payment_method": {
+      "title": "Tu último pago falló",
+      "description": "Nuestro último intento de cobrar tu tarjeta falló. Por favor, actualiza los detalles de tu tarjeta a continuación, y trataremos de cobrar tu tarjeta nuevamente."
+    },
+    "requires_action": {
+      "title": "Necesitas autorizar tu pago",
+      "description": "Para procesar tu último pago de suscripción, necesitas autorizar la transacción con tu banco. Por favor, revisa tu correo electrónico para encontrar un enlace para hacer esto, luego refresca esta página cuando hayas terminado."
+    },
+    "canceled": {
+      "title": "Tu suscripción ha sido cancelada",
+      "description": "Para continuar utilizando la aplicación, por favor selecciona un nuevo plan y completa el proceso de pago."
+    }
+  }
+}

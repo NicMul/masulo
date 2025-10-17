@@ -1,0 +1,16 @@
+{
+ "domain": "https://www.mesulo.com",
+ "stripe": {
+  "plans": []
+ },
+ "facebook": {
+  "scope": [
+   "email"
+  ],
+  "callback_url": "https://www.mesulo.com/auth/facebook/callback"
+ },
+ "twitter": {
+  "scope": [],
+  "callback_url": "https://www.mesulo.com/auth/twitter/callback"
+ }
+}

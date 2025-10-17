@@ -1,0 +1,52 @@
+@import 'components/global';
+
+.testimonial {
+  
+  margin-bottom: $scale2 !important;
+
+  @media (max-width: $tablet){
+
+    margin-bottom: 0;
+
+  }
+}
+
+.footer {
+
+  position: relative;
+  margin-top: $scale;
+  overflow: hidden;
+
+}
+
+.avatar {
+
+  width: $scale4;
+  height: $scale4;
+  border-radius: 100%;
+  overflow: hidden;
+
+}
+
+.author {
+
+  font-weight: 700;
+
+}
+
+.cite {
+
+  position: absolute;
+  left: $scale7;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: $scale-1;
+  font-style: normal;
+  line-height: $scale1;
+
+  a {
+
+    text-decoration: underline;
+
+  }
+}

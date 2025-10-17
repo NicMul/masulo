@@ -1,0 +1,38 @@
+@import 'components/global';
+
+.flag {
+
+  float: left;
+  height: 18px;
+  margin-right: $scale-3;
+
+}
+
+.select {
+
+  float: left;
+  height: 18px;
+
+}
+
+.input {
+
+  position: absolute;
+  font-size: $scale1;
+  font-weight: 600;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: transparent;
+  border: transparent;
+  outline: none;
+  overflow: visible;
+  cursor: pointer;
+  line-height: 21px;
+  padding-right: $scale;
+  background-repeat: no-repeat;
+  background-size: 0.65em;
+  background-position: top 50% right;
+  background-image: url('/images/icons/ico-dropdown-light.svg');
+
+}

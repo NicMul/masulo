@@ -1,0 +1,50 @@
+@import 'components/global';
+
+.footer {
+
+  border-top: 1px solid $c-border;
+
+}
+
+.logo {
+
+  margin-bottom: $scale;
+  width: $scale9;
+
+}
+
+.title {
+
+  color: $c-dark;
+  font-weight: bold;
+  margin-bottom: $scale-2;
+
+}
+
+.address {
+
+  display: block;
+  color: $c-slate-500;
+  font-style: normal;
+  font-size: $scale-1;
+  padding-right: $scale7;
+
+}
+
+.button {
+
+  margin-right: $scale-2;
+
+}
+
+.link {
+
+  display: block;
+  margin-bottom: $scale-4;
+
+  &:hover {
+
+    text-decoration: underline;
+
+  }
+}

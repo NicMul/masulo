@@ -1,0 +1,65 @@
+{
+  "title": "Usuarios",
+  "subtitle": "Gestionar Usuarios",
+  "description": "Invitar usuarios a tu cuenta",
+  "button": "Gestionar Usuarios",
+  "header": {
+    "avatar": "avatar",
+    "name": "nombre",
+    "email": "correo electrónico",
+    "date_created": "fecha de creación",
+    "permission": "permiso",
+    "status": "estado"
+  },  
+  "new": {
+    "button": "Agregar Usuario"
+  },
+  "status": {
+    "invited": "Invitado",
+    "registered": "Registrado",
+    "verified": "Verificado"
+  },
+  "invite": {
+    "title": "Agregar Usuario",
+    "description": "Para invitar a más de un usuario, separa los correos electrónicos con una coma.",
+    "form": {
+      "email": {
+        "label": "Correo Electrónico"
+      },
+      "permission": {
+        "label": "Permiso"
+      },
+      "button": "Enviar"
+    },
+    "resent_notification": "Invitación reenviada a"
+  },
+  "delete_invite": {
+    "title": "Eliminar Invitación",
+    "description": "¿Estás seguro de que quieres eliminar la invitación para",
+    "form": {
+      "button": "Eliminar"
+    }
+  },
+  "edit": {
+    "title": "Editar Usuario",
+    "form": {
+      "name": {
+        "label": "Nombre"
+      },
+      "email": {
+        "label": "Correo Electrónico"
+      },
+      "permission": {
+        "label": "Permiso"
+      },
+      "button": "Guardar"
+    }
+  },
+  "delete": {
+    "title": "Eliminar Usuario",
+    "description": "¿Estás seguro de que quieres eliminar",
+    "form": {
+      "button": "Eliminar"
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "profile": "Perfil",
+  "password": "Contraseña",
+  "2fa": "2FA",
+  "billing": "Facturación",
+  "notifications": "Notificaciones",
+  "api_keys": "Claves API",
+  "users": "Usuarios"
+}

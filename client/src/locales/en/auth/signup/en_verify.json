@@ -1,0 +1,26 @@
+{
+  "title": "Verify Your Email Address",
+  "message": {
+    "info": {
+      "title": "Please Check Your Email",
+      "description": "Please click the link in the email we sent to verify your account.",
+      "button": "Re-Send Verification Email"
+    },
+    "verifying": {
+      "title": "Verifying...",
+      "description": "Please wait a moment while we verify your email."
+    },
+    "error": {
+      "title": "Verification Link Has Expired",
+      "description": "Please re-send the verification email and try again.",
+      "button": "Re-Send Verification Email"
+    },
+    "resent": {
+      "title": "Verification Email Sent",
+      "description": "Please check your email for the verification link."
+    }
+  },
+  "footer": {
+    "link_text": "Manage Your Account"
+  }
+}

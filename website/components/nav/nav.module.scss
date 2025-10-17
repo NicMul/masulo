@@ -1,0 +1,133 @@
+@import 'components/global';
+
+.wrapper {
+
+  padding: $scale4 0;
+
+}
+
+.nav {
+
+  position: relative;
+
+}
+
+.desktop {
+
+  display: none;
+
+  @media (min-width: $mobile){
+
+    display: block;
+
+  }
+}
+
+.mobile {
+
+  position: fixed;
+  top: 1.2em;
+  left: 0.75em;
+  right: 0.75em;
+  z-index: 10;
+
+  @media (min-width: $mobile){
+
+    display: none;
+
+  }
+}
+
+.logo {
+
+  position: absolute;
+  top: 50%;
+  left: 0;
+  margin: 0;
+  transform: translateY(-50%);
+
+}
+
+.links {
+
+  padding: $scale2;
+  text-align: left;
+
+  @media (min-width: $mobile){
+
+    padding: 0;
+    text-align: center;
+
+  }
+}
+
+.link {
+
+  display: block;
+  color: $c-slate-700;
+  margin-bottom: $scale;
+  text-decoration: none;
+
+  @media (min-width: $mobile){
+
+    display: inline-block;
+    color: white;
+    opacity: 0.9;
+    margin-right: $scale;
+    margin-bottom: 0;
+
+    &:hover {
+
+      opacity: 1;
+
+    }
+
+    &:last-of-type {
+
+      margin-right: 0;
+
+    }
+  }
+}
+
+
+button.toggleButtonOpen {
+
+  position: absolute;
+  top: 50%;
+  right: 0.4em;
+  z-index: 101;
+  transform: translateY(-50%);
+
+  @media (min-width: $mobile){
+
+    display: none !important;
+
+  }
+}
+
+button.toggleButtonClosed {
+
+  position: absolute;
+  right: $scale;
+  top: $scale;
+  z-index: 101;
+
+  @media (min-width: $mobile){
+
+    display: none;
+
+  }
+}
+
+.button {
+
+  @media (min-width: $mobile){
+
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+
+  }
+}

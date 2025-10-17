@@ -1,0 +1,13 @@
+{
+  "title": "Actualizar",
+  "subtitle": "Actualiza Tu Plan",
+  "form": {
+    "plan": {
+      "label": "Plan"
+    },
+    "token": {
+      "label": "Tarjeta de Crédito"
+    },
+    "button": "Actualizar Ahora"
+  }
+}

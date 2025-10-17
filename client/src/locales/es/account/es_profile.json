@@ -1,0 +1,41 @@
+{
+  "title": "Perfil",
+  "subtitle": "Editar tu Perfil",
+  "description": "Actualiza la información de tu perfil",
+  "button": "Actualizar",
+  "form": {
+    "name": {
+      "label": "Tu Nombre",
+      "error": "Por favor, ingresa tu nombre"
+    },
+    "email": {
+      "label": "Dirección de Email",
+      "error": "Por favor, ingresa tu dirección de email"
+    },
+    "avatar": {
+      "label": "Imagen de Perfil"
+    },
+    "dark_mode": {
+      "label": "Modo Oscuro"
+    },
+    "account_name": {
+      "label": "Nombre de la Cuenta"
+    },
+    "default_account": {
+      "label": "Cuenta Predeterminada"
+    },
+    "button": "Guardar"
+  },
+  "close_account": {
+    "title": "Eliminar tu Cuenta",
+    "description": "¿Estás seguro de que deseas eliminar tu cuenta? Perderás toda tu información, y esta acción no puede ser deshecha.",
+    "form": {
+      "password": {
+        "label": "Contraseña",
+        "description": "Por favor, ingresa tu contraseña para confirmar la eliminación de tu cuenta.",
+        "error": "Por favor, ingresa tu contraseña para confirmar la eliminación de tu cuenta."
+      }
+    },
+    "button": "Eliminar"
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "title": "Profile",
+  "subtitle": "Edit Your Profile",
+  "description": "Update your profile information",
+  "button": "Update",
+  "form": {
+    "name": {
+      "label": "Your Name",
+      "error": "Please enter your name"
+    },
+    "email": {
+      "label": "Email address",
+      "error": "Please enter your email address"
+    },
+    "avatar": {
+      "label": "Profile Picture"
+    },
+    "dark_mode": {
+      "label": "Dark Mode"
+    },
+    "account_name": {
+      "label": "Account Name"
+    },
+    "default_account": {
+      "label": "Default Account"
+    },
+    "button": "Save"
+  },
+  "close_account": {
+    "title": "Delete Your Account",
+    "description": "Are you sure you want to delete your account? You will lose all of your data, and this action cannot be undone.",
+    "form": {
+      "password": {
+        "label": "Password",
+        "description": "Please enter your password to confirm your account deletion.",
+        "error": "Please enter your password to confirm your account deletion."
+      }
+    },
+    "button": "Delete"
+  }
+}

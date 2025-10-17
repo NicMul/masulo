@@ -1,0 +1,18 @@
+.loading {
+
+  opacity: 0.5;
+  pointer-events: none;
+
+}
+
+.button {
+
+  width: 48%;
+  margin-right: 2%;
+
+  &:last-child {
+
+    margin-right: 0;
+
+  }
+}

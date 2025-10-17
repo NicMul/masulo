@@ -1,0 +1,34 @@
+{
+  "development": {
+    "stripe": {
+      "publishableAPIKey": ""
+    },
+    "locales": [
+      {
+        "value": "en",
+        "label": "English"
+      },
+      {
+        "value": "es",
+        "label": "Español"
+      }
+    ],
+    "server_url": "http://localhost:8080"
+  },
+  "production": {
+    "stripe": {
+      "publishableAPIKey": ""
+    },
+    "locales": [
+      {
+        "value": "en",
+        "label": "English"
+      },
+      {
+        "value": "es",
+        "label": "Español"
+      }
+    ],
+    "server_url": "https://www.mesulo.com"
+  }
+}

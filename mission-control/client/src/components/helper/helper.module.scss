@@ -1,0 +1,36 @@
+.helper {
+
+  padding: $scale;
+  margin-bottom: $scale;
+  border-radius: $radius;
+  background-color: lighten($c-blue, 2%);
+
+}
+
+.icon {
+
+  float: left;
+  margin-right: $scale;
+
+}
+
+.link {
+
+  color: white;
+  text-decoration: none;
+
+  &:hover {
+
+     text-decoration: underline;
+
+  }
+}
+
+:global(.dark){ 
+
+  .helper {
+
+    background-color: darken($c-blue, 20%);
+
+  }
+}

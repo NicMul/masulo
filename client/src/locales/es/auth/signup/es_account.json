@@ -1,0 +1,22 @@
+{
+  "title": "Crea Tu Cuenta",
+  "form": {
+    "first_name": {
+      "label": "Nombre",
+      "error": "Por favor, introduce tu nombre"
+    },
+    "email": {
+      "label": "Correo Electrónico",
+      "error": "Por favor, introduce tu correo electrónico"
+    },
+    "password": {
+      "label": "Contraseña",
+      "error": "Por favor, introduce una contraseña"
+    },
+    "button": "Crear Cuenta"
+  },
+  "footer": {
+    "text": "¿Ya tienes una cuenta?",
+    "link_text": "Iniciar Sesión"
+  }
+}

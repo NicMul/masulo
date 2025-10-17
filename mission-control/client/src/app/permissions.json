@@ -1,0 +1,3 @@
+{
+  "master": { "master": true, "owner": true, "admin": true, "developer": false, "user": true }
+}

@@ -1,0 +1,26 @@
+@import 'components/global';
+
+.switch {
+
+  color: white;
+  display: inline-block;
+  background: $c-slate-700;
+  border-radius: $radius;
+  font-size: 0.9em;
+
+}
+
+.option {
+
+  cursor: pointer;
+  display: inline-block;
+  padding: $scale-4 $scale;
+  border-radius: $radius;
+
+}
+
+.selected {
+
+  background-color: $c-green;
+
+}

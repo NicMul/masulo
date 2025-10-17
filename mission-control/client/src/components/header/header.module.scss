@@ -1,0 +1,54 @@
+.header {
+
+  position: relative;
+  width: auto;
+  background: white;
+  padding: $scale2;
+  font-weight: 600;
+  overflow: hidden;
+  margin: $scale2*-1 $scale2*-1 $scale2 $scale2*-1;
+
+  @media (max-width: $mobile){
+
+    padding: $scale $scale;
+    border: none;
+
+  }
+}
+
+.title {
+
+  position: relative;
+  float: left;
+
+  @media (max-width: $mobile){
+
+    margin-left: $scale3;
+      
+  }
+
+  @media (min-width: $mobile){
+
+    font-size: $scale1;
+    font-weight: 600;
+    
+  }
+}
+
+.dark_mode_switch {
+
+  position: relative;
+  float: right;
+  top: 0.15em;
+
+}
+
+:global(.dark){ 
+
+  .header {
+
+    background-color: $c-slate-900;
+    border: 1px dotted $c-slate-800;
+
+  }
+}

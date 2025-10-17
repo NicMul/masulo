@@ -1,0 +1,55 @@
+{
+  "title": "Billing",
+  "description": "Update your plan or credit card",
+  "button": "Manage",
+  "tabs": {
+    "plan": "Plan",
+    "card": "Card",
+    "invoices": "Invoices"
+  },
+  "plan": {
+    "title": "Your Subscription Plan",
+    "usage_helper": "You've used",
+    "seats_helper": {
+      "title": "Total: {{currency}}{{total}}/{{interval}}",
+      "description_single": "You have {{volume}} user at {{currency}}{{price}}/{{interval}}.",
+      "description_plural": "You have {{volume}} users at {{currency}}{{price}}/{{interval}} each."
+    },
+    "downgrade_helper": "Downgrading to free will cancel your subscription at the end of your billing period on {{end}}. You'll still have access to your plan features until then.",
+    "form": {
+      "button": "Update Plan"
+    },
+    "billing_cycle": "Your billing cycle is",
+    "subscription_ends": "Your subscription will be cancelled on {{end}} and you'll be moved onto the free plan."
+  },
+  "card": {
+    "title": "Update Your Card Details",
+    "expires": "EXPIRES",
+    "form": {
+      "button": "Save Card"
+    }
+  },
+  "invoice": {
+    "title": "Your Invoices",
+    "header": {
+      "number": "number",
+      "date": "date",
+      "status": "status",
+      "total": "total"
+    }
+	},
+  "message": {
+    "requires_payment_method": {
+      "title": "Your latest payment failed",
+      "description": "Our latest attempt to charge your card failed. Please update your card details below, and we will attempt to charge your card again."
+    },
+    "requires_action": {
+      "title": "You need to authorize your payment",
+      "description": "In order to process your latest subscription payment, you need to authorize the transaction with your bank. Please check your email for a link to do this, then refresh this page when you're done."
+    },
+    "canceled": {
+      "title": "Your subscription has been canceled",
+      "description": "In order to continue using the app, please select a new plan and complete the payment process."
+    }
+  }
+}

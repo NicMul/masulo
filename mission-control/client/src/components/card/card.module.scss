@@ -1,0 +1,116 @@
+.card {
+
+  position: relative;
+  padding: $scale2;
+  z-index: 1;
+  margin-bottom: $scale2;
+  background: white;
+  border-radius: $radius;
+
+  > h2 {
+
+    font-size: $scale;
+    margin: $scale1 0 $scale-4;
+
+  }
+
+  a {
+
+    display: inline-block;
+    margin-top: $scale-2;
+    font-weight: 600;
+
+  }
+
+  &:last-of-type {
+
+    margin-bottom: 0;
+
+  }
+}
+
+.header {
+
+  position: relative;
+  overflow: hidden;
+  text-align: left;
+  padding-bottom: $scale1;
+  margin-bottom: $scale3;
+  border-bottom: 1px dotted $c-border;
+
+}
+
+.title {
+
+  float: left;
+  margin: 0;
+  font-size: $scale1;
+  font-weight: 600;
+
+}
+
+.center {
+
+  margin-left: auto;
+  margin-right: auto;
+
+}
+
+.shadow {
+
+  box-shadow: 0em 0.15em 0.4em rgba(0, 0, 0, 0.05);
+
+}
+
+.loading {
+
+  min-height: $scale13;
+
+  > div {
+
+    margin-top: $scale;
+
+  }
+}
+
+.restrictWidth {
+
+  @media (min-width: $mobile){
+
+    max-width: $scale15;
+
+  }
+}
+
+.noPadding {
+
+  padding: 0;
+
+}
+
+.last {
+
+  margin-bottom: 0;
+
+}
+
+.transparent {
+
+  background-color: transparent !important;
+
+}
+
+:global(.dark) {
+
+  .card {
+
+    background-color: $c-slate-800;
+
+  }
+
+  .header {
+
+    border-bottom-color: $c-slate-700;
+
+  }
+}

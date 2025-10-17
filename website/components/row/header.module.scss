@@ -1,0 +1,40 @@
+@import 'components/global';
+
+.header  {
+
+  position: relative;
+  text-align: center;
+  margin-bottom: $scale7;
+
+  &:after {
+
+    content: '';
+    position: absolute;
+    width: $scale4;
+    height: 2px;
+    left: 50%;
+    bottom: -$scale1;
+    transform: translateX(-50%);
+    background-color: darken($c-border, 5%);
+
+  }
+}
+
+.title {
+
+  font-weight: 700;
+  font-size: $scale2;
+
+  @media (min-width: $mobile){
+
+    font-size: $scale3;
+
+  }
+}
+
+.desc {
+
+  text-align: center;
+  margin-top: $scale-4;
+
+}

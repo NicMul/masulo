@@ -1,0 +1,30 @@
+{
+  "title": "Iniciar sesión en Gravity",
+  "message": {
+    "title": "Revisa Tu Correo",
+    "description": "Por favor, haz clic en el enlace de tu bandeja de entrada para iniciar sesión."
+  },
+  "button": { 
+    "use_password": "Usar contraseña", 
+    "use_magic": "Usar enlace mágico" 
+  },
+  "form": {
+    "email": {
+      "label": "Correo Electrónico"
+    },
+    "password": {
+      "label": "Contraseña"
+    },
+    "forgotpassword": {
+      "text": "¿Olvidaste tu contraseña?"
+    },
+    "button": {
+      "use_magic": "Enviar Enlace Mágico",
+      "use_password": "Iniciar Sesión"
+    }
+  },
+  "footer": {
+    "text": "¿No tienes una cuenta?",
+    "link": "Regístrate"
+  }
+}

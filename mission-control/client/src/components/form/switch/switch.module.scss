@@ -1,0 +1,65 @@
+.switch {
+
+  position: relative;
+  display: block;
+  width: 100%;
+  margin-bottom: $scale3;
+
+}
+
+.label {
+
+  position: relative;
+  top: 0.1em;
+  float: left;
+  margin-left: $scale;
+  text-transform: none !important;
+
+}
+
+.track {
+
+  position: relative;
+  float: left;
+  top: 0;
+  left: 0;
+  width: 2.8em;
+  height: 1.5em;
+  cursor: pointer;
+  overflow: hidden;
+  border-radius: 2em;
+  background: lighten($c-dark, 65%);
+  transition: all 0.3s ease-out;
+
+}
+
+.trackOn {
+
+  background-color: $c-green;
+
+}
+
+.handle {
+
+  position: absolute;
+  top: 50%;
+  left: 0.175em;
+  color: white;
+  width: 1.5em;
+  height: 1.5em;
+  font-size: 0.85em;
+  line-height: 2.1em;
+  text-transform: uppercase;
+  pointer-events: none;
+  background-color: white;
+  transition: all 0.1s ease-out;
+  border-radius: 100%;
+  transform: translateY(-50%);
+
+}
+
+.handleOn {
+
+  left: 1.65em;
+
+}

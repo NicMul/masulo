@@ -1,0 +1,15 @@
+{
+  "title": "Selecciona Tu Plan",
+  "form": {
+    "plan": {
+      "label": "Plan"
+    },
+    "token": {
+      "label": "Tarjeta de Crédito"
+    },
+    "button": "Guardar Plan"
+  },
+  "footer": {
+    "link_text": "Gestionar Tu Cuenta"
+  }
+}

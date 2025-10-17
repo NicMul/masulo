@@ -1,0 +1,15 @@
+{
+  "title": "Notificaciones",
+  "subtitle": "Configuración de Notificaciones",
+  "description": "Elige qué notificaciones recibes",
+  "button": "Administrar",
+  "form": {
+    "options": {
+      "new_signin": "Alerta de nuevo inicio de sesión",
+      "plan_updated": "Plan de facturación actualizado",
+      "card_updated": "Tarjeta de crédito actualizada",
+      "invite_accepted": "Invitación aceptada"
+    },
+    "button": "Guardar"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "title": "Two-Factor Authentication",
+  "subtitle": "Secure Your Account",
+  "description": "Secure your account",
+  "button": {
+    "manage": "Manage",
+    "enable": "Enable"
+  },
+  "form": {
+    "2fa_enabled": {
+      "label": "Enable two-factor authentication"
+    },
+    "code": {
+      "label": "Verification code"
+    },
+    "button": "Verify"
+  },
+  "message": {
+    "scan_qr_code": {
+      "title": "Scan QR Code",
+      "text": "Scan the QR code below with an authenticator app such as Google Authenticator and enter the verification code.",
+      "image_alt": "Please scan this with your authenticator app"
+    },
+    "backup_code": {
+      "title": "Your Backup Code",
+      "text": "Please store your backup code somewhere safe."
+    },
+    "2fa_enabled": {
+      "title": "2FA Enabled",
+      "text": "Good job! Two-factor authentication is enabled on your account."
+    },
+    "enable_2fa": {
+      "title": "Enable 2FA",
+      "text": "We recommended enabling 2FA on your account for added security."
+    }
+  }
+}

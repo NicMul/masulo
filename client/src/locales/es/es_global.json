@@ -1,0 +1,119 @@
+{
+  "welcome": "Bienvenido",
+  "search": "Buscar",
+  "error": { 
+    "title": "Algo salió mal",
+    "message": "Por favor, inténtalo de nuevo."
+  },
+  "feedback": {
+    "title": "¿Disfrutando de Gravity?",
+    "form": {
+      "comment": {
+        "label": "Cuéntanos sobre tu experiencia"
+      },
+      "button": "Enviar Comentarios",
+      "success_title": "Feedback enviado",
+      "success_message": "Gracias, apreciamos mucho tus comentarios."
+    }
+  },
+  "form": {
+    "input": {
+      "error": {
+        "required": "{{label}} es requerido",
+        "min": "Por favor ingrese un mínimo de {{min}}",
+        "max": "Por favor ingrese un máximo de {{max}}",
+        "min_max": "Por favor ingrese un valor entre {{min}} y {{max}}",
+        "min_length": "{{label}} debe tener un mínimo de {{minLength}} caracteres",
+        "max_length": "{{label}} debe tener un máximo de {{maxLength}} caracteres"
+      }
+    },
+    "number": {
+      "error": {
+        "invalid": "Por favor ingrese un número válido"
+      }
+    },
+    "password": {
+      "error": {
+        "invalid": "La contraseña debe contener al menos un carácter especial"
+      }
+    },
+    "url": {
+      "error": {
+        "invalid": "Por favor ingrese una URL válida"
+      }
+    },
+    "phone": {
+      "error": {
+        "invalid": "Por favor ingrese un número de teléfono válido, por ejemplo, +44 0714649626"
+      }
+    },
+    "email": {
+      "error": {
+        "invalid": "Por favor ingrese una dirección de correo electrónico válida"
+      }
+    },
+    "date": {
+      "placeholder": "Seleccione una fecha"
+    },
+    "select": {
+      "placeholder": "Por favor seleccione una opción"
+    },
+    "fieldset": {
+      "error": {
+        "min": "Por favor seleccione un mínimo de",
+        "max": "Por favor seleccione un máximo de",
+        "min_max": "Por favor elija entre {{min}} y {{max}} opciones."
+      }
+    },
+    "file": {
+      "dropzone": "Suelte el archivo aquí",
+      "error": {
+        "unselected": "Por favor seleccione un archivo",
+        "max": "Por favor suba un máximo de",
+        "excluded": "archivos no son aceptados"
+      }
+    }
+  },
+  "locale": {
+    "title": "Cambiar Idioma",
+    "form": {
+      "language": {
+        "label": "Idioma"
+      }
+    }
+  },
+  "paginate": {
+    "showing": "mostrando {{start}} - {{end}} de {{total}}",
+    "no_results": "No hay resultados"
+  },
+  "social": {
+    "use": "Usar",
+    "or": "o"
+  },
+  "table": {
+    "header": {
+      "select": "seleccionar",
+      "actions": "acciones"
+    },
+    "action": {
+      "contact": "Contacto",
+      "delete": "Eliminar",
+      "download": "Descargar",
+      "edit": "Editar",
+      "reveal": "Revelar",
+      "revoke": "Revocar",
+      "select_all": "Seleccionar Todo",
+      "view": "Ver",
+      "resend_invite": "Reenviar Invitación",
+      "new": "Nuevo"
+    },
+    "label": {
+      "yes": "Sí",
+      "no": "No"
+    },
+    "empty": "Nada que mostrar"
+  },
+  "chart": {
+    "empty": "Nada que mostrar"
+  }
+}

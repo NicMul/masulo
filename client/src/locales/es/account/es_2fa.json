@@ -1,0 +1,37 @@
+{
+  "title": "Autenticación de Dos Factores",
+  "subtitle": "Asegura Tu Cuenta",
+  "description": "Asegura tu cuenta",
+  "button": {
+    "manage": "Gestionar",
+    "enable": "Activar"
+  },
+  "form": {
+    "2fa_enabled": {
+      "label": "Activar la autenticación de dos factores"
+    },
+    "code": {
+      "label": "Código de Verificación"
+    },
+    "button": "Verificar"
+  },
+  "message": {
+    "scan_qr_code": {
+      "title": "Escanear Código QR",
+      "text": "Escanea el código QR a continuación con una aplicación autenticadora como Google Authenticator e introduce el código de verificación.",
+      "image_alt": "Por favor, escanea esto con tu aplicación de autenticación"
+    },
+    "backup_code": {
+      "title": "Tu Código de Respaldo",
+      "text": "Por favor, guarda tu código de respaldo en un lugar seguro."
+    },
+    "2fa_enabled": {
+      "title": "2FA Activado",
+      "text": "¡Buen trabajo! La autenticación de dos factores está activada en tu cuenta."
+    },
+    "enable_2fa": {
+      "title": "Activar 2FA",
+      "text": "Recomendamos activar 2FA en tu cuenta para mayor seguridad."
+    }
+  }
+}

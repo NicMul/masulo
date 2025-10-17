@@ -1,0 +1,75 @@
+@import 'components/global';
+
+.base {
+
+  padding: $scale4 0;
+  color: $c-dark;
+  background-color: white;
+
+  @media (min-width: $mobile){
+
+    padding: $scale6 0;
+
+  }
+}
+
+.transparent {
+
+  background-color: transparent;
+
+}
+
+.tint {
+
+  background-color: $c-bg;
+
+}
+
+.dark {
+
+  color: white;
+  background-color: $c-dark;
+
+  button {
+
+    color: white !important;
+
+  }
+}
+
+.brand {
+
+  color: white;
+  background-color: $c-purple;
+
+}
+
+.left {
+
+  text-align: left;
+
+}
+
+.center {
+
+  text-align: center;
+
+}
+
+.loading {
+
+  min-height: $scale13;
+
+}
+
+.removeTopPadding {
+
+  padding-top: 0;
+
+}
+
+.removeBottomPadding {
+
+  padding-bottom: 0;
+
+}

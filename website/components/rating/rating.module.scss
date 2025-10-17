@@ -1,0 +1,38 @@
+@import 'components/global';
+
+.stars {
+
+  position: relative;
+  top: -0.1em;
+  display: inline-block;
+
+}
+
+.star {
+
+  display: inline-block;
+  margin-right: $scale-3;
+
+  &:last-of-type {
+
+    margin-right: 0;
+
+  }
+}
+
+.label {
+
+  display: inline-block;
+
+  a, span {
+
+    margin-left: $scale-3;
+
+  }  
+
+  a {
+
+    text-decoration: underline;
+
+  }
+}

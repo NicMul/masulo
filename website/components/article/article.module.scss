@@ -1,0 +1,44 @@
+@import 'components/global';
+
+.article {
+
+  padding: $scale3 0;
+
+  h1 {
+
+    color: $c-dark;
+    font-weight: 600;
+    font-size: $scale2;
+    margin-bottom: $scale-2;
+
+  }
+
+  h2 {
+
+    color: $c-slate-700;
+    font-size: $scale1;
+    font-weight: 600;
+    margin: $scale3 0 $scale-2 0;
+
+  }
+
+  h3 {
+
+    color: $c-slate-600;
+    font-size: $scale;
+    margin-bottom: $scale;
+
+  }
+
+  p {
+
+    margin-bottom: $scale;
+
+  }
+
+  @media (min-width: $mobile){
+
+    padding: $scale6 0;
+
+  }
+}

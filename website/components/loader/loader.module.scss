@@ -1,0 +1,21 @@
+@import 'components/global';
+
+.base {
+
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 22px;
+  height: 22px;
+  margin-top: $scale6;
+  transform: translate(-50%, -50%);
+
+}
+
+.orbit {
+
+  position: absolute;
+  z-index: 10;
+  animation: rotate 1s infinite linear;
+
+}

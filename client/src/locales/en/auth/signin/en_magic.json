@@ -1,0 +1,14 @@
+{
+  "title": "",
+  "message": {
+    "success": {
+      "title": "Using The Magic",
+      "description": "Please wait, signing you in now..."
+    },
+    "error": {
+      "title": "Magic Link Is Invalid",
+      "description": "Please go back and try again",
+      "button": "Back to Sign In"
+    }
+  }
+}

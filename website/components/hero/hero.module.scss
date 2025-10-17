@@ -1,0 +1,84 @@
+@import 'components/global';
+
+.hero {
+
+  position: relative;
+  text-align: left;
+  margin-bottom: $scale5;
+
+  @media (min-width: $mobile){
+
+    text-align: center;
+    margin-bottom: $scale4;
+
+  }
+}
+
+.blurb {
+  
+  @media (min-width: $mobile){
+
+    max-width: $scale18;
+    margin-left: auto;
+    margin-right: auto;
+
+  }
+}
+
+.title {
+
+  display: block;
+  font-size: $scale2;
+  font-weight: 700;
+  line-height: $scale1;
+  margin-bottom: 0;
+
+  @media (min-width: $mobile){
+
+    font-size: $scale5;
+
+  }
+}
+
+.subtitle {
+
+  display: block;
+  font-weight: normal;
+  font-size: $scale;
+  margin-top: $scale;
+
+  @media (min-width: $mobile){
+
+    font-size: $scale1;
+
+  }
+}
+
+.rating {
+
+  margin: $scale2 0 $scale3;
+
+  @media (min-width: $mobile){
+
+    margin: $scale3 auto $scale4;
+
+  }
+}
+
+.actions {
+
+  margin-top: $scale1;
+
+  @media (min-width: $mobile){
+
+    margin-top: $scale3;
+
+  }
+}
+
+.visual {
+
+  margin-bottom: -$scale7;
+  box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.2);
+
+}

@@ -1,0 +1,13 @@
+@import 'components/global';
+
+.button {
+
+  display: inline-block;
+  margin-right: $scale;
+
+  &:last-child {
+
+    margin-right: 0;
+
+  }
+}

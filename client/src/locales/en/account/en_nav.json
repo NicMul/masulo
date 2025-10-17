@@ -1,0 +1,9 @@
+{
+  "profile": "Profile",
+  "password": "Password",
+  "2fa": "2FA",
+  "billing": "Billing",
+  "notifications": "Notifications",
+  "api_keys": "API Keys",
+  "users": "Users"
+}
