@@ -30,22 +30,23 @@ export function EditHeader({ t, selectedGame, onSaveAndPublish }) {
           <h1 className='text-2xl font-bold text-slate-900 dark:text-slate-100'>
             { selectedGame ? t('edit.header.title', { gameName: selectedGame.cmsId }) : t('edit.header.titleDefault') }
           </h1>
+          
           <p className='text-sm text-slate-600 dark:text-slate-400'>
             { selectedGame ? t('edit.header.version', { version: selectedGame.version }) : t('edit.header.versionDefault') }
           </p>
         </div>
-        <div className='flex items-center gap-4'>
-          <div className='bg-slate-800 dark:bg-slate-800 rounded-md p-2 text-sm text-slate-200 dark:text-slate-400'>
+        <div className='flex'>
+        <div className='bg-red-800 dark:bg-slate-800 rounded-full p-2 text-sm text-slate-200 dark:text-slate-400 mr-4 px-4'>
             { selectedGame ? t('edit.header.cmsId', { cmsId: selectedGame.cmsId }) : t('edit.header.cmsIdDefault') }
           </div>
-          <div className='flex items-center gap-2'>
-            <Switch
+          <Switch
               name="animate"
               value={ animateEnabled }
               label={ t('edit.header.animate') }
               onChange={ (e) => setAnimateEnabled(e.target.value) }
               disabled={ !selectedGame }
             />
+            <div className='mr-4'></div>
             <Switch
               name="hover"
               value={ hoverEnabled }
@@ -53,9 +54,16 @@ export function EditHeader({ t, selectedGame, onSaveAndPublish }) {
               onChange={ (e) => setHoverEnabled(e.target.value) }
               disabled={ !selectedGame }
             />
+        </div>
+       
+        <div className='flex items-center gap-4'>
+          
+          <div className='flex items-center gap-2'>
+            
           </div>
           <Button 
             icon='save' 
+            color='green'
             text={ t('edit.header.savePublish') } 
             onClick={ onSaveAndPublish }
             disabled={ !selectedGame }

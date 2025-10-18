@@ -22,7 +22,7 @@
     "description": "{{source}} se está sirviendo actualmente al SDK.",
     "source": {
       "original": "Activo Original",
-      "standard": "Contenido AI Estándar",
+      "current": "Contenido AI Actual",
       "theme": "Activo AI Temático"
     }
   },
@@ -34,14 +34,14 @@
     "defaultVideo": "Animación por Defecto",
     "readOnly": "Solo Lectura: Extraído del Sitio del Casino"
   },
-  "standard": {
-    "title": "2. Contenido AI Estándar",
-    "image": "AI ESTÁNDAR v1",
-    "video": "AI ESTÁNDAR Video v1",
-    "aiImage": "Imagen AI Estándar",
-    "aiVideo": "Animación AI Estándar",
-    "regenerate": "Regenerar Activos Estándar",
-    "lock": "Bloquear Contenido Estándar"
+  "current": {
+    "title": "2. Contenido AI Actual",
+    "image": "AI ACTUAL v1",
+    "video": "AI ACTUAL Video v1",
+    "aiImage": "Imagen AI Actual",
+    "aiVideo": "Animación AI Actual",
+    "regenerate": "Regenerar Activos Actuales",
+    "lock": "Bloquear Contenido Actual"
   },
   "theme": {
     "title": "3. Contenido AI Temático",
@@ -56,11 +56,38 @@
   },
   "regenerate": {
     "noGame": "Por favor selecciona un juego primero",
-    "standard": {
-      "success": "Activos estándar regenerados exitosamente"
+    "current": {
+      "success": "Activos actuales regenerados exitosamente"
     },
     "theme": {
       "success": "Activos temáticos regenerados exitosamente"
+    },
+    "dialog": {
+      "title": "Regenerar Activos {{assetType}}",
+      "description": "Generar nuevos activos AI con prompts personalizados. Tanto la imagen como el video se generarán juntos.",
+      "currentAssets": "Activos Actuales",
+      "prompts": "Prompts Personalizados",
+      "imagePrompt": "Prompt de Imagen",
+      "videoPrompt": "Prompt de Video",
+      "optional": "Opcional",
+      "imagePromptPlaceholder": "Describe la imagen que quieres generar...",
+      "videoPromptPlaceholder": "Describe el video/animación que quieres generar...",
+      "generate": "Generar Nuevos Activos",
+      "generating": "Generando...",
+      "generatedAssets": "Activos Generados",
+      "generatedImage": "Imagen Generada",
+      "generatedVideo": "Video Generado",
+      "accept": "Aceptar y Guardar",
+      "delete": "Eliminar Generado",
+      "success": "Activos generados exitosamente",
+      "error": "Error al generar activos",
+      "acceptResult": {
+        "success": "Activos aceptados y guardados exitosamente",
+        "error": "Error al aceptar activos"
+      },
+      "deleteResult": {
+        "success": "Activos generados eliminados"
+      }
     }
   },
   "clear": {

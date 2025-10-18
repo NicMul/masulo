@@ -589,6 +589,9 @@ table tbody tr:last-child td {
 .absolute {
   position: absolute;
 }
+.\!absolute {
+  position: absolute !important;
+}
 .relative {
   position: relative;
 }
@@ -671,6 +674,12 @@ table tbody tr:last-child td {
 }
 .top-px {
   top: 1px;
+}
+.\!right-0 {
+  right: 0px !important;
+}
+.\!top-0 {
+  top: 0px !important;
 }
 .z-10 {
   z-index: 10;
@@ -816,6 +825,9 @@ table tbody tr:last-child td {
 }
 .mt-1 {
   margin-top: 0.25rem;
+}
+.mr-6 {
+  margin-right: 1.5rem;
 }
 .block {
   display: block;
@@ -967,6 +979,9 @@ table tbody tr:last-child td {
 .max-h-\[90vh\] {
   max-height: 90vh;
 }
+.max-h-\[95vh\] {
+  max-height: 95vh;
+}
 .min-h-\[10rem\] {
   min-height: 10rem;
 }
@@ -978,6 +993,12 @@ table tbody tr:last-child td {
 }
 .min-h-0 {
   min-height: 0px;
+}
+.min-h-\[80px\] {
+  min-height: 80px;
+}
+.min-h-\[100px\] {
+  min-height: 100px;
 }
 .\!w-5 {
   width: 1.25rem !important;
@@ -1096,6 +1117,21 @@ table tbody tr:last-child td {
 .w-\[70\%\] {
   width: 70%;
 }
+.w-1\/4 {
+  width: 25%;
+}
+.w-24 {
+  width: 6rem;
+}
+.w-\[80vw\] {
+  width: 80vw;
+}
+.\!w-\[80vw\] {
+  width: 80vw !important;
+}
+.w-1\/6 {
+  width: 16.666667%;
+}
 .min-w-\[8rem\] {
   min-width: 8rem;
 }
@@ -1134,6 +1170,18 @@ table tbody tr:last-child td {
 }
 .max-w-none {
   max-width: none;
+}
+.max-w-\[180px\] {
+  max-width: 180px;
+}
+.max-w-\[200px\] {
+  max-width: 200px;
+}
+.max-w-\[150px\] {
+  max-width: 150px;
+}
+.\!max-w-none {
+  max-width: none !important;
 }
 .flex-1 {
   flex: 1 1 0%;
@@ -1342,6 +1390,11 @@ table tbody tr:last-child td {
   margin-right: calc(0.75rem * var(--tw-space-x-reverse));
   margin-left: calc(0.75rem * calc(1 - var(--tw-space-x-reverse)));
 }
+.space-y-3 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(0.75rem * var(--tw-space-y-reverse));
+}
 .divide-y > :not([hidden]) ~ :not([hidden]) {
   --tw-divide-y-reverse: 0;
   border-top-width: calc(1px * calc(1 - var(--tw-divide-y-reverse)));
@@ -1445,6 +1498,9 @@ table tbody tr:last-child td {
 .border-solid {
   border-style: solid;
 }
+.border-dashed {
+  border-style: dashed;
+}
 .border-dotted {
   border-style: dotted;
 }
@@ -1498,6 +1554,10 @@ table tbody tr:last-child td {
 .border-gray-200 {
   --tw-border-opacity: 1;
   border-color: rgb(229 231 235 / var(--tw-border-opacity, 1));
+}
+.border-slate-300 {
+  --tw-border-opacity: 1;
+  border-color: rgb(203 213 225 / var(--tw-border-opacity, 1));
 }
 .\!bg-\[\#0e76a8\] {
   --tw-bg-opacity: 1 !important;
@@ -1652,6 +1712,14 @@ table tbody tr:last-child td {
   --tw-bg-opacity: 1;
   background-color: rgb(254 242 242 / var(--tw-bg-opacity, 1));
 }
+.bg-green-800 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(22 101 52 / var(--tw-bg-opacity, 1));
+}
+.bg-red-800 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(153 27 27 / var(--tw-bg-opacity, 1));
+}
 .bg-opacity-30 {
   --tw-bg-opacity: 0.3;
 }
@@ -1766,6 +1834,14 @@ table tbody tr:last-child td {
 .py-3 {
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
+}
+.py-6 {
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+}
+.py-12 {
+  padding-top: 3rem;
+  padding-bottom: 3rem;
 }
 .pb-4 {
   padding-bottom: 1rem;
@@ -2032,6 +2108,10 @@ table tbody tr:last-child td {
 .text-green-600 {
   --tw-text-opacity: 1;
   color: rgb(22 163 74 / var(--tw-text-opacity, 1));
+}
+.text-slate-300 {
+  --tw-text-opacity: 1;
+  color: rgb(203 213 225 / var(--tw-text-opacity, 1));
 }
 .text-opacity-80 {
   --tw-text-opacity: 0.8;
@@ -3080,6 +3160,11 @@ html, #root, body {
   background-color: rgb(88 28 135 / var(--tw-bg-opacity, 1));
 }
 
+.dark\:bg-green-900:is(.dark *) {
+  --tw-bg-opacity: 1;
+  background-color: rgb(20 83 45 / var(--tw-bg-opacity, 1));
+}
+
 .dark\:bg-opacity-30:is(.dark *) {
   --tw-bg-opacity: 0.3;
 }
@@ -3181,6 +3266,21 @@ html, #root, body {
 .dark\:text-green-400:is(.dark *) {
   --tw-text-opacity: 1;
   color: rgb(74 222 128 / var(--tw-text-opacity, 1));
+}
+
+.dark\:text-green-200:is(.dark *) {
+  --tw-text-opacity: 1;
+  color: rgb(187 247 208 / var(--tw-text-opacity, 1));
+}
+
+.dark\:text-slate-600:is(.dark *) {
+  --tw-text-opacity: 1;
+  color: rgb(71 85 105 / var(--tw-text-opacity, 1));
+}
+
+.dark\:text-slate-500:is(.dark *) {
+  --tw-text-opacity: 1;
+  color: rgb(100 116 139 / var(--tw-text-opacity, 1));
 }
 
 .dark\:shadow-lg:is(.dark *) {

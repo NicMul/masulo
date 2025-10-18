@@ -9,10 +9,12 @@ import { useState, useCallback, useContext } from 'react';
 import { Card, Button, Switch } from 'components/lib';
 import { ViewContext } from 'components/lib';
 import { MediaViewer } from './MediaViewer';
+import { RegenerateAiAssetsDialog } from './RegenerateAiAssetsDialog';
 
 export function ThemeAssets({ t, selectedGame }) {
   const viewContext = useContext(ViewContext);
   const [themeLocked, setThemeLocked] = useState(false);
+  const [showRegenerateDialog, setShowRegenerateDialog] = useState(false);
 
   // regenerate theme assets
   const regenerateThemeAssets = useCallback(() => {
@@ -24,10 +26,7 @@ export function ThemeAssets({ t, selectedGame }) {
       return;
     }
 
-    viewContext.notification({
-      description: t('edit.regenerate.theme.success'),
-      variant: 'success'
-    });
+    setShowRegenerateDialog(true);
   }, [selectedGame, t, viewContext]);
 
   // clear theme content
@@ -47,7 +46,7 @@ export function ThemeAssets({ t, selectedGame }) {
   }, [selectedGame, t, viewContext]);
 
   return (
-    <Card title={ t('edit.theme.title') }>
+    <Card title={ t('edit.theme.title', { theme: selectedGame?.theme || 'DEFAULT' }) }>
       <div className='space-y-4'>
         {/* Image and Video Row */}
         <div className='grid grid-cols-2 gap-3'>
@@ -94,15 +93,27 @@ export function ThemeAssets({ t, selectedGame }) {
         </div>
         
         <div className='space-y-2'>
+          <div className='flex items-center justify-between gap-2'>
           <Button 
             icon='refresh-cw' 
             text={ t('edit.theme.regenerate') } 
             onClick={ regenerateThemeAssets }
             disabled={ themeLocked || !selectedGame }
             className='w-full'
+            color='blue'
           />
-          <div className='flex items-center justify-between'>
-            <span className='text-sm text-slate-600 dark:text-slate-400'>
+          <Button 
+            icon='trash-2' 
+            text={ t('edit.theme.clear') } 
+            onClick={ clearThemeContent }
+            color='red'
+            disabled={ themeLocked || !selectedGame }
+            className='w-full'
+          />
+          </div>
+          
+          <div className='flex items-center justify-end'>
+            <span className='text-sm text-slate-600 dark:text-slate-400 mr-2'>
               { t('edit.theme.lock') }
             </span>
             <Switch
@@ -112,16 +123,17 @@ export function ThemeAssets({ t, selectedGame }) {
               disabled={ !selectedGame }
             />
           </div>
-          <Button 
-            icon='trash-2' 
-            text={ t('edit.theme.clear') } 
-            onClick={ clearThemeContent }
-            variant='outline'
-            disabled={ !selectedGame }
-            className='w-full'
-          />
+          
         </div>
       </div>
+      
+      <RegenerateAiAssetsDialog
+        isOpen={showRegenerateDialog}
+        onClose={setShowRegenerateDialog}
+        selectedGame={selectedGame}
+        assetType="theme"
+        t={t}
+      />
     </Card>
   );
 }

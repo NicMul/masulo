@@ -22,7 +22,7 @@
     "description": "{{source}} is currently being served to the SDK.",
     "source": {
       "original": "Original Asset",
-      "standard": "Standard AI Content",
+      "current": "Current AI Content",
       "theme": "Theme AI Asset"
     }
   },
@@ -32,35 +32,65 @@
     "video": "ORIGINAL VIDEO",
     "defaultImage": "Default Image",
     "defaultVideo": "Default Animation",
-    "readOnly": "Read-Only: Scraped from Casino Site"
+    "readOnly": "Read-Only: Scraped from Casino Site",
+    "referenceAsset": "Scraped from Casino Site"
   },
-  "standard": {
-    "title": "2. Standard AI Content",
-    "image": "AI STANDARD v1",
-    "video": "AI STANDARD Video v1",
-    "aiImage": "AI Standard Image",
-    "aiVideo": "AI Standard Animation",
-    "regenerate": "Regenerate Standard Assets",
-    "lock": "Lock Standard Content"
+  "current": {
+    "title": "2. Current Asset (AI Generated)",
+    "image": "AI IMAGE",
+    "video": "AI VIDEO",
+    "aiImage": "Current Image",
+    "aiVideo": "Current Animation",
+    "regenerate": "Regenerate Current Assets",
+    "delete": "Delete Current Assets",
+    "lock": "Lock Current Assets"
   },
   "theme": {
-    "title": "3. Theme AI Content",
+    "title": "3. Themed {{theme}} Assets (AI Generated)",
     "subtitle": "Generated via active seasonal/promo prompt.",
-    "image": "XMAS THEME v1",
-    "video": "XMAS VIDEO v1",
-    "themeImage": "Theme Image",
-    "themeVideo": "Theme Animation",
-    "regenerate": "Regenerate Theme Assets",
-    "lock": "Lock Theme Content",
-    "clear": "Clear Theme Content"
+    "image": "AI IMAGE",
+    "video": "AI VIDEO",
+    "themeImage": "Themed Image",
+    "themeVideo": "Themed Animation",
+    "regenerate": "Regenerate Themed Assets",
+    "lock": "Lock Themed Assets",
+    "clear": "Delete Themed Assets"
   },
   "regenerate": {
     "noGame": "Please select a game first",
-    "standard": {
-      "success": "Standard assets regenerated successfully"
+    "current": {
+      "success": "Current assets regenerated successfully"
     },
     "theme": {
       "success": "Theme assets regenerated successfully"
+    },
+    "dialog": {
+      "title": "Regenerate Current Game Assets",
+      "description": "Generate new assets with custom prompts from the default seed image. Both image and video will be generated together.",
+      "currentAssets": "Current Assets",
+      "noAssetsGenerated": "No Assets Generated",
+      "noAssetsGeneratedDescription": "No assets have been generated yet. Press the generate button to create new assets. Prompts are optional.",
+      "imagePrompt": "Image Prompt",
+      "videoPrompt": "Video Prompt",
+      "optional": "Optional",
+      "imagePromptPlaceholder": "Describe the image you want to generate...",
+      "videoPromptPlaceholder": "Describe the video/animation you want to generate...",
+      "generate": "Generate New Assets for {{theme}}",
+      "generating": "Generating...",
+      "generatedAssets": "Generated Assets",
+      "generatedImage": "Generated Image",
+      "generatedVideo": "Generated Video",
+      "accept": "Accept & Save",
+      "delete": "Delete Generated",
+      "success": "Assets generated successfully",
+      "error": "Failed to generate assets",
+      "acceptResult": {
+        "success": "Assets accepted and saved successfully",
+        "error": "Failed to accept assets"
+      },
+      "deleteResult": {
+        "success": "Generated assets deleted"
+      }
     }
   },
   "clear": {
