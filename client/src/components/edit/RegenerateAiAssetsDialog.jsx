@@ -42,8 +42,13 @@ export function RegenerateAiAssetsDialog({
       setHoveredAsset(null);
     } else {
       // Initialize current prompts when dialog opens
-      setCurrentImagePrompt(selectedGame?.[`${assetType}ImagePrompt`] || '');
-      setCurrentVideoPrompt(selectedGame?.[`${assetType}VideoPrompt`] || '');
+      if (assetType === 'original') {
+        setCurrentImagePrompt(''); // Original image is read-only, no prompt
+        setCurrentVideoPrompt(selectedGame?.originalVideoPrompt || '');
+      } else {
+        setCurrentImagePrompt(selectedGame?.[`${assetType}ImagePrompt`] || '');
+        setCurrentVideoPrompt(selectedGame?.[`${assetType}VideoPrompt`] || '');
+      }
     }
     onClose(open);
   }, [onClose, selectedGame, assetType]);
@@ -65,15 +70,18 @@ export function RegenerateAiAssetsDialog({
       console.log('Generating AI assets:', {
         gameId: selectedGame.id,
         assetType,
-        imagePrompt: imagePrompt || 'Default image prompt',
-        videoPrompt: videoPrompt || 'Default video prompt'
+        imagePrompt: assetType === 'original' ? 'Read-only (no generation)' : (currentImagePrompt || 'Default image prompt'),
+        videoPrompt: currentVideoPrompt || 'Default video prompt'
       });
 
       // Simulate API call for now
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       // Mock generated assets with proper dimensions
-      const mockAssets = {
+      const mockAssets = assetType === 'original' ? {
+        image: null, // Original image is read-only
+        video: 'https://via.placeholder.com/180x280/8B5CF6/FFFFFF?text=Generated+Video'
+      } : {
         image: 'https://via.placeholder.com/180x280/8B5CF6/FFFFFF?text=Generated+Image',
         video: 'https://via.placeholder.com/180x280/8B5CF6/FFFFFF?text=Generated+Video'
       };
@@ -134,11 +142,24 @@ export function RegenerateAiAssetsDialog({
   }, [t, viewContext]);
 
   const getAssetTypeTitle = () => {
-    return assetType === 'current' ? t('edit.current.title') : t('edit.theme.title');
+    if (assetType === 'current') return t('edit.current.title');
+    if (assetType === 'theme') return t('edit.theme.title');
+    if (assetType === 'original') return t('edit.original.title');
+    return t('edit.current.title');
   };
 
   const getAssetTypeColor = () => {
-    return assetType === 'current' ? 'purple' : 'orange';
+    if (assetType === 'current') return 'purple';
+    if (assetType === 'theme') return 'orange';
+    if (assetType === 'original') return 'slate';
+    return 'purple';
+  };
+
+  const getAssetTypeDescription = () => {
+    if (assetType === 'original') {
+      return "Generate new video content with custom prompts. The original image remains read-only.";
+    }
+    return t('edit.regenerate.dialog.description');
   };
 
   return (
@@ -148,15 +169,17 @@ export function RegenerateAiAssetsDialog({
             <div className="flex items-center justify-between">
                 <div className="flex flex-col gap-2">
                     <DialogTitle>{t('edit.regenerate.dialog.title', { assetType: getAssetTypeTitle() })}</DialogTitle>
-                    <DialogDescription>{t('edit.regenerate.dialog.description')}</DialogDescription>
+                    <DialogDescription>{getAssetTypeDescription()}</DialogDescription>
                     
                 </div>
-                <div className="flex items-center mr-6 w-1/6">
-                <ThemeSelect
-                        value={selectedTheme || selectedGame?.theme}
-                        onChange={(e) => setSelectedTheme(e.target.value)}
+                {assetType === 'theme' && (
+                  <div className="flex items-center mr-6 w-1/6">
+                    <ThemeSelect
+                      value={selectedTheme || selectedGame?.theme}
+                      onChange={(e) => setSelectedTheme(e.target.value)}
                     />
-                </div>
+                  </div>
+                )}
             </div>
         
         </DialogHeader>
@@ -172,71 +195,90 @@ export function RegenerateAiAssetsDialog({
                   {t('edit.regenerate.dialog.currentAssets')}
                 </h3>
  
-                <div className="grid grid-cols-3 gap-3">
-                  {/* Default Asset */}
-                  <div className="bg-slate-100 dark:bg-slate-800 rounded-lg p-3 text-center">
-                    <div className="text-xs font-bold text-slate-800 dark:text-slate-200 mb-2">
-                      {t('edit.original.image')}
-                    </div>
-                    {selectedGame?.defaultImage ? (
-                      <img
-                        src={selectedGame.defaultImage}
-                        alt="Default Image"
-                        className="w-full aspect-[180/280] object-cover rounded mb-3 mx-auto"
-                      />
-                    ) : (
-                      <div className="text-xs text-slate-600 dark:text-slate-400 py-6">
-                        {t('edit.original.defaultImage')}
+                <div className={`grid gap-3 ${assetType === 'original' ? 'grid-cols-2' : 'grid-cols-3'}`}>
+                  {assetType !== 'original' && (
+                    /* Default Asset - Only for current and theme */
+                    <div className="bg-slate-100 dark:bg-slate-800 rounded-lg p-3 text-center">
+                      <div className="text-xs font-bold text-slate-800 dark:text-slate-200 mb-2">
+                        {t('edit.original.image')}
                       </div>
-                    )}
-                    <div className="mt-2">
-                      <div className="text-xs text-slate-500 dark:text-slate-400 p-2 bg-slate-50 dark:bg-slate-700 rounded">
-                        {t('edit.original.referenceAsset')}
+                      {selectedGame?.defaultImage ? (
+                        <img
+                          src={selectedGame.defaultImage}
+                          alt="Default Image"
+                          className="w-full aspect-[180/280] object-cover rounded mb-3 mx-auto"
+                        />
+                      ) : (
+                        <div className="text-xs text-slate-600 dark:text-slate-400 py-6">
+                          {t('edit.original.defaultImage')}
+                        </div>
+                      )}
+                      <div className="mt-2">
+                        <div className="text-xs text-slate-500 dark:text-slate-400 p-2 bg-slate-50 dark:bg-slate-700 rounded">
+                          {t('edit.original.referenceAsset')}
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  )}
 
                   {/* Current Image */}
                   <div className={`bg-${getAssetTypeColor()}-100 dark:bg-${getAssetTypeColor()}-900 rounded-lg p-3 text-center`}>
                     <div className={`text-xs font-bold text-${getAssetTypeColor()}-800 dark:text-${getAssetTypeColor()}-200 mb-2`}>
-                      {assetType === 'current' ? t('edit.current.image') : t('edit.theme.image')}
+                      {assetType === 'current' ? t('edit.current.image') : 
+                       assetType === 'theme' ? t('edit.theme.image') : 
+                       t('edit.original.image')}
                     </div>
-                    {selectedGame?.[`${assetType}Image`] ? (
+                    {selectedGame?.[assetType === 'original' ? 'defaultImage' : `${assetType}Image`] ? (
                       <img
-                        src={selectedGame[`${assetType}Image`]}
+                        src={selectedGame[assetType === 'original' ? 'defaultImage' : `${assetType}Image`]}
                         alt={`${assetType} Image`}
                         className="w-full aspect-[180/280] object-cover rounded mb-3 mx-auto"
                       />
                     ) : (
                       <div className={`text-xs text-${getAssetTypeColor()}-600 dark:text-${getAssetTypeColor()}-400 py-6`}>
-                        {assetType === 'current' ? t('edit.current.aiImage') : t('edit.theme.themeImage')}
+                        {assetType === 'current' ? t('edit.current.aiImage') : 
+                         assetType === 'theme' ? t('edit.theme.themeImage') : 
+                         t('edit.original.defaultImage')}
                       </div>
                     )}
-                    <div className="mt-2">
-                      <Textarea
-                        name={`${assetType}ImagePrompt`}
-                        value={currentImagePrompt}
-                        onChange={(e) => setCurrentImagePrompt(e.target.value)}
-                        placeholder="Enter image prompt..."
-                        className="min-h-[60px] text-xs"
-                      />
-                    </div>
+                    {assetType !== 'original' && (
+                      <div className="mt-2">
+                        <Textarea
+                          name={`${assetType}ImagePrompt`}
+                          value={currentImagePrompt}
+                          onChange={(e) => setCurrentImagePrompt(e.target.value)}
+                          placeholder="Enter image prompt..."
+                          className="min-h-[60px] text-xs"
+                        />
+                      </div>
+                    )}
+                    {assetType === 'original' && (
+                      <div className="mt-2">
+                        <div className="text-xs text-slate-500 dark:text-slate-400 p-2 bg-slate-50 dark:bg-slate-700 rounded">
+                          {t('edit.original.readOnly')}
+                        </div>
+                      </div>
+                    )}
                   </div>
                   
                   {/* Current Video */}
                   <div className={`bg-${getAssetTypeColor()}-100 dark:bg-${getAssetTypeColor()}-900 rounded-lg p-3 text-center`}>
                     <div className={`text-xs font-bold text-${getAssetTypeColor()}-800 dark:text-${getAssetTypeColor()}-200 mb-2`}>
-                      {assetType === 'current' ? t('edit.current.video') : t('edit.theme.video')}
+                      {assetType === 'current' ? t('edit.current.video') : 
+                       assetType === 'theme' ? t('edit.theme.video') : 
+                       t('edit.original.video')}
                     </div>
-                    {selectedGame?.[`${assetType}Video`] ? (
+                    {selectedGame?.[assetType === 'original' ? 'defaultVideo' : `${assetType}Video`] ? (
                       <video
-                        src={selectedGame[`${assetType}Video`]}
+                        src={selectedGame[assetType === 'original' ? 'defaultVideo' : `${assetType}Video`]}
                         className="w-full aspect-[180/280] object-cover rounded mb-3 mx-auto"
                         controls={true}
                       />
                     ) : (
                       <div className={`text-xs text-${getAssetTypeColor()}-600 dark:text-${getAssetTypeColor()}-400 py-6`}>
-                        {assetType === 'current' ? t('edit.current.aiVideo') : t('edit.theme.themeVideo')}
+                        {assetType === 'current' ? t('edit.current.aiVideo') : 
+                         assetType === 'theme' ? t('edit.theme.themeVideo') : 
+                         t('edit.original.defaultVideo')}
                       </div>
                     )}
                     <div className="mt-2">
@@ -275,45 +317,44 @@ export function RegenerateAiAssetsDialog({
               ) : (
                
                 <div className="space-y-4">
-            
-                  <div className="grid grid-cols-2 gap-3">
-                    
-                    <div 
-                      className="bg-green-100 dark:bg-green-900 rounded-lg p-3 text-center relative"
-                      onMouseEnter={() => setHoveredAsset('image')}
-                      onMouseLeave={() => setHoveredAsset(null)}
-                    >
-                      <div className="text-xs font-bold text-green-800 dark:text-green-200 mb-2">
-                        {t('edit.regenerate.dialog.generatedImage')}
+                  <div className={`grid gap-3 ${assetType === 'original' ? 'grid-cols-1' : 'grid-cols-2'}`}>
+                    {assetType !== 'original' && (
+                      <div 
+                        className="bg-green-100 dark:bg-green-900 rounded-lg p-3 text-center relative"
+                        onMouseEnter={() => setHoveredAsset('image')}
+                        onMouseLeave={() => setHoveredAsset(null)}
+                      >
+                        <div className="text-xs font-bold text-green-800 dark:text-green-200 mb-2">
+                          {t('edit.regenerate.dialog.generatedImage')}
+                        </div>
+                        <div className="relative">
+                          <img
+                            src={generatedAssets.image}
+                            alt="Generated Image"
+                            className="w-full max-w-[250px] aspect-[180/280] object-cover rounded mb-2 mx-auto"
+                          />
+                          {hoveredAsset === 'image' && generatedAssets.video && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded">
+                              <video
+                                src={generatedAssets.video}
+                                className="w-full max-w-[250px] aspect-[180/280] object-cover rounded mx-auto"
+                                autoPlay
+                                muted
+                                loop
+                              />
+                            </div>
+                          )}
+                        </div>
                       </div>
-                      <div className="relative">
-                        <img
-                          src={generatedAssets.image}
-                          alt="Generated Image"
-                          className="w-full  aspect-[180/280] object-cover rounded mb-2 mx-auto"
-                        />
-                        {hoveredAsset === 'image' && generatedAssets.video && (
-                          <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded">
-                            <video
-                              src={generatedAssets.video}
-                              className="w-full aspect-[180/280] object-cover rounded mx-auto"
-                              autoPlay
-                              muted
-                              loop
-                            />
-                          </div>
-                        )}
-                      </div>
-                    </div>
+                    )}
                     
-              
                     <div className="bg-green-100 dark:bg-green-900 rounded-lg p-3 text-center">
                       <div className="text-xs font-bold text-green-800 dark:text-green-200 mb-2">
                         {t('edit.regenerate.dialog.generatedVideo')}
                       </div>
                       <video
                         src={generatedAssets.video}
-                        className="w-full max-w-[150px] aspect-[180/280] object-cover rounded mb-2 mx-auto"
+                        className="w-full max-w-[250px] aspect-[180/280] object-cover rounded mb-2 mx-auto"
                         controls={true}
                       />
                     </div>
@@ -340,7 +381,10 @@ export function RegenerateAiAssetsDialog({
               ) : (
                 <>
                   <Icon name="refresh-cw" className="w-4 h-4 mr-2" />
-                  {t('edit.regenerate.dialog.generate', { theme: selectedTheme.toUpperCase() || selectedGame?.theme.toUpperCase() })}
+                  {assetType === 'theme' 
+                    ? t('edit.regenerate.dialog.generate', { theme: ` for ${selectedTheme.toUpperCase() || selectedGame?.theme.toUpperCase()}` })
+                    : t('edit.regenerate.dialog.generate', { theme: '' })
+                  }
                 </>
               )}
             </Button>

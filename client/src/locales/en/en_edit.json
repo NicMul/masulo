@@ -27,13 +27,16 @@
     }
   },
   "original": {
-    "title": "1. Original Asset (Baseline)",
+    "title": "1. Original Image Asset (Default)",
     "image": "ORIGINAL IMAGE",
-    "video": "ORIGINAL VIDEO",
+    "video": "AI VIDEO",
     "defaultImage": "Default Image",
     "defaultVideo": "Default Animation",
     "readOnly": "Read-Only: Scraped from Casino Site",
-    "referenceAsset": "Scraped from Casino Site"
+    "referenceAsset": "Scraped from Casino Site",
+    "regenerateVideo": "Regenerate Video",
+    "deleteVideo": "Delete Video",
+    "lock": "Lock Video"
   },
   "current": {
     "title": "2. Current Asset (AI Generated)",
@@ -65,8 +68,8 @@
       "success": "Theme assets regenerated successfully"
     },
     "dialog": {
-      "title": "Regenerate Current Game Assets",
-      "description": "Generate new assets with custom prompts from the default seed image. Both image and video will be generated together.",
+      "title": "Regenerate {{assetType}} Assets",
+      "description": "Generate new assets with custom prompts. Image and video will be generated together.",
       "currentAssets": "Current Assets",
       "noAssetsGenerated": "No Assets Generated",
       "noAssetsGeneratedDescription": "No assets have been generated yet. Press the generate button to create new assets. Prompts are optional.",
@@ -75,7 +78,7 @@
       "optional": "Optional",
       "imagePromptPlaceholder": "Describe the image you want to generate...",
       "videoPromptPlaceholder": "Describe the video/animation you want to generate...",
-      "generate": "Generate New Assets for {{theme}}",
+      "generate": "Generate New Assets{{theme}}",
       "generating": "Generating...",
       "generatedAssets": "Generated Assets",
       "generatedImage": "Generated Image",
