@@ -8,7 +8,7 @@
 import { useState, useCallback, useContext } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, 
          Button, Textarea, Icon, Badge, 
-         ThemeSelect} from 'components/lib';
+         ThemeSelect, Checkbox} from 'components/lib';
 import { ViewContext } from 'components/lib';
 import { useMutation } from 'components/hooks/mutation';
 
@@ -28,6 +28,8 @@ export function RegenerateAiAssetsDialog({
   const [generatedAssets, setGeneratedAssets] = useState(null);
   const [hoveredAsset, setHoveredAsset] = useState(null);
   const [selectedTheme, setSelectedTheme] = useState(selectedGame?.theme || 'default');
+  const [generateImage, setGenerateImage] = useState(assetType !== 'original');
+  const [generateVideo, setGenerateVideo] = useState(true);
 
   // Mutation hook for calling n8n endpoint
   const processAiMutation = useMutation('/api/ai/process', 'POST');
@@ -44,19 +46,45 @@ export function RegenerateAiAssetsDialog({
       setCurrentVideoPrompt('');
       setGeneratedAssets(null);
       setHoveredAsset(null);
+      setGenerateImage(false);
+      setGenerateVideo(true);
     } else {
       // Initialize current prompts when dialog opens
       if (assetType === 'original') {
         setCurrentImagePrompt(''); // Original image is read-only, no prompt
         setCurrentVideoPrompt(selectedGame?.originalVideoPrompt || '');
+        setGenerateImage(false); // Original assets can only generate video
+        setGenerateVideo(true);
       } else {
         setCurrentImagePrompt(selectedGame?.[`${assetType}ImagePrompt`] || '');
         setCurrentVideoPrompt(selectedGame?.[`${assetType}VideoPrompt`] || '');
+        setGenerateImage(true); // Default to both image and video for current/theme
+        setGenerateVideo(true);
       }
     }
     onClose(open);
   }, [onClose, selectedGame, assetType]);
 
+  // Auto-selection logic for checkboxes
+  const handleGenerateImageChange = useCallback((e) => {
+    // Extract the boolean value from the event object (no label, so use Object.values)
+    const checked = Object.values(e)[0];
+    setGenerateImage(checked);
+    // If generating image, also generate video (for current/theme only)
+    if (checked && assetType !== 'original') {
+      setGenerateVideo(true);
+    }
+  }, [assetType]);
+
+  const handleGenerateVideoChange = useCallback((e) => {
+    // Extract the boolean value from the event object (no label, so use Object.values)
+    const checked = Object.values(e)[0];
+    setGenerateVideo(checked);
+    // If not generating video, also don't generate image (for current/theme only)
+    if (!checked && assetType !== 'original') {
+      setGenerateImage(false);
+    }
+  }, [assetType]);
 
   const generateAssets = useCallback(async () => {
     if (!selectedGame) {
@@ -74,10 +102,11 @@ export function RegenerateAiAssetsDialog({
       const payload = {
         gameId: selectedGame.id,
         assetType,
-        imagePrompt: assetType === 'original' ? null : (currentImagePrompt || 'Default image prompt'),
-        videoPrompt: currentVideoPrompt || 'Default video prompt',
-        theme: selectedTheme || selectedGame?.theme,
-        timestamp: new Date().toISOString()
+        generateVideo,
+        generateImage,
+        imagePrompt: generateImage ? (currentImagePrompt || 'Default image prompt') : null,
+        videoPrompt: generateVideo ? (currentVideoPrompt || 'Default video prompt') : null,
+        theme: selectedTheme || selectedGame?.theme
       };
 
       // Log generation request to console as requested
@@ -113,7 +142,7 @@ export function RegenerateAiAssetsDialog({
     } finally {
       setIsGenerating(false);
     }
-  }, [selectedGame, assetType, currentImagePrompt, currentVideoPrompt, selectedTheme, t, viewContext, processAiMutation]);
+  }, [selectedGame, assetType, generateImage, generateVideo, currentImagePrompt, currentVideoPrompt, selectedTheme, t, viewContext, processAiMutation]);
 
   const acceptAssets = useCallback(async () => {
     if (!generatedAssets || !selectedGame) return;
@@ -234,11 +263,21 @@ export function RegenerateAiAssetsDialog({
                   )}
 
                   {/* Current Image */}
-                  <div className={`bg-${getAssetTypeColor()}-100 dark:bg-${getAssetTypeColor()}-900 rounded-lg p-3 text-center`}>
-                    <div className={`text-xs font-bold text-${getAssetTypeColor()}-800 dark:text-${getAssetTypeColor()}-200 mb-2`}>
-                      {assetType === 'current' ? t('edit.current.image') : 
-                       assetType === 'theme' ? t('edit.theme.image') : 
-                       t('edit.original.image')}
+                  <div className={`bg-${getAssetTypeColor()}-100 dark:bg-${getAssetTypeColor()}-900 rounded-lg p-3 text-center relative ${generateImage ? 'ring-2 ring-green-500 bg-green-100 dark:bg-green-900' : ''}`}>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className={`text-xs font-bold text-${getAssetTypeColor()}-800 dark:text-${getAssetTypeColor()}-200`}>
+                        {assetType === 'current' ? t('edit.current.image') : 
+                         assetType === 'theme' ? t('edit.theme.image') : 
+                         t('edit.original.image')}
+                      </div>
+                      {assetType !== 'original' && (
+                        <Checkbox
+                          name="generateImage"
+                          checked={generateImage}
+                          onChange={handleGenerateImageChange}
+                          className="w-6 h-6 border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800"
+                        />
+                      )}
                     </div>
                     {selectedGame?.[assetType === 'original' ? 'defaultImage' : `${assetType}Image`] ? (
                       <img
@@ -274,11 +313,19 @@ export function RegenerateAiAssetsDialog({
                   </div>
                   
                   {/* Current Video */}
-                  <div className={`bg-${getAssetTypeColor()}-100 dark:bg-${getAssetTypeColor()}-900 rounded-lg p-3 text-center`}>
-                    <div className={`text-xs font-bold text-${getAssetTypeColor()}-800 dark:text-${getAssetTypeColor()}-200 mb-2`}>
-                      {assetType === 'current' ? t('edit.current.video') : 
-                       assetType === 'theme' ? t('edit.theme.video') : 
-                       t('edit.original.video')}
+                  <div className={`bg-${getAssetTypeColor()}-100 dark:bg-${getAssetTypeColor()}-900 rounded-lg p-3 text-center relative ${generateVideo ? 'ring-2 ring-green-500 bg-green-100 dark:bg-green-900' : ''}`}>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className={`text-xs font-bold text-${getAssetTypeColor()}-800 dark:text-${getAssetTypeColor()}-200`}>
+                        {assetType === 'current' ? t('edit.current.video') : 
+                         assetType === 'theme' ? t('edit.theme.video') : 
+                         t('edit.original.video')}
+                      </div>
+                      <Checkbox
+                        name="generateVideo"
+                        checked={generateVideo}
+                        onChange={handleGenerateVideoChange}
+                        className="w-6 h-6 border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800"
+                      />
                     </div>
                     {selectedGame?.[assetType === 'original' ? 'defaultVideo' : `${assetType}Video`] ? (
                       <video
@@ -381,7 +428,7 @@ export function RegenerateAiAssetsDialog({
           {!generatedAssets ? (
             <Button
               onClick={generateAssets}
-              disabled={isGenerating || !selectedGame}
+              disabled={isGenerating || !selectedGame || (!generateImage && !generateVideo)}
               className="flex w-1/4"
               color="blue"
             >
@@ -393,10 +440,24 @@ export function RegenerateAiAssetsDialog({
               ) : (
                 <>
                   <Icon name="refresh-cw" className="w-4 h-4 mr-2" />
-                  {assetType === 'theme' 
-                    ? t('edit.regenerate.dialog.generate', { theme: ` for ${selectedTheme.toUpperCase() || selectedGame?.theme.toUpperCase()}` })
-                    : t('edit.regenerate.dialog.generate', { theme: '' })
-                  }
+                  {(() => {
+                    let buttonText = '';
+                    if (generateImage && generateVideo) {
+                      buttonText = 'Generate Image & Video';
+                    } else if (generateImage) {
+                      buttonText = 'Generate Image Only';
+                    } else if (generateVideo) {
+                      buttonText = 'Generate Video Only';
+                    } else {
+                      buttonText = 'Select Generation Options';
+                    }
+                    
+                    if (assetType === 'theme') {
+                      buttonText += ` for ${selectedTheme.toUpperCase() || selectedGame?.theme.toUpperCase()}`;
+                    }
+                    
+                    return buttonText;
+                  })()}
                 </>
               )}
             </Button>
