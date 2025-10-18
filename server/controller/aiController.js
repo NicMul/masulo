@@ -56,10 +56,16 @@ exports.process = async function(req, res){
   const axios = require('axios');
   
   try {
-    // Forward the entire request body to n8n
+    // Add userId to the payload before forwarding to n8n
+    const payload = {
+      ...req.body,
+      userId: req.user
+    };
+    
+    // Forward the enhanced payload to n8n
     const n8nResponse = await axios.post(
       process.env.N8N_PROCESS_AI_URL,
-      req.body,
+      payload,
       {
         auth: {
           username: process.env.N8N_USERNAME,
