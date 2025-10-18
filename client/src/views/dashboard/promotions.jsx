@@ -168,6 +168,7 @@ export function Promotions({ t }){
       ...promotion,
       name: promotion.name || '',
       description: promotion.description || '',
+      theme: promotion.theme || '',
       startDate: new Date(promotion.startDate).toLocaleDateString(),
       endDate: new Date(promotion.endDate).toLocaleDateString(),
       games: gamesComponent
@@ -209,7 +210,7 @@ export function Promotions({ t }){
           <Table
             data={tableData}
             actions={actions}
-            show={['name', 'description', 'startDate', 'endDate', 'games', 'approvedBy']}
+            show={['name', 'description', 'theme', 'startDate', 'endDate', 'games', 'approvedBy']}
             badge={[]}
           />
         )}

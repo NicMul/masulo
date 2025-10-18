@@ -63,6 +63,7 @@ export { Textarea } from './form/input/textarea';
 export { Label } from './form/label/label';
 export { Description } from './form/description/description';
 export { Select } from './form/input/select/select';
+export { ThemeSelect, THEME_OPTIONS } from './form/input/select/ThemeSelect';
 export { OTP } from './form/input/otp/otp';
 
 // dropdown menu

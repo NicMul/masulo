@@ -8,6 +8,7 @@ const PromotionSchema = new Schema({
   id: { type: String, required: true, unique: true },
   name: { type: String, required: true },
   description: { type: String, required: true },
+  theme: { type: String, required: true },
   startDate: { type: Date, required: true },
   endDate: { type: Date, required: true },
   games: [{ type: String }], // Array of game IDs
@@ -32,6 +33,7 @@ exports.create = async function({ data, user }){
     id: uuidv4(),
     name: data.name,
     description: data.description,
+    theme: data.theme,
     startDate: data.startDate,
     endDate: data.endDate,
     games: data.games || [],

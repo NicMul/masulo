@@ -6,6 +6,7 @@
   "edit_promotion": "Editar Promoción",
   "name": "Nombre",
   "description": "Descripción",
+  "theme": "Tema",
   "start_date": "Fecha de Inicio",
   "end_date": "Fecha de Fin",
   "games": "Juegos",
@@ -32,5 +33,6 @@
   "approved_by_required": "Aprobado por es requerido",
   "name_required": "El nombre es requerido",
   "description_required": "La descripción es requerida",
+  "theme_required": "El tema es requerido",
   "error_saving": "Error al guardar la promoción"
 }

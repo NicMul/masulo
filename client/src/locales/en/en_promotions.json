@@ -6,6 +6,7 @@
   "edit_promotion": "Edit Promotion",
   "name": "Name",
   "description": "Description",
+  "theme": "Theme",
   "start_date": "Start Date",
   "end_date": "End Date",
   "games": "Games",
@@ -32,5 +33,6 @@
   "approved_by_required": "Approved by is required",
   "name_required": "Name is required",
   "description_required": "Description is required",
+  "theme_required": "Theme is required",
   "error_saving": "Error saving promotion"
 }

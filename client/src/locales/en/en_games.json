@@ -50,19 +50,31 @@
       "error": "Default image URL is required"
     },
     "defaultVideo": {
-      "label": "Default Video URL"
+      "label": "Default Video URL",
+      "error": "Default video URL is required"
     },
     "currentImage": {
-      "label": "Current Image URL"
+      "label": "Current Image URL",
+      "error": "Current image URL is required"
     },
     "currentVideo": {
-      "label": "Current Video URL"
+      "label": "Current Video URL",
+      "error": "Current video URL is required"
     },
     "themeImage": {
-      "label": "Theme Image URL"
+      "label": "Theme Image URL",
+      "error": "Theme image URL is required"
     },
     "themeVideo": {
-      "label": "Theme Video URL"
+      "label": "Theme Video URL",
+      "error": "Theme video URL is required"
+    },
+    "scrape": {
+      "label": "Enable Scraping"
+    },
+    "theme": {
+      "label": "Theme",
+      "error": "Theme is required"
     },
     "animate": {
       "label": "Enable Animation"

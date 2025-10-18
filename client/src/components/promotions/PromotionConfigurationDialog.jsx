@@ -6,7 +6,7 @@
 **********/
 
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { Table, Dialog, Button } from 'components/lib';
+import { Table, Dialog, Button, ThemeSelect } from 'components/lib';
 
 // UTILITY: Function to format dates for HTML input type="date" (YYYY-MM-DD format)
 const formatDateForInput = (dateString) => {
@@ -49,6 +49,7 @@ export function PromotionConfigurationDialog({
   const [formData, setFormData] = useState({
     name: '',
     description: '',
+    theme: '',
     startDate: '',
     endDate: '',
     approvedBy: ''
@@ -65,6 +66,7 @@ export function PromotionConfigurationDialog({
       setFormData({
         name: promotion.name || '',
         description: promotion.description || '',
+        theme: promotion.theme || '',
         startDate: formattedStartDate,
         endDate: formattedEndDate,
         approvedBy: promotion.approvedBy || ''
@@ -73,6 +75,7 @@ export function PromotionConfigurationDialog({
       setFormData({
         name: '',
         description: '',
+        theme: '',
         startDate: '',
         endDate: '',
         approvedBy: ''
@@ -96,10 +99,10 @@ export function PromotionConfigurationDialog({
   // Validate form whenever form data changes
   useEffect(() => {
     const validateForm = () => {
-      const { name, description, startDate, endDate, approvedBy } = formData;
+      const { name, description, theme, startDate, endDate, approvedBy } = formData;
       
       // Check if required fields are filled
-      if (!name || !description || !startDate || !endDate) {
+      if (!name || !description || !theme || !startDate || !endDate) {
         return false;
       }
       
@@ -154,6 +157,7 @@ export function PromotionConfigurationDialog({
     const data = {
       name: formData.name.trim(),
       description: formData.description.trim(),
+      theme: formData.theme.trim(),
       startDate: formData.startDate,
       endDate: formData.endDate,
       games: gamesArray,
@@ -226,6 +230,20 @@ export function PromotionConfigurationDialog({
                 />
                 {!formData.description && (
                   <p className="text-red-500 text-xs mt-1">{t('promotions.description_required')}</p>
+                )}
+              </div>
+              
+              {/* Theme */}
+              <div>
+                <label className="block text-sm font-medium mb-2">{t('promotions.theme')} *</label>
+                <ThemeSelect
+                  name="theme"
+                  value={formData.theme}
+                  onChange={(e) => handleFormChange('theme', e.target.value)}
+                  error={!formData.theme}
+                />
+                {!formData.theme && (
+                  <p className="text-red-500 text-xs mt-1">{t('promotions.theme_required')}</p>
                 )}
               </div>
               

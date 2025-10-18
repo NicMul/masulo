@@ -9,6 +9,7 @@ exports.create = async function(req, res){
     
     name: joi.string().required(),
     description: joi.string().required(),
+    theme: joi.string().required(),
     startDate: joi.date().required(),
     endDate: joi.date().required(),
     games: joi.array().items(joi.string()).required(),
@@ -42,6 +43,7 @@ exports.update = async function(req, res){
     
     name: joi.string(),
     description: joi.string(),
+    theme: joi.string(),
     startDate: joi.date(),
     endDate: joi.date(),
     games: joi.array().items(joi.string()),

@@ -22,7 +22,7 @@
   "csv": {
     "title": "Subir CSV de Juegos",
     "action": "Subir CSV",
-    "description": "Sube un archivo CSV para crear múltiples juegos a la vez. El CSV debe tener las columnas: cmsId, defaultImage, defaultVideo, currentImage, currentVideo, themeImage, themeVideo, animate, hover, version",
+    "description": "Sube un archivo CSV para crear múltiples juegos a la vez. El CSV debe tener las columnas: cmsId, defaultImage, defaultVideo, currentImage, currentVideo, themeImage, themeVideo, scrape, theme, animate, hover, version",
     "file": {
       "label": "Archivo CSV",
       "error": "Por favor selecciona un archivo CSV válido"
@@ -50,19 +50,31 @@
       "error": "La URL de imagen predeterminada es obligatoria"
     },
     "defaultVideo": {
-      "label": "URL de Video Predeterminado"
+      "label": "URL de Video Predeterminado",
+      "error": "La URL de video predeterminado es obligatoria"
     },
     "currentImage": {
-      "label": "URL de Imagen Actual"
+      "label": "URL de Imagen Actual",
+      "error": "La URL de imagen actual es obligatoria"
     },
     "currentVideo": {
-      "label": "URL de Video Actual"
+      "label": "URL de Video Actual",
+      "error": "La URL de video actual es obligatoria"
     },
     "themeImage": {
-      "label": "URL de Imagen de Tema"
+      "label": "URL de Imagen de Tema",
+      "error": "La URL de imagen de tema es obligatoria"
     },
     "themeVideo": {
-      "label": "URL de Video de Tema"
+      "label": "URL de Video de Tema",
+      "error": "La URL de video de tema es obligatoria"
+    },
+    "scrape": {
+      "label": "Habilitar Scraping"
+    },
+    "theme": {
+      "label": "Tema",
+      "error": "El tema es obligatorio"
     },
     "animate": {
       "label": "Habilitar Animación"

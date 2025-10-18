@@ -7,6 +7,8 @@
 
 import { useContext, useCallback, useState, useEffect } from 'react';
 import { ViewContext, Card, Table, Animate, useAPI, Button } from 'components/lib';
+import { GameEditForm } from 'components/games/GameEditForm';
+import { GameCreateForm } from 'components/games/GameCreateForm';
 import axios from 'axios';
 
 export function Games({ t }){
@@ -86,72 +88,17 @@ export function Games({ t }){
   const createGame = useCallback(({ editRowCallback }) => {
     viewContext.dialog.open({
       title: t('games.create.title'),
-      form: {
-        inputs: {
-          cmsId: {
-            label: t('games.form.cmsId.label'),
-            type: 'text',
-            required: true,
-            errorMessage: t('games.form.cmsId.error')
-          },
-          defaultImage: {
-            label: t('games.form.defaultImage.label'),
-            type: 'text',
-            required: true,
-            errorMessage: t('games.form.defaultImage.error')
-          },
-          defaultVideo: {
-            label: t('games.form.defaultVideo.label'),
-            type: 'text',
-            required: false
-          },
-          currentImage: {
-            label: t('games.form.currentImage.label'),
-            type: 'text',
-            required: false
-          },
-          currentVideo: {
-            label: t('games.form.currentVideo.label'),
-            type: 'text',
-            required: false
-          },
-          themeImage: {
-            label: t('games.form.themeImage.label'),
-            type: 'text',
-            required: false
-          },
-          themeVideo: {
-            label: t('games.form.themeVideo.label'),
-            type: 'text',
-            required: false
-          },
-          animate: {
-            label: t('games.form.animate.label'),
-            type: 'switch',
-            required: false,
-            defaultValue: false
-          },
-          hover: {
-            label: t('games.form.hover.label'),
-            type: 'switch',
-            required: false,
-            defaultValue: false
-          },
-          version: {
-            label: t('games.form.version.label'),
-            type: 'number',
-            required: true,
-            value: 1,
-            errorMessage: t('games.form.version.error')
-          }
-        },
-        buttonText: t('games.create.button'),
-        url: '/api/game',
-        method: 'POST'
-      }
-    }, (formData) => {
-      // add new game to state
-      setGames([formData, ...games]);
+      className: 'max-w-4xl w-full',
+      children: (
+        <GameCreateForm
+          onSuccess={(newGame) => {
+            setGames([newGame, ...games]);
+            viewContext.dialog.close();
+          }}
+          onCancel={() => viewContext.dialog.close()}
+          t={t}
+        />
+      )
     });
   }, [games, t, viewContext]);
 
@@ -159,83 +106,19 @@ export function Games({ t }){
   const editGame = useCallback(({ row, editRowCallback }) => {
     viewContext.dialog.open({
       title: t('games.edit.title'),
-      form: {
-        inputs: {
-          id: {
-            type: 'hidden',
-            value: row.id
-          },
-          cmsId: {
-            label: t('games.form.cmsId.label'),
-            type: 'text',
-            required: true,
-            value: row.cmsId,
-            errorMessage: t('games.form.cmsId.error')
-          },
-          defaultImage: {
-            label: t('games.form.defaultImage.label'),
-            type: 'text',
-            required: true,
-            value: row.defaultImage,
-            errorMessage: t('games.form.defaultImage.error')
-          },
-          defaultVideo: {
-            label: t('games.form.defaultVideo.label'),
-            type: 'text',
-            required: false,
-            value: row.defaultVideo
-          },
-          currentImage: {
-            label: t('games.form.currentImage.label'),
-            type: 'text',
-            required: false,
-            value: row.currentImage
-          },
-          currentVideo: {
-            label: t('games.form.currentVideo.label'),
-            type: 'text',
-            required: false,
-            value: row.currentVideo
-          },
-          themeImage: {
-            label: t('games.form.themeImage.label'),
-            type: 'text',
-            required: false,
-            value: row.themeImage
-          },
-          themeVideo: {
-            label: t('games.form.themeVideo.label'),
-            type: 'text',
-            required: false,
-            value: row.themeVideo
-          },
-          animate: {
-            label: t('games.form.animate.label'),
-            type: 'switch',
-            required: false,
-            defaultValue: row.animate
-          },
-          hover: {
-            label: t('games.form.hover.label'),
-            type: 'switch',
-            required: false,
-            defaultValue: row.hover
-          },
-          version: {
-            label: t('games.form.version.label'),
-            type: 'number',
-            required: true,
-            value: row.version,
-            errorMessage: t('games.form.version.error')
-          }
-        },
-        buttonText: t('games.edit.button'),
-        url: `/api/game/${row.id}`,
-        method: 'PATCH'
-      }
-    }, (formData) => {
-      const newState = editRowCallback(formData);
-      setGames(newState);
+      className: 'max-w-4xl w-full',
+      children: (
+        <GameEditForm
+          game={row}
+          onSuccess={(updatedGame) => {
+            const newState = editRowCallback(updatedGame);
+            setGames(newState);
+            viewContext.dialog.close();
+          }}
+          onCancel={() => viewContext.dialog.close()}
+          t={t}
+        />
+      )
     });
   }, [t, viewContext]);
 
@@ -307,8 +190,16 @@ export function Games({ t }){
           data={ games }
           loading={ res.loading }
           actions={ actions }
-          show={ ['cmsId', 'defaultImage', 'currentImage', 'themeImage', 'animate', 'hover', 'version'] }
+          show={ ['cmsId', 'defaultImage', 'currentImage', 'themeImage', 'scrape', 'theme', 'animate', 'hover', 'version'] }
           badge={ [
+            { 
+              col: 'scrape', 
+              color: 'blue',
+              condition: [
+                { value: true, color: 'green' },
+                { value: false, color: 'red' }
+              ]
+            },
             { 
               col: 'animate', 
               color: 'blue',

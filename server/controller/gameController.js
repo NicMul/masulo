@@ -16,6 +16,8 @@ exports.create = async function(req, res){
     currentVideo: joi.string().allow('', null),
     themeImage: joi.string().allow('', null),
     themeVideo: joi.string().allow('', null),
+    scrape: joi.boolean(),
+    theme: joi.string().allow('', null),
     animate: joi.boolean().required(),
     hover: joi.boolean().required(),
     version: joi.number().required()
@@ -162,10 +164,10 @@ exports.downloadTemplate = async function(req, res){
 
   // CSV template with ALL headers and example data
   const csvContent = [
-    'cmsId,defaultImage,defaultVideo,currentImage,currentVideo,themeImage,themeVideo,animate,hover,version',
-    'game-001,https://example.com/image1.jpg,https://example.com/video1.mp4,https://example.com/current1.jpg,https://example.com/current1.mp4,https://example.com/theme1.jpg,https://example.com/theme1.mp4,true,false,1',
-    'game-002,https://example.com/image2.jpg,,https://example.com/current2.jpg,,https://example.com/theme2.jpg,,false,true,2',
-    'game-003,https://example.com/image3.jpg,https://example.com/video3.mp4,,,https://example.com/theme3.jpg,https://example.com/theme3.mp4,true,true,1'
+    'cmsId,defaultImage,defaultVideo,currentImage,currentVideo,themeImage,themeVideo,scrape,theme,animate,hover,version',
+    'game-001,https://example.com/image1.jpg,https://example.com/video1.mp4,https://example.com/current1.jpg,https://example.com/current1.mp4,https://example.com/theme1.jpg,https://example.com/theme1.mp4,true,adventure,true,false,1',
+    'game-002,https://example.com/image2.jpg,,https://example.com/current2.jpg,,https://example.com/theme2.jpg,,false,action,false,true,2',
+    'game-003,https://example.com/image3.jpg,https://example.com/video3.mp4,,,https://example.com/theme3.jpg,https://example.com/theme3.mp4,true,puzzle,true,true,1'
   ].join('\n');
 
   // Set headers for CSV download
@@ -198,6 +200,8 @@ exports.update = async function(req, res){
     currentVideo: joi.string().allow('', null),
     themeImage: joi.string().allow('', null),
     themeVideo: joi.string().allow('', null),
+    scrape: joi.boolean(),
+    theme: joi.string().allow('', null),
     animate: joi.boolean(),
     hover: joi.boolean(),
     version: joi.number()
