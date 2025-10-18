@@ -181,8 +181,8 @@ const emails = [
     body: 'Please click the link below to verify your email address.',
     button_label: 'Verify Your Email',
     button_url: '{{domain}}/signup/verify?token={{content.verification_token}}',
-    locale: 'en',
-  },
+    locale: 'en'
+  }
 ]
 
 module.exports = emails;

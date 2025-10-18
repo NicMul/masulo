@@ -45,3 +45,79 @@ exports.image = async function(req, res){
   return res.status(200).send({ data: imageData })
 
 }
+
+/*
+* ai.process()
+* Forward any payload to n8n with basic auth credentials
+*/
+
+exports.process = async function(req, res){
+
+  const axios = require('axios');
+  
+  try {
+    // Forward the entire request body to n8n
+    const n8nResponse = await axios.post(
+      process.env.N8N_PROCESS_AI_URL,
+      req.body,
+      {
+        auth: {
+          username: process.env.N8N_USERNAME,
+          password: process.env.N8N_PASSWORD
+        },
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        timeout: 30000 // 30 second timeout
+      }
+    );
+
+    // Log the response to console
+    console.log('N8N Response:', {
+      status: n8nResponse.status,
+      statusText: n8nResponse.statusText,
+      data: n8nResponse.data,
+      headers: n8nResponse.headers
+    });
+
+    // Return the n8n response to the client
+    return res.status(n8nResponse.status).send(n8nResponse.data);
+
+  } catch (error) {
+    
+    // Log the error to console
+    console.error('N8N Error:', {
+      message: error.message,
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      data: error.response?.data,
+      config: {
+        url: error.config?.url,
+        method: error.config?.method,
+        timeout: error.config?.timeout
+      }
+    });
+
+    // Return error response
+    if (error.response) {
+      // n8n returned an error response
+      return res.status(error.response.status).send({
+        error: 'N8N Error',
+        message: error.response.statusText,
+        data: error.response.data
+      });
+    } else if (error.request) {
+      // Request was made but no response received
+      return res.status(500).send({
+        error: 'N8N Connection Error',
+        message: 'No response received from N8N service'
+      });
+    } else {
+      // Something else happened
+      return res.status(500).send({
+        error: 'Internal Error',
+        message: error.message
+      });
+    }
+  }
+}

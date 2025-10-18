@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
          Button, Textarea, Icon, Badge, 
          ThemeSelect} from 'components/lib';
 import { ViewContext } from 'components/lib';
+import { useMutation } from 'components/hooks/mutation';
 
 export function RegenerateAiAssetsDialog({ 
   isOpen, 
@@ -27,6 +28,9 @@ export function RegenerateAiAssetsDialog({
   const [generatedAssets, setGeneratedAssets] = useState(null);
   const [hoveredAsset, setHoveredAsset] = useState(null);
   const [selectedTheme, setSelectedTheme] = useState(selectedGame?.theme || 'default');
+
+  // Mutation hook for calling n8n endpoint
+  const processAiMutation = useMutation('/api/ai/process', 'POST');
 
 
   console.log('RegenerateAiAssetsDialog', { selectedGame});
@@ -66,18 +70,26 @@ export function RegenerateAiAssetsDialog({
     setIsGenerating(true);
     
     try {
-      // Log generation request to console as requested
-      console.log('Generating AI assets:', {
+      // Prepare payload for n8n
+      const payload = {
         gameId: selectedGame.id,
         assetType,
-        imagePrompt: assetType === 'original' ? 'Read-only (no generation)' : (currentImagePrompt || 'Default image prompt'),
-        videoPrompt: currentVideoPrompt || 'Default video prompt'
-      });
+        imagePrompt: assetType === 'original' ? null : (currentImagePrompt || 'Default image prompt'),
+        videoPrompt: currentVideoPrompt || 'Default video prompt',
+        theme: selectedTheme || selectedGame?.theme,
+        timestamp: new Date().toISOString()
+      };
 
-      // Simulate API call for now
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Log generation request to console as requested
+      console.log('Generating AI assets:', payload);
+
+      // Call n8n endpoint
+      const result = await processAiMutation.execute(payload);
       
-      // Mock generated assets with proper dimensions
+      console.log('N8N Response:', result);
+      
+      // For now, use mock assets since we don't know the exact response format from n8n
+      // TODO: Update this when we know the actual response structure from n8n
       const mockAssets = assetType === 'original' ? {
         image: null, // Original image is read-only
         video: 'https://via.placeholder.com/180x280/8B5CF6/FFFFFF?text=Generated+Video'
@@ -101,7 +113,7 @@ export function RegenerateAiAssetsDialog({
     } finally {
       setIsGenerating(false);
     }
-  }, [selectedGame, assetType, imagePrompt, videoPrompt, t, viewContext]);
+  }, [selectedGame, assetType, currentImagePrompt, currentVideoPrompt, selectedTheme, t, viewContext, processAiMutation]);
 
   const acceptAssets = useCallback(async () => {
     if (!generatedAssets || !selectedGame) return;

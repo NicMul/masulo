@@ -12,4 +12,6 @@ api.post('/api/ai/text', limiter(throttle.api), auth.verify('user'), use(aiContr
 
 api.post('/api/ai/image', limiter(throttle.api), auth.verify('user'), use(aiController.image));
 
+api.post('/api/ai/process', limiter(throttle.api), auth.verify('user'), use(aiController.process));
+
 module.exports = api;
