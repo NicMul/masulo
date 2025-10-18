@@ -32,7 +32,7 @@ import { TableFooter } from './footer.jsx';
 import { GlobalActions } from './actions.jsx';
 
 const Table = forwardRef(({ className, header, data, footer, caption, show, hide, children, actions, 
-  translation, loading, badge, selectable, searchable, ...props }, ref) => {
+  translation, loading, badge, selectable, searchable, onSelectionChange, ...props }, ref) => {
 
   const { t } = useTranslation();
 
@@ -154,17 +154,28 @@ const Table = forwardRef(({ className, header, data, footer, caption, show, hide
     const s = [...selected];
     const i = s.findIndex(x => x.index === index);
     i > -1 ? s.splice(i, 1) : s.push({ index, id });
-    return setSelected(s);
+    setSelected(s);
+    
+    // notify parent component of selection change
+    if (onSelectionChange) {
+      onSelectionChange(s);
+    }
 
-  }, [selected]);
+  }, [selected, onSelectionChange]);
 
   // select all rows from header
   const selectAllRows = useCallback(() => {
 
     // toggle all visible rows
-    setSelected(selected.length ? [] : data.map((x, i) => ({ index: i, id: x.id })));
+    const newSelection = selected.length ? [] : data.map((x, i) => ({ index: i, id: x.id }));
+    setSelected(newSelection);
     
-  }, [data, selected]);
+    // notify parent component of selection change
+    if (onSelectionChange) {
+      onSelectionChange(newSelection);
+    }
+    
+  }, [data, selected, onSelectionChange]);
 
   const search = useCallback(term => {
 

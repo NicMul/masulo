@@ -1,0 +1,98 @@
+{
+  "title": "Games",
+  "table": {
+    "title": "Your Games"
+  },
+  "create": {
+    "title": "Create Game",
+    "action": "New Game",
+    "button": "Create Game"
+  },
+  "edit": {
+    "title": "Edit Game",
+    "action": "Edit",
+    "button": "Save Changes"
+  },
+  "delete": {
+    "title": "Delete Game",
+    "action": "Delete",
+    "description": "Are you sure you want to delete",
+    "button": "Delete Game"
+  },
+  "csv": {
+    "title": "Upload Games CSV",
+    "action": "CSV",
+    "description": "Upload a CSV file to create multiple games at once. The CSV should have columns: cmsId, defaultImage, defaultVideo, currentImage, currentVideo, themeImage, themeVideo, animate, hover, version",
+    "file": {
+      "label": "CSV File",
+      "error": "Please select a valid CSV file"
+    },
+    "button": "Upload Games",
+    "success": "Games uploaded successfully",
+    "error": "Error uploading games",
+    "validation": {
+      "invalid_format": "Invalid CSV format",
+      "missing_columns": "Missing required columns",
+      "invalid_data": "Invalid data in CSV"
+    }
+  },
+  "template": {
+    "action": "Template",
+    "error": "Error downloading template"
+  },
+  "form": {
+    "cmsId": {
+      "label": "CMS ID",
+      "error": "CMS ID is required"
+    },
+    "defaultImage": {
+      "label": "Default Image URL",
+      "error": "Default image URL is required"
+    },
+    "defaultVideo": {
+      "label": "Default Video URL"
+    },
+    "currentImage": {
+      "label": "Current Image URL"
+    },
+    "currentVideo": {
+      "label": "Current Video URL"
+    },
+    "themeImage": {
+      "label": "Theme Image URL"
+    },
+    "themeVideo": {
+      "label": "Theme Video URL"
+    },
+    "animate": {
+      "label": "Enable Animation"
+    },
+    "hover": {
+      "label": "Enable Hover Effect"
+    },
+    "version": {
+      "label": "Version",
+      "error": "Version is required"
+    }
+  },
+  "imageEdit": {
+    "title": "Image Editor",
+    "game": {
+      "select": {
+        "label": "Select Game",
+        "placeholder": "Choose a game to edit"
+      },
+      "selected": {
+        "title": "Selected Game",
+        "cmsId": "CMS ID",
+        "version": "Version",
+        "animate": "Animation",
+        "hover": "Hover Effect"
+      }
+    },
+    "image": {
+      "title": "Image Editor",
+      "placeholder": "Image editing tools will be added here"
+    }
+  }
+}

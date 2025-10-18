@@ -1,0 +1,15 @@
+{
+  "title": "A/B Testing",
+  "description": "Manage and analyze A/B tests for promotions and content",
+  "create_test": "Create A/B Test",
+  "overview": "A/B Testing Overview",
+  "no_tests": "No A/B Tests Found",
+  "no_tests_description": "Create your first A/B test to start optimizing your promotions and content",
+  "create_first_test": "Create First Test",
+  "active_tests": "Active Tests",
+  "completed_tests": "Completed Tests",
+  "total_tests": "Total Tests",
+  "create": {
+    "success": "A/B test created successfully"
+  }
+}

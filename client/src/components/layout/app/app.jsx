@@ -23,7 +23,11 @@ export function AppLayout({ title, children }){
 
   const nav = [
     { label: t('nav.dashboard'), icon: 'gauge', link: '/dashboard', position: 'top' },
-    { label: t('nav.account'), icon: 'user', link: '/account', position: 'top' },
+    { label: t('nav.games'), icon: 'gamepad-2', link: '/games', position: 'top' },
+    { label: t('nav.edit'), icon: 'edit', link: '/edit', position: 'top' },
+    { label: t('nav.promotions'), icon: 'megaphone', link: '/promotions', position: 'top' },
+    { label: t('nav.ab_testing'), icon: 'test-tube', link: '/ab-testing', position: 'top' },
+    { label: t('nav.account'), icon: 'user', link: '/account', position: 'bottom' },
     { label: t('nav.help'), icon: 'help-circle', link: '/help', position: 'bottom' },
     { label: t('nav.signout'), icon: 'log-out', action: authContext.signout, position: 'bottom' }
   ]

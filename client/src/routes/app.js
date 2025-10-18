@@ -1,4 +1,8 @@
 import { Dashboard } from 'views/dashboard/dashboard';
+import { Games } from 'views/dashboard/games';
+import { Promotions } from 'views/dashboard/promotions';
+import { ABTesting } from 'views/dashboard/ab-testing';
+import { Edit } from 'views/dashboard/edit';
 import { Help } from 'views/dashboard/help';
 import { OnboardingView } from 'views/onboarding/onboarding';
 
@@ -9,6 +13,34 @@ const Routes = [
     layout: 'app',
     permission: 'user',
     title: 'dashboard.title'
+  },
+  {
+    path: '/games',
+    view: Games,
+    layout: 'app',
+    permission: 'user',
+    title: 'games.title'
+  },
+  {
+    path: '/promotions',
+    view: Promotions,
+    layout: 'app',
+    permission: 'user',
+    title: 'promotions.title'
+  },
+  {
+    path: '/ab-testing',
+    view: ABTesting,
+    layout: 'app',
+    permission: 'user',
+    title: 'ab_testing.title'
+  },
+  {
+    path: '/edit',
+    view: Edit,
+    layout: 'app',
+    permission: 'user',
+    title: 'edit.title'
   },
   {
     path: '/welcome',

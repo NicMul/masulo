@@ -1,11 +1,14 @@
 import { Switch } from './switch/switch';
 import { RadioGroup } from './radio/radio';
 import { CheckboxGroup } from './checkbox/checkbox';
+import { CustomCheckboxGroup } from './checkbox/custom-checkbox';
 import { CardInput } from './card/card';
 import { DateInput } from './date/date';
 import { Input } from './input';
 import { Textarea } from './textarea';
 import { Select } from './select/select';
+import { MultiSelect } from './select/multi-select';
+import { SimpleMultiSelect } from './select/simple-multi-select';
 import { OTP } from './otp/otp';
 import { FileInput } from './file/file';
 
@@ -16,17 +19,22 @@ export default  {
     showLabel: true,
   },
   date: {
-    component: DateInput,
-    showIcon: true,
+    component: Input,
+    showIcon: false,
     showLabel: true
   },
   checkbox: {
-    component: CheckboxGroup,
+    component: CustomCheckboxGroup,
     showIcon: false,
     showLabel: true,
   },
   select: {
     component: Select,
+    showIcon: false,
+    showLabel: true,
+  },
+  multiselect: {
+    component: SimpleMultiSelect,
     showIcon: false,
     showLabel: true,
   },

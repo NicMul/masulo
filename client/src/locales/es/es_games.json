@@ -1,0 +1,78 @@
+{
+  "title": "Juegos",
+  "table": {
+    "title": "Tus Juegos"
+  },
+  "create": {
+    "title": "Crear Juego",
+    "action": "Nuevo Juego",
+    "button": "Crear Juego"
+  },
+  "edit": {
+    "title": "Editar Juego",
+    "action": "Editar",
+    "button": "Guardar Cambios"
+  },
+  "delete": {
+    "title": "Eliminar Juego",
+    "action": "Eliminar",
+    "description": "¿Estás seguro de que quieres eliminar",
+    "button": "Eliminar Juego"
+  },
+  "csv": {
+    "title": "Subir CSV de Juegos",
+    "action": "Subir CSV",
+    "description": "Sube un archivo CSV para crear múltiples juegos a la vez. El CSV debe tener las columnas: cmsId, defaultImage, defaultVideo, currentImage, currentVideo, themeImage, themeVideo, animate, hover, version",
+    "file": {
+      "label": "Archivo CSV",
+      "error": "Por favor selecciona un archivo CSV válido"
+    },
+    "button": "Subir Juegos",
+    "success": "Juegos subidos exitosamente",
+    "error": "Error al subir juegos",
+    "validation": {
+      "invalid_format": "Formato CSV inválido",
+      "missing_columns": "Faltan columnas requeridas",
+      "invalid_data": "Datos inválidos en el CSV"
+    }
+  },
+  "template": {
+    "action": "Descargar Plantilla",
+    "error": "Error al descargar plantilla"
+  },
+  "form": {
+    "cmsId": {
+      "label": "ID de CMS",
+      "error": "El ID de CMS es obligatorio"
+    },
+    "defaultImage": {
+      "label": "URL de Imagen Predeterminada",
+      "error": "La URL de imagen predeterminada es obligatoria"
+    },
+    "defaultVideo": {
+      "label": "URL de Video Predeterminado"
+    },
+    "currentImage": {
+      "label": "URL de Imagen Actual"
+    },
+    "currentVideo": {
+      "label": "URL de Video Actual"
+    },
+    "themeImage": {
+      "label": "URL de Imagen de Tema"
+    },
+    "themeVideo": {
+      "label": "URL de Video de Tema"
+    },
+    "animate": {
+      "label": "Habilitar Animación"
+    },
+    "hover": {
+      "label": "Habilitar Efecto Hover"
+    },
+    "version": {
+      "label": "Versión",
+      "error": "La versión es obligatoria"
+    }
+  }
+}

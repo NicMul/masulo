@@ -1,5 +1,9 @@
 {
   "dashboard": "Dashboard",
+  "games": "Games",
+  "promotions": "Promotions",
+  "ab_testing": "A/B Testing",
+  "edit": "Edit",
   "account": "Account",
   "help": "Help",
   "signout": "Sign Out"

@@ -1,5 +1,9 @@
 {
   "dashboard": "Tablero",
+  "games": "Juegos",
+  "promotions": "Promociones",
+  "ab_testing": "Pruebas A/B",
+  "edit": "Editar",
   "account": "Cuenta",
   "help": "Ayuda",
   "signout": "Cerrar Sesión"

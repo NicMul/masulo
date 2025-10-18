@@ -1,14 +1,24 @@
-import { forwardRef, isValidElement } from 'react';
-import { Badge, Checkbox, Icon, Link, cn, useTranslation } from 'components/lib';
+import { forwardRef, isValidElement, useState } from 'react';
+import { Badge, Checkbox, Icon, Link, cn, useTranslation, Dialog } from 'components/lib';
 import { TableRow, TableCell } from './table'
 import { RowActions } from './actions';
 
 const TableBody = forwardRef(({ className, rows, show, hide, badge, translation, actions, editRowCallback, deleteRowCallback, select, selected, ...props }, ref) => {
   
   const { t } = useTranslation();
+  const [imagePreview, setImagePreview] = useState({ open: false, src: '', alt: '' });
+
+  const openImagePreview = (src, alt) => {
+    setImagePreview({ open: true, src, alt });
+  };
+
+  const closeImagePreview = () => {
+    setImagePreview({ open: false, src: '', alt: '' });
+  };
 
   return (
-    <tbody ref={ ref } className={ cn('[&_tr:last-child]:border-0', className)} {...props }>
+    <>
+      <tbody ref={ ref } className={ cn('[&_tr:last-child]:border-0', className)} {...props }>
 
       { /* map rows if they exist, or show empty row */ }
       { rows.length ? 
@@ -72,6 +82,29 @@ const TableBody = forwardRef(({ className, rows, show, hide, badge, translation,
                   })          
                 }
 
+                { /* cell contains image URL - show preview */ }
+                if (typeof value === 'string' && value && col.toLowerCase().includes('image') && 
+                    (value.startsWith('http') || value.startsWith('https') || value.startsWith('/')) &&
+                    (value.includes('.jpg') || value.includes('.jpeg') || value.includes('.png') || 
+                     value.includes('.gif') || value.includes('.webp') || value.includes('.svg'))) {
+                  
+                  cellContent = (
+                    <div className="flex items-center gap-2">
+                      <img 
+                        src={ value } 
+                        alt={ col }
+                        className="w-16 h-16 object-cover rounded border cursor-pointer hover:opacity-80 transition-opacity"
+                        onClick={() => openImagePreview(value, col)}
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'inline';
+                        }}
+                      />
+                      <span className="text-xs text-gray-500 hidden">{ value }</span>
+                    </div>
+                  );
+                }
+
                 { /* can render text or a link if cell is an object */ }
                 return (
                   <TableCell key={ index } label={ translation ? t(`${translation}.header.${col}`) : col }>
@@ -114,6 +147,22 @@ const TableBody = forwardRef(({ className, rows, show, hide, badge, translation,
         </TableRow>
       }
     </tbody>
+    
+    {/* Image Preview Dialog */}
+    <Dialog
+      open={imagePreview.open}
+      onClose={closeImagePreview}
+      title=""
+    >
+      <div className="flex justify-center">
+        <img
+          src={imagePreview.src}
+          alt={imagePreview.alt}
+          className="w-full max-h-[80vh] object-contain rounded-lg"
+        />
+      </div>
+    </Dialog>
+    </>
   )
 })
 

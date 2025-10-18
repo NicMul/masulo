@@ -107,5 +107,6 @@ export { Detail } from './detail/detail';
 
 // hooks
 export { useAPI } from './hooks/api';
+export { useMutation } from './hooks/mutation';
 export { usePlans } from './hooks/plans';
 export { usePermissions } from './hooks/permissions';

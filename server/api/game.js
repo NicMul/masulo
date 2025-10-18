@@ -1,10 +1,16 @@
 const express = require('express');
+const multer = require('multer');
 const auth = require('../model/auth');
 const gameController = require('../controller/gameController');
 const api = express.Router();
 const use = require('../helper/utility').use;
+const upload = multer({ dest: 'uploads' });
 
 api.post('/api/game', auth.verify('user'), use(gameController.create));
+
+api.post('/api/game/bulk', auth.verify('user'), upload.single('file'), use(gameController.bulkCreate));
+
+api.get('/api/game/template', auth.verify('user'), use(gameController.downloadTemplate));
 
 api.get('/api/game', auth.verify('user'), use(gameController.get));
 

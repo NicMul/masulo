@@ -1,0 +1,11 @@
+{
+  "promotion.create.success": "Promoción creada exitosamente",
+  "promotion.create.end_date_after_start": "La fecha de fin debe ser posterior a la fecha de inicio",
+  "promotion.update.success": "Promoción actualizada exitosamente",
+  "promotion.update.id_required": "Se requiere ID de promoción",
+  "promotion.update.not_found": "Promoción no encontrada",
+  "promotion.update.end_date_after_start": "La fecha de fin debe ser posterior a la fecha de inicio",
+  "promotion.delete.success": "Promoción eliminada exitosamente",
+  "promotion.delete.id_required": "Se requiere ID de promoción",
+  "promotion.delete.not_found": "Promoción no encontrada"
+}

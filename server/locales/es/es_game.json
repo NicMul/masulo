@@ -1,0 +1,27 @@
+{
+  "create": {
+    "success": "Juego creado"
+  },
+  "update": {
+    "success": "Juego actualizado",
+    "id_required": "Se requiere ID del juego",
+    "not_found": "Juego no encontrado"
+  },
+  "delete": {
+    "success": "Juego eliminado",
+    "id_required": "Se requiere ID del juego",
+    "not_found": "Juego no encontrado"
+  },
+  "csv": {
+    "file": {
+      "error": "Por favor selecciona un archivo CSV válido"
+    },
+    "success": "Juegos subidos exitosamente",
+    "error": "Error al subir juegos",
+    "validation": {
+      "invalid_format": "Formato CSV inválido",
+      "missing_columns": "Faltan columnas requeridas",
+      "invalid_data": "Datos inválidos en el CSV"
+    }
+  }
+}

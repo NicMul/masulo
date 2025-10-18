@@ -1,0 +1,27 @@
+{
+  "create": {
+    "success": "Game created"
+  },
+  "update": {
+    "success": "Game updated",
+    "id_required": "Game ID is required",
+    "not_found": "Game not found"
+  },
+  "delete": {
+    "success": "Game deleted",
+    "id_required": "Game ID is required",
+    "not_found": "Game not found"
+  },
+  "csv": {
+    "file": {
+      "error": "Please select a valid CSV file"
+    },
+    "success": "Games uploaded successfully",
+    "error": "Error uploading games",
+    "validation": {
+      "invalid_format": "Invalid CSV format",
+      "missing_columns": "Missing required columns",
+      "invalid_data": "Invalid data in CSV"
+    }
+  }
+}

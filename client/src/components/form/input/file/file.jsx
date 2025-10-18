@@ -43,8 +43,18 @@ const FileInput = forwardRef(({ className, name, defaultValue, value, type, plac
       for (let i = 0; i < e.target.files.length; i++) {
 
         const file = e.target.files[i];
+        const fileName = file.name.toLowerCase();
+        const fileType = file.type.toLowerCase();
+        
+        // check if file type or extension matches any accepted type
+        const isAccepted = accept.some(acceptedType => {
+          const accepted = acceptedType.toLowerCase();
+          return accepted === fileType || 
+                 accepted === fileName.substring(fileName.lastIndexOf('.')) ||
+                 (accepted.startsWith('.') && fileName.endsWith(accepted));
+        });
 
-        if (!accept.includes(file.type)){
+        if (!isAccepted){
           
           return onChange({ 
 

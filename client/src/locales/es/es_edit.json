@@ -1,0 +1,81 @@
+{
+  "title": "Editar",
+  "game": {
+    "select": {
+      "label": "Seleccionar Juego",
+      "placeholder": "Elige un juego para editar"
+    }
+  },
+  "header": {
+    "title": "Editando Juego: {{gameName}}",
+    "titleDefault": "Editor de Activos de Juego",
+    "version": "Versión Actual: v{{version}}",
+    "versionDefault": "Selecciona un juego para comenzar a editar",
+    "cmsId": "ID CMS: {{cmsId}}",
+    "cmsIdDefault": "Ningún juego seleccionado",
+    "animate": "Animar",
+    "hover": "Efecto Hover",
+    "savePublish": "Guardar y Publicar Cambios"
+  },
+  "banner": {
+    "title": "Fuente de Contenido en Vivo Efectiva",
+    "description": "{{source}} se está sirviendo actualmente al SDK.",
+    "source": {
+      "original": "Activo Original",
+      "standard": "Contenido AI Estándar",
+      "theme": "Activo AI Temático"
+    }
+  },
+  "original": {
+    "title": "1. Activo Original (Línea Base)",
+    "image": "IMAGEN ORIGINAL",
+    "video": "VIDEO ORIGINAL",
+    "defaultImage": "Imagen por Defecto",
+    "defaultVideo": "Animación por Defecto",
+    "readOnly": "Solo Lectura: Extraído del Sitio del Casino"
+  },
+  "standard": {
+    "title": "2. Contenido AI Estándar",
+    "image": "AI ESTÁNDAR v1",
+    "video": "AI ESTÁNDAR Video v1",
+    "aiImage": "Imagen AI Estándar",
+    "aiVideo": "Animación AI Estándar",
+    "regenerate": "Regenerar Activos Estándar",
+    "lock": "Bloquear Contenido Estándar"
+  },
+  "theme": {
+    "title": "3. Contenido AI Temático",
+    "subtitle": "Generado mediante prompt estacional/promocional activo.",
+    "image": "TEMA NAVIDEÑO v1",
+    "video": "VIDEO NAVIDEÑO v1",
+    "themeImage": "Imagen Temática",
+    "themeVideo": "Animación Temática",
+    "regenerate": "Regenerar Activos Temáticos",
+    "lock": "Bloquear Contenido Temático",
+    "clear": "Limpiar Contenido Temático"
+  },
+  "regenerate": {
+    "noGame": "Por favor selecciona un juego primero",
+    "standard": {
+      "success": "Activos estándar regenerados exitosamente"
+    },
+    "theme": {
+      "success": "Activos temáticos regenerados exitosamente"
+    }
+  },
+  "clear": {
+    "noGame": "Por favor selecciona un juego primero",
+    "theme": {
+      "success": "Contenido temático limpiado exitosamente"
+    }
+  },
+  "save": {
+    "noGame": "Por favor selecciona un juego primero",
+    "publish": {
+      "success": "Cambios guardados y publicados exitosamente"
+    }
+  },
+  "media": {
+    "close": "Cerrar"
+  }
+}

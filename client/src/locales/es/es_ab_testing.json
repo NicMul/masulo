@@ -1,0 +1,15 @@
+{
+  "title": "Pruebas A/B",
+  "description": "Gestiona y analiza pruebas A/B para promociones y contenido",
+  "create_test": "Crear Prueba A/B",
+  "overview": "Resumen de Pruebas A/B",
+  "no_tests": "No se Encontraron Pruebas A/B",
+  "no_tests_description": "Crea tu primera prueba A/B para comenzar a optimizar tus promociones y contenido",
+  "create_first_test": "Crear Primera Prueba",
+  "active_tests": "Pruebas Activas",
+  "completed_tests": "Pruebas Completadas",
+  "total_tests": "Total de Pruebas",
+  "create": {
+    "success": "Prueba A/B creada exitosamente"
+  }
+}
