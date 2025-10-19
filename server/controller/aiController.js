@@ -74,7 +74,7 @@ exports.process = async function(req, res){
         headers: {
           'Content-Type': 'application/json'
         },
-        timeout: 30000 // 30 second timeout
+        timeout: 120000 // 2 minute timeout
       }
     );
 

@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
          ThemeSelect, Checkbox} from 'components/lib';
 import { ViewContext } from 'components/lib';
 import { useMutation } from 'components/hooks/mutation';
+import AiPreview  from './AiPreview';
 
 export function RegenerateAiAssetsDialog({ 
   isOpen, 
@@ -26,7 +27,6 @@ export function RegenerateAiAssetsDialog({
   const [currentImagePrompt, setCurrentImagePrompt] = useState('');
   const [currentVideoPrompt, setCurrentVideoPrompt] = useState('');
   const [generatedAssets, setGeneratedAssets] = useState(null);
-  const [hoveredAsset, setHoveredAsset] = useState(null);
   const [selectedTheme, setSelectedTheme] = useState(selectedGame?.theme || 'default');
   const [generateImage, setGenerateImage] = useState(assetType !== 'original');
   const [generateVideo, setGenerateVideo] = useState(true);
@@ -45,7 +45,6 @@ export function RegenerateAiAssetsDialog({
       setCurrentImagePrompt('');
       setCurrentVideoPrompt('');
       setGeneratedAssets(null);
-      setHoveredAsset(null);
       setGenerateImage(false);
       setGenerateVideo(true);
     } else {
@@ -117,17 +116,8 @@ export function RegenerateAiAssetsDialog({
       
       console.log('N8N Response:', result);
       
-      // For now, use mock assets since we don't know the exact response format from n8n
-      // TODO: Update this when we know the actual response structure from n8n
-      const mockAssets = assetType === 'original' ? {
-        image: null, // Original image is read-only
-        video: 'https://via.placeholder.com/180x280/8B5CF6/FFFFFF?text=Generated+Video'
-      } : {
-        image: 'https://via.placeholder.com/180x280/8B5CF6/FFFFFF?text=Generated+Image',
-        video: 'https://via.placeholder.com/180x280/8B5CF6/FFFFFF?text=Generated+Video'
-      };
-      
-      setGeneratedAssets(mockAssets);
+      // Set the actual response from n8n
+      setGeneratedAssets(result);
       
       viewContext.notification({
         description: t('edit.regenerate.dialog.success'),
@@ -353,73 +343,28 @@ export function RegenerateAiAssetsDialog({
                 </div>
               </div>
 
-            {/* Right Side - Generated Assets */}
+
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
-                {generatedAssets ? t('edit.regenerate.dialog.generatedAssets') : t('edit.regenerate.dialog.noAssetsGenerated')}
+                {generatedAssets ? t('edit.regenerate.dialog.generatedAssets') : 'Preview'}
               </h3>
               
-              {!generatedAssets ? (
-                /* Instructions with SVG */
+              <div className="space-y-4 max-w-[60%] mx-auto">
                 <div className="space-y-4">
-                  <div className="text-center text-slate-600 dark:text-slate-400">
-                    <p className="text-sm mb-4">{t('edit.regenerate.dialog.noAssetsGeneratedDescription')}</p>
-                  </div>
-                  
-                  {/* Simple Icon Placeholder */}
-                  <div className="flex justify-center items-center py-12">
-                    <div className="w-24 h-24 rounded-lg border-2 border-dashed border-slate-300 dark:border-slate-600 flex items-center justify-center bg-slate-50 dark:bg-slate-800">
-                      <Icon name="sparkles" className="w-12 h-12 text-slate-400 dark:text-slate-500" />
+                  <div className={`rounded-lg p-6 text-center mx-auto ${generatedAssets ? 'bg-green-100 dark:bg-green-900' : 'bg-slate-100 dark:bg-slate-800'}`}>
+                    <div className={`text-xs font-bold mb-2 ${generatedAssets ? 'text-green-800 dark:text-green-200' : 'text-slate-800 dark:text-slate-200'}`}>
+                      {generatedAssets ? t('edit.regenerate.dialog.generatedVideo') : 'Video Preview'}
                     </div>
+                    <AiPreview
+                      gameId={selectedGame?.id}
+                      testImage={selectedGame?.defaultImage}
+                      testVideo={selectedGame?.testVideo}
+                      defaultImage={selectedGame?.defaultImage}
+                      className="mb-2"
+                    />
                   </div>
                 </div>
-              ) : (
-               
-                <div className="space-y-4">
-                  <div className={`grid gap-3 ${assetType === 'original' ? 'grid-cols-1' : 'grid-cols-2'}`}>
-                    {assetType !== 'original' && (
-                      <div 
-                        className="bg-green-100 dark:bg-green-900 rounded-lg p-3 text-center relative"
-                        onMouseEnter={() => setHoveredAsset('image')}
-                        onMouseLeave={() => setHoveredAsset(null)}
-                      >
-                        <div className="text-xs font-bold text-green-800 dark:text-green-200 mb-2">
-                          {t('edit.regenerate.dialog.generatedImage')}
-                        </div>
-                        <div className="relative">
-                          <img
-                            src={generatedAssets.image}
-                            alt="Generated Image"
-                            className="w-full max-w-[250px] aspect-[180/280] object-cover rounded mb-2 mx-auto"
-                          />
-                          {hoveredAsset === 'image' && generatedAssets.video && (
-                            <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded">
-                              <video
-                                src={generatedAssets.video}
-                                className="w-full max-w-[250px] aspect-[180/280] object-cover rounded mx-auto"
-                                autoPlay
-                                muted
-                                loop
-                              />
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                    
-                    <div className="bg-green-100 dark:bg-green-900 rounded-lg p-3 text-center">
-                      <div className="text-xs font-bold text-green-800 dark:text-green-200 mb-2">
-                        {t('edit.regenerate.dialog.generatedVideo')}
-                      </div>
-                      <video
-                        src={generatedAssets.video}
-                        className="w-full max-w-[250px] aspect-[180/280] object-cover rounded mb-2 mx-auto"
-                        controls={true}
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
+              </div>
             </div>
           </div>
         </div>
