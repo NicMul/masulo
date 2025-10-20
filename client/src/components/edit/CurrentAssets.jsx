@@ -5,11 +5,12 @@
 *
 **********/
 
-import { useState, useCallback, useContext } from 'react';
+import { useState, useCallback, useContext, useMemo } from 'react';
 import { Card, Button, Switch } from 'components/lib';
 import { ViewContext } from 'components/lib';
 import { MediaViewer } from './MediaViewer';
 import { RegenerateAiAssetsDialog } from './RegenerateAiAssetsDialog';
+import  MediaPlayer from './MediaPlayer';
 
 export function CurrentAssets({ t, selectedGame }) {
   const viewContext = useContext(ViewContext);
@@ -45,6 +46,10 @@ export function CurrentAssets({ t, selectedGame }) {
     });
   }, [selectedGame, t, viewContext]);
 
+  const handleSelect = (videoUrl) => {
+    console.log('Selected video:', videoUrl);
+  };
+
   return (
     <Card title={ t('edit.current.title') }>
       <div className='space-y-4'>
@@ -55,19 +60,18 @@ export function CurrentAssets({ t, selectedGame }) {
             <div className='text-xs font-bold text-purple-800 dark:text-purple-200 mb-2'>
               { t('edit.current.image') }
             </div>
-            { selectedGame?.currentImage ? (
-              <MediaViewer
-                mediaUrl={selectedGame.currentImage}
-                mediaType="image"
-                title={t('edit.current.image')}
-                alt="Standard AI Image"
-                className='w-full aspect-[180/280] object-cover rounded mb-2 cursor-pointer hover:opacity-90 transition-opacity'
-              />
-            ) : (
-              <div className='text-xs text-purple-600 dark:text-purple-400'>
-                { t('edit.current.aiImage') }
-              </div>
-            )}
+           
+            <MediaPlayer
+              gameId={selectedGame?.id}
+              imageUrl={selectedGame?.currentImage}
+              videoUrl={selectedGame?.currentVideo}
+              onSelect={handleSelect}
+              type="image"
+              canSelect={false}
+              showPlayIcon={false}
+              readOnly={false}
+            />
+         
           </div>
           
           {/* Video */}
@@ -75,20 +79,14 @@ export function CurrentAssets({ t, selectedGame }) {
             <div className='text-xs font-bold text-purple-800 dark:text-purple-200 mb-2'>
               { t('edit.current.video') }
             </div>
-            { selectedGame?.currentVideo ? (
-              <MediaViewer
-                mediaUrl={selectedGame.currentVideo}
-                mediaType="video"
-                title={t('edit.current.video')}
-                alt="Standard AI Video"
-                className='w-full aspect-[180/280] object-cover rounded mb-2 cursor-pointer hover:opacity-90 transition-opacity'
-                controls={true}
-              />
-            ) : (
-              <div className='text-xs text-purple-600 dark:text-purple-400'>
-                { t('edit.current.aiVideo') }
-              </div>
-            )}
+            <MediaPlayer
+              gameId={selectedGame?.id}
+              imageUrl={selectedGame?.currentImage}
+              videoUrl={selectedGame?.currentVideo}
+              onSelect={handleSelect}
+              type="video"
+              canSelect={false}
+            />
           </div>
         </div>
         

@@ -8,8 +8,8 @@
 import { useState, useCallback, useContext } from 'react';
 import { Card, Button, Switch } from 'components/lib';
 import { ViewContext } from 'components/lib';
-import { MediaViewer } from './MediaViewer';
 import { RegenerateAiAssetsDialog } from './RegenerateAiAssetsDialog';
+import  MediaPlayer from './MediaPlayer';
 
 export function ThemeAssets({ t, selectedGame }) {
   const viewContext = useContext(ViewContext);
@@ -45,6 +45,10 @@ export function ThemeAssets({ t, selectedGame }) {
     });
   }, [selectedGame, t, viewContext]);
 
+  const handleSelect = (videoUrl) => {
+    console.log('Selected video:', videoUrl);
+  };
+
   return (
     <Card title={ t('edit.theme.title', { theme: selectedGame?.theme || 'DEFAULT' }) }>
       <div className='space-y-4'>
@@ -55,19 +59,16 @@ export function ThemeAssets({ t, selectedGame }) {
             <div className='text-xs font-bold text-orange-800 dark:text-orange-200 mb-2'>
               { t('edit.theme.image') }
             </div>
-            { selectedGame?.themeImage ? (
-              <MediaViewer
-                mediaUrl={selectedGame.themeImage}
-                mediaType="image"
-                title={t('edit.theme.image')}
-                alt="Theme AI Image"
-                className='w-full aspect-[180/280] object-cover rounded mb-2 cursor-pointer hover:opacity-90 transition-opacity'
-              />
-            ) : (
-              <div className='text-xs text-orange-600 dark:text-orange-400'>
-                { t('edit.theme.themeImage') }
-              </div>
-            )}
+            <MediaPlayer
+              gameId={selectedGame?.id}
+              imageUrl={selectedGame?.themeImage}
+              videoUrl={selectedGame?.themeVideo}
+              onSelect={handleSelect}
+              type="image"
+              canSelect={false}
+              showPlayIcon={false}
+              readOnly={false}
+            />
           </div>
           
           {/* Video */}
@@ -75,20 +76,16 @@ export function ThemeAssets({ t, selectedGame }) {
             <div className='text-xs font-bold text-orange-800 dark:text-orange-200 mb-2'>
               { t('edit.theme.video') }
             </div>
-            { selectedGame?.themeVideo ? (
-              <MediaViewer
-                mediaUrl={selectedGame.themeVideo}
-                mediaType="video"
-                title={t('edit.theme.video')}
-                alt="Theme AI Video"
-                className='w-full aspect-[180/280] object-cover rounded mb-2 cursor-pointer hover:opacity-90 transition-opacity'
-                controls={true}
-              />
-            ) : (
-              <div className='text-xs text-orange-600 dark:text-orange-400'>
-                { t('edit.theme.themeVideo') }
-              </div>
-            )}
+            <MediaPlayer
+              gameId={selectedGame?.id}
+              imageUrl={selectedGame?.themeImage}
+              videoUrl={selectedGame?.themeVideo}
+              onSelect={handleSelect}
+              type="video"
+              canSelect={false}
+              showPlayIcon={true}
+              readOnly={false}
+            />
           </div>
         </div>
         

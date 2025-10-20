@@ -1,0 +1,22 @@
+{
+  "title": "Website Scraper",
+  "description": "Find and extract images from websites",
+  "form": {
+    "title": "Scrape Website",
+    "url": {
+      "label": "Website URL",
+      "placeholder": "https://example.com"
+    },
+    "button": "Scrape Images"
+  },
+  "results": {
+    "title": "Scraped Images",
+    "empty": "No images found yet. Enter a URL above to start scraping."
+  },
+  "success": "Website scraped successfully",
+  "error": "Error scraping website",
+  "info": {
+    "title": "How it works",
+    "description": "Enter a website URL and we'll automatically find all images on that page. This tool helps you discover visual content for your games."
+  }
+}

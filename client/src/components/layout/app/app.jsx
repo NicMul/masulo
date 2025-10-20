@@ -24,6 +24,7 @@ export function AppLayout({ title, children }){
   const nav = [
     { label: t('nav.dashboard'), icon: 'gauge', link: '/dashboard', position: 'top' },
     { label: t('nav.games'), icon: 'gamepad-2', link: '/games', position: 'top' },
+    { label: t('nav.scrape'), icon: 'search', link: '/scrape', position: 'top' },
     { label: t('nav.edit'), icon: 'edit', link: '/edit', position: 'top' },
     { label: t('nav.promotions'), icon: 'megaphone', link: '/promotions', position: 'top' },
     { label: t('nav.ab_testing'), icon: 'test-tube', link: '/ab-testing', position: 'top' },

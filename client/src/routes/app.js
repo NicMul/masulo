@@ -3,6 +3,7 @@ import { Games } from 'views/dashboard/games';
 import { Promotions } from 'views/dashboard/promotions';
 import { ABTesting } from 'views/dashboard/ab-testing';
 import { Edit } from 'views/dashboard/edit';
+import { Scrape } from 'views/dashboard/scrape';
 import { Help } from 'views/dashboard/help';
 import { OnboardingView } from 'views/onboarding/onboarding';
 
@@ -20,6 +21,13 @@ const Routes = [
     layout: 'app',
     permission: 'user',
     title: 'games.title'
+  },
+  {
+    path: '/scrape',
+    view: Scrape,
+    layout: 'app',
+    permission: 'user',
+    title: 'scrape.title'
   },
   {
     path: '/promotions',
