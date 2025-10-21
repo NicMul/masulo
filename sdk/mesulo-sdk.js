@@ -215,19 +215,29 @@
       }
     }
     
-    // Automatically request games with hardcoded IDs
+    // Dynamically request games by scanning DOM for game elements
     requestGames() {
-      const gameIds = [
-        'b4a40dc5-e950-4e6b-bca9-1ae51589b2b5',
-        '7c371c7d-6ec2-494c-a553-1645a70007d3',
-        'b37b4b9a-4f2f-4a3c-8a58-f4a76d19d88f',
-        '8d0b5e73-13fa-42c4-901d-829406c8e207',
-        'd5352f25-9718-44a6-a95d-1ddd47ea63ce'
-      ];
-
-      // const gameIds = [
-      //   'b4a40dc5-e950-4e6b-bca9-1ae51589b2b5'
-      // ];
+      const gameIds = [];
+      
+      // Search DOM for elements with both data-masulo-game-id and data-masulo-tag attributes
+      const gameElements = document.querySelectorAll('[data-masulo-game-id][data-masulo-tag]');
+      
+      gameElements.forEach(element => {
+        const gameId = element.getAttribute('data-masulo-game-id');
+        const tagValue = element.getAttribute('data-masulo-tag');
+        
+        // Only add to array if data-masulo-tag is "true"
+        if (tagValue === 'true' && gameId) {
+          gameIds.push(gameId);
+        }
+      });
+      
+      console.log(`Found ${gameIds.length} tagged games in DOM:`, gameIds);
+      
+      if (gameIds.length === 0) {
+        console.warn('No games found with data-masulo-tag="true" in DOM');
+        return;
+      }
       
       this.socket.emit('sdk-event', {
         event: 'get-games',
