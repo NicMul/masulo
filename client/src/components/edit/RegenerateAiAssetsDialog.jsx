@@ -5,428 +5,428 @@
 *
 **********/
 
-import { useState, useCallback, useContext } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, 
-         Button, Textarea, Icon, Badge, 
-         ThemeSelect, Checkbox} from 'components/lib';
+import { useState, useCallback, useContext, useMemo, useEffect } from 'react';
+import {
+  Dialog, DialogContent, DialogHeader,
+  Button, Textarea, Icon, Badge,
+  ThemeSelect, Card, Tabs, TabsList, TabsTrigger, TabsContent, Label
+} from 'components/lib';
 import { ViewContext } from 'components/lib';
 import { useMutation } from 'components/hooks/mutation';
-import AiPreview  from './AiPreview';
+import { Tooltip } from 'components/tooltip/tooltip';
+import AiPreview from './AiPreview';
+import MediaPlayer from './MediaPlayer';
+import { DialogFooter } from 'components/dialog/dialog';
+import PromptInput from './PromptInput';
 
-export function RegenerateAiAssetsDialog({ 
-  isOpen, 
-  onClose, 
-  selectedGame, 
+
+export function RegenerateAiAssetsDialog({
+  isOpen,
+  onClose,
+  selectedGame,
   assetType, // 'current' or 'theme'
-  t 
+  onGameUpdate, // callback to trigger game refetch
+  t
 }) {
   const viewContext = useContext(ViewContext);
+  const generateAssetsMutation = useMutation('/api/ai/process', 'POST');
+  const updateGameMutation = useMutation('/api/game', 'PATCH');
+
+  // Generation state
   const [isGenerating, setIsGenerating] = useState(false);
+  const [generatedAssets, setGeneratedAssets] = useState(null);
+  const [error, setError] = useState(null);
+
+  // Prompt state
   const [imagePrompt, setImagePrompt] = useState('');
   const [videoPrompt, setVideoPrompt] = useState('');
-  const [currentImagePrompt, setCurrentImagePrompt] = useState('');
-  const [currentVideoPrompt, setCurrentVideoPrompt] = useState('');
-  const [generatedAssets, setGeneratedAssets] = useState(null);
+  
+  // Selection state
   const [selectedTheme, setSelectedTheme] = useState(selectedGame?.theme || 'default');
-  const [generateImage, setGenerateImage] = useState(assetType !== 'original');
-  const [generateVideo, setGenerateVideo] = useState(true);
+  const [generateImage, setGenerateImage] = useState(false);
+  const [generateVideo, setGenerateVideo] = useState(false);
+  const [imageSelected, setImageSelected] = useState(false);
+  const [videoSelected, setVideoSelected] = useState(false);
 
-  // Mutation hook for calling n8n endpoint
-  const processAiMutation = useMutation('/api/ai/process', 'POST');
-
-
-  console.log('RegenerateAiAssetsDialog', { selectedGame});
-
-
-  const handleOpenChange = useCallback((open) => {
-    if (!open) {
-      setImagePrompt('');
-      setVideoPrompt('');
-      setCurrentImagePrompt('');
-      setCurrentVideoPrompt('');
-      setGeneratedAssets(null);
-      setGenerateImage(false);
-      setGenerateVideo(true);
-    } else {
-      // Initialize current prompts when dialog opens
-      if (assetType === 'original') {
-        setCurrentImagePrompt(''); // Original image is read-only, no prompt
-        setCurrentVideoPrompt(selectedGame?.originalVideoPrompt || '');
-        setGenerateImage(false); // Original assets can only generate video
-        setGenerateVideo(true);
-      } else {
-        setCurrentImagePrompt(selectedGame?.[`${assetType}ImagePrompt`] || '');
-        setCurrentVideoPrompt(selectedGame?.[`${assetType}VideoPrompt`] || '');
-        setGenerateImage(true); // Default to both image and video for current/theme
-        setGenerateVideo(true);
-      }
+  // Compute current assets based on asset type
+  const currentAssets = useMemo(() => {
+    switch (assetType) {
+      case 'current':
+        return {
+          image: selectedGame?.currentImage,
+          video: selectedGame?.currentVideo
+        };
+      case 'theme':
+        return {
+          image: selectedGame?.themeImage,
+          video: selectedGame?.themeVideo
+        };
+      case 'original':
+        return {
+          image: selectedGame?.defaultImage,
+          video: selectedGame?.defaultVideo
+        };
+      default:
+        return { image: null, video: null };
     }
-    onClose(open);
-  }, [onClose, selectedGame, assetType]);
+  }, [selectedGame, assetType]);
 
-  // Auto-selection logic for checkboxes
-  const handleGenerateImageChange = useCallback((e) => {
-    // Extract the boolean value from the event object (no label, so use Object.values)
-    const checked = Object.values(e)[0];
-    setGenerateImage(checked);
-    // If generating image, also generate video (for current/theme only)
-    if (checked && assetType !== 'original') {
-      setGenerateVideo(true);
+  // Determine displayed assets (prioritize generated, fallback to test, then default)
+  const displayedAssets = useMemo(() => {
+    return {
+      image: generatedAssets?.testImage || selectedGame?.testImage || '',
+      video: generatedAssets?.testVideo || selectedGame?.testVideo || ''
+    };
+  }, [generatedAssets, selectedGame]);
+
+  // Determine media player type based on available assets
+  const mediaPlayerType = useMemo(() => {
+    const hasImage = displayedAssets.image;
+    const hasVideo = displayedAssets.video;
+    
+    // When both exist, prioritize image
+    if (hasImage && hasVideo) return 'both';
+    if (hasImage) return 'image';
+    if (hasVideo) return 'video';
+    return 'both';
+  }, [displayedAssets]);
+
+  // Check if we have any generated or test assets
+  const hasTestAssets = useMemo(() => {
+    return Boolean(
+      generatedAssets || 
+      selectedGame?.testImage || 
+      selectedGame?.testVideo
+    );
+  }, [generatedAssets, selectedGame]);
+
+  // Handle media selection
+  const handleSelect = useCallback((gameId, newSelected, type) => {
+    if (type === 'image') {
+      setImageSelected(newSelected);
+      setGenerateImage(newSelected);
+    } else if (type === 'video') {
+      setVideoSelected(newSelected);
+      setGenerateVideo(newSelected);
     }
-  }, [assetType]);
+  }, []);
 
-  const handleGenerateVideoChange = useCallback((e) => {
-    // Extract the boolean value from the event object (no label, so use Object.values)
-    const checked = Object.values(e)[0];
-    setGenerateVideo(checked);
-    // If not generating video, also don't generate image (for current/theme only)
-    if (!checked && assetType !== 'original') {
-      setGenerateImage(false);
+  // Clear prompts
+  const clearPrompts = useCallback(() => {
+    setImagePrompt('');
+    setVideoPrompt('');
+    setError(null);
+  }, []);
+
+  // Validate generation request
+  const validateGeneration = useCallback(() => {
+    if (!generateImage && !generateVideo) {
+      return { valid: false, error: null };
     }
-  }, [assetType]);
 
-  const generateAssets = useCallback(async () => {
-    if (!selectedGame) {
-      viewContext.notification({
-        description: t('edit.regenerate.noGame'),
-        variant: 'error'
-      });
+    if (assetType === 'original') {
+      return { valid: true, error: null };
+    }
+
+    if (generateImage && !imagePrompt?.trim()) {
+      return { valid: false, error: 'Please enter an image prompt before generating' };
+    }
+
+    if (generateVideo && !videoPrompt?.trim()) {
+      return { valid: false, error: 'Please enter a video prompt before generating' };
+    }
+
+    return { valid: true, error: null };
+  }, [generateImage, generateVideo, imagePrompt, videoPrompt, assetType]);
+
+  // Handle regeneration
+  const handleRegenerate = async () => {
+    const validation = validateGeneration();
+    
+    if (!validation.valid) {
+      if (validation.error) setError(validation.error);
       return;
     }
 
     setIsGenerating(true);
-    
+    setError(null);
+
     try {
-      // Prepare payload for n8n
       const payload = {
-        gameId: selectedGame.id,
-        assetType,
-        generateVideo,
-        generateImage,
-        imagePrompt: generateImage ? (currentImagePrompt || 'Default image prompt') : null,
-        videoPrompt: generateVideo ? (currentVideoPrompt || 'Default video prompt') : null,
-        theme: selectedTheme || selectedGame?.theme
+        gameId: selectedGame?.id,
+        assetType: assetType,
+        generateVideo: generateVideo,
+        generateImage: generateImage,
+        imagePrompt: imagePrompt?.trim() || null,
+        videoPrompt: videoPrompt?.trim() || null,
+        theme: selectedTheme || "default"
       };
 
-      // Log generation request to console as requested
-      console.log('Generating AI assets:', payload);
+      console.log('Sending payload to n8n:', payload);
+      const result = await generateAssetsMutation.execute(payload);
 
-      // Call n8n endpoint
-      const result = await processAiMutation.execute(payload);
-      
-      console.log('N8N Response:', result);
-      
-      // Set the actual response from n8n
-      setGeneratedAssets(result);
-      
-      viewContext.notification({
-        description: t('edit.regenerate.dialog.success'),
-        variant: 'success'
-      });
-    } catch (error) {
-      console.error('Error generating assets:', error);
-      viewContext.notification({
-        description: t('edit.regenerate.dialog.error'),
-        variant: 'error'
-      });
+      if (result) {
+        setGeneratedAssets({
+          testImage: generateImage ? result[0].testImage : null,
+          testVideo: generateVideo ? result[0].testVideo : null
+        });
+
+        viewContext.notification({
+          description: t('edit.regenerate.dialog.success'),
+          variant: 'success'
+        });
+      }
+    } catch (err) {
+      console.error('Error generating assets:', err);
+      setError(err.message || 'Failed to generate assets');
     } finally {
       setIsGenerating(false);
     }
-  }, [selectedGame, assetType, generateImage, generateVideo, currentImagePrompt, currentVideoPrompt, selectedTheme, t, viewContext, processAiMutation]);
+  };
 
-  const acceptAssets = useCallback(async () => {
-    if (!generatedAssets || !selectedGame) return;
+  // Handle accepting new assets
+  const handleAcceptAssets = useCallback(async () => {
+    if (!selectedGame || !hasTestAssets) return;
 
     try {
-      // Log acceptance to console as requested
-      console.log('Accepting generated assets:', {
-        gameId: selectedGame.id,
-        assetType,
-        assets: generatedAssets
-      });
+      // Determine which fields to update based on assetType
+      const updateData = {};
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500));
+      if (assetType === 'original') {
+        updateData.defaultVideo = generatedAssets?.testVideo || selectedGame?.testVideo;
+      }
       
-      viewContext.notification({
-        description: t('edit.regenerate.dialog.acceptResult.success'),
-        variant: 'success'
-      });
+      if (assetType === 'current') {
+        // Move test assets to current assets
+        if (displayedAssets.image) updateData.currentImage = displayedAssets.image;
+        if (displayedAssets.video) updateData.currentVideo = displayedAssets.video;
+      } else if (assetType === 'theme') {
+        // Move test assets to theme assets
+        if (displayedAssets.image) updateData.themeImage = displayedAssets.image;
+        if (displayedAssets.video) updateData.themeVideo = displayedAssets.video;
+      }
       
-      handleOpenChange(false);
-    } catch (error) {
-      console.error('Error accepting assets:', error);
+      // Clear test assets after moving them
+      updateData.testImage = null;
+      updateData.testVideo = null;
+
+      // Update the game in the database
+      const result = await updateGameMutation.execute(updateData, `/api/game/${selectedGame.id}`);
+      
+      if (result) {
+        // Show success notification
+        viewContext.notification({
+          description: t('edit.accept.success'),
+          variant: 'success'
+        });
+        
+        // Trigger game refetch in parent
+        if (onGameUpdate) {
+          onGameUpdate();
+        }
+        
+        // Close the dialog
+        onClose();
+      }
+    } catch (err) {
+      console.error('Error accepting assets:', err);
       viewContext.notification({
-        description: t('edit.regenerate.dialog.acceptResult.error'),
+        description: t('edit.accept.error'),
         variant: 'error'
       });
     }
-  }, [generatedAssets, selectedGame, assetType, t, viewContext, handleOpenChange]);
+  }, [selectedGame, hasTestAssets, assetType, displayedAssets, updateGameMutation, viewContext, t, onGameUpdate, onClose]);
 
+  // Get button text based on selection
+  const getButtonText = useCallback(() => {
+    if (isGenerating) return t('edit.regenerate.dialog.generating');
+    if (generateImage && generateVideo) return t('edit.regenerate.dialog.buttons.regenerateImageVideo');
+    if (generateImage) return t('edit.regenerate.dialog.buttons.regenerateAiImage');
+    if (generateVideo) return t('edit.regenerate.dialog.buttons.regenerateAiVideo');
+    return t('edit.regenerate.dialog.buttons.makeSelection');
+  }, [isGenerating, generateImage, generateVideo, t]);
 
-  const deleteAssets = useCallback(() => {
-    setGeneratedAssets(null);
-    viewContext.notification({
-      description: t('edit.regenerate.dialog.deleteResult.success'),
-      variant: 'success'
-    });
-  }, [t, viewContext]);
-
-  const getAssetTypeTitle = () => {
-    if (assetType === 'current') return t('edit.current.title');
-    if (assetType === 'theme') return t('edit.theme.title');
-    if (assetType === 'original') return t('edit.original.title');
-    return t('edit.current.title');
-  };
-
-  const getAssetTypeColor = () => {
-    if (assetType === 'current') return 'purple';
-    if (assetType === 'theme') return 'orange';
-    if (assetType === 'original') return 'slate';
-    return 'purple';
-  };
-
-  const getAssetTypeDescription = () => {
-    if (assetType === 'original') {
-      return "Generate new video content with custom prompts. The original image remains read-only.";
+  // Reset state when dialog closes
+  useEffect(() => {
+    if (!isOpen) {
+      setGeneratedAssets(null);
+      setImageSelected(false);
+      setVideoSelected(false);
+      setGenerateImage(false);
+      setGenerateVideo(false);
+      setError(null);
     }
-    return t('edit.regenerate.dialog.description');
-  };
+  }, [isOpen]);
+
+  console.log(selectedGame);
+  console.log(generatedAssets);
+  console.log(assetType);
+  console.log('------------------------------')
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+    <Dialog open={isOpen} onClose={onClose}>
       <DialogContent className="!w-[80vw] !max-w-none">
         <DialogHeader>
-            <div className="flex items-center justify-between">
-                <div className="flex flex-col gap-2">
-                    <DialogTitle>{t('edit.regenerate.dialog.title', { assetType: getAssetTypeTitle() })}</DialogTitle>
-                    <DialogDescription>{getAssetTypeDescription()}</DialogDescription>
-                    
-                </div>
-                {assetType === 'theme' && (
-                  <div className="flex items-center mr-6 w-1/6">
-                    <ThemeSelect
-                      value={selectedTheme || selectedGame?.theme}
-                      onChange={(e) => setSelectedTheme(e.target.value)}
-                    />
-                  </div>
-                )}
-            </div>
-        
+          <div className="flex items-center justify-between">
+            {/* Header content */}
+          </div>
         </DialogHeader>
 
-        
+        {error && (
+          <div className="bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 p-3 rounded-lg mb-4">
+            {error}
+          </div>
+        )}
 
-        <div className="space-y-6">
+        <div className='grid grid-cols-2 gap-3'>
+          {/* Left Panel - Original and Selected Assets */}
+          <Tabs defaultValue="video">
+            <TabsList>
+              <TabsTrigger value="image">{t('edit.regenerate.dialog.tabs.original')}</TabsTrigger>
+              <TabsTrigger value="video">{t('edit.regenerate.dialog.tabs.selectedForEdit')}</TabsTrigger>
+            </TabsList>
 
-          <div className="grid grid-cols-2 gap-6">
- 
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
-                  {t('edit.regenerate.dialog.currentAssets')}
-                </h3>
- 
-                <div className={`grid gap-3 ${assetType === 'original' ? 'grid-cols-2' : 'grid-cols-3'}`}>
+            {/* Original Assets Tab */}
+            <TabsContent value="image">
+              <div className='flex justify-center items-center flex-row gap-3 bg-slate-200 dark:bg-slate-700 rounded-lg p-3 text-center'>
+                <Card title={t('edit.regenerate.dialog.cards.originalImage')} className='w-1/2 flex-col gap-3'>
+                  <MediaPlayer
+                    gameId={selectedGame?.id}
+                    imageUrl={selectedGame?.defaultImage}
+                    videoUrl={selectedGame?.defaultVideo}
+                    onSelect={handleSelect}
+                    type="image"
+                    canSelect={false}
+                    showPlayIcon={false}
+                    readOnly={true}
+                    isSelected={imageSelected}
+                  />
+                </Card>
+              </div>
+            </TabsContent>
+
+            {/* Selected for Edit Tab */}
+            <TabsContent value="video">
+              <div className='flex flex-row gap-3 bg-slate-200 dark:bg-slate-700 rounded-lg p-3 text-center'>
+                {/* Image Section */}
+                <Card 
+                  title={assetType === 'original' ? t('edit.regenerate.dialog.cards.originalImage') : t('edit.regenerate.dialog.cards.aiGeneratedImage')} 
+                  className='w-1/2 flex-col gap-3'
+                >
+                  <MediaPlayer
+                    gameId={selectedGame?.id}
+                    imageUrl={currentAssets.image}
+                    videoUrl={currentAssets.video}
+                    onSelect={handleSelect}
+                    type="image"
+                    canSelect={assetType !== 'original'}
+                    showPlayIcon={false}
+                    readOnly={assetType === 'original'}
+                    isSelected={imageSelected}
+                  />
+
                   {assetType !== 'original' && (
-                    /* Default Asset - Only for current and theme */
-                    <div className="bg-slate-100 dark:bg-slate-800 rounded-lg p-3 text-center">
-                      <div className="text-xs font-bold text-slate-800 dark:text-slate-200 mb-2">
-                        {t('edit.original.image')}
-                      </div>
-                      {selectedGame?.defaultImage ? (
-                        <img
-                          src={selectedGame.defaultImage}
-                          alt="Default Image"
-                          className="w-full aspect-[180/280] object-cover rounded mb-3 mx-auto"
-                        />
-                      ) : (
-                        <div className="text-xs text-slate-600 dark:text-slate-400 py-6">
-                          {t('edit.original.defaultImage')}
-                        </div>
-                      )}
-                      <div className="mt-2">
-                        <div className="text-xs text-slate-500 dark:text-slate-400 p-2 bg-slate-50 dark:bg-slate-700 rounded">
-                          {t('edit.original.referenceAsset')}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Current Image */}
-                  <div className={`bg-${getAssetTypeColor()}-100 dark:bg-${getAssetTypeColor()}-900 rounded-lg p-3 text-center relative ${generateImage ? 'ring-2 ring-green-500 bg-green-100 dark:bg-green-900' : ''}`}>
-                    <div className="flex items-center justify-between mb-2">
-                      <div className={`text-xs font-bold text-${getAssetTypeColor()}-800 dark:text-${getAssetTypeColor()}-200`}>
-                        {assetType === 'current' ? t('edit.current.image') : 
-                         assetType === 'theme' ? t('edit.theme.image') : 
-                         t('edit.original.image')}
-                      </div>
-                      {assetType !== 'original' && (
-                        <Checkbox
-                          name="generateImage"
-                          checked={generateImage}
-                          onChange={handleGenerateImageChange}
-                          className="w-6 h-6 border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800"
-                        />
-                      )}
-                    </div>
-                    {selectedGame?.[assetType === 'original' ? 'defaultImage' : `${assetType}Image`] ? (
-                      <img
-                        src={selectedGame[assetType === 'original' ? 'defaultImage' : `${assetType}Image`]}
-                        alt={`${assetType} Image`}
-                        className="w-full aspect-[180/280] object-cover rounded mb-3 mx-auto"
-                      />
-                    ) : (
-                      <div className={`text-xs text-${getAssetTypeColor()}-600 dark:text-${getAssetTypeColor()}-400 py-6`}>
-                        {assetType === 'current' ? t('edit.current.aiImage') : 
-                         assetType === 'theme' ? t('edit.theme.themeImage') : 
-                         t('edit.original.defaultImage')}
-                      </div>
-                    )}
-                    {assetType !== 'original' && (
-                      <div className="mt-2">
-                        <Textarea
-                          name={`${assetType}ImagePrompt`}
-                          value={currentImagePrompt}
-                          onChange={(e) => setCurrentImagePrompt(e.target.value)}
-                          placeholder="Enter image prompt..."
-                          className="min-h-[60px] text-xs"
-                        />
-                      </div>
-                    )}
-                    {assetType === 'original' && (
-                      <div className="mt-2">
-                        <div className="text-xs text-slate-500 dark:text-slate-400 p-2 bg-slate-50 dark:bg-slate-700 rounded">
-                          {t('edit.original.readOnly')}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  
-                  {/* Current Video */}
-                  <div className={`bg-${getAssetTypeColor()}-100 dark:bg-${getAssetTypeColor()}-900 rounded-lg p-3 text-center relative ${generateVideo ? 'ring-2 ring-green-500 bg-green-100 dark:bg-green-900' : ''}`}>
-                    <div className="flex items-center justify-between mb-2">
-                      <div className={`text-xs font-bold text-${getAssetTypeColor()}-800 dark:text-${getAssetTypeColor()}-200`}>
-                        {assetType === 'current' ? t('edit.current.video') : 
-                         assetType === 'theme' ? t('edit.theme.video') : 
-                         t('edit.original.video')}
-                      </div>
-                      <Checkbox
-                        name="generateVideo"
-                        checked={generateVideo}
-                        onChange={handleGenerateVideoChange}
-                        className="w-6 h-6 border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800"
-                      />
-                    </div>
-                    {selectedGame?.[assetType === 'original' ? 'defaultVideo' : `${assetType}Video`] ? (
-                      <video
-                        src={selectedGame[assetType === 'original' ? 'defaultVideo' : `${assetType}Video`]}
-                        className="w-full aspect-[180/280] object-cover rounded mb-3 mx-auto"
-                        controls={true}
-                      />
-                    ) : (
-                      <div className={`text-xs text-${getAssetTypeColor()}-600 dark:text-${getAssetTypeColor()}-400 py-6`}>
-                        {assetType === 'current' ? t('edit.current.aiVideo') : 
-                         assetType === 'theme' ? t('edit.theme.themeVideo') : 
-                         t('edit.original.defaultVideo')}
-                      </div>
-                    )}
-                    <div className="mt-2">
-                      <Textarea
-                        name={`${assetType}VideoPrompt`}
-                        value={currentVideoPrompt}
-                        onChange={(e) => setCurrentVideoPrompt(e.target.value)}
-                        placeholder="Enter video prompt..."
-                        className="min-h-[60px] text-xs"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
-                {generatedAssets ? t('edit.regenerate.dialog.generatedAssets') : 'Preview'}
-              </h3>
-              
-              <div className="space-y-4 max-w-[60%] mx-auto">
-                <div className="space-y-4">
-                  <div className={`rounded-lg p-6 text-center mx-auto ${generatedAssets ? 'bg-green-100 dark:bg-green-900' : 'bg-slate-100 dark:bg-slate-800'}`}>
-                    <div className={`text-xs font-bold mb-2 ${generatedAssets ? 'text-green-800 dark:text-green-200' : 'text-slate-800 dark:text-slate-200'}`}>
-                      {generatedAssets ? t('edit.regenerate.dialog.generatedVideo') : 'Video Preview'}
-                    </div>
-                    <AiPreview
-                      gameId={selectedGame?.id}
-                      testImage={selectedGame?.defaultImage}
-                      testVideo={selectedGame?.testVideo}
-                      defaultImage={selectedGame?.defaultImage}
-                      className="mb-2"
+                    <PromptInput
+                      value={imagePrompt}
+                      onChange={(e) => setImagePrompt(e.target.value)}
+                      placeholder={t('edit.regenerate.dialog.placeholders.imagePrompt')}
+                      className="w-full mt-4 bg-slate-100 dark:bg-slate-800 rounded-lg p-3"
+                      t={t}
                     />
-                  </div>
-                </div>
+                  )}
+                </Card>
+
+                {/* Video Section */}
+                <Card title={t('edit.regenerate.dialog.cards.aiGeneratedVideo')} className='w-1/2 flex-col gap-3'>
+                  <MediaPlayer
+                    gameId={selectedGame?.id}
+                    imageUrl={currentAssets.image}
+                    videoUrl={currentAssets.video}
+                    onSelect={handleSelect}
+                    type="video"
+                    canSelect={true}
+                    showPlayIcon={true}
+                    readOnly={false}
+                    isSelected={videoSelected}
+                  />
+                  
+                  {assetType !== 'original' && (
+                    <PromptInput
+                      value={videoPrompt}
+                      onChange={(e) => setVideoPrompt(e.target.value)}
+                      placeholder={t('edit.regenerate.dialog.placeholders.videoPrompt')}
+                      className="w-full mt-4 bg-slate-100 dark:bg-slate-800 rounded-lg p-3"
+                      t={t}
+                    />
+                  )}
+                </Card>
               </div>
-            </div>
+            </TabsContent>
+          </Tabs>
+
+          {/* Right Panel - Generated Assets Preview */}
+          <div className='relative flex justify-center items-center bg-slate-200 dark:bg-slate-700 rounded-lg p-3 text-center'>
+            {/* Generation Badges */}
+            {generateImage && (
+              <div className='absolute top-5 right-3 bg-gradient-to-br from-blue-500 to-purple-600 scale-100 shadow-lg text-white text-sm font-semibold px-2 py-1 rounded-full'>
+                {t('edit.regenerate.dialog.badges.generateImage')}
+              </div>
+            )}
+
+            {generateVideo && (
+              <div className={`absolute ${generateImage ? 'top-14' : 'top-5'} right-3 bg-gradient-to-br from-blue-500 to-purple-600 scale-100 shadow-lg text-white text-sm font-semibold px-2 py-1 rounded-full`}>
+                {t('edit.regenerate.dialog.badges.generateVideo')}
+              </div>
+            )}
+
+            <Card
+              title={hasTestAssets ? t('edit.regenerate.dialog.cards.latestAssets') : t('edit.regenerate.dialog.cards.generateAssets')}
+              className='relative w-1/2 justify-center flex-col gap-3'
+            >
+              <div className="absolute z-10 top-0 right-0">
+                <Tooltip title={t('edit.regenerate.dialog.tooltips.clearPrompts')} />
+              </div>
+              
+              <MediaPlayer
+                gameId={selectedGame?.id}
+                imageUrl={displayedAssets.image}
+                videoUrl={displayedAssets.video}
+                onSelect={handleSelect}
+                type={mediaPlayerType}
+                canSelect={false}
+                showPlayIcon={true}
+                readOnly={false}
+                isSelected={imageSelected || videoSelected}
+              />
+
+              {generatedAssets && (
+                <div className="mt-2 text-sm text-green-600 dark:text-green-400">
+                  {t('edit.regenerate.dialog.messages.assetsGeneratedSuccessfully')}
+                </div>
+              )}
+            </Card>
           </div>
         </div>
-        
-        <div className="flex justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-700">
-          {!generatedAssets ? (
-            <Button
-              onClick={generateAssets}
-              disabled={isGenerating || !selectedGame || (!generateImage && !generateVideo)}
-              className="flex w-1/4"
-              color="blue"
-            >
-              {isGenerating ? (
-                <>
-                  <Icon name="loader-2" className="w-4 h-4 mr-2 animate-spin" />
-                  {t('edit.regenerate.dialog.generating')}
-                </>
-              ) : (
-                <>
-                  <Icon name="refresh-cw" className="w-4 h-4 mr-2" />
-                  {(() => {
-                    let buttonText = '';
-                    if (generateImage && generateVideo) {
-                      buttonText = 'Generate Image & Video';
-                    } else if (generateImage) {
-                      buttonText = 'Generate Image Only';
-                    } else if (generateVideo) {
-                      buttonText = 'Generate Video Only';
-                    } else {
-                      buttonText = 'Select Generation Options';
-                    }
-                    
-                    if (assetType === 'theme') {
-                      buttonText += ` for ${selectedTheme.toUpperCase() || selectedGame?.theme.toUpperCase()}`;
-                    }
-                    
-                    return buttonText;
-                  })()}
-                </>
-              )}
-            </Button>
-          ) : (
-            <>
-              <Button
-                onClick={acceptAssets}
-                className="flex w-1/4"
-                color="green"
-              >
-                <Icon name="check" className="w-4 h-4 mr-2" />
-                {t('edit.regenerate.dialog.accept')}
+
+        <DialogFooter>
+          {hasTestAssets && (
+            <div className="flex gap-2">
+              <Button color="green" onClick={handleAcceptAssets}>
+                {t('edit.regenerate.dialog.buttons.acceptNewAssets')}
               </Button>
-              <Button
-                onClick={deleteAssets}
-                className="flex w-1/4"
-                color="red"
-              >
-                <Icon name="trash-2" className="w-4 h-4 mr-2" />
-                {t('edit.regenerate.dialog.delete')}
-              </Button>
-            </>
+            </div>
           )}
-        </div>
+
+          <Button
+            onClick={handleRegenerate}
+            disabled={isGenerating || (!generateImage && !generateVideo)}
+          >
+            {isGenerating && (
+              <Icon name="loader-2" size={16} className="mr-2 animate-spin" />
+            )}
+            {getButtonText()}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

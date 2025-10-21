@@ -93,8 +93,44 @@
       },
       "deleteResult": {
         "success": "Generated assets deleted"
+      },
+      "tabs": {
+        "original": "Original",
+        "selectedForEdit": "Selected for Edit"
+      },
+      "cards": {
+        "originalImage": "Original Image",
+        "aiGeneratedImage": "AI Generated Image",
+        "aiGeneratedVideo": "AI Generated Video",
+        "latestAssets": "Latest Assets",
+        "generateAssets": "Generate Assets"
+      },
+      "placeholders": {
+        "imagePrompt": "Enter image prompt",
+        "videoPrompt": "Enter video prompt"
+      },
+      "badges": {
+        "generateImage": "Generate Image",
+        "generateVideo": "Generate Video"
+      },
+      "buttons": {
+        "acceptNewAssets": "Accept New Assets",
+        "regenerateImageVideo": "Regenerate Image & Video",
+        "regenerateAiImage": "Regenerate AI Image",
+        "regenerateAiVideo": "Regenerate AI Video",
+        "makeSelection": "Make a Selection to Generate"
+      },
+      "tooltips": {
+        "clearPrompts": "Clear Prompts"
+      },
+      "messages": {
+        "assetsGeneratedSuccessfully": "✓ Assets generated successfully"
       }
     }
+  },
+  "accept": {
+    "success": "Assets accepted and saved successfully",
+    "error": "Failed to accept assets"
   },
   "clear": {
     "noGame": "Please select a game first",
@@ -110,5 +146,11 @@
   },
   "media": {
     "close": "Close"
+  },
+  "prompt": {
+    "title": "AI Prompt",
+    "addPrompt": "Add Prompt",
+    "placeholder": "Enter your prompt here...",
+    "shortcut": "Cmd/Ctrl + Enter"
   }
 }

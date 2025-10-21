@@ -1,3 +1,4 @@
+import { t } from 'i18next';
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 
 const MediaPlayer = ({
@@ -9,15 +10,21 @@ const MediaPlayer = ({
     type,
     readOnly = false,
     showPlayIcon = true,
-    canSelect = true
+    canSelect = true,
+    isSelected: externalIsSelected
 }) => {
     const [isHovering, setIsHovering] = useState(false);
     const [videoReady, setVideoReady] = useState(false);
-    const [isSelected, setIsSelected] = useState(false);
+    const [isSelected, setIsSelected] = useState(externalIsSelected || false);
     const videoRef = useRef(null);
 
+    // Update internal state when external prop changes
+    useEffect(() => {
+        setIsSelected(externalIsSelected || false);
+    }, [externalIsSelected]);
+
     // Default placeholder image (data URI for a simple gray placeholder)
-    const defaultImage = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='280'%3E%3Crect width='180' height='280' fill='%23374151'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='16' fill='%23d1d5db' text-anchor='middle' dy='.3em'%3ENO ${type.toUpperCase()}%3C/text%3E%3C/svg%3E`;
+    const defaultImage = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='280'%3E%3Crect width='180' height='280' fill='%23374151'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='16' fill='%23d1d5db' text-anchor='middle' dy='.3em'%3ENO ASSETS%3C/text%3E%3C/svg%3E`;
     
     const finalImageUrl = imageUrl || defaultImage;
     const finalVideoUrl = videoUrl || "";
@@ -54,7 +61,7 @@ const MediaPlayer = ({
         const newSelected = !isSelected;
         setIsSelected(newSelected);
         if (onSelect) {
-            onSelect(gameId, newSelected);
+            onSelect(gameId, newSelected, type);
         }
     };
 
@@ -119,6 +126,15 @@ const MediaPlayer = ({
             onMouseLeave={handleMouseLeave}
             onClick={handleSelect}
         >
+            {readOnly && (
+                <div className="absolute top-2 left-2 flex items-center justify-center z-10">
+                    <div className="bg-black/40 backdrop-blur-sm rounded-full px-4 py-2 transition-transform hover:scale-110">
+                        <span className="text-white text-sm font-semibold tracking-wide">
+                            Default / No Edit
+                        </span>
+                    </div>
+                </div>
+            )}
             {mediaContent}
 
             {/* Gradient Overlay */}
@@ -154,8 +170,8 @@ const MediaPlayer = ({
             {/* Play Icon */}
             {showPlayIcon && hasVideo && videoUrl && !isHovering && (
                 <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="bg-black/40 backdrop-blur-sm rounded-full px-8 py-4 transition-transform hover:scale-110">
-                        <span className="text-white text-xl font-bold tracking-wide">
+                    <div className="bg-black/40 backdrop-blur-sm rounded-full px-3 py-2 transition-transform hover:scale-110">
+                        <span className="text-white text-xl font-semibold tracking-tighter">
                             Play Now
                         </span>
                     </div>

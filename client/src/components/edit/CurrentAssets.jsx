@@ -12,7 +12,7 @@ import { MediaViewer } from './MediaViewer';
 import { RegenerateAiAssetsDialog } from './RegenerateAiAssetsDialog';
 import  MediaPlayer from './MediaPlayer';
 
-export function CurrentAssets({ t, selectedGame }) {
+export function CurrentAssets({ t, selectedGame, onGameUpdate }) {
   const viewContext = useContext(ViewContext);
   const [currentLocked, setCurrentLocked] = useState(false);
   const [showRegenerateDialog, setShowRegenerateDialog] = useState(false);
@@ -127,9 +127,10 @@ export function CurrentAssets({ t, selectedGame }) {
       
       <RegenerateAiAssetsDialog
         isOpen={showRegenerateDialog}
-        onClose={setShowRegenerateDialog}
+        onClose={() => setShowRegenerateDialog(false)}
         selectedGame={selectedGame}
-        assetType="current"xx
+        assetType="current"
+        onGameUpdate={onGameUpdate}
         t={t}
       />
     </Card>

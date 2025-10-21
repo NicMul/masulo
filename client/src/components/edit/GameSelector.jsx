@@ -5,20 +5,9 @@
 *
 **********/
 
-import { useState, useEffect } from 'react';
-import { Card, Select, useAPI } from 'components/lib';
+import { Card, Select } from 'components/lib';
 
-export function GameSelector({ t, onGameSelect }) {
-  const [games, setGames] = useState([]);
-  
-  const res = useAPI('/api/game');
-
-  useEffect(() => {
-    if (res.data) {
-      setGames(res.data);
-    }
-  }, [res.data]);
-
+export function GameSelector({ t, onGameSelect, games = [] }) {
   const handleGameSelect = (event) => {
     const gameId = event.target.value;
 

@@ -108,7 +108,7 @@ export function OriginalAssets({ t, selectedGame }) {
       
       <RegenerateAiAssetsDialog
         isOpen={showRegenerateDialog}
-        onClose={setShowRegenerateDialog}
+        onClose={() => setShowRegenerateDialog(false)}
         selectedGame={selectedGame}
         assetType="original"
         t={t}

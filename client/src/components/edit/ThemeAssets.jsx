@@ -11,7 +11,7 @@ import { ViewContext } from 'components/lib';
 import { RegenerateAiAssetsDialog } from './RegenerateAiAssetsDialog';
 import  MediaPlayer from './MediaPlayer';
 
-export function ThemeAssets({ t, selectedGame }) {
+export function ThemeAssets({ t, selectedGame, onGameUpdate }) {
   const viewContext = useContext(ViewContext);
   const [themeLocked, setThemeLocked] = useState(false);
   const [showRegenerateDialog, setShowRegenerateDialog] = useState(false);
@@ -126,9 +126,10 @@ export function ThemeAssets({ t, selectedGame }) {
       
       <RegenerateAiAssetsDialog
         isOpen={showRegenerateDialog}
-        onClose={setShowRegenerateDialog}
+        onClose={() => setShowRegenerateDialog(false)}
         selectedGame={selectedGame}
         assetType="theme"
+        onGameUpdate={onGameUpdate}
         t={t}
       />
     </Card>
