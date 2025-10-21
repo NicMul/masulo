@@ -73,80 +73,35 @@
 
         /* Banner */
         .banner {
-            background: linear-gradient(135deg, 
-                rgba(218, 165, 32, 0.15) 0%, 
-                rgba(255, 215, 0, 0.1) 25%,
-                rgba(184, 134, 11, 0.15) 50%,
-                rgba(255, 215, 0, 0.1) 75%,
-                rgba(218, 165, 32, 0.15) 100%);
-            backdrop-filter: blur(20px);
-            border-bottom: 2px solid rgba(218, 165, 32, 0.3);
-            padding: 40px 0;
-            text-align: center;
-            box-shadow: 
-                0 8px 32px rgba(0, 0, 0, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1),
-                0 0 60px rgba(218, 165, 32, 0.2);
+            background-image: url('./images/banner.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 300px;
             position: relative;
             overflow: hidden;
+            border-bottom: 2px solid rgba(218, 165, 32, 0.3);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.4),
+                0 0 60px rgba(218, 165, 32, 0.2);
         }
 
         .banner::before {
             content: '';
             position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: linear-gradient(
-                45deg,
-                transparent,
-                transparent 40%,
-                rgba(255, 215, 0, 0.1) 50%,
-                transparent 60%,
-                transparent
+                135deg,
+                rgba(0, 0, 0, 0.2) 0%,
+                rgba(0, 0, 0, 0.1) 50%,
+                rgba(0, 0, 0, 0.2) 100%
             );
-            animation: shimmer 3s infinite;
-        }
-
-        @keyframes shimmer {
-            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
-        }
-
-        .banner h1 {
-            font-family: 'Cinzel', serif;
-            font-size: 3.5rem;
-            font-weight: 900;
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FFD700 100%);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            /* text-shadow: 
-                0 0 30px rgba(255, 215, 0, 0.5),
-                0 0 60px rgba(255, 215, 0, 0.3); */
-            margin-bottom: 15px;
-            letter-spacing: 3px;
-            animation: goldShine 3s ease-in-out infinite;
-            position: relative;
             z-index: 1;
         }
 
-        @keyframes goldShine {
-            0%, 100% { background-position: 0% center; }
-            50% { background-position: 100% center; }
-        }
-
-        .banner p {
-            font-size: 1.3rem;
-            font-weight: 300;
-            letter-spacing: 2px;
-            color: rgba(255, 215, 0, 0.9);
-            text-transform: uppercase;
-            position: relative;
-            z-index: 1;
-        }
 
         /* Main Layout */
         .main-container {
@@ -544,8 +499,6 @@
 <body>
 
     <div class="banner">
-        <h1>🎰 Masulo Preview 🎰</h1>
-        <p>Welcome to the Ultimate Gaming Experience</p>
     </div>
 
 
@@ -603,7 +556,7 @@
 
 
                 <div>
-                    <div data-masulo-game-id="b37b4b9a-4f2f-4a3c-8a58-f4a76d19d88f" data-masulo-tag="true"  class="game-card" onclick="playGame('tome')">
+                    <div data-masulo-game-id="b37b4b9a-4f2f-4a3c-8a58-f4a76d19d88f" data-masulo-tag="false"  class="game-card" onclick="playGame('tome')">
                         <img src="images/tome.webp" alt="Tome" class="game-image">
                         <button class="play-button">Play Now</button>
                     </div>

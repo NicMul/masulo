@@ -114,6 +114,50 @@
          0% { transform: rotate(0deg); }
          100% { transform: rotate(360deg); }
        }
+       
+       /* Video styling */
+       .masulo-game-video {
+         position: absolute;
+         top: 0;
+         left: 0;
+         width: 100%;
+         height: 100%;
+         object-fit: cover;
+         display: none;
+         z-index: 2;
+       }
+       
+       /* Style existing play buttons - always visible */
+       .masulo-image-container .masulo-play-button {
+         transition: all 0.3s ease !important;
+         backdrop-filter: blur(0px) !important;
+         opacity: 1 !important;
+         visibility: visible !important;
+         display: block !important;
+       }
+       
+       /* Hover state - translucent and blurred */
+       .masulo-image-container:hover .masulo-play-button {
+         background: rgba(0, 0, 0, 0.5) !important;
+         border-color: #ffd700 !important;
+         backdrop-filter: blur(2px) !important;
+         opacity: 0.7 !important;
+         color: white !important;
+         font-weight: bold !important;
+       }
+       
+       /* Ensure container can hold both image and video */
+       .masulo-image-container {
+         position: relative;
+         overflow: hidden;
+         cursor: pointer;
+       }
+       
+       .masulo-image-container img {
+         width: 100%;
+         height: 100%;
+         object-fit: cover;
+       }
       
   
     `;
@@ -199,18 +243,18 @@
         this.updateStatus('disconnected');
       });
       
-      this.socket.on('games-response', (response) => {
-        if (response.success) {
-          console.log(`Received ${response.count} games:`, response.games);
-          response.games.forEach(game => {
-            if (game.currentImage) {
-              this.updateGameImage(game.id, game.currentImage);
-            }
-          });
-        } else {
-          console.error('Games request failed:', response.error);
-        }
-      });
+       this.socket.on('games-response', (response) => {
+         if (response.success) {
+           console.log(`Received ${response.count} games:`, response.games);
+           response.games.forEach(game => {
+             if (game.currentImage) {
+               this.updateGameImage(game.id, game.currentImage, game.currentVideo);
+             }
+           });
+         } else {
+           console.error('Games request failed:', response.error);
+         }
+       });
     }
     
     requestGames() {
@@ -232,7 +276,7 @@
       });
     }
     
-    updateGameImage(gameId, imageUrl) {
+    updateGameImage(gameId, imageUrl, videoUrl = null) {
       const container = document.querySelector(`[data-masulo-game-id="${gameId}"]`);
       if (!container) {
         console.warn(`No element found for game ID: ${gameId}`);
@@ -242,14 +286,36 @@
       // Add container class for transitions
       container.classList.add('masulo-image-container');
       
+      // Style existing play button if it exists - apply immediately
+      const existingPlayButton = container.querySelector('button, .play-button, .cta-button, [class*="play"], [class*="cta"]');
+      if (existingPlayButton) {
+        existingPlayButton.classList.add('masulo-play-button');
+      }
+      
       // Preload image
       const preloader = new Image();
-      preloader.onload = () => this.applyImageTransition(container, imageUrl);
+      preloader.onload = () => {
+        if (videoUrl) {
+          // Preload video metadata
+          const videoPreloader = document.createElement('video');
+          videoPreloader.preload = 'metadata';
+          videoPreloader.onloadedmetadata = () => {
+            this.applyImageTransition(container, imageUrl, videoUrl);
+          };
+          videoPreloader.onerror = () => {
+            console.warn(`Failed to preload video for game ${gameId}, proceeding with image only`);
+            this.applyImageTransition(container, imageUrl);
+          };
+          videoPreloader.src = videoUrl;
+        } else {
+          this.applyImageTransition(container, imageUrl);
+        }
+      };
       preloader.onerror = () => console.error(`Failed to load image for game ${gameId}:`, imageUrl);
       preloader.src = imageUrl;
     }
     
-    applyImageTransition(container, imageUrl) {
+    applyImageTransition(container, imageUrl, videoUrl = null) {
       // Show loader at bottom right over the old image
       container.classList.add('masulo-loading');
       
@@ -270,6 +336,33 @@
             container.style.backgroundImage = `url(${imageUrl})`;
           }
           
+          // Update video if present
+          if (videoUrl) {
+            let videoElement = container.querySelector('video');
+            if (!videoElement) {
+              // Create video element if it doesn't exist
+              videoElement = document.createElement('video');
+              videoElement.className = 'masulo-game-video';
+              videoElement.controls = false;
+              videoElement.loop = true;
+              videoElement.muted = true;
+              videoElement.autoplay = false; // Will be controlled by hover
+              container.appendChild(videoElement);
+            }
+            
+            videoElement.src = videoUrl;
+            videoElement.poster = imageUrl; // Use image as poster
+            
+            // Style existing play button if it exists
+            const existingPlayButton = container.querySelector('button, .play-button, .cta-button, [class*="play"], [class*="cta"]');
+            if (existingPlayButton) {
+              existingPlayButton.classList.add('masulo-play-button');
+            }
+            
+            // Add hover event listeners
+            this.addVideoHoverEvents(container, imgElement, videoElement);
+          }
+          
           // Force reflow to ensure image is loaded
           void container.offsetHeight;
           
@@ -284,9 +377,34 @@
             }, 500);
           });
           
-          console.log(`✓ Updated image: ${imageUrl}`);
+          console.log(`✓ Updated image: ${imageUrl}${videoUrl ? ` and video: ${videoUrl}` : ''}`);
         }, 300); // Wait for fade out to complete
       }, 3000); // Wait 3 seconds before starting transition
+    }
+    
+    // Add video hover functionality
+    addVideoHoverEvents(container, imgElement, videoElement) {
+      // Remove existing event listeners to prevent duplicates
+      container.removeEventListener('mouseenter', container._masuloMouseEnter);
+      container.removeEventListener('mouseleave', container._masuloMouseLeave);
+      
+      // Mouse enter - show video
+      container._masuloMouseEnter = () => {
+        imgElement.style.display = 'none';
+        videoElement.style.display = 'block';
+        videoElement.play().catch(e => console.warn('Video autoplay failed:', e));
+      };
+      
+      // Mouse leave - show image
+      container._masuloMouseLeave = () => {
+        videoElement.pause();
+        videoElement.currentTime = 0; // Reset to beginning
+        videoElement.style.display = 'none';
+        imgElement.style.display = 'block';
+      };
+      
+      container.addEventListener('mouseenter', container._masuloMouseEnter);
+      container.addEventListener('mouseleave', container._masuloMouseLeave);
     }
     
     // Status management
