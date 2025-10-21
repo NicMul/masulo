@@ -1,0 +1,3 @@
+/**
+ * Masulo Thumbnail SDK
+ */
