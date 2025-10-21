@@ -79,6 +79,19 @@ exports.get = async function({ id, user }){
 }
 
 /*
+* game.getByIds()
+* get games by multiple IDs (for SDK requests)
+*/
+
+exports.getByIds = async function(gameIds){
+  
+  const data = await Game.find({ id: { $in: gameIds } }).sort({ date_created: -1 });
+  
+  return data;
+  
+}
+
+/*
 * game.update()
 * update a game by id and user_id
 */

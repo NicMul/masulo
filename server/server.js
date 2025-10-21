@@ -13,6 +13,7 @@ const throttle = config.get('throttle');
 const limiter = require('express-rate-limit');
 const i18n = require('i18n');
 require('./helper/i18n').config(); // helper file
+const realtime = require('./realtime/socket');
 
 const port = process.env.PORT || 8080;
 const app = express();
@@ -105,6 +106,8 @@ const server = app.listen(port, async () => {
   welcome('de529c70-eb80-4dfb-9540-5075db7545bf')
 
 });
+
+realtime.initializeSocketIO(server);
 
 module.exports = server;
 
