@@ -154,6 +154,7 @@ export function RegenerateAiAssetsDialog({
     try {
       const payload = {
         gameId: selectedGame?.id,
+        imageUrl: currentAssets.image,
         assetType: assetType,
         generateVideo: generateVideo,
         generateImage: generateImage,
@@ -258,11 +259,6 @@ export function RegenerateAiAssetsDialog({
     }
   }, [isOpen]);
 
-  console.log(selectedGame);
-  console.log(generatedAssets);
-  console.log(assetType);
-  console.log('------------------------------')
-
   return (
     <Dialog open={isOpen} onClose={onClose}>
       <DialogContent className="!w-[80vw] !max-w-none">
@@ -280,7 +276,7 @@ export function RegenerateAiAssetsDialog({
 
         <div className='grid grid-cols-2 gap-3'>
           {/* Left Panel - Original and Selected Assets */}
-          <Tabs defaultValue="video">
+          <Tabs defaultValue="image">
             <TabsList>
               <TabsTrigger value="image">{t('edit.regenerate.dialog.tabs.original')}</TabsTrigger>
               <TabsTrigger value="video">{t('edit.regenerate.dialog.tabs.selectedForEdit')}</TabsTrigger>
@@ -327,6 +323,7 @@ export function RegenerateAiAssetsDialog({
 
                   {assetType !== 'original' && (
                     <PromptInput
+                      onClick={() => setImageSelected(true)}
                       value={imagePrompt}
                       onChange={(e) => setImagePrompt(e.target.value)}
                       placeholder={t('edit.regenerate.dialog.placeholders.imagePrompt')}
@@ -352,6 +349,7 @@ export function RegenerateAiAssetsDialog({
                   
                   {assetType !== 'original' && (
                     <PromptInput
+                      onClick={() => setVideoSelected(true)}
                       value={videoPrompt}
                       onChange={(e) => setVideoPrompt(e.target.value)}
                       placeholder={t('edit.regenerate.dialog.placeholders.videoPrompt')}
@@ -419,7 +417,7 @@ export function RegenerateAiAssetsDialog({
 
           <Button
             onClick={handleRegenerate}
-            disabled={isGenerating || (!generateImage && !generateVideo)}
+            disabled={isGenerating}
           >
             {isGenerating && (
               <Icon name="loader-2" size={16} className="mr-2 animate-spin" />

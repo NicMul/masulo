@@ -21,14 +21,14 @@
     "title": "Effective Live Content Source",
     "description": "{{source}} is currently being served to the SDK.",
     "source": {
-      "original": "Original Asset",
+      "original": "REFERENCE ASSET",
       "current": "Current AI Content",
       "theme": "Theme AI Asset"
     }
   },
   "original": {
-    "title": "1. Original Image Asset (Default)",
-    "image": "ORIGINAL IMAGE",
+    "title": "1. Reference Image Asset (Default)",
+    "image": "REFERENCE IMAGE",
     "video": "AI VIDEO",
     "defaultImage": "Default Image",
     "defaultVideo": "Default Animation",
@@ -95,14 +95,14 @@
         "success": "Generated assets deleted"
       },
       "tabs": {
-        "original": "Original",
-        "selectedForEdit": "Selected for Edit"
+        "original": "Used for Reference",
+        "selectedForEdit": "Currently Saved"
       },
       "cards": {
-        "originalImage": "Original Image",
+        "originalImage": "Reference Image",
         "aiGeneratedImage": "AI Generated Image",
         "aiGeneratedVideo": "AI Generated Video",
-        "latestAssets": "Latest Assets",
+        "latestAssets": "Last Generated",
         "generateAssets": "Generate Assets"
       },
       "placeholders": {
@@ -148,8 +148,8 @@
     "close": "Close"
   },
   "prompt": {
-    "title": "AI Prompt",
-    "addPrompt": "Add Prompt",
+    "title": "What would you like to change?",
+    "addPrompt": "Edit Asset",
     "placeholder": "Enter your prompt here...",
     "shortcut": "Cmd/Ctrl + Enter"
   }

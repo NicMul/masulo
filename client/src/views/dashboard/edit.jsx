@@ -20,7 +20,7 @@ export function Edit({ t }){
   const [selectedGame, setSelectedGame] = useState(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   
-  // Fetch games data for refetching
+
   const gamesRes = useAPI('/api/game', 'get', refreshTrigger);
 
   const handleGameSelect = (game) => {
@@ -28,9 +28,8 @@ export function Edit({ t }){
     setSelectedGame(game);
   };
 
-  // Handle game update callback
   const handleGameUpdate = useCallback(() => {
-    // Trigger a refetch by updating the trigger
+
     setRefreshTrigger(prev => prev + 1);
   }, []);
 
@@ -60,7 +59,6 @@ export function Edit({ t }){
     });
   }, [selectedGame, t, viewContext]);
 
-  console.log('Current selectedGame:', selectedGame);
 
   return (
     <Animate type='pop'>
@@ -78,13 +76,13 @@ export function Edit({ t }){
     
         <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
       
-          <OriginalAssets t={t} selectedGame={selectedGame} />
+          <OriginalAssets t={t} selectedGame={selectedGame}  />
 
        
-          <CurrentAssets t={t} selectedGame={selectedGame} onGameUpdate={handleGameUpdate} />
+          <CurrentAssets t={t} selectedGame={selectedGame} />
 
          
-          <ThemeAssets t={t} selectedGame={selectedGame} onGameUpdate={handleGameUpdate} />
+          <ThemeAssets t={t} selectedGame={selectedGame}  />
         </div>
       </div>
     </Animate>

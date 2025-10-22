@@ -8,18 +8,19 @@
 import { useState } from 'react';
 import { Card, Button, Switch } from 'components/lib';
 import { RegenerateAiAssetsDialog } from './RegenerateAiAssetsDialog';
+import { GenerateAssets } from './GenerateAssets';
 import  MediaPlayer from './MediaPlayer';
 
 export function OriginalAssets({ t, selectedGame }) {
   const [originalLocked, setOriginalLocked] = useState(false);
   const [showRegenerateDialog, setShowRegenerateDialog] = useState(false);
 
+
   const regenerateOriginalVideo = () => {
     setShowRegenerateDialog(true);
   };
 
   const clearOriginalVideo = () => {
-    // TODO: Implement clear original video functionality
     console.log('Clear original video');
   };
 
@@ -106,12 +107,11 @@ export function OriginalAssets({ t, selectedGame }) {
         </div>
       </div>
       
-      <RegenerateAiAssetsDialog
+      <GenerateAssets
         isOpen={showRegenerateDialog}
         onClose={() => setShowRegenerateDialog(false)}
         selectedGame={selectedGame}
         assetType="original"
-        t={t}
       />
     </Card>
   );

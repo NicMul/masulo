@@ -127,21 +127,22 @@
          z-index: 2;
        }
        
-       /* Style existing play buttons - always visible */
+       /* Style existing play buttons - hidden initially */
        .masulo-image-container .masulo-play-button {
          transition: all 0.3s ease !important;
          backdrop-filter: blur(0px) !important;
-         opacity: 1 !important;
-         visibility: visible !important;
+         opacity: 0 !important;
+         visibility: hidden !important;
          display: block !important;
        }
        
-       /* Hover state - translucent and blurred */
+       /* Hover state - show translucent and blurred button */
        .masulo-image-container:hover .masulo-play-button {
          background: rgba(0, 0, 0, 0.5) !important;
          border-color: #ffd700 !important;
          backdrop-filter: blur(2px) !important;
          opacity: 0.7 !important;
+         visibility: visible !important;
          color: white !important;
          font-weight: bold !important;
        }

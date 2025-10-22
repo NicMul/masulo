@@ -2,6 +2,7 @@ const joi = require('joi');
 const openai = require('../model/openai');
 const account = require('../model/account');
 const utility = require('../helper/utility');
+const { generateImageWithReplicate, generateVideoWithReplicate, generateImageAndVideoWithPrompt } = require('../services/asset-generation');
 
 exports.text = async function(req, res){
 
@@ -53,77 +54,84 @@ exports.image = async function(req, res){
 
 exports.process = async function(req, res){
 
-  const axios = require('axios');
-  
-  try {
-    // Add userId to the payload before forwarding to n8n
-    const payload = {
-      ...req.body,
-      userId: req.user
-    };
-    
-    // Forward the enhanced payload to n8n
-    const n8nResponse = await axios.post(
-      process.env.N8N_PROCESS_AI_URL,
-      payload,
-      {
-        auth: {
-          username: process.env.N8N_USERNAME,
-          password: process.env.N8N_PASSWORD
-        },
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        timeout: 120000 // 2 minute timeout
-      }
-    );
+  console.log('req.body', req.body);
 
-    // Log the response to console
-    console.log('N8N Response:', {
-      status: n8nResponse.status,
-      statusText: n8nResponse.statusText,
-      data: n8nResponse.data,
-      headers: n8nResponse.headers
-    });
-
-    // Return the n8n response to the client
-    return res.status(n8nResponse.status).send(n8nResponse.data);
-
+  try{
+      const imageAndVideoData = await generateImageAndVideoWithPrompt(req.body.imageUrl, req.body.prompt, req.body.theme, req.body.assetType);
+      return res.status(200).send({ data: imageAndVideoData });
   } catch (error) {
-    
-    // Log the error to console
-    console.error('N8N Error:', {
-      message: error.message,
-      status: error.response?.status,
-      statusText: error.response?.statusText,
-      data: error.response?.data,
-      config: {
-        url: error.config?.url,
-        method: error.config?.method,
-        timeout: error.config?.timeout
-      }
-    });
-
-    // Return error response
-    if (error.response) {
-      // n8n returned an error response
-      return res.status(error.response.status).send({
-        error: 'N8N Error',
-        message: error.response.statusText,
-        data: error.response.data
-      });
-    } else if (error.request) {
-      // Request was made but no response received
-      return res.status(500).send({
-        error: 'N8N Connection Error',
-        message: 'No response received from N8N service'
-      });
-    } else {
-      // Something else happened
-      return res.status(500).send({
-        error: 'Internal Error',
-        message: error.message
-      });
-    }
+    return res.status(500).send({ error: error.message });
   }
+
+  // try {
+  //   // Add userId to the payload before forwarding to n8n
+  //   const payload = {
+  //     ...req.body,
+  //     userId: req.user
+  //   };
+    
+  //   // Forward the enhanced payload to n8n
+  //   const n8nResponse = await axios.post(
+  //     process.env.N8N_PROCESS_AI_URL,
+  //     payload,
+  //     {
+  //       auth: {
+  //         username: process.env.N8N_USERNAME,
+  //         password: process.env.N8N_PASSWORD
+  //       },
+  //       headers: {
+  //         'Content-Type': 'application/json'
+  //       },
+  //       timeout: 120000 // 2 minute timeout
+  //     }
+  //   );
+
+  //   // Log the response to console
+  //   console.log('N8N Response:', {
+  //     status: n8nResponse.status,
+  //     statusText: n8nResponse.statusText,
+  //     data: n8nResponse.data,
+  //     headers: n8nResponse.headers
+  //   });
+
+  //   // Return the n8n response to the client
+  //   return res.status(n8nResponse.status).send(n8nResponse.data);
+
+  // } catch (error) {
+    
+  //   // Log the error to console
+  //   console.error('N8N Error:', {
+  //     message: error.message,
+  //     status: error.response?.status,
+  //     statusText: error.response?.statusText,
+  //     data: error.response?.data,
+  //     config: {
+  //       url: error.config?.url,
+  //       method: error.config?.method,
+  //       timeout: error.config?.timeout
+  //     }
+  //   });
+
+  //   // Return error response
+  //   if (error.response) {
+  //     // n8n returned an error response
+  //     return res.status(error.response.status).send({
+  //       error: 'N8N Error',
+  //       message: error.response.statusText,
+  //       data: error.response.data
+  //     });
+  //   } else if (error.request) {
+  //     // Request was made but no response received
+  //     return res.status(500).send({
+  //       error: 'N8N Connection Error',
+  //       message: 'No response received from N8N service'
+  //     });
+  //   } else {
+  //     // Something else happened
+  //     return res.status(500).send({
+  //       error: 'Internal Error',
+  //       message: error.message
+  //     });
+  //   }
+  // }
 }

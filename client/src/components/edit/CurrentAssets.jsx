@@ -8,9 +8,8 @@
 import { useState, useCallback, useContext, useMemo } from 'react';
 import { Card, Button, Switch } from 'components/lib';
 import { ViewContext } from 'components/lib';
-import { MediaViewer } from './MediaViewer';
-import { RegenerateAiAssetsDialog } from './RegenerateAiAssetsDialog';
 import  MediaPlayer from './MediaPlayer';
+import { GenerateAssets } from './GenerateAssets';
 
 export function CurrentAssets({ t, selectedGame, onGameUpdate }) {
   const viewContext = useContext(ViewContext);
@@ -125,13 +124,12 @@ export function CurrentAssets({ t, selectedGame, onGameUpdate }) {
         </div>
       </div>
       
-      <RegenerateAiAssetsDialog
+      <GenerateAssets
         isOpen={showRegenerateDialog}
         onClose={() => setShowRegenerateDialog(false)}
         selectedGame={selectedGame}
         assetType="current"
-        onGameUpdate={onGameUpdate}
-        t={t}
+       
       />
     </Card>
   );

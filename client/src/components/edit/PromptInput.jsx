@@ -7,12 +7,14 @@ export default function PromptInput({
   placeholder = 'Enter your prompt here...',
   className = '',
   onSubmit,
+  onClick,
   t
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const handleToggle = () => {
     setIsExpanded(!isExpanded);
+    onClick && onClick();
   };
 
   const handleSubmit = () => {
@@ -70,9 +72,9 @@ export default function PromptInput({
               <button
                 onClick={handleSubmit}
                 disabled={!value.trim()}
-                className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2 text-sm font-medium"
+                className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2 text-sm font-semibold"
               >
-                Send
+                Submit
                 <Send size={16} />
               </button>
             </div>
