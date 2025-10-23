@@ -155,7 +155,7 @@ export function GameEditForm({ game, onSuccess, onCancel, t }) {
             />
           </div>
           
-          <div>
+          <div className="px-2">
             <label className="block text-sm font-medium mb-2 text-gray-700">
               {t('games.form.version.label')} <span className="text-red-500">*</span>
             </label>
