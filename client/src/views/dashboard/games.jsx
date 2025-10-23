@@ -85,14 +85,18 @@ export function Games({ t }){
   }, [t, viewContext]);
 
   // create new game
-  const createGame = useCallback(({ editRowCallback }) => {
+  const createGame = useCallback(() => {
     viewContext.dialog.open({
       title: t('games.create.title'),
       className: 'max-w-4xl w-full',
       children: (
         <GameCreateForm
           onSuccess={(newGame) => {
-            setGames([newGame, ...games]);
+            setGames(prevGames => [newGame, ...prevGames]);
+            viewContext.notification({
+              description: t('games.game_created'),
+              variant: 'success'
+            });
             viewContext.dialog.close();
           }}
           onCancel={() => viewContext.dialog.close()}
@@ -100,10 +104,10 @@ export function Games({ t }){
         />
       )
     });
-  }, [games, t, viewContext]);
+  }, [t, viewContext]);
 
   // edit game
-  const editGame = useCallback(({ row, editRowCallback }) => {
+  const editGame = useCallback(({ row }) => {
     viewContext.dialog.open({
       title: t('games.edit.title'),
       className: 'max-w-4xl w-full',
@@ -111,8 +115,11 @@ export function Games({ t }){
         <GameEditForm
           game={row}
           onSuccess={(updatedGame) => {
-            const newState = editRowCallback(updatedGame);
-            setGames(newState);
+            setGames(prevGames => prevGames.map(g => g.id === row.id ? updatedGame : g));
+            viewContext.notification({
+              description: t('games.game_updated'),
+              variant: 'success'
+            });
             viewContext.dialog.close();
           }}
           onCancel={() => viewContext.dialog.close()}
@@ -123,7 +130,7 @@ export function Games({ t }){
   }, [t, viewContext]);
 
   // delete game
-  const deleteGame = useCallback(({ row, deleteRowCallback }) => {
+  const deleteGame = useCallback(({ row }) => {
     viewContext.dialog.open({
       title: t('games.delete.title'),
       description: `${t('games.delete.description')} "${row.cmsId}"?`,
@@ -135,8 +142,11 @@ export function Games({ t }){
         destructive: true
       }
     }, () => {
-      const newState = deleteRowCallback(row);
-      setGames(newState);
+      setGames(prevGames => prevGames.filter(g => g.id !== row.id));
+      viewContext.notification({
+        description: t('games.game_deleted'),
+        variant: 'success'
+      });
     });
   }, [t, viewContext]);
 

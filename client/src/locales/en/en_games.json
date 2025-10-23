@@ -117,5 +117,9 @@
       "title": "Image Editor",
       "placeholder": "Image editing tools will be added here"
     }
-  }
+  },
+  "game_created": "Game created successfully",
+  "game_updated": "Game updated successfully",
+  "game_deleted": "Game deleted successfully",
+  "error_saving": "Error saving game"
 }

@@ -97,5 +97,9 @@
     "touch": {
       "label": "Habilitar Soporte Táctil"
     }
-  }
+  },
+  "game_created": "Juego creado exitosamente",
+  "game_updated": "Juego actualizado exitosamente",
+  "game_deleted": "Juego eliminado exitosamente",
+  "error_saving": "Error al guardar juego"
 }

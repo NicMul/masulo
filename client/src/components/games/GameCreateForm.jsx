@@ -5,12 +5,13 @@
 *
 **********/
 
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef, useContext } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'components/hooks/mutation';
-import { Button, cn, ThemeSelect, GroupSelect } from 'components/lib';
+import { Button, cn, ThemeSelect, GroupSelect, ViewContext } from 'components/lib';
 
 export function GameCreateForm({ onSuccess, onCancel, t }) {
+  const viewContext = useContext(ViewContext);
   const [loading, setLoading] = useState(false);
   const [showScrollIndicator, setShowScrollIndicator] = useState(false);
   const scrollContainerRef = useRef(null);
@@ -18,7 +19,7 @@ export function GameCreateForm({ onSuccess, onCancel, t }) {
   // Use the useMutation hook for API calls
   const createGame = useMutation('/api/game', 'POST');
   
-  const { register, handleSubmit, formState: { errors, isValid }, watch } = useForm({
+  const { register, handleSubmit, formState: { errors, isValid }, watch, setValue } = useForm({
     mode: 'onChange',
     defaultValues: {
       cmsId: '',
@@ -56,14 +57,18 @@ export function GameCreateForm({ onSuccess, onCancel, t }) {
       const result = await createGame.execute(data);
       
       if (result) {
-        onSuccess(result);
+        onSuccess(result.data); // Use result.data like promotions
       }
     } catch (error) {
       console.error('Error creating game:', error);
+      viewContext.notification({
+        description: t('games.error_saving'),
+        variant: 'error'
+      });
     } finally {
       setLoading(false);
     }
-  }, [createGame, onSuccess, isFormValid]);
+  }, [createGame, onSuccess, isFormValid, viewContext, t]);
 
   // Check if content is scrollable
   useEffect(() => {
@@ -150,7 +155,9 @@ export function GameCreateForm({ onSuccess, onCancel, t }) {
               {t('games.form.theme.label')}
             </label>
             <ThemeSelect
-              {...register('theme')}
+              name="theme"
+              value={watchedValues.theme}
+              onChange={(e) => setValue('theme', e.target.value)}
               error={!!errors.theme}
             />
           </div>
@@ -182,7 +189,9 @@ export function GameCreateForm({ onSuccess, onCancel, t }) {
               {t('games.form.group.label')}
             </label>
             <GroupSelect
-              {...register('group')}
+              name="group"
+              value={watchedValues.group}
+              onChange={(e) => setValue('group', e.target.value)}
               placeholder={t('games.form.group.placeholder')}
             />
           </div>
