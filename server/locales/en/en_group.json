@@ -1,0 +1,15 @@
+{
+  "create": {
+    "success": "Group created"
+  },
+  "update": {
+    "success": "Group updated",
+    "id_required": "Group ID is required",
+    "not_found": "Group not found"
+  },
+  "delete": {
+    "success": "Group deleted",
+    "id_required": "Group ID is required",
+    "not_found": "Group not found"
+  }
+}

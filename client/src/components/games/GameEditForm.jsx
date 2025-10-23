@@ -8,7 +8,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'components/hooks/mutation';
-import { Button, cn, ThemeSelect } from 'components/lib';
+import { Button, cn, ThemeSelect, GroupSelect } from 'components/lib';
 
 export function GameEditForm({ game, onSuccess, onCancel, t }) {
   const [loading, setLoading] = useState(false);
@@ -184,10 +184,8 @@ export function GameEditForm({ game, onSuccess, onCancel, t }) {
             <label className="block text-sm font-medium mb-2 text-gray-700">
               {t('games.form.group.label')}
             </label>
-            <input
+            <GroupSelect
               {...register('group')}
-              type="text"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder={t('games.form.group.placeholder')}
             />
           </div>
@@ -323,7 +321,7 @@ export function GameEditForm({ game, onSuccess, onCancel, t }) {
       {/* Features & Settings Section */}
       <div>
         <h3 className="text-lg font-semibold mb-4 text-gray-900">Features & Settings</h3>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-4 gap-4">
           <div className="flex items-center space-x-2">
             <input
               {...register('scrape')}
@@ -356,6 +354,17 @@ export function GameEditForm({ game, onSuccess, onCancel, t }) {
               {t('games.form.hover.label')}
             </label>
           </div>
+          
+          <div className="flex items-center space-x-2">
+            <input
+              {...register('touch')}
+              type="checkbox"
+              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            />
+            <label className="text-sm font-medium text-gray-700">
+              {t('games.form.touch.label')}
+            </label>
+          </div>
         </div>
       </div>
 
@@ -373,17 +382,6 @@ export function GameEditForm({ game, onSuccess, onCancel, t }) {
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder={t('games.form.playerCss.placeholder')}
             />
-          </div>
-          
-          <div className="flex items-center space-x-2">
-            <input
-              {...register('touch')}
-              type="checkbox"
-              className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-            />
-            <label className="text-sm font-medium text-gray-700">
-              {t('games.form.touch.label')}
-            </label>
           </div>
         </div>
       </div>

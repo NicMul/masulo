@@ -18,6 +18,13 @@ export function VerticalNav({ items }){
 
   function renderItem(item){    
 
+    // Handle divider
+    if (item.type === 'divider') {
+      return (
+        <div key={`divider-${item.position}`} className="w-6 h-px bg-gray-200 dark:bg-gray-700 my-1"></div>
+      );
+    }
+
     return (
       <Tooltip key={ item.label }>
         <TooltipTrigger asChild>
@@ -51,6 +58,28 @@ export function VerticalNav({ items }){
           items.map(item => {
 
             return item.position === 'top' ? renderItem(item) : false;
+            
+          })
+        }
+      </nav>
+
+      { /* middle items - campaigns section */ }
+      <nav className='flex flex-col items-center gap-3 px-2 sm:py-5'>
+        { items?.length > 0 &&
+          items.map(item => {
+
+            return item.position === 'middle' ? renderItem(item) : false;
+            
+          })
+        }
+      </nav>
+
+      { /* middle2 items - scraper section */ }
+      <nav className='flex flex-col items-center gap-3 px-2 sm:py-5'>
+        { items?.length > 0 &&
+          items.map(item => {
+
+            return item.position === 'middle2' ? renderItem(item) : false;
             
           })
         }

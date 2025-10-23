@@ -4,6 +4,7 @@ import { Promotions } from 'views/dashboard/promotions';
 import { ABTesting } from 'views/dashboard/ab-testing';
 import { Edit } from 'views/dashboard/edit';
 import { Scrape } from 'views/dashboard/scrape';
+import { Configure } from 'views/dashboard/configure';
 import { Help } from 'views/dashboard/help';
 import { OnboardingView } from 'views/onboarding/onboarding';
 
@@ -49,6 +50,13 @@ const Routes = [
     layout: 'app',
     permission: 'user',
     title: 'edit.title'
+  },
+  {
+    path: '/configure',
+    view: Configure,
+    layout: 'app',
+    permission: 'user',
+    title: 'configure.title'
   },
   {
     path: '/welcome',

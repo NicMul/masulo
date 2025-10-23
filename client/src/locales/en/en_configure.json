@@ -1,0 +1,73 @@
+{
+  "title": "Configure",
+  "groups": {
+    "title": "Groups",
+    "create": {
+      "title": "Create Group",
+      "action": "New Group",
+      "button": "Create Group"
+    },
+    "edit": {
+      "title": "Edit Group",
+      "action": "Edit",
+      "button": "Save Changes"
+    },
+    "delete": {
+      "title": "Delete Group",
+      "action": "Delete",
+      "description": "Are you sure you want to delete",
+      "button": "Delete Group"
+    },
+    "form": {
+      "cmsGroupId": {
+        "label": "CMS Group ID",
+        "error": "CMS Group ID is required"
+      },
+      "friendlyName": {
+        "label": "Friendly Name",
+        "error": "Friendly name is required"
+      },
+      "description": {
+        "label": "Description",
+        "error": "Description is required"
+      }
+    }
+  },
+  "themes": {
+    "title": "Themes",
+    "create": {
+      "title": "Create Theme",
+      "action": "New Theme",
+      "button": "Create Theme"
+    },
+    "edit": {
+      "title": "Edit Theme",
+      "action": "Edit",
+      "button": "Save Changes"
+    },
+    "delete": {
+      "title": "Delete Theme",
+      "action": "Delete",
+      "description": "Are you sure you want to delete",
+      "button": "Delete Theme"
+    },
+    "form": {
+      "cmsThemeId": {
+        "label": "CMS Theme ID",
+        "error": "CMS Theme ID is required"
+      },
+      "friendlyName": {
+        "label": "Friendly Name",
+        "error": "Friendly name is required"
+      },
+      "description": {
+        "label": "Description",
+        "error": "Description is required"
+      }
+    },
+    "placeholder": {
+      "title": "Themes Coming Soon",
+      "description": "Theme management features will be added here"
+    }
+  }
+}

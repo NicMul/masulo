@@ -22,12 +22,26 @@ export function AppLayout({ title, children }){
   const authContext = useContext(AuthContext);
 
   const nav = [
+    // Main navigation section
     { label: t('nav.dashboard'), icon: 'gauge', link: '/dashboard', position: 'top' },
-    { label: t('nav.games'), icon: 'gamepad-2', link: '/games', position: 'top' },
-    { label: t('nav.scrape'), icon: 'search', link: '/scrape', position: 'top' },
+    { label: t('nav.games'), icon: 'dice-6', link: '/games', position: 'top' },
     { label: t('nav.edit'), icon: 'edit', link: '/edit', position: 'top' },
-    { label: t('nav.promotions'), icon: 'megaphone', link: '/promotions', position: 'top' },
-    { label: t('nav.ab_testing'), icon: 'test-tube', link: '/ab-testing', position: 'top' },
+    { label: t('nav.configure'), icon: 'sliders', link: '/configure', position: 'top' },
+    
+    // Divider
+    { type: 'divider', position: 'middle' },
+    
+    // Campaigns section
+    { label: t('nav.promotions'), icon: 'megaphone', link: '/promotions', position: 'middle' },
+    { label: t('nav.ab_testing'), icon: 'test-tube', link: '/ab-testing', position: 'middle' },
+    
+    // Divider
+    { type: 'divider', position: 'middle2' },
+    
+    // Scraper section
+    { label: t('nav.scrape'), icon: 'search', link: '/scrape', position: 'middle2' },
+    
+    // Bottom section
     { label: t('nav.account'), icon: 'user', link: '/account', position: 'bottom' },
     { label: t('nav.help'), icon: 'help-circle', link: '/help', position: 'bottom' },
     { label: t('nav.signout'), icon: 'log-out', action: authContext.signout, position: 'bottom' }

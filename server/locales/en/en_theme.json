@@ -1,0 +1,15 @@
+{
+  "create": {
+    "success": "Theme created"
+  },
+  "update": {
+    "success": "Theme updated",
+    "id_required": "Theme ID is required",
+    "not_found": "Theme not found"
+  },
+  "delete": {
+    "success": "Theme deleted",
+    "id_required": "Theme ID is required",
+    "not_found": "Theme not found"
+  }
+}

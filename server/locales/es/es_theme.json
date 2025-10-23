@@ -1,0 +1,15 @@
+{
+  "create": {
+    "success": "Tema creado"
+  },
+  "update": {
+    "success": "Tema actualizado",
+    "id_required": "Se requiere ID del tema",
+    "not_found": "Tema no encontrado"
+  },
+  "delete": {
+    "success": "Tema eliminado",
+    "id_required": "Se requiere ID del tema",
+    "not_found": "Tema no encontrado"
+  }
+}

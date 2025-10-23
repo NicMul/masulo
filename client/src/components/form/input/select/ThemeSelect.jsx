@@ -1,7 +1,7 @@
 /***
 *
 *   THEME SELECT
-*   Reusable theme selection dropdown component
+*   Reusable theme selection dropdown component that fetches themes from API
 *
 *   PROPS
 *   className: custom styling (string, optional)
@@ -11,27 +11,44 @@
 *   value: controlled value (string, optional)
 *   onChange: change handler (function, optional)
 *   name: input name (string, optional)
+*   placeholder: placeholder text (string, optional)
 *
 **********/
 
-import { forwardRef } from 'react';
-import { cn } from 'components/lib';
+import { forwardRef, useState, useEffect } from 'react';
+import { cn, useAPI } from 'components/lib';
 
-// Theme options available across the application
-export const THEME_OPTIONS = [
-  { value: 'default', label: 'Default' },
-  { value: 'xmas', label: 'Christmas' },
-  { value: 'valentines', label: 'Valentines' },
-  { value: 'halloween', label: 'Halloween' },
-  { value: 'easter', label: 'Easter' },
-  { value: 'stpatricks', label: "St Patrick's Day" }
+// Fallback theme options if API fails
+export const FALLBACK_THEME_OPTIONS = [
+  { id: 'default', friendlyName: 'Default' },
+  { id: 'xmas', friendlyName: 'Christmas' },
+  { id: 'valentines', friendlyName: 'Valentines' },
+  { id: 'halloween', friendlyName: 'Halloween' },
+  { id: 'easter', friendlyName: 'Easter' },
+  { id: 'stpatricks', friendlyName: "St Patrick's Day" }
 ];
 
 export const ThemeSelect = forwardRef(({ 
   className, 
   error, 
+  placeholder = "Select a theme",
   ...props 
 }, ref) => {
+  
+  // Fetch themes from API
+  const themesRes = useAPI('/api/theme');
+  const [themes, setThemes] = useState([]);
+
+  // Update themes when data loads
+  useEffect(() => {
+    if (themesRes.data) {
+      setThemes(themesRes.data);
+    }
+  }, [themesRes.data]);
+
+  // Use API themes if available, otherwise fallback to hardcoded options
+  const themeOptions = themes.length > 0 ? themes : FALLBACK_THEME_OPTIONS;
+
   return (
     <select
       ref={ref}
@@ -42,11 +59,17 @@ export const ThemeSelect = forwardRef(({
       )}
       {...props}
     >
-      {THEME_OPTIONS.map(option => (
-        <option key={option.value} value={option.value}>
-          {option.label}
+      <option value="">{placeholder}</option>
+      {themeOptions.map(option => (
+        <option key={option.id || option.value} value={option.friendlyName || option.label}>
+          {option.friendlyName || option.label}
         </option>
       ))}
+      {themes.length === 0 && (
+        <option value="" disabled>
+          No Themes Configured
+        </option>
+      )}
     </select>
   );
 });

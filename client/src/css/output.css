@@ -796,6 +796,14 @@ table tbody tr:last-child td {
   margin-left: 1rem;
   margin-right: 1rem;
 }
+.my-3 {
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+.my-4 {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
 .\!mb-2 {
   margin-bottom: 0.5rem !important;
 }
@@ -1026,6 +1034,9 @@ table tbody tr:last-child td {
 }
 .h-\[80dvh\] {
   height: 80dvh;
+}
+.h-64 {
+  height: 16rem;
 }
 .max-h-32 {
   max-height: 8rem;
@@ -1414,6 +1425,9 @@ table tbody tr:last-child td {
 }
 .grid-cols-3 {
   grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.grid-cols-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 .grid-rows-2 {
   grid-template-rows: repeat(2, minmax(0, 1fr));
@@ -1928,6 +1942,10 @@ table tbody tr:last-child td {
   --tw-bg-opacity: 1;
   background-color: rgb(34 197 94 / var(--tw-bg-opacity, 1));
 }
+.bg-gray-200 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(229 231 235 / var(--tw-bg-opacity, 1));
+}
 .bg-opacity-30 {
   --tw-bg-opacity: 0.3;
 }
@@ -2206,6 +2224,10 @@ table tbody tr:last-child td {
 .text-2xl {
   font-size: 1.5rem;
   line-height: 2rem;
+}
+.text-4xl {
+  font-size: 2.25rem;
+  line-height: 2.5rem;
 }
 .\!font-normal {
   font-weight: 400 !important;
@@ -3545,6 +3567,11 @@ html, #root, body {
 .dark\:bg-green-900:is(.dark *) {
   --tw-bg-opacity: 1;
   background-color: rgb(20 83 45 / var(--tw-bg-opacity, 1));
+}
+
+.dark\:bg-gray-700:is(.dark *) {
+  --tw-bg-opacity: 1;
+  background-color: rgb(55 65 81 / var(--tw-bg-opacity, 1));
 }
 
 .dark\:bg-opacity-30:is(.dark *) {

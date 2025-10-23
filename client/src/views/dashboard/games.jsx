@@ -190,16 +190,18 @@ export function Games({ t }){
           data={ games }
           loading={ res.loading }
           actions={ actions }
-          show={ ['cmsId', 'defaultImage', 'currentImage', 'themeImage', 'scrape', 'theme', 'animate', 'hover', 'version'] }
+          show={ ['cmsId','version', 'group', 'theme', 'defaultImage', 'currentImage', 'themeImage', 'animate', 'hover', 'touch'] }
           badge={ [
             { 
-              col: 'scrape', 
-              color: 'blue',
+              col: 'touch', 
+              color: 'green',
               condition: [
-                { value: true, color: 'green' },
-                { value: false, color: 'red' }
+                { value: 'default', color: 'gray' },
+                { value: 'promo', color: 'green' },
+                { value: 'seasonal', color: 'blue' }
               ]
             },
+
             { 
               col: 'animate', 
               color: 'blue',

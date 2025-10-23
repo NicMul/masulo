@@ -24,7 +24,13 @@ const TableHeader = forwardRef(({ className, header, show, row, hide, translatio
       if (translation)
         return t(`${translation}.header.${value}`)
 
-      return value.replaceAll('_', ' ');
+      // Replace underscores with spaces
+    let formatted = value.replaceAll('_', ' ');
+    
+    // Convert camelCase to space-separated words
+    formatted = formatted.replace(/([a-z])([A-Z])/g, '$1 $2');
+    
+    return formatted;
 
     }
   }

@@ -39,7 +39,7 @@
     "lock": "Lock Video"
   },
   "current": {
-    "title": "2. Current Asset (AI Generated)",
+    "title": "2. Saved Assets (AI Generated)",
     "image": "AI IMAGE",
     "video": "AI VIDEO",
     "aiImage": "Current Image",

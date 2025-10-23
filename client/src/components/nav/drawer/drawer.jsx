@@ -19,44 +19,57 @@ export function DrawerNav({ items }){
 
   const Trigger = <Button size='icon' variant='ghost' iconSize={ 22 } icon='menu' className='fixed top-[0.7em] z-50 left-2 sm:hidden'/>
 
+  function renderItem(item) {
+    // Handle divider
+    if (item.type === 'divider') {
+      return (
+        <div key={`divider-${item.position}`} className="w-full h-px bg-gray-200 dark:bg-gray-700 my-1"></div>
+      );
+    }
+
+    return (
+      <div className='[&>a]:flex [&>a]:items-center [&>a]:gap-x-3 text-muted-foreground hover:text-foreground dark:text-slate-50' key={ item.label }>
+
+        { item.link ?
+          <SheetClose asChild>
+            <NavLink 
+              key={ item.label } 
+              to={ item.link } 
+              className={({ isActive }) => cn('[&>a]:flex [&>a]:items-center [&>a]:gap-x-3 text-muted-foreground hover:text-foreground dark:text-slate-50', { ['text-slate-900']: isActive })}>
+
+                <Icon name={ item.icon } size={ 18 } className={ `relative -top-[1px] text-${item.color}` }/>
+                <span>{ item.label }</span>
+
+            </NavLink>
+          </SheetClose> :
+        
+          <Button 
+            key={ item.label } 
+            text={ item.label }
+            action={ item.action }  
+            icon={ item.icon }
+            color='primary'
+            iconColor='white'
+            size='full'
+          /> 
+        }
+
+      </div>
+    );
+  }
+
   return (
     <Sheet side='left' trigger={ Trigger } accessibleTitle='Menu'>
 
-      <Logo mark className='inline-block h-8 w-8 mb-6' color='dark'/>
+      <Logo mark className='inline-block h-8 w-8 mb-3' color='dark'/>
 
       <nav className='flex flex-col text-lg font-medium gap-y-3 pl-[5px] sm:hidden'>
         { items.length && 
           items.map(item => {
-
-            return (
-              <div className='[&>a]:flex [&>a]:items-center [&>a]:gap-x-3 text-muted-foreground hover:text-foreground dark:text-slate-50' key={ item.label }>
-
-                { item.link ?
-                  <SheetClose asChild>
-                    <NavLink 
-                      key={ item.label } 
-                      to={ item.link } 
-                      className={({ isActive }) => cn('[&>a]:flex [&>a]:items-center [&>a]:gap-x-3 text-muted-foreground hover:text-foreground dark:text-slate-50', { ['text-slate-900']: isActive })}>
-
-                        <Icon name={ item.icon } size={ 18 } className={ `relative -top-[1px] text-${item.color}` }/>
-                        <span>{ item.label }</span>
-
-                    </NavLink>
-                  </SheetClose> :
-                
-                  <Button 
-                    key={ item.label } 
-                    text={ item.label }
-                    action={ item.action }  
-                    icon={ item.icon }
-                    color='primary'
-                    iconColor='white'
-                    size='full'
-                  /> 
-                }
-
-              </div> 
-            )
+            // Only show top, middle, middle2, and bottom items (skip dividers in mobile)
+            if (item.type === 'divider') return null;
+            
+            return renderItem(item);
           }) 
         }
       </nav>
