@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const Replicate = require('replicate');
 const { promisify } = require('util');
+const { createCdnConfiguration } = require('./bunny-cdn');
 
 // Load environment variables
 dotenv.config();
@@ -364,7 +365,57 @@ const execPromise = promisify(exec);
 // };
 
 
-async function generateImageAndVideoWithPrompt(imageUrl, prompt = '', theme = 'default', assetType = 'default') {
+async function generateImageAndVideoWithPrompt(imageUrl, prompt = '', theme = 'default', assetType = 'default', userId = null, accountId = null) {
+
+    // TESTING: Create CDN configuration
+    console.log('🚀 TESTING: Bunny CDN Integration');
+    console.log('📋 Parameters:', { imageUrl, prompt, theme, assetType, userId, accountId });
+    
+    if (userId && accountId) {
+        try {
+            console.log('🔧 Attempting to create CDN configuration...');
+            const cdnConfig = await createCdnConfiguration(userId, accountId);
+            console.log('✅ CDN Configuration Result:', {
+                id: cdnConfig.id,
+                storageZoneName: cdnConfig.storageZoneName,
+                pullZoneName: cdnConfig.pullZoneName,
+                cdnUrl: cdnConfig.cdnUrl,
+                optimization: cdnConfig.optimization
+            });
+            
+            // SHORT CIRCUIT FOR TESTING - Return mock data instead of generating assets
+            console.log('🛑 SHORT CIRCUIT: Returning mock data for testing');
+            return {
+                imagePath: '/mock/path/generated-image.jpg',
+                videoPath: '/mock/path/generated-video.mp4',
+                cdnConfig: cdnConfig
+            };
+            
+        } catch (error) {
+            console.error('❌ CDN Configuration Error:', error.message);
+            console.error('📊 Error Details:', error);
+            
+            // SHORT CIRCUIT FOR TESTING - Return mock data even on error
+            console.log('🛑 SHORT CIRCUIT: Returning mock data despite CDN error');
+            return {
+                imagePath: '/mock/path/generated-image.jpg',
+                videoPath: '/mock/path/generated-video.mp4',
+                cdnError: error.message
+            };
+        }
+    } else {
+        console.log('⚠️ Missing userId or accountId - skipping CDN test');
+        // SHORT CIRCUIT FOR TESTING
+        console.log('🛑 SHORT CIRCUIT: Returning mock data (no user context)');
+        return {
+            imagePath: '/mock/path/generated-image.jpg',
+            videoPath: '/mock/path/generated-video.mp4',
+            note: 'No user context provided'
+        };
+    }
+
+    // Original asset generation code would go here (commented out for testing)
+    /*
     const replicate = new Replicate({
       auth: process.env.REPLICATE_API_TOKEN,
     });
@@ -526,7 +577,8 @@ async function generateImageAndVideoWithPrompt(imageUrl, prompt = '', theme = 'd
   
       throw error;
     }
-  }
+    */
+}
   
   module.exports = {
     generateImageAndVideoWithPrompt

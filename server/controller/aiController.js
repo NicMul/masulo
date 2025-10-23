@@ -55,9 +55,18 @@ exports.image = async function(req, res){
 exports.process = async function(req, res){
 
   console.log('req.body', req.body);
+  console.log('req.user:', req.user);
+  console.log('req.account:', req.account);
 
   try{
-      const imageAndVideoData = await generateImageAndVideoWithPrompt(req.body.imageUrl, req.body.prompt, req.body.theme, req.body.assetType);
+      const imageAndVideoData = await generateImageAndVideoWithPrompt(
+          req.body.imageUrl, 
+          req.body.prompt, 
+          req.body.theme, 
+          req.body.assetType,
+          req.user,    // Pass userId
+          req.account  // Pass accountId
+      );
       return res.status(200).send({ data: imageAndVideoData });
   } catch (error) {
     return res.status(500).send({ error: error.message });
