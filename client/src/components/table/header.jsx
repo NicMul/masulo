@@ -6,8 +6,8 @@ const TableHeader = forwardRef(({ className, header, show, row, hide, translatio
 
   const { t } = useTranslation();
 
-  // use keys from first row if header isn't provided
-  header = header || (row ? Object.keys(row).map(key => key) : []);
+  // use keys from first row if header isn't provided, respecting show order
+  header = header || (row ? (show || Object.keys(row)).map(key => key) : []);
 
   // add actions col (empty)
   if (actions){
@@ -81,4 +81,4 @@ const TableHead = forwardRef(({ className, ...props }, ref) => (
 
 TableHead.displayName = 'TableHead'
 
-export { TableHeader, TableHead } 
+export { TableHeader, TableHead }

@@ -36,7 +36,7 @@ const TableBody = forwardRef(({ className, rows, show, hide, badge, translation,
                 </TableCell> 
               }
 
-              { Object.keys(row).map((col, index) => {
+              { (show || Object.keys(row)).map((col, index) => {
 
                 let value = row[col];
                 let cellContent = value;
