@@ -26,6 +26,7 @@ const GenerateAssets = ({
     const { t } = useTranslation();
     const generateAssetsMutation = useMutation('/api/ai/process', 'POST');
     const deleteTestAssetsMutation = useMutation(`/api/game/${selectedGame?.id}/test-assets`, 'DELETE');
+    const acceptTestAssetsMutation = useMutation(`/api/game/${selectedGame?.id}/test-assets/accept`, 'POST');
 
 
     const handleSelect = (videoUrl) => {
@@ -40,7 +41,7 @@ const GenerateAssets = ({
         if (hasImage) return 'image';
         if (hasVideo) return 'video';
         return 'both';
-    }, [selectedGame]);
+    }, [selectedGame, testImage, testVideoUrl]);
 
     const getButtonText = useCallback(() => {
         if (isGenerating) return t('edit.regenerate.dialog.generating');
@@ -116,6 +117,30 @@ const GenerateAssets = ({
             });
         }
     }, [deleteTestAssetsMutation, reloadTrigger, viewContext, t]);
+
+    const handleAcceptTestAssets = useCallback(async () => {
+        try {
+            await acceptTestAssetsMutation.execute();
+            
+            // Clear local state
+            setTestVideoUrl(null);
+            setTestImage(null);
+            
+            // Refresh component data
+            setReloadTrigger(reloadTrigger + 1);
+            
+            viewContext.notification({
+                description: t('Test assets accepted successfully'),
+                variant: 'success'
+            });
+        } catch (err) {
+            console.error('Error accepting test assets:', err);
+            viewContext.notification({
+                description: t('Failed to accept test assets'),
+                variant: 'error'
+            });
+        }
+    }, [acceptTestAssetsMutation, reloadTrigger, viewContext, t]);
 
     const handleDeleteClick = useCallback(() => {
         setShowDeleteConfirmationDialog(true);
@@ -214,7 +239,7 @@ const GenerateAssets = ({
                                 {(selectedGame?.testImage || selectedGame?.testVideo || testImage || testVideoUrl) && (
                                     <div className="mt-4 flex justify-between gap-2">
                                         <Button color="red" className="w-1/2" onClick={handleDeleteClick}>{t('Delete Last')}</Button>
-                                        <Button color="green" className="w-1/2" onClick={onClose}>
+                                        <Button color="green" className="w-1/2" onClick={handleAcceptTestAssets}>
                                             {t('Accept Last')}
                                         </Button>
                                     </div>

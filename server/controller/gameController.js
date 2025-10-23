@@ -262,3 +262,101 @@ exports.deleteTestAssets = async function(req, res){
   return res.status(200).send({ message: res.__('game.update.success'), data: gameData });
 
 }
+
+exports.acceptTestAssets = async function(req, res){
+
+  utility.assert(req.params.id, res.__('game.update.id_required'));
+
+  try {
+    // Get current game data to retrieve testVideo URL
+    const gameData = await game.get({ id: req.params.id, user: req.user });
+    
+    if (!gameData || gameData.length === 0) {
+      return res.status(404).send({ message: res.__('game.update.not_found') });
+    }
+
+    const currentGame = gameData[0];
+    
+    // Validate that testVideo field is not empty
+    if (!currentGame.testVideo || currentGame.testVideo.trim() === '') {
+      return res.status(400).send({ message: 'No test video to accept' });
+    }
+
+    // Import Bunny CDN functions
+    const { 
+      findCdnConfigurationByUserId, 
+      downloadFromBunnyStorage, 
+      uploadToBunnyStorage, 
+      deleteFromBunnyStorage 
+    } = require('../services/bunny-cdn');
+
+    // Get user's CDN configuration
+    const cdnConfig = await findCdnConfigurationByUserId(req.user, req.account);
+    if (!cdnConfig) {
+      return res.status(500).send({ message: 'CDN configuration not found' });
+    }
+
+    console.log('🎯 Accepting test assets for game:', req.params.id);
+    console.log('📹 Test video URL:', currentGame.testVideo);
+
+    // Step 1: Download the test video from /test/ directory
+    const tempVideoPath = await downloadFromBunnyStorage(currentGame.testVideo, cdnConfig);
+
+    // Step 2: Generate new filename for /videos/ directory
+    const randomString = generateRandomString(9);
+    const newVideoFilename = `default-${randomString}.mp4`;
+
+    // Step 3: Upload video to /videos/ directory with new filename
+    const newVideoUrl = await uploadToBunnyStorage(tempVideoPath, cdnConfig, 'videos', newVideoFilename);
+
+    // Step 4: Delete test video from /test/ directory
+    await deleteFromBunnyStorage(currentGame.testVideo, cdnConfig);
+
+    // Step 5: Update game document
+    const updateData = {
+      testVideo: '', // Clear test video
+      defaultVideo: newVideoUrl // Set new default video
+    };
+
+    const updatedGameData = await game.update({ id: req.params.id, user: req.user, data: updateData });
+    
+    if (!updatedGameData) {
+      return res.status(500).send({ message: 'Failed to update game' });
+    }
+
+    // Step 6: Clean up temp file
+    try {
+      const fs = require('fs');
+      fs.unlinkSync(tempVideoPath);
+      console.log('✅ Cleaned up temp video file');
+    } catch (cleanupError) {
+      console.warn('⚠️ Failed to cleanup temp video:', cleanupError);
+    }
+
+    console.log('✅ Test assets accepted successfully');
+    console.log('📹 New default video URL:', newVideoUrl);
+
+    return res.status(200).send({ 
+      message: 'Test assets accepted successfully', 
+      data: updatedGameData 
+    });
+
+  } catch (error) {
+    console.error('❌ Error accepting test assets:', error);
+    return res.status(500).send({ 
+      message: 'Failed to accept test assets', 
+      error: error.message 
+    });
+  }
+
+}
+
+// Helper function to generate random alphanumeric string
+function generateRandomString(length) {
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}

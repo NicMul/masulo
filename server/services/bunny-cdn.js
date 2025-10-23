@@ -1,4 +1,6 @@
 const axios = require('axios');
+const fs = require('fs');
+const path = require('path');
 const cdnModel = require('../model/mongo/cdn');
 
 // Helper function to generate random alphanumeric string
@@ -148,10 +150,118 @@ async function createCdnConfiguration(userId, accountId) {
   }
 }
 
+// Helper function to download file from Bunny storage
+async function downloadFromBunnyStorage(cdnUrl, cdnConfig) {
+  try {
+    console.log(`📥 Downloading file from Bunny storage: ${cdnUrl}`);
+    
+    // Extract storage zone name, folder, and filename from CDN URL
+    // URL format: https://cdn.example.com/folder/filename.mp4
+    const urlParts = cdnUrl.split('/');
+    const folder = urlParts[urlParts.length - 2]; // second to last part
+    const filename = urlParts[urlParts.length - 1]; // last part
+    
+    // Create temp directory if it doesn't exist
+    const tempDir = path.join(process.cwd(), 'temp');
+    if (!fs.existsSync(tempDir)) {
+      fs.mkdirSync(tempDir, { recursive: true });
+    }
+    
+    // Create unique filename for temp file
+    const tempFilename = `download-${Date.now()}-${filename}`;
+    const tempPath = path.join(tempDir, tempFilename);
+    
+    // Download file from Bunny storage
+    const downloadUrl = `https://storage.bunnycdn.com/${cdnConfig.storageZoneName}/${folder}/${filename}`;
+    
+    const response = await axios.get(downloadUrl, {
+      headers: {
+        'AccessKey': cdnConfig.storageKey
+      },
+      responseType: 'stream'
+    });
+    
+    // Save to temp file
+    const writer = fs.createWriteStream(tempPath);
+    response.data.pipe(writer);
+    
+    await new Promise((resolve, reject) => {
+      writer.on('finish', () => resolve());
+      writer.on('error', reject);
+    });
+    
+    console.log(`✅ File downloaded to: ${tempPath}`);
+    return tempPath;
+    
+  } catch (error) {
+    console.error(`❌ Download failed for ${cdnUrl}:`, error.message);
+    throw error;
+  }
+}
+
+// Helper function to delete file from Bunny storage
+async function deleteFromBunnyStorage(cdnUrl, cdnConfig) {
+  try {
+    console.log(`🗑️ Deleting file from Bunny storage: ${cdnUrl}`);
+    
+    // Extract storage zone name, folder, and filename from CDN URL
+    const urlParts = cdnUrl.split('/');
+    const folder = urlParts[urlParts.length - 2];
+    const filename = urlParts[urlParts.length - 1];
+    
+    // Delete file from Bunny storage
+    const deleteUrl = `https://storage.bunnycdn.com/${cdnConfig.storageZoneName}/${folder}/${filename}`;
+    
+    await axios.delete(deleteUrl, {
+      headers: {
+        'AccessKey': cdnConfig.storageKey
+      }
+    });
+    
+    console.log(`✅ File deleted successfully: ${filename}`);
+    
+  } catch (error) {
+    console.error(`❌ Delete failed for ${cdnUrl}:`, error.message);
+    throw error;
+  }
+}
+
+// Helper function to upload file to Bunny storage
+async function uploadToBunnyStorage(filePath, cdnConfig, folder, filename) {
+  try {
+    console.log(`📤 Uploading ${filename} to Bunny storage...`);
+    
+    // Read the file
+    const fileBuffer = fs.readFileSync(filePath);
+    
+    // Upload to Bunny storage
+    const uploadUrl = `https://storage.bunnycdn.com/${cdnConfig.storageZoneName}/${folder}/${filename}`;
+    
+    const response = await axios.put(uploadUrl, fileBuffer, {
+      headers: {
+        'AccessKey': cdnConfig.storageKey,
+        'Content-Type': folder === 'images' ? 'image/jpeg' : 'video/mp4'
+      }
+    });
+    
+    // Construct CDN URL
+    const cdnUrl = `https://${cdnConfig.cdnUrl}/${folder}/${filename}`;
+    console.log(`✅ Upload successful! CDN URL: ${cdnUrl}`);
+    
+    return cdnUrl;
+  } catch (error) {
+    console.error(`❌ Upload failed for ${filename}:`, error.message);
+    throw error;
+  }
+}
+
 // Export the functions for use in other modules
 module.exports = {
   findCdnConfigurationByUserId,
-  createCdnConfiguration
+  createCdnConfiguration,
+  downloadFromBunnyStorage,
+  deleteFromBunnyStorage,
+  uploadToBunnyStorage
 };
 
 

@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const Replicate = require('replicate');
 const { promisify } = require('util');
-const { createCdnConfiguration, findCdnConfigurationByUserId } = require('./bunny-cdn');
+const { createCdnConfiguration, findCdnConfigurationByUserId, uploadToBunnyStorage } = require('./bunny-cdn');
 const game = require('../model/mongo/game');
 
 // Load environment variables
@@ -190,35 +190,6 @@ async function uploadAssetsToStorage(assetType, cdnConfig, imagePath, videoPath)
   }
   
   return result;
-}
-
-// Helper function to upload file to Bunny CDN storage
-async function uploadToBunnyStorage(filePath, cdnConfig, folder, filename) {
-  try {
-    console.log(`📤 Uploading ${filename} to Bunny storage...`);
-    
-    // Read the file
-    const fileBuffer = fs.readFileSync(filePath);
-    
-    // Upload to Bunny storage
-    const uploadUrl = `https://storage.bunnycdn.com/${cdnConfig.storageZoneName}/${folder}/${filename}`;
-    
-    const response = await axios.put(uploadUrl, fileBuffer, {
-      headers: {
-        'AccessKey': cdnConfig.storageKey,
-        'Content-Type': folder === 'images' ? 'image/jpeg' : 'video/mp4'
-      }
-    });
-    
-    // Construct CDN URL
-    const cdnUrl = `https://${cdnConfig.cdnUrl}/${folder}/${filename}`;
-    console.log(`✅ Upload successful! CDN URL: ${cdnUrl}`);
-    
-    return cdnUrl;
-  } catch (error) {
-    console.error(`❌ Upload failed for ${filename}:`, error.message);
-    throw error;
-  }
 }
 
 // async function generateImageWithReplicate(imageUrl, customPrompt, theme = 'default') {

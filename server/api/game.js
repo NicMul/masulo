@@ -20,6 +20,8 @@ api.patch('/api/game/:id', auth.verify('user'), use(gameController.update));
 
 api.delete('/api/game/:id/test-assets', auth.verify('user'), use(gameController.deleteTestAssets));
 
+api.post('/api/game/:id/test-assets/accept', auth.verify('user'), use(gameController.acceptTestAssets));
+
 api.delete('/api/game/:id', auth.verify('user'), use(gameController.delete));
 
 module.exports = api;
