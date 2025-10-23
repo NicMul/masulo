@@ -165,15 +165,12 @@ async function uploadAssetsToStorage(assetType, cdnConfig, imagePath, videoPath)
   
   if (cdnConfig) {
     if (assetType === 'original') {
-      // Upload video to both production and test folders for original type
+      // Upload video ONLY to test folder for original type
       const randomString = generateRandomString(9);
-      const videoFilename = `default-${randomString}.mp4`;
       const testVideoFilename = `test-default-${randomString}.mp4`;
       
-      const videoUrl = await uploadToBunnyStorage(videoPath, cdnConfig, 'videos', videoFilename);
       const testVideoUrl = await uploadToBunnyStorage(videoPath, cdnConfig, 'test', testVideoFilename);
       
-      result.videoUrl = videoUrl;
       result.testVideoUrl = testVideoUrl;
     } else if (assetType === 'current' || assetType === 'theme') {
       // Upload both image and video for current/theme types
@@ -664,21 +661,20 @@ async function generateImageAndVideoWithPrompt(imageUrl, prompt = '', theme = 'd
         // Upload only video to CDN
         const result = await uploadAssetsToStorage(assetType, cdnConfig, null, optimizedPath);
         
-        // Update MongoDB game collection for default assets
-        if (gameId && result.videoUrl && result.testVideoUrl) {
+        // Update MongoDB game collection for test video only
+        if (gameId && result.testVideoUrl) {
           try {
-            console.log('📝 Updating game defaultVideo and testVideo fields in MongoDB...');
+            console.log('📝 Updating game testVideo field in MongoDB...');
             await game.update({ 
               id: gameId, 
               user: userId, 
               data: { 
-                defaultVideo: result.videoUrl,
                 testVideo: result.testVideoUrl
               } 
             });
-            console.log('✅ Successfully updated game defaultVideo and testVideo fields');
+            console.log('✅ Successfully updated game testVideo field');
           } catch (error) {
-            console.error('❌ Failed to update game defaultVideo and testVideo fields:', error.message);
+            console.error('❌ Failed to update game testVideo field:', error.message);
             // Don't throw here - we still want to return the result
           }
         }

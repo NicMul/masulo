@@ -16,13 +16,16 @@ const GenerateAssets = ({
     const [isGenerating, setIsGenerating] = useState(false);
     const [customPrompt, setCustomPrompt] = useState('');
     const [showDescribeChangesDialog, setShowDescribeChangesDialog] = useState(false);
+    const [showDeleteConfirmationDialog, setShowDeleteConfirmationDialog] = useState(false);
     const [testImage, setTestImage] = useState(null);
-    const [testVideo, setTestVideo] = useState(null);
-    
+    const [testVideoUrl, setTestVideoUrl] = useState(null);
+    const [reloadTrigger, setReloadTrigger] = useState(0);
+
     const viewContext = useContext(ViewContext);
 
     const { t } = useTranslation();
     const generateAssetsMutation = useMutation('/api/ai/process', 'POST');
+    const deleteTestAssetsMutation = useMutation(`/api/game/${selectedGame?.id}/test-assets`, 'DELETE');
 
 
     const handleSelect = (videoUrl) => {
@@ -30,8 +33,9 @@ const GenerateAssets = ({
     };
 
     const mediaPlayerType = useMemo(() => {
-        const hasImage = selectedGame?.testImage;
-        const hasVideo = selectedGame?.testVideo;
+
+        const hasImage = selectedGame?.testImage || testImage;
+        const hasVideo = selectedGame?.testVideo || testVideoUrl;
         if (hasImage && hasVideo) return 'both';
         if (hasImage) return 'image';
         if (hasVideo) return 'video';
@@ -62,12 +66,15 @@ const GenerateAssets = ({
             const result = await generateAssetsMutation.execute(payload);
       
             if (result) {
-            //   setGeneratedAssets({
-            //     testImage: generateImage ? result[0].testImage : null,
-            //     testVideo: generateVideo ? result[0].testVideo : null
-            //   });
+                if (result.data.assetType === 'original') {
+                    console.log('Result:', result.data);
+                    setTestVideoUrl(result.data.url);
+                    setReloadTrigger(reloadTrigger + 1);
+                } else {
+                    return
+                }
 
-            console.log('Result:', result);
+            console.log('Result:', result.data);
       
               viewContext.notification({
                 description: t('edit.regenerate.dialog.success'),
@@ -82,6 +89,44 @@ const GenerateAssets = ({
             setIsGenerating(false);
           }
     }, [selectedGame, assetType, customPrompt, viewContext, t, generateAssetsMutation]);
+
+    const handleDeleteTestAssets = useCallback(async () => {
+        try {
+            await deleteTestAssetsMutation.execute();
+            
+            // Clear local state
+            setTestVideoUrl(null);
+            setTestImage(null);
+            
+            // Refresh component data
+            setReloadTrigger(reloadTrigger + 1);
+            
+            // Close confirmation dialog
+            setShowDeleteConfirmationDialog(false);
+            
+            viewContext.notification({
+                description: t('Test assets deleted successfully'),
+                variant: 'success'
+            });
+        } catch (err) {
+            console.error('Error deleting test assets:', err);
+            viewContext.notification({
+                description: t('Failed to delete test assets'),
+                variant: 'error'
+            });
+        }
+    }, [deleteTestAssetsMutation, reloadTrigger, viewContext, t]);
+
+    const handleDeleteClick = useCallback(() => {
+        setShowDeleteConfirmationDialog(true);
+    }, []);
+
+    const getTestVideoUrl = useCallback(() => {
+        if (testVideoUrl) {
+            return testVideoUrl;
+        }
+        return selectedGame?.testVideo;
+    },[testVideoUrl, selectedGame?.testVideo])
 
     return (
         <div>
@@ -118,26 +163,26 @@ const GenerateAssets = ({
                             <TabsContent value="saved">
                                 <div className='flex flex-row gap-3 bg-slate-200 dark:bg-slate-700 rounded-lg p-3 text-center'>
                                     <Card
-                                        title={assetType === 'default' ? t('edit.regenerate.dialog.cards.originalImage') : t('edit.regenerate.dialog.cards.aiGeneratedImage')}
+                                        title={assetType === 'original' ? t('edit.regenerate.dialog.cards.originalImage') : t('edit.regenerate.dialog.cards.aiGeneratedImage')}
                                         className='w-1/2 flex-col gap-3'
                                     >
                                         <MediaPlayer
                                             gameId={selectedGame?.id}
-                                            imageUrl={selectedGame?.currentImage}
-                                            videoUrl={selectedGame?.currentVideo}
+                                            imageUrl={selectedGame?.defaultImage}
+                                            videoUrl={selectedGame?.defaultVideo}
                                             onSelect={handleSelect}
                                             type="image"
                                             canSelect={false}
                                             showPlayIcon={false}
-                                            readOnly={false}
+                                            readOnly={assetType === 'original' && selectedGame?.defaultImage}
                                             isSelected={false}
                                         />
                                     </Card>
                                     <Card title={t('edit.regenerate.dialog.cards.aiGeneratedVideo')} className='w-1/2 flex-col gap-3'>
                                         <MediaPlayer
                                             gameId={selectedGame?.id}
-                                            imageUrl={selectedGame?.currentImage}
-                                            videoUrl={selectedGame?.currentVideo}
+                                            imageUrl={selectedGame?.defaultImage}
+                                            videoUrl={selectedGame?.defaultVideo}
                                             onSelect={handleSelect}
                                             type="video"
                                             canSelect={false}
@@ -154,28 +199,26 @@ const GenerateAssets = ({
                                 title={selectedGame?.testImage || selectedGame?.testVideo ? t('edit.regenerate.dialog.cards.latestAssets') : t('edit.regenerate.dialog.cards.generateAssets')}
                                 className='relative w-1/2 justify-center flex-col gap-3'
                             >
-
                                 <MediaPlayer
+                                    key={reloadTrigger}
                                     gameId={selectedGame?.id}
                                     imageUrl={selectedGame?.testImage}
-                                    videoUrl={selectedGame?.testVideo}
+                                    videoUrl={getTestVideoUrl()}
                                     onSelect={handleSelect}
                                     type={mediaPlayerType}
                                     canSelect={false}
-                                    showPlayIcon={false}
+                                    showPlayIcon={!testImage || !selectedGame?.testImage}
                                     readOnly={false}
                                     isSelected={false}
                                 />
-                                 {selectedGame?.testImage || selectedGame?.testVideo && (
-                            <div className="mt-4 flex justify-between gap-2">
-                            <Button color="red" className="w-1/2" onClick={onClose}>{t('Delete Last')}</Button>
-                            <Button color="green" className="w-1/2"  onClick={onClose}>
-                                {t('Accept Last')}
-                            </Button>
-                            </div>
-                            
-                        )}
-
+                                {(selectedGame?.testImage || selectedGame?.testVideo || testImage || testVideoUrl) && (
+                                    <div className="mt-4 flex justify-between gap-2">
+                                        <Button color="red" className="w-1/2" onClick={handleDeleteClick}>{t('Delete Last')}</Button>
+                                        <Button color="green" className="w-1/2" onClick={onClose}>
+                                            {t('Accept Last')}
+                                        </Button>
+                                    </div>
+                                )}
                             </Card>
                         </div>
                     </div>
@@ -224,6 +267,24 @@ const GenerateAssets = ({
                     
                     <DialogFooter>
                         <Button color="green" onClick={() => setShowDescribeChangesDialog(false)}>{t('Continue')}</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+            <Dialog open={showDeleteConfirmationDialog} onClose={() => setShowDeleteConfirmationDialog(false)}>
+                <DialogContent>
+                    <DialogHeader>
+                        <h1>{t('Delete Test Assets')}</h1>
+                    </DialogHeader>
+                    <div className="py-4">
+                        <p>{t('Are you sure you want to delete the test assets? This action cannot be undone.')}</p>
+                    </div>
+                    <DialogFooter>
+                        <Button color="gray" onClick={() => setShowDeleteConfirmationDialog(false)}>
+                            {t('Cancel')}
+                        </Button>
+                        <Button color="red" onClick={handleDeleteTestAssets}>
+                            {t('Delete')}
+                        </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

@@ -243,3 +243,22 @@ exports.delete = async function(req, res){
   res.status(200).send({ message: res.__('game.delete.success') });
 
 }
+
+exports.deleteTestAssets = async function(req, res){
+
+  utility.assert(req.params.id, res.__('game.update.id_required'));
+
+  const data = {
+    testImage: '',
+    testVideo: ''
+  };
+
+  const gameData = await game.update({ id: req.params.id, user: req.user, data });
+  
+  if (!gameData) {
+    return res.status(404).send({ message: res.__('game.update.not_found') });
+  }
+
+  return res.status(200).send({ message: res.__('game.update.success'), data: gameData });
+
+}
