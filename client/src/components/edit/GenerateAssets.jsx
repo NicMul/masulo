@@ -16,6 +16,9 @@ const GenerateAssets = ({
     const [isGenerating, setIsGenerating] = useState(false);
     const [customPrompt, setCustomPrompt] = useState('');
     const [showDescribeChangesDialog, setShowDescribeChangesDialog] = useState(false);
+    const [testImage, setTestImage] = useState(null);
+    const [testVideo, setTestVideo] = useState(null);
+    
     const viewContext = useContext(ViewContext);
 
     const { t } = useTranslation();
@@ -46,6 +49,7 @@ const GenerateAssets = ({
         setIsGenerating(true);
 
         const payload = {
+            gameId: selectedGame?.id,
             imageUrl: selectedGame?.defaultImage,
             assetType: assetType,
             prompt: customPrompt,
@@ -62,6 +66,8 @@ const GenerateAssets = ({
             //     testImage: generateImage ? result[0].testImage : null,
             //     testVideo: generateVideo ? result[0].testVideo : null
             //   });
+
+            console.log('Result:', result);
       
               viewContext.notification({
                 description: t('edit.regenerate.dialog.success'),

@@ -58,14 +58,26 @@ exports.process = async function(req, res){
   console.log('req.user:', req.user);
   console.log('req.account:', req.account);
 
+  // validate
+  const data = utility.validate(joi.object({
+    
+    imageUrl: joi.string().required(),
+    prompt: joi.string().allow(''),
+    theme: joi.string().allow(''),
+    assetType: joi.string().allow(''),
+    gameId: joi.string().required()
+
+  }), req, res); 
+
   try{
       const imageAndVideoData = await generateImageAndVideoWithPrompt(
-          req.body.imageUrl, 
-          req.body.prompt, 
-          req.body.theme, 
-          req.body.assetType,
+          data.imageUrl, 
+          data.prompt, 
+          data.theme, 
+          data.assetType,
           req.user,    // Pass userId
-          req.account  // Pass accountId
+          req.account, // Pass accountId
+          data.gameId  // Pass gameId
       );
       return res.status(200).send({ data: imageAndVideoData });
   } catch (error) {
