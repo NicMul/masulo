@@ -1021,6 +1021,12 @@ table tbody tr:last-child td {
 .h-\[300px\] {
   height: 300px;
 }
+.h-96 {
+  height: 24rem;
+}
+.h-\[80dvh\] {
+  height: 80dvh;
+}
 .max-h-32 {
   max-height: 8rem;
 }
@@ -1047,6 +1053,9 @@ table tbody tr:last-child td {
 }
 .max-h-\[95vh\] {
   max-height: 95vh;
+}
+.max-h-\[80dvh\] {
+  max-height: 80dvh;
 }
 .min-h-\[10rem\] {
   min-height: 10rem;
@@ -1207,6 +1216,9 @@ table tbody tr:last-child td {
 .w-\[48\%\] {
   width: 48%;
 }
+.w-\[200px\] {
+  width: 200px;
+}
 .min-w-\[8rem\] {
   min-width: 8rem;
 }
@@ -1354,6 +1366,21 @@ table tbody tr:last-child td {
 .animate-spin {
   animation: spin 1s linear infinite;
 }
+@keyframes bounce {
+
+  0%, 100% {
+    transform: translateY(-25%);
+    animation-timing-function: cubic-bezier(0.8,0,1,1);
+  }
+
+  50% {
+    transform: none;
+    animation-timing-function: cubic-bezier(0,0,0.2,1);
+  }
+}
+.animate-bounce {
+  animation: bounce 1s infinite;
+}
 .cursor-default {
   cursor: default;
 }
@@ -1369,6 +1396,9 @@ table tbody tr:last-child td {
 }
 .resize-none {
   resize: none;
+}
+.resize {
+  resize: both;
 }
 .list-decimal {
   list-style-type: decimal;
@@ -1402,6 +1432,9 @@ table tbody tr:last-child td {
 }
 .items-start {
   align-items: flex-start;
+}
+.items-end {
+  align-items: flex-end;
 }
 .items-center {
   align-items: center;
@@ -1947,6 +1980,11 @@ table tbody tr:last-child td {
   --tw-gradient-to: rgb(239 246 255 / 0) var(--tw-gradient-to-position);
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
+.from-white {
+  --tw-gradient-from: #fff var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(255 255 255 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
 .via-transparent {
   --tw-gradient-to: rgb(0 0 0 / 0)  var(--tw-gradient-to-position);
   --tw-gradient-stops: var(--tw-gradient-from), transparent var(--tw-gradient-via-position), var(--tw-gradient-to);
@@ -2070,6 +2108,14 @@ table tbody tr:last-child td {
   padding-top: 0.25rem;
   padding-bottom: 0.25rem;
 }
+.px-7 {
+  padding-left: 1.75rem;
+  padding-right: 1.75rem;
+}
+.py-7 {
+  padding-top: 1.75rem;
+  padding-bottom: 1.75rem;
+}
 .pb-4 {
   padding-bottom: 1rem;
 }
@@ -2114,6 +2160,9 @@ table tbody tr:last-child td {
 }
 .pt-6 {
   padding-top: 1.5rem;
+}
+.pb-8 {
+  padding-bottom: 2rem;
 }
 .\!text-left {
   text-align: left !important;

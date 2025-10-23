@@ -20,6 +20,9 @@ const GameSchema = new Schema({
   animate: { type: Boolean, required: true },
   hover: { type: Boolean, required: true },
   version: { type: Number, required: true },
+  group: { type: String, default: '' },
+  playerCss: { type: String, default: '' },
+  touch: { type: Boolean, default: true },
   user_id: { type: String, required: true },
   date_created: Date,
   date_updated: Date
@@ -52,6 +55,9 @@ exports.create = async function({ data, user }){
     animate: data.animate,
     hover: data.hover,
     version: data.version,
+    group: data.group || '',
+    playerCss: data.playerCss || '',
+    touch: data.touch !== undefined ? data.touch : true,
     user_id: user,
     date_created: new Date(),
     date_updated: new Date()

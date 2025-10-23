@@ -22,7 +22,10 @@ exports.create = async function(req, res){
     theme: joi.string().allow('', null),
     animate: joi.boolean().required(),
     hover: joi.boolean().required(),
-    version: joi.number().required()
+    version: joi.number().required(),
+    group: joi.string().allow(''),
+    playerCss: joi.string().allow(''),
+    touch: joi.boolean()
 
   }), req, res); 
 
@@ -210,7 +213,10 @@ exports.update = async function(req, res){
     theme: joi.string().allow('', null),
     animate: joi.boolean(),
     hover: joi.boolean(),
-    version: joi.number()
+    version: joi.number(),
+    group: joi.string().allow(''),
+    playerCss: joi.string().allow(''),
+    touch: joi.boolean()
 
   }), req, res); 
 

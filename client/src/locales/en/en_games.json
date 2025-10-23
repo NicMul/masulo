@@ -85,6 +85,17 @@
     "version": {
       "label": "Version",
       "error": "Version is required"
+    },
+    "group": {
+      "label": "Group",
+      "placeholder": "Enter group name (optional)"
+    },
+    "playerCss": {
+      "label": "Player CSS",
+      "placeholder": "Enter custom CSS for the player (optional)"
+    },
+    "touch": {
+      "label": "Enable Touch Support"
     }
   },
   "imageEdit": {

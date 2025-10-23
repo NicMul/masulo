@@ -135,7 +135,7 @@ const GenerateAssets = ({
                                             onSelect={handleSelect}
                                             type="video"
                                             canSelect={false}
-                                            showPlayIcon={false}
+                                            showPlayIcon={true}
                                             readOnly={false}
                                             isSelected={false}
                                         />
@@ -188,15 +188,34 @@ const GenerateAssets = ({
                 </DialogContent>
             </Dialog>
             <Dialog open={showDescribeChangesDialog} onClose={() => setShowDescribeChangesDialog(false)}>
-                <DialogContent>
+                <DialogContent >
                     <DialogHeader>
                         <h1>Describe Changes</h1>
                     </DialogHeader>
-                    <Textarea
-                        value={customPrompt}
-                        onChange={(e) => setCustomPrompt(e.target.value)}
-                        placeholder={t('Describe the changes you want to make to the assets.')}
-                    />
+                    <div className="flex gap-4">
+                        <div className="flex-1">
+                            <MediaPlayer
+                                gameId={selectedGame?.id}
+                                imageUrl={selectedGame?.defaultImage}
+                                videoUrl={selectedGame?.defaultVideo}
+                                onSelect={handleSelect}
+                                type="image"
+                                canSelect={false}
+                                showPlayIcon={false}
+                                readOnly={false}
+                                isSelected={false}
+                            />
+                        </div>
+                        <div className="flex-1 ">
+                            <Textarea
+                                value={customPrompt}
+                                onChange={(e) => setCustomPrompt(e.target.value)}
+                                placeholder={t('Describe the reference image changes you want to make to the assets you are generating.')}
+                                className="h-full w-[200px] resize-none"
+                            />
+                        </div>
+                    </div>
+                    
                     <DialogFooter>
                         <Button color="green" onClick={() => setShowDescribeChangesDialog(false)}>{t('Continue')}</Button>
                     </DialogFooter>

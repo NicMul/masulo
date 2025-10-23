@@ -85,6 +85,17 @@
     "version": {
       "label": "Versión",
       "error": "La versión es obligatoria"
+    },
+    "group": {
+      "label": "Grupo",
+      "placeholder": "Ingresa el nombre del grupo (opcional)"
+    },
+    "playerCss": {
+      "label": "CSS del Reproductor",
+      "placeholder": "Ingresa CSS personalizado para el reproductor (opcional)"
+    },
+    "touch": {
+      "label": "Habilitar Soporte Táctil"
     }
   }
 }
