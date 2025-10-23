@@ -30,8 +30,8 @@ export function GameEditForm({ game, onSuccess, onCancel, t }) {
       themeImage: game.themeImage || '',
       themeVideo: game.themeVideo || '',
       scrape: game.scrape || false,
-      animate: game.animate || false,
-      hover: game.hover || false,
+      animate: game.animate !== undefined ? game.animate : true,
+      hover: game.hover !== undefined ? game.hover : true,
       version: game.version || 1,
       group: game.group || '',
       playerCss: game.playerCss || '',
@@ -39,13 +39,13 @@ export function GameEditForm({ game, onSuccess, onCancel, t }) {
     }
   });
 
-  // Watch all form values to determine if form is valid
+  // Watch only required fields to determine if form is valid
   const watchedValues = watch();
-  const isFormValid = Object.values(watchedValues).every(value => {
-    if (typeof value === 'boolean') return true; // checkboxes/switches are always valid
-    if (typeof value === 'number') return value > 0; // version must be > 0
-    return value && value.toString().trim() !== ''; // strings must not be empty
-  });
+  const isFormValid = watchedValues.cmsId && 
+                     watchedValues.cmsId.trim() !== '' && 
+                     watchedValues.version > 0 && 
+                     watchedValues.defaultImage && 
+                     watchedValues.defaultImage.trim() !== '';
 
   const onSubmit = useCallback(async (data) => {
     if (!isFormValid) return;
@@ -125,9 +125,9 @@ export function GameEditForm({ game, onSuccess, onCancel, t }) {
       <div>
         <h3 className="text-lg font-semibold mb-4 text-gray-900">Basic Information</h3>
         <div className="grid grid-cols-2 gap-4">
-          <div>
+          <div className="px-2">
             <label className="block text-sm font-medium mb-2 text-gray-700">
-              {t('games.form.cmsId.label')} *
+              {t('games.form.cmsId.label')} <span className="text-red-500">*</span>
             </label>
             <input
               {...register('cmsId', { 
@@ -145,22 +145,19 @@ export function GameEditForm({ game, onSuccess, onCancel, t }) {
             )}
           </div>
           
-          <div>
+          <div className="px-2">
             <label className="block text-sm font-medium mb-2 text-gray-700">
-              {t('games.form.theme.label')} *
+              {t('games.form.theme.label')}
             </label>
             <ThemeSelect
-              {...register('theme', { required: t('games.form.theme.error') })}
+              {...register('theme')}
               error={!!errors.theme}
             />
-            {errors.theme && (
-              <p className="text-red-500 text-xs mt-1">{errors.theme.message}</p>
-            )}
           </div>
           
           <div>
             <label className="block text-sm font-medium mb-2 text-gray-700">
-              {t('games.form.version.label')} *
+              {t('games.form.version.label')} <span className="text-red-500">*</span>
             </label>
             <input
               {...register('version', { 
@@ -180,7 +177,7 @@ export function GameEditForm({ game, onSuccess, onCancel, t }) {
             )}
           </div>
           
-          <div>
+          <div className="px-2">
             <label className="block text-sm font-medium mb-2 text-gray-700">
               {t('games.form.group.label')}
             </label>
@@ -196,9 +193,9 @@ export function GameEditForm({ game, onSuccess, onCancel, t }) {
       <div>
         <h3 className="text-lg font-semibold mb-4 text-gray-900">Media Assets</h3>
         <div className="grid grid-cols-2 gap-4">
-          <div>
+          <div className="px-2">
             <label className="block text-sm font-medium mb-2 text-gray-700">
-              {t('games.form.defaultImage.label')} *
+              {t('games.form.defaultImage.label')} <span className="text-red-500">*</span>
             </label>
             <input
               {...register('defaultImage', { 
@@ -216,104 +213,59 @@ export function GameEditForm({ game, onSuccess, onCancel, t }) {
             )}
           </div>
           
-          <div>
+          <div className="px-2">
             <label className="block text-sm font-medium mb-2 text-gray-700">
-              {t('games.form.defaultVideo.label')} *
+              {t('games.form.defaultVideo.label')}
             </label>
             <input
-              {...register('defaultVideo', { 
-                required: t('games.form.defaultVideo.error'),
-                minLength: { value: 1, message: t('games.form.defaultVideo.error') }
-              })}
+              {...register('defaultVideo')}
               type="text"
-              className={cn(
-                "w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500",
-                errors.defaultVideo ? "border-red-300" : "border-gray-300"
-              )}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            {errors.defaultVideo && (
-              <p className="text-red-500 text-xs mt-1">{errors.defaultVideo.message}</p>
-            )}
           </div>
           
-          <div>
+          <div className="px-2">
             <label className="block text-sm font-medium mb-2 text-gray-700">
-              {t('games.form.currentImage.label')} *
+              {t('games.form.currentImage.label')}
             </label>
             <input
-              {...register('currentImage', { 
-                required: t('games.form.currentImage.error'),
-                minLength: { value: 1, message: t('games.form.currentImage.error') }
-              })}
+              {...register('currentImage')}
               type="text"
-              className={cn(
-                "w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500",
-                errors.currentImage ? "border-red-300" : "border-gray-300"
-              )}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            {errors.currentImage && (
-              <p className="text-red-500 text-xs mt-1">{errors.currentImage.message}</p>
-            )}
           </div>
           
-          <div>
+          <div className="px-2">
             <label className="block text-sm font-medium mb-2 text-gray-700">
-              {t('games.form.currentVideo.label')} *
+              {t('games.form.currentVideo.label')}
             </label>
             <input
-              {...register('currentVideo', { 
-                required: t('games.form.currentVideo.error'),
-                minLength: { value: 1, message: t('games.form.currentVideo.error') }
-              })}
+              {...register('currentVideo')}
               type="text"
-              className={cn(
-                "w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500",
-                errors.currentVideo ? "border-red-300" : "border-gray-300"
-              )}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            {errors.currentVideo && (
-              <p className="text-red-500 text-xs mt-1">{errors.currentVideo.message}</p>
-            )}
           </div>
           
-          <div>
+          <div className="px-2">
             <label className="block text-sm font-medium mb-2 text-gray-700">
-              {t('games.form.themeImage.label')} *
+              {t('games.form.themeImage.label')}
             </label>
             <input
-              {...register('themeImage', { 
-                required: t('games.form.themeImage.error'),
-                minLength: { value: 1, message: t('games.form.themeImage.error') }
-              })}
+              {...register('themeImage')}
               type="text"
-              className={cn(
-                "w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500",
-                errors.themeImage ? "border-red-300" : "border-gray-300"
-              )}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            {errors.themeImage && (
-              <p className="text-red-500 text-xs mt-1">{errors.themeImage.message}</p>
-            )}
           </div>
           
-          <div>
+          <div className="px-2">
             <label className="block text-sm font-medium mb-2 text-gray-700">
-              {t('games.form.themeVideo.label')} *
+              {t('games.form.themeVideo.label')}
             </label>
             <input
-              {...register('themeVideo', { 
-                required: t('games.form.themeVideo.error'),
-                minLength: { value: 1, message: t('games.form.themeVideo.error') }
-              })}
+              {...register('themeVideo')}
               type="text"
-              className={cn(
-                "w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500",
-                errors.themeVideo ? "border-red-300" : "border-gray-300"
-              )}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            {errors.themeVideo && (
-              <p className="text-red-500 text-xs mt-1">{errors.themeVideo.message}</p>
-            )}
           </div>
         </div>
       </div>
@@ -372,7 +324,7 @@ export function GameEditForm({ game, onSuccess, onCancel, t }) {
       <div>
         <h3 className="text-lg font-semibold mb-4 text-gray-900">Additional Settings</h3>
         <div className="space-y-4">
-          <div>
+          <div className="px-2">
             <label className="block text-sm font-medium mb-2 text-gray-700">
               {t('games.form.playerCss.label')}
             </label>
