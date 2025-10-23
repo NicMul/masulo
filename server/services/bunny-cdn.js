@@ -68,6 +68,18 @@ async function createCdnConfiguration(userId, accountId) {
 
     console.log(`Storage zone created: ${storageZoneName} (ID: ${storageZoneId})`);
 
+    // Step 2.5: Get storage zone details to retrieve the correct API key
+    console.log('Getting storage zone details for API key...');
+    const storageZoneDetailsResponse = await axios.get(`https://api.bunny.net/storagezone/${storageZoneId}`, {
+      headers: {
+        'AccessKey': bunnyApiKey,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    const storageApiKey = storageZoneDetailsResponse.data.Password;
+    console.log(`Storage API key retrieved: ${storageApiKey ? 'Yes' : 'No'}`);
+
     // Step 3: Create pull zone
     console.log('Creating pull zone...');
     const randomSuffix = generateRandomString(7);
@@ -112,7 +124,7 @@ async function createCdnConfiguration(userId, accountId) {
       pullZoneName: pullZoneName,
       pullZoneId: pullZoneId,
       cdnUrl: cdnUrl,
-      storageKey: storagePassword,
+      storageKey: storageApiKey,
       optimization: true
     };
 

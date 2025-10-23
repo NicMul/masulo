@@ -5,12 +5,51 @@ const fs = require('fs');
 const path = require('path');
 const Replicate = require('replicate');
 const { promisify } = require('util');
-const { createCdnConfiguration } = require('./bunny-cdn');
+const { createCdnConfiguration, findCdnConfigurationByUserId } = require('./bunny-cdn');
 
 // Load environment variables
 dotenv.config();
 
 const execPromise = promisify(exec);
+
+// Helper function to generate random alphanumeric string
+function generateRandomString(length) {
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
+
+// Helper function to upload file to Bunny CDN storage
+async function uploadToBunnyStorage(filePath, cdnConfig, folder, filename) {
+  try {
+    console.log(`📤 Uploading ${filename} to Bunny storage...`);
+    
+    // Read the file
+    const fileBuffer = fs.readFileSync(filePath);
+    
+    // Upload to Bunny storage
+    const uploadUrl = `https://storage.bunnycdn.com/${cdnConfig.storageZoneName}/${folder}/${filename}`;
+    
+    const response = await axios.put(uploadUrl, fileBuffer, {
+      headers: {
+        'AccessKey': cdnConfig.storageKey,
+        'Content-Type': folder === 'images' ? 'image/jpeg' : 'video/mp4'
+      }
+    });
+    
+    // Construct CDN URL
+    const cdnUrl = `https://${cdnConfig.cdnUrl}/${folder}/${filename}`;
+    console.log(`✅ Upload successful! CDN URL: ${cdnUrl}`);
+    
+    return cdnUrl;
+  } catch (error) {
+    console.error(`❌ Upload failed for ${filename}:`, error.message);
+    throw error;
+  }
+}
 
 // async function generateImageWithReplicate(imageUrl, customPrompt, theme = 'default') {
 //   const replicate = new Replicate({
@@ -367,55 +406,31 @@ const execPromise = promisify(exec);
 
 async function generateImageAndVideoWithPrompt(imageUrl, prompt = '', theme = 'default', assetType = 'default', userId = null, accountId = null) {
 
-    // TESTING: Create CDN configuration
-    console.log('🚀 TESTING: Bunny CDN Integration');
+    console.log('🎨 Generating AI image and video...');
     console.log('📋 Parameters:', { imageUrl, prompt, theme, assetType, userId, accountId });
     
+    // Get or create CDN configuration
+    let cdnConfig = null;
     if (userId && accountId) {
         try {
-            console.log('🔧 Attempting to create CDN configuration...');
-            const cdnConfig = await createCdnConfiguration(userId, accountId);
-            console.log('✅ CDN Configuration Result:', {
-                id: cdnConfig.id,
+            console.log('🔧 Getting CDN configuration...');
+            cdnConfig = await findCdnConfigurationByUserId(userId, accountId);
+            if (!cdnConfig) {
+                console.log('📦 Creating new CDN configuration...');
+                cdnConfig = await createCdnConfiguration(userId, accountId);
+            }
+            console.log('✅ CDN Configuration ready:', {
                 storageZoneName: cdnConfig.storageZoneName,
-                pullZoneName: cdnConfig.pullZoneName,
-                cdnUrl: cdnConfig.cdnUrl,
-                optimization: cdnConfig.optimization
+                cdnUrl: cdnConfig.cdnUrl
             });
-            
-            // SHORT CIRCUIT FOR TESTING - Return mock data instead of generating assets
-            console.log('🛑 SHORT CIRCUIT: Returning mock data for testing');
-            return {
-                imagePath: '/mock/path/generated-image.jpg',
-                videoPath: '/mock/path/generated-video.mp4',
-                cdnConfig: cdnConfig
-            };
-            
         } catch (error) {
             console.error('❌ CDN Configuration Error:', error.message);
-            console.error('📊 Error Details:', error);
-            
-            // SHORT CIRCUIT FOR TESTING - Return mock data even on error
-            console.log('🛑 SHORT CIRCUIT: Returning mock data despite CDN error');
-            return {
-                imagePath: '/mock/path/generated-image.jpg',
-                videoPath: '/mock/path/generated-video.mp4',
-                cdnError: error.message
-            };
+            throw error;
         }
     } else {
-        console.log('⚠️ Missing userId or accountId - skipping CDN test');
-        // SHORT CIRCUIT FOR TESTING
-        console.log('🛑 SHORT CIRCUIT: Returning mock data (no user context)');
-        return {
-            imagePath: '/mock/path/generated-image.jpg',
-            videoPath: '/mock/path/generated-video.mp4',
-            note: 'No user context provided'
-        };
+        console.log('⚠️ Missing userId or accountId - CDN upload will be skipped');
     }
 
-    // Original asset generation code would go here (commented out for testing)
-    /*
     const replicate = new Replicate({
       auth: process.env.REPLICATE_API_TOKEN,
     });
@@ -561,10 +576,55 @@ async function generateImageAndVideoWithPrompt(imageUrl, prompt = '', theme = 'd
         console.warn('  ⚠️ Failed to cleanup original image:', cleanupError);
       }
   
-      return {
-        imagePath: generatedImagePath,
-        videoPath: optimizedPath
-      };
+      // Upload assets to CDN based on asset type
+      let result = {};
+      
+      if (cdnConfig) {
+        if (assetType === 'default') {
+          // Only upload video for default type
+          const videoFilename = `${generateRandomString(9)}.mp4`;
+          const videoUrl = await uploadToBunnyStorage(optimizedPath, cdnConfig, 'videos', videoFilename);
+          result.videoUrl = videoUrl;
+        } else if (assetType === 'current' || assetType === 'theme') {
+          // Upload both image and video for current/theme types
+          const imageFilename = `${generateRandomString(9)}.jpg`;
+          const videoFilename = `${generateRandomString(9)}.mp4`;
+          
+          const imageUrl = await uploadToBunnyStorage(generatedImagePath, cdnConfig, 'images', imageFilename);
+          const videoUrl = await uploadToBunnyStorage(optimizedPath, cdnConfig, 'videos', videoFilename);
+          
+          result.imageUrl = imageUrl;
+          result.videoUrl = videoUrl;
+        }
+      } else {
+        console.log('⚠️ No CDN config - returning local paths');
+        result.imagePath = generatedImagePath;
+        result.videoPath = optimizedPath;
+      }
+      
+      // Cleanup temporary files
+      try {
+        fs.unlinkSync(imagePath);
+        console.log('✅ Cleaned up original image');
+      } catch (cleanupError) {
+        console.warn('⚠️ Failed to cleanup original image:', cleanupError);
+      }
+      
+      try {
+        fs.unlinkSync(generatedImagePath);
+        console.log('✅ Cleaned up generated image');
+      } catch (cleanupError) {
+        console.warn('⚠️ Failed to cleanup generated image:', cleanupError);
+      }
+      
+      try {
+        fs.unlinkSync(optimizedPath);
+        console.log('✅ Cleaned up optimized video');
+      } catch (cleanupError) {
+        console.warn('⚠️ Failed to cleanup optimized video:', cleanupError);
+      }
+      
+      return result;
   
     } catch (error) {
       console.error('  ❌ Generation failed:', error);
@@ -577,7 +637,6 @@ async function generateImageAndVideoWithPrompt(imageUrl, prompt = '', theme = 'd
   
       throw error;
     }
-    */
 }
   
   module.exports = {
