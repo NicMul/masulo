@@ -15,6 +15,7 @@
     "cmsIdDefault": "No game selected",
     "animate": "Animate",
     "hover": "Hover Effect",
+    "touch": "Touch Support",
     "savePublish": "Save & Publish Changes"
   },
   "banner": {

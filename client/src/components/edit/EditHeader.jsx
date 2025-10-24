@@ -11,15 +11,18 @@ import { Button, Switch } from 'components/lib';
 export function EditHeader({ t, selectedGame, onSaveAndPublish }) {
   const [animateEnabled, setAnimateEnabled] = useState(false);
   const [hoverEnabled, setHoverEnabled] = useState(false);
+  const [touchEnabled, setTouchEnabled] = useState(false);
 
   // Update animate and hover state when game is selected
   useEffect(() => {
     if (selectedGame) {
       setAnimateEnabled(selectedGame.animate || false);
       setHoverEnabled(selectedGame.hover || false);
+      setTouchEnabled(selectedGame.touch || false);
     } else {
       setAnimateEnabled(false);
       setHoverEnabled(false);
+      setTouchEnabled(false);
     }
   }, [selectedGame]);
 
@@ -28,17 +31,16 @@ export function EditHeader({ t, selectedGame, onSaveAndPublish }) {
       <div className='flex items-center justify-between'>
         <div>
           <h1 className='text-2xl font-bold text-slate-900 dark:text-slate-100'>
-            { selectedGame ? t('edit.header.title', { gameName: selectedGame.cmsId }) : t('edit.header.titleDefault') }
+            { selectedGame ? t('edit.header.title', { gameName: selectedGame.cmsId.toUpperCase() }) : t('edit.header.titleDefault') }
+            <span className='text-ml text-slate-600 dark:text-slate-400'> - v{ selectedGame ? selectedGame.version : t('edit.header.cmsIdDefault') }</span>
           </h1>
-          
           <p className='text-sm text-slate-600 dark:text-slate-400'>
-            { selectedGame ? t('edit.header.version', { version: selectedGame.version }) : t('edit.header.versionDefault') }
+          { selectedGame ? t('edit.header.cmsId', { cmsId: selectedGame.cmsId }) : t('edit.header.cmsIdDefault') }
           </p>
+          
         </div>
         <div className='flex'>
-        <div className='bg-red-800 dark:bg-slate-800 rounded-full p-2 text-sm text-slate-200 dark:text-slate-400 mr-4 px-4'>
-            { selectedGame ? t('edit.header.cmsId', { cmsId: selectedGame.cmsId }) : t('edit.header.cmsIdDefault') }
-          </div>
+        
           <Switch
               name="animate"
               value={ animateEnabled }
@@ -52,6 +54,14 @@ export function EditHeader({ t, selectedGame, onSaveAndPublish }) {
               value={ hoverEnabled }
               label={ t('edit.header.hover') }
               onChange={ (e) => setHoverEnabled(e.target.value) }
+              disabled={ !selectedGame }
+            />
+            <div className='mr-4'></div>
+            <Switch
+              name="touch"
+              value={ touchEnabled }
+              label={ t('edit.header.touch') }
+              onChange={ (e) => setTouchEnabled(e.target.value) }
               disabled={ !selectedGame }
             />
         </div>

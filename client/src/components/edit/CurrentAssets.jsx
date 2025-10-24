@@ -102,38 +102,15 @@ export function CurrentAssets({ t, selectedGame, onGameUpdate }) {
           </div>
         </div>
         
-        <div className='space-y-2'>
-          <div className='flex items-center justify-between gap-2'>
+        <div className='space-y-2 flex justify-center items-center'>
           <Button 
             icon='refresh-cw' 
             text={ t('edit.current.regenerate') } 
             onClick={ regenerateCurrentAssets }
             disabled={ currentLocked || !selectedGame }
-            className='w-full'
+            className="w-3/5"
             color='blue'
           />
-          <Button 
-            icon='trash-2' 
-            text={ t('edit.current.delete') } 
-            onClick={ clearThemeContent }
-            color='red'
-            disabled={ currentLocked || !selectedGame }
-            className='w-full'
-          />
-          </div>
-          
-          <div className='flex items-center justify-end'>
-            <span className='text-sm text-slate-600 dark:text-slate-400 mr-2'>
-              { t('edit.current.lock') }
-            </span>
-            <Switch
-              name="currentLock"
-              value={ currentLocked }
-              onChange={ (e) => setCurrentLocked(e.target.value) }
-              disabled={ !selectedGame }
-            />
-          </div>
-          
         </div>
       </div>
       

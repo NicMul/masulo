@@ -1236,6 +1236,9 @@ table tbody tr:last-child td {
 .w-48 {
   width: 12rem;
 }
+.w-3\/5 {
+  width: 60%;
+}
 .min-w-\[8rem\] {
   min-width: 8rem;
 }
@@ -2036,6 +2039,9 @@ table tbody tr:last-child td {
 }
 .object-cover {
   object-fit: cover;
+}
+.object-fill {
+  object-fit: fill;
 }
 .\!p-0 {
   padding: 0px !important;

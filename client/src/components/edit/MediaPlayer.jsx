@@ -26,8 +26,8 @@ const MediaPlayer = ({
     // Default placeholder image (data URI for a simple gray placeholder)
     const defaultImage = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='280'%3E%3Crect width='180' height='280' fill='%23374151'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='16' fill='%23d1d5db' text-anchor='middle' dy='.3em'%3ENO ASSETS%3C/text%3E%3C/svg%3E`;
     
-    const finalImageUrl = imageUrl || defaultImage;
-    const finalVideoUrl = videoUrl || "";
+    const finalImageUrl = `${imageUrl}?optimizer=1&aspect_ratio=220:280` || `${defaultImage}?optimizer=1&aspect_ratio=220:280`;
+    const finalVideoUrl = `${videoUrl}?optimizer=1&aspect_ratio=220:280` || "";
     
     const hasVideo = type === 'video' || type === 'both';
 
@@ -121,7 +121,7 @@ const MediaPlayer = ({
     return (
         <div
             className={`relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 bg-gray-900 cursor-pointer ${className}`}
-            style={{ aspectRatio: '180 / 280' }}
+            style={{ aspectRatio: '220 / 280' }}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
             onClick={handleSelect}
