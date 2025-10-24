@@ -274,6 +274,9 @@ exports.acceptTestAssets = async function(req, res){
   utility.assert(req.params.id, res.__('game.update.id_required'));
 
   try {
+    // Extract assetType from request body (default to 'original' for backward compatibility)
+    const assetType = req.body.assetType || 'original';
+    
     // Get current game data to retrieve test assets
     const gameData = await game.get({ id: req.params.id, user: req.user });
     
@@ -283,10 +286,7 @@ exports.acceptTestAssets = async function(req, res){
 
     const currentGame = gameData[0];
     
-    // Get asset type from request body (default to 'original' for backward compatibility)
-    const assetType = req.body.assetType || 'original';
-    
-    // Validate that we have test assets to accept
+    // Validate that testVideo field is not empty
     if (!currentGame.testVideo || currentGame.testVideo.trim() === '') {
       return res.status(400).send({ message: 'No test video to accept' });
     }
@@ -306,37 +306,43 @@ exports.acceptTestAssets = async function(req, res){
     }
 
     console.log('🎯 Accepting test assets for game:', req.params.id);
-    console.log('📋 Asset type:', assetType);
     console.log('📹 Test video URL:', currentGame.testVideo);
-    if (currentGame.testImage) {
-      console.log('🖼️ Test image URL:', currentGame.testImage);
-    }
+    console.log('🎨 Asset type:', assetType);
 
-    const updateData = {
-      testVideo: '', // Clear test video
-      testImage: ''  // Clear test image (if exists)
-    };
-
-    const randomString = generateRandomString(9);
-
-    // Handle video acceptance
+    // Step 1: Download the test video from /test/ directory
     const tempVideoPath = await downloadFromBunnyStorage(currentGame.testVideo, cdnConfig);
-    const videoFilename = assetType === 'original' ? `default-${randomString}.mp4` : `current-${randomString}.mp4`;
-    const newVideoUrl = await uploadToBunnyStorage(tempVideoPath, cdnConfig, 'videos', videoFilename);
+
+    // Step 2: Generate new filename for /videos/ directory based on assetType
+    const randomString = generateRandomString(9);
+    let newVideoFilename;
+    let newImageFilename;
     
-    // Update the appropriate video field
     if (assetType === 'original') {
-      updateData.defaultVideo = newVideoUrl;
+      newVideoFilename = `default-${randomString}.mp4`;
+    } else if (assetType === 'current') {
+      newVideoFilename = `current-${randomString}.mp4`;
+      newImageFilename = `current-${randomString}.jpg`;
+    } else if (assetType === 'theme') {
+      newVideoFilename = `theme-${randomString}.mp4`;
+      newImageFilename = `theme-${randomString}.jpg`;
     } else {
-      updateData.currentVideo = newVideoUrl;
+      // Default fallback
+      newVideoFilename = `default-${randomString}.mp4`;
     }
 
-    // Handle image acceptance (only for current asset type)
-    if (assetType === 'current' && currentGame.testImage && currentGame.testImage.trim() !== '') {
+    // Step 3: Upload video to /videos/ directory with new filename
+    const newVideoUrl = await uploadToBunnyStorage(tempVideoPath, cdnConfig, 'videos', newVideoFilename);
+
+    // Step 4: Handle test image if it exists (for current/theme types)
+    let newImageUrl = null;
+    if ((assetType === 'current' || assetType === 'theme') && currentGame.testImage && currentGame.testImage.trim() !== '') {
+      console.log('📷 Processing test image:', currentGame.testImage);
+      
+      // Download test image
       const tempImagePath = await downloadFromBunnyStorage(currentGame.testImage, cdnConfig);
-      const imageFilename = `current-${randomString}.jpg`;
-      const newImageUrl = await uploadToBunnyStorage(tempImagePath, cdnConfig, 'images', imageFilename);
-      updateData.currentImage = newImageUrl;
+      
+      // Upload image to /images/ directory
+      newImageUrl = await uploadToBunnyStorage(tempImagePath, cdnConfig, 'images', newImageFilename);
       
       // Delete test image from /test/ directory
       await deleteFromBunnyStorage(currentGame.testImage, cdnConfig);
@@ -351,17 +357,35 @@ exports.acceptTestAssets = async function(req, res){
       }
     }
 
-    // Delete test video from /test/ directory
+    // Step 5: Delete test video from /test/ directory
     await deleteFromBunnyStorage(currentGame.testVideo, cdnConfig);
 
-    // Update game document
+    // Step 6: Update game document based on assetType
+    let updateData = {
+      testVideo: '', // Clear test video
+      testImage: ''  // Clear test image
+    };
+
+    if (assetType === 'original') {
+      updateData.defaultVideo = newVideoUrl;
+    } else if (assetType === 'current') {
+      updateData.currentVideo = newVideoUrl;
+      if (newImageUrl) updateData.currentImage = newImageUrl;
+    } else if (assetType === 'theme') {
+      updateData.themeVideo = newVideoUrl;
+      if (newImageUrl) updateData.themeImage = newImageUrl;
+    } else {
+      // Default fallback
+      updateData.defaultVideo = newVideoUrl;
+    }
+
     const updatedGameData = await game.update({ id: req.params.id, user: req.user, data: updateData });
     
     if (!updatedGameData) {
       return res.status(500).send({ message: 'Failed to update game' });
     }
 
-    // Clean up temp video file
+    // Step 7: Clean up temp file
     try {
       const fs = require('fs');
       fs.unlinkSync(tempVideoPath);
@@ -372,8 +396,8 @@ exports.acceptTestAssets = async function(req, res){
 
     console.log('✅ Test assets accepted successfully');
     console.log('📹 New video URL:', newVideoUrl);
-    if (updateData.currentImage) {
-      console.log('🖼️ New image URL:', updateData.currentImage);
+    if (newImageUrl) {
+      console.log('📷 New image URL:', newImageUrl);
     }
 
     return res.status(200).send({ 
@@ -405,7 +429,7 @@ exports.archiveTestAssets = async function(req, res){
 
     const currentGame = gameData[0];
     
-    // Validate that we have test assets to archive
+    // Check if there are any test assets to archive
     if ((!currentGame.testVideo || currentGame.testVideo.trim() === '') && 
         (!currentGame.testImage || currentGame.testImage.trim() === '')) {
       return res.status(400).send({ message: 'No test assets to archive' });
@@ -414,9 +438,7 @@ exports.archiveTestAssets = async function(req, res){
     // Import Bunny CDN functions
     const { 
       findCdnConfigurationByUserId, 
-      listFilesInFolder,
-      moveFileBetweenFolders,
-      deleteFromBunnyStorage 
+      moveFileBetweenFolders
     } = require('../services/bunny-cdn');
 
     // Get user's CDN configuration
@@ -427,62 +449,24 @@ exports.archiveTestAssets = async function(req, res){
 
     console.log('🗄️ Archiving test assets for game:', req.params.id);
     console.log('📹 Test video URL:', currentGame.testVideo);
-    if (currentGame.testImage) {
-      console.log('🖼️ Test image URL:', currentGame.testImage);
-    }
-
-    const archivedAssets = {};
-    const filesToDelete = [];
+    console.log('📷 Test image URL:', currentGame.testImage);
 
     // Archive test video if it exists
     if (currentGame.testVideo && currentGame.testVideo.trim() !== '') {
-      try {
-        const archivedVideoUrl = await moveFileBetweenFolders(currentGame.testVideo, cdnConfig, 'archive');
-        archivedAssets.video = archivedVideoUrl;
-        filesToDelete.push(currentGame.testVideo);
-        console.log('✅ Test video archived:', archivedVideoUrl);
-      } catch (error) {
-        console.error('❌ Failed to archive test video:', error);
-        // Continue with other operations even if one fails
-      }
+      console.log('📹 Archiving test video...');
+      await moveFileBetweenFolders(currentGame.testVideo, cdnConfig, 'archive');
     }
 
     // Archive test image if it exists
     if (currentGame.testImage && currentGame.testImage.trim() !== '') {
-      try {
-        const archivedImageUrl = await moveFileBetweenFolders(currentGame.testImage, cdnConfig, 'archive');
-        archivedAssets.image = archivedImageUrl;
-        filesToDelete.push(currentGame.testImage);
-        console.log('✅ Test image archived:', archivedImageUrl);
-      } catch (error) {
-        console.error('❌ Failed to archive test image:', error);
-        // Continue with other operations even if one fails
-      }
+      console.log('📷 Archiving test image...');
+      await moveFileBetweenFolders(currentGame.testImage, cdnConfig, 'archive');
     }
 
-    // List all files in /test/ folder and delete them
-    try {
-      const testFiles = await listFilesInFolder(cdnConfig, 'test');
-      console.log(`🗑️ Found ${testFiles.length} files in /test/ folder to delete`);
-      
-      for (const file of testFiles) {
-        try {
-          const fileUrl = `https://${cdnConfig.cdnUrl}/test/${file.name}`;
-          await deleteFromBunnyStorage(fileUrl, cdnConfig);
-          console.log(`✅ Deleted file from /test/: ${file.name}`);
-        } catch (error) {
-          console.error(`❌ Failed to delete file ${file.name}:`, error);
-        }
-      }
-    } catch (error) {
-      console.error('❌ Failed to list/delete files in /test/ folder:', error);
-      // Continue with database update even if cleanup fails
-    }
-
-    // Update game document to clear test assets
+    // Clear test assets from game document
     const updateData = {
-      testVideo: '',
-      testImage: ''
+      testVideo: '', // Clear test video
+      testImage: ''  // Clear test image
     };
 
     const updatedGameData = await game.update({ id: req.params.id, user: req.user, data: updateData });
@@ -492,11 +476,9 @@ exports.archiveTestAssets = async function(req, res){
     }
 
     console.log('✅ Test assets archived successfully');
-    console.log('📊 Archived assets:', archivedAssets);
 
     return res.status(200).send({ 
       message: 'Test assets archived successfully', 
-      archived: archivedAssets,
       data: updatedGameData 
     });
 

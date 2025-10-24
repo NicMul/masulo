@@ -104,7 +104,8 @@
         "aiGeneratedImage": "AI Generated Image",
         "aiGeneratedVideo": "AI Generated Video",
         "latestAssets": "Last Generated",
-        "generateAssets": "Nothing New Yet ..."
+        "generateAssets": "Nothing New Yet",
+        "generatingAssets": "Generating Assets ..."
       },
       "placeholders": {
         "imagePrompt": "Enter image prompt",

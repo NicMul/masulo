@@ -1,5 +1,6 @@
 const { generateOriginalAsset } = require('./generate-original-asset');
 const { generateCurrentAsset } = require('./generate-current-asset');
+const { generateThemeAsset } = require('./generate-theme-asset');
 
 
 
@@ -36,6 +37,16 @@ async function generateImageAndVideoWithPrompt(imageUrl, prompt = '', theme = 'd
       });
     } else if (assetType === 'current') {
       return await generateCurrentAsset({
+        imageUrl,
+        prompt,
+        userId,
+        accountId,
+        gameId,
+        generateImage,
+        generateVideo
+      });
+    } else if (assetType === 'theme') {
+      return await generateThemeAsset({
         imageUrl,
         prompt,
         userId,

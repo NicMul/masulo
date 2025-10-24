@@ -77,8 +77,8 @@ const GenerateAssets = ({
             if (result) {
                 console.log('Result:', result.data);
                 
-                // Handle both 'original' and 'current' asset types
-                if (result.data.assetType === 'original' || result.data.assetType === 'current') {
+                // Handle 'original', 'current', and 'theme' asset types
+                if (result.data.assetType === 'original' || result.data.assetType === 'current' || result.data.assetType === 'theme') {
                     setTestImage(result.data.imageUrl);
                     setTestVideoUrl(result.data.videoUrl);
                     
@@ -249,8 +249,6 @@ const GenerateAssets = ({
         return generateDescriptionPlaceholder(assetType, t);
     }, [assetType, t]);
 
-
-
     const imageUrl = useMemo(() => {
         return getImageUrl(assetType, selectedGame);
     }, [assetType, selectedGame]);
@@ -258,6 +256,16 @@ const GenerateAssets = ({
     const videoUrl = useMemo(() => {
         return getVideoUrl(assetType, selectedGame);
     }, [assetType, selectedGame]);
+
+    const createTitle = () => {
+        if (isGenerating) {
+            return t('edit.regenerate.dialog.cards.generatingAssets');
+        }
+        if (selectedGame?.testImage || selectedGame?.testVideo) {
+            return t('edit.regenerate.dialog.cards.latestAssets');
+        }
+        return t('edit.regenerate.dialog.cards.generateAssets');
+    }
 
 
 
@@ -289,6 +297,7 @@ const GenerateAssets = ({
                                             showPlayIcon={false}
                                             readOnly={true}
                                             isSelected={false}
+                                            isGenerating={false}
                                         />
                                     </Card>
                                 </div>
@@ -310,6 +319,7 @@ const GenerateAssets = ({
                                             showPlayIcon={false}
                                             readOnly={assetType === 'original' && selectedGame?.defaultImage }
                                             isSelected={false}
+                                            isGenerating={false}
                                         />
                                     </Card>
                                     <Card title={t('edit.regenerate.dialog.cards.aiGeneratedVideo')} className='w-1/2 flex-col gap-3'>
@@ -324,6 +334,7 @@ const GenerateAssets = ({
                                             showPlayIcon={true}
                                             readOnly={false}
                                             isSelected={false}
+                                            isGenerating={false}
                                         />
                                     </Card>
                                 </div>
@@ -331,7 +342,7 @@ const GenerateAssets = ({
                         </Tabs>
                         <div className='relative flex justify-center items-center bg-slate-200 dark:bg-slate-700 rounded-lg p-3 text-center'>
                             <Card
-                                title={selectedGame?.testImage || selectedGame?.testVideo ? t('edit.regenerate.dialog.cards.latestAssets') : t('edit.regenerate.dialog.cards.generateAssets')}
+                                title={createTitle()}
                                 className='relative w-1/2 justify-center flex-col gap-3'
                             >
                             
@@ -346,6 +357,7 @@ const GenerateAssets = ({
                                     showPlayIcon={!testImage && !selectedGame?.testImage}
                                     readOnly={false}
                                     isSelected={false}
+                                    isGenerating={isGenerating}
                                 />
                                 {(selectedGame?.testImage || selectedGame?.testVideo || testImage || testVideoUrl) && (
                                     <div className="mt-4 flex justify-between gap-2">
