@@ -19,13 +19,14 @@ const GenerateAssets = ({
     const [showDescribeChangesDialog, setShowDescribeChangesDialog] = useState(false);
     const [showDeleteConfirmationDialog, setShowDeleteConfirmationDialog] = useState(false);
     const [showAssetSelectionDialog, setShowAssetSelectionDialog] = useState(false);
-    const [generateImage, setGenerateImage] = useState(assetType === 'original' ? false : true);
+    const [generateImage, setGenerateImage] = useState();
     const [generateVideo, setGenerateVideo] = useState(true);
     const [testImage, setTestImage] = useState(null);
     const [testVideoUrl, setTestVideoUrl] = useState(null);
     const [reloadTrigger, setReloadTrigger] = useState(0);
     const [showAcceptConfirmationDialog, setShowAcceptConfirmationDialog] = useState(false);
     const [madeSelection, setMadeSelection] = useState(false);
+    const [reloadTrigger2, setReloadTrigger2] = useState(0);
 
     const viewContext = useContext(ViewContext);
 
@@ -61,7 +62,7 @@ const GenerateAssets = ({
 
         const payload = {
             gameId: selectedGame?.id,
-            imageUrl: selectedGame?.defaultImage,
+            imageUrl: selectedGame.testImage || testImage ? selectedGame.testImage : selectedGame?.defaultImage,
             assetType: assetType,
             prompt: customPrompt,
             theme: selectedGame?.theme,
@@ -166,7 +167,9 @@ const GenerateAssets = ({
 
     const confirmAcceptTestAssets = useCallback(async () => {
         try {
-            await acceptTestAssetsMutation.execute();
+            await acceptTestAssetsMutation.execute({
+                assetType: assetType
+            });
 
             // Clear local state
             setTestVideoUrl(null);
@@ -194,7 +197,7 @@ const GenerateAssets = ({
                 variant: 'error'
             });
         }
-    }, [acceptTestAssetsMutation, reloadTrigger, viewContext, t, onGameUpdate]);
+    }, [acceptTestAssetsMutation, assetType, reloadTrigger, viewContext, t, onGameUpdate]);
 
     const handleDeleteClick = useCallback(() => {
         setShowDeleteConfirmationDialog(true);
@@ -217,7 +220,6 @@ const GenerateAssets = ({
 
 
     const getImageUrl = useCallback(() => {
-
       if (assetType === 'original') return selectedGame?.defaultImage;
       if (assetType === 'current') return selectedGame?.currentImage;
       if (assetType === 'theme') return selectedGame?.themeImage;
@@ -230,7 +232,24 @@ const GenerateAssets = ({
       if (assetType === 'current') return selectedGame?.currentVideo;
       if (assetType === 'theme') return selectedGame?.themeVideo;
       return null;
-    }, [assetType, selectedGame]);
+    }, [assetType, selectedGame, generateVideo, generateImage]);
+
+    const getImageNewUrls = useCallback(() => {
+        if (assetType === 'original') return selectedGame?.defaultImage;
+        if (assetType === 'current') return generateVideo ? selectedGame?.defaultImage : selectedGame?.currentImage;
+        if (assetType === 'theme') return selectedGame?.themeImage;
+        return null;
+      }, [assetType, selectedGame]);
+  
+      const getVideoNewUrls = useCallback(() => {
+  
+        if (assetType === 'original') return selectedGame?.defaultVideo;
+        if (assetType === 'current') return selectedGame?.currentVideo;
+        if (assetType === 'theme') return selectedGame?.themeVideo;
+        return null;
+      }, [assetType, selectedGame, generateVideo, generateImage]);
+
+
 
     return (
         <div>
@@ -353,14 +372,15 @@ const GenerateAssets = ({
                         <div className="w-2/5 flex-shrink-0">
                             <div className="relative w-full" style={{ aspectRatio: '220/280' }}>
                                 <MediaPlayer
+                                    key={reloadTrigger2}
                                     gameId={selectedGame?.id}
-                                    imageUrl={selectedGame?.defaultImage}
-                                    videoUrl={selectedGame?.defaultVideo}
+                                    imageUrl={assetType !== 'original' ?( generateImage ? selectedGame?.defaultImage : selectedGame?.currentImage) : selectedGame?.defaultImage}
+                                    videoUrl={assetType !== 'original' ?( generateVideo ? selectedGame?.defaultVideo : selectedGame?.currentVideo) : selectedGame?.defaultVideo}
                                     onSelect={handleSelect}
                                     type="image"
                                     canSelect={false}
                                     showPlayIcon={false}
-                                    readOnly={true}
+                                    readOnly={assetType === 'original' ? true : false}
                                     isSelected={false}
                                 />
                             </div>
@@ -385,6 +405,7 @@ const GenerateAssets = ({
                         <span className="text-lg font-medium text-muted-foreground">
                             Generate:
                         </span>
+                       
                         <div className="flex items-center gap-2">
                             <Switch
                                disabled={assetType === 'original'}
@@ -412,6 +433,7 @@ const GenerateAssets = ({
                             {t('Cancel')}
                         </Button>
                         <Button
+                            disabled={!generateImage && !generateVideo}
                             onClick={() => {
                                 setShowDescribeChangesDialog(false);
                                 setMadeSelection(true);
@@ -450,6 +472,8 @@ const GenerateAssets = ({
                         <p>
                             {assetType === 'original'
                                 ? t('Accepting will replace animation for your default image. The image will not be changed.')
+                                : assetType === 'current'
+                                ? t('Accepting will replace both your current image and video with the test versions.')
                                 : t('Are you sure you want to accept the test assets? This action cannot be undone.')
                             }
                         </p>

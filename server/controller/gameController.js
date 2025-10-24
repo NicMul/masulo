@@ -274,7 +274,7 @@ exports.acceptTestAssets = async function(req, res){
   utility.assert(req.params.id, res.__('game.update.id_required'));
 
   try {
-    // Get current game data to retrieve testVideo URL
+    // Get current game data to retrieve test assets
     const gameData = await game.get({ id: req.params.id, user: req.user });
     
     if (!gameData || gameData.length === 0) {
@@ -283,7 +283,10 @@ exports.acceptTestAssets = async function(req, res){
 
     const currentGame = gameData[0];
     
-    // Validate that testVideo field is not empty
+    // Get asset type from request body (default to 'original' for backward compatibility)
+    const assetType = req.body.assetType || 'original';
+    
+    // Validate that we have test assets to accept
     if (!currentGame.testVideo || currentGame.testVideo.trim() === '') {
       return res.status(400).send({ message: 'No test video to accept' });
     }
@@ -303,34 +306,62 @@ exports.acceptTestAssets = async function(req, res){
     }
 
     console.log('🎯 Accepting test assets for game:', req.params.id);
+    console.log('📋 Asset type:', assetType);
     console.log('📹 Test video URL:', currentGame.testVideo);
+    if (currentGame.testImage) {
+      console.log('🖼️ Test image URL:', currentGame.testImage);
+    }
 
-    // Step 1: Download the test video from /test/ directory
-    const tempVideoPath = await downloadFromBunnyStorage(currentGame.testVideo, cdnConfig);
-
-    // Step 2: Generate new filename for /videos/ directory
-    const randomString = generateRandomString(9);
-    const newVideoFilename = `default-${randomString}.mp4`;
-
-    // Step 3: Upload video to /videos/ directory with new filename
-    const newVideoUrl = await uploadToBunnyStorage(tempVideoPath, cdnConfig, 'videos', newVideoFilename);
-
-    // Step 4: Delete test video from /test/ directory
-    await deleteFromBunnyStorage(currentGame.testVideo, cdnConfig);
-
-    // Step 5: Update game document
     const updateData = {
       testVideo: '', // Clear test video
-      defaultVideo: newVideoUrl // Set new default video
+      testImage: ''  // Clear test image (if exists)
     };
 
+    const randomString = generateRandomString(9);
+
+    // Handle video acceptance
+    const tempVideoPath = await downloadFromBunnyStorage(currentGame.testVideo, cdnConfig);
+    const videoFilename = assetType === 'original' ? `default-${randomString}.mp4` : `current-${randomString}.mp4`;
+    const newVideoUrl = await uploadToBunnyStorage(tempVideoPath, cdnConfig, 'videos', videoFilename);
+    
+    // Update the appropriate video field
+    if (assetType === 'original') {
+      updateData.defaultVideo = newVideoUrl;
+    } else {
+      updateData.currentVideo = newVideoUrl;
+    }
+
+    // Handle image acceptance (only for current asset type)
+    if (assetType === 'current' && currentGame.testImage && currentGame.testImage.trim() !== '') {
+      const tempImagePath = await downloadFromBunnyStorage(currentGame.testImage, cdnConfig);
+      const imageFilename = `current-${randomString}.jpg`;
+      const newImageUrl = await uploadToBunnyStorage(tempImagePath, cdnConfig, 'images', imageFilename);
+      updateData.currentImage = newImageUrl;
+      
+      // Delete test image from /test/ directory
+      await deleteFromBunnyStorage(currentGame.testImage, cdnConfig);
+      
+      // Clean up temp image file
+      try {
+        const fs = require('fs');
+        fs.unlinkSync(tempImagePath);
+        console.log('✅ Cleaned up temp image file');
+      } catch (cleanupError) {
+        console.warn('⚠️ Failed to cleanup temp image:', cleanupError);
+      }
+    }
+
+    // Delete test video from /test/ directory
+    await deleteFromBunnyStorage(currentGame.testVideo, cdnConfig);
+
+    // Update game document
     const updatedGameData = await game.update({ id: req.params.id, user: req.user, data: updateData });
     
     if (!updatedGameData) {
       return res.status(500).send({ message: 'Failed to update game' });
     }
 
-    // Step 6: Clean up temp file
+    // Clean up temp video file
     try {
       const fs = require('fs');
       fs.unlinkSync(tempVideoPath);
@@ -340,7 +371,10 @@ exports.acceptTestAssets = async function(req, res){
     }
 
     console.log('✅ Test assets accepted successfully');
-    console.log('📹 New default video URL:', newVideoUrl);
+    console.log('📹 New video URL:', newVideoUrl);
+    if (updateData.currentImage) {
+      console.log('🖼️ New image URL:', updateData.currentImage);
+    }
 
     return res.status(200).send({ 
       message: 'Test assets accepted successfully', 
