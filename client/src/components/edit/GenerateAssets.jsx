@@ -174,6 +174,24 @@ const GenerateAssets = ({
         return t('edit.regenerate.dialog.placeholders.aiGeneratedImagePrompt');
     }, [assetType]);
 
+
+
+    const getImageUrl = useCallback(() => {
+
+      if (assetType === 'original') return selectedGame?.defaultImage;
+      if (assetType === 'current') return selectedGame?.currentImage;
+      if (assetType === 'theme') return selectedGame?.themeImage;
+      return null;
+    }, [assetType, selectedGame]);
+
+    const getVideoUrl = useCallback(() => {
+
+      if (assetType === 'original') return selectedGame?.defaultVideo;
+      if (assetType === 'current') return selectedGame?.currentVideo;
+      if (assetType === 'theme') return selectedGame?.themeVideo;
+      return null;
+    }, [assetType, selectedGame]);
+
     return (
         <div>
             <Dialog open={isOpen} onClose={onClose}>
@@ -215,13 +233,13 @@ const GenerateAssets = ({
                                         <MediaPlayer
                                             key={reloadTrigger}
                                             gameId={selectedGame?.id}
-                                            imageUrl={selectedGame?.defaultImage}
-                                            videoUrl={selectedGame?.defaultVideo}
+                                            imageUrl={getImageUrl()}
+                                            videoUrl={getVideoUrl()}
                                             onSelect={handleSelect}
                                             type="image"
                                             canSelect={false}
                                             showPlayIcon={false}
-                                            readOnly={assetType === 'original' && selectedGame?.defaultImage}
+                                            readOnly={assetType === 'original' && selectedGame?.defaultImage }
                                             isSelected={false}
                                         />
                                     </Card>
@@ -229,8 +247,8 @@ const GenerateAssets = ({
                                         <MediaPlayer
                                             key={reloadTrigger}
                                             gameId={selectedGame?.id}
-                                            imageUrl={selectedGame?.defaultImage}
-                                            videoUrl={selectedGame?.defaultVideo}
+                                            imageUrl={getImageUrl()}
+                                            videoUrl={getVideoUrl()}
                                             onSelect={handleSelect}
                                             type="video"
                                             canSelect={false}
