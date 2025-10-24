@@ -187,12 +187,22 @@ export function Games({ t }){
       <Card title={ t('games.table.title') }>
         
         <Table
-          searchable
+        sortable
+        selectable
+      searchable
           data={ games }
           loading={ res.loading }
           actions={ actions }
-          show={ ['cmsId','version', 'group', 'theme', 'defaultImage', 'currentImage', 'themeImage', 'animate', 'hover', 'touch'] }
+          show={ ['published', 'version','cmsId', 'group', 'theme', 'defaultImage', 'currentImage', 'themeImage', 'animate', 'hover', 'touch'] }
           badge={ [
+            { 
+              col: 'published', 
+              color: 'green',
+              condition: [
+                { value: true, color: 'green' },
+                { value: false, color: 'red' }
+              ]
+            },
             { 
               col: 'touch', 
               color: 'green',

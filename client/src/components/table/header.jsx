@@ -13,7 +13,6 @@ const TableHeader = forwardRef(({ className, header, show, row, hide, translatio
   if (actions){
 
     header.push('');
-    show?.length && show.push('');
 
   }
 

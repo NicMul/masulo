@@ -36,7 +36,7 @@ const TableBody = forwardRef(({ className, rows, show, hide, badge, translation,
                 </TableCell> 
               }
 
-              { (show || Object.keys(row)).map((col, index) => {
+              { (show || Object.keys(row)).filter(col => col !== '').map((col, index) => {
 
                 let value = row[col];
                 let cellContent = value;
@@ -120,7 +120,7 @@ const TableBody = forwardRef(({ className, rows, show, hide, badge, translation,
               })}    
         
               { /* add the actions */ }
-              { row.actions || actions ? 
+              { (row.actions || actions) && 
                 <TableCell className='text-left my-2 sm:text-right'>
                   <RowActions 
                     row={ row }
@@ -128,7 +128,7 @@ const TableBody = forwardRef(({ className, rows, show, hide, badge, translation,
                     editRowCallback={ editRowCallback }
                     deleteRowCallback={ deleteRowCallback }
                   />
-                </TableCell> : undefined 
+                </TableCell>
               }
 
             </TableRow>
