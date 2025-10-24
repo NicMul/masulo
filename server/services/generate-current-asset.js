@@ -66,8 +66,8 @@ async function generateCurrentAsset({ imageUrl, prompt, userId, accountId, gameI
     const dataURI = convertImageToDataURI(imagePath);
     
     // Build prompts
-    const baseImagePrompt = "This is an online casino game thumbnail. Create a beautiful enhanced version that improves the visual appeal. The elements should be cinematic and professional. Where possible, use the game's theme color for enhancement. the main items of the image should be enhanced and not changed. Do not change any text. ";
-    const baseVideoPrompt = "This is an online casino game thumbnail. Create a beautiful animation that enhances the appeal. The elements in the picture are cinematic and animate professionally. Where possible, use the game's theme color for the animation. Try to make the animation in a loop. Do not change any text.";
+    const baseImagePrompt = "This is an online casino game thumbnail. Create a beautiful enhanced version that improves the visual appeal. The elements should be cinematic and professional. Where possible, use the game's theme color for enhancement. the main items of the image should be enhanced and not changed. Do not change or remove any text. ";
+    const baseVideoPrompt = "This is an online casino game thumbnail. Create a beautiful animation that enhances the appeal. The elements in the picture are cinematic and animate professionally. Where possible, use the game's theme color for the animation. Try to make the animation in a loop. Do not change or remove any text.";
     
     let finalImagePrompt = baseImagePrompt;
     let finalVideoPrompt = baseVideoPrompt;
