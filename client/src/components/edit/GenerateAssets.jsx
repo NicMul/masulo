@@ -63,7 +63,9 @@ const GenerateAssets = ({
             imageUrl: selectedGame?.defaultImage,
             assetType: assetType,
             prompt: customPrompt,
-            theme: selectedGame?.theme
+            theme: selectedGame?.theme,
+            generateImage: generateImage,
+            generateVideo: generateVideo
         };
 
         try {

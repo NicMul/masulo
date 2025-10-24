@@ -545,7 +545,7 @@ async function uploadAssetsToStorage(assetType, cdnConfig, imagePath, videoPath)
 // };
 
 
-async function generateImageAndVideoWithPrompt(imageUrl, prompt = '', theme = 'default', assetType = 'original', userId = null, accountId = null, gameId = null) {
+async function generateImageAndVideoWithPrompt(imageUrl, prompt = '', theme = 'default', assetType = 'original', userId = null, accountId = null, gameId = null, generateImage = null, generateVideo = null) {
 
     console.log('🎨 Generating AI image and video...');
     console.log('📋 Parameters:', { imageUrl, prompt, theme, assetType, userId, accountId, gameId });
@@ -562,6 +562,9 @@ async function generateImageAndVideoWithPrompt(imageUrl, prompt = '', theme = 'd
     }
     if (!gameId || gameId.trim() === '') {
         throw new Error('gameId is required and cannot be empty');
+    }
+    if ((!generateImage || generateImage === null || generateImage === false) || (!generateVideo || generateVideo === null || generateVideo === false)) {
+        throw new Error('generateImage or generateVideo are required and cannot be empty');
     }
     
     // Short circuit for non-original assets during testing

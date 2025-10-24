@@ -65,7 +65,9 @@ exports.process = async function(req, res){
     prompt: joi.string().allow(''),
     theme: joi.string().allow(''),
     assetType: joi.string().allow(''),
-    gameId: joi.string().required()
+    gameId: joi.string().required(),
+    generateImage: joi.boolean().required(),
+    generateVideo: joi.boolean().required()
 
   }), req, res); 
 
@@ -75,9 +77,11 @@ exports.process = async function(req, res){
           data.prompt, 
           data.theme, 
           data.assetType,
-          req.user,    // Pass userId
-          req.account, // Pass accountId
-          data.gameId  // Pass gameId
+          req.user,  
+          req.account, 
+          data.gameId,
+          data.generateImage,
+          data.generateVideo
       );
       return res.status(200).send({ data: imageAndVideoData });
   } catch (error) {
