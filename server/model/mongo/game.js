@@ -23,6 +23,9 @@ const GameSchema = new Schema({
   group: { type: String, default: '' },
   playerCss: { type: String, default: '' },
   touch: { type: Boolean, default: true },
+  promoImage: { type: String, default: '' },
+  promoVideo: { type: String, default: '' },
+  locked: { type: Boolean, default: false },
   user_id: { type: String, required: true },
   date_created: Date,
   date_updated: Date
@@ -58,6 +61,9 @@ exports.create = async function({ data, user }){
     group: data.group || '',
     playerCss: data.playerCss || '',
     touch: data.touch !== undefined ? data.touch : true,
+    promoImage: data.promoImage || '',
+    promoVideo: data.promoVideo || '',
+    locked: data.locked !== undefined ? data.locked : false,
     user_id: user,
     date_created: new Date(),
     date_updated: new Date()

@@ -25,7 +25,10 @@ exports.create = async function(req, res){
     version: joi.number().required(),
     group: joi.string().allow(''),
     playerCss: joi.string().allow(''),
-    touch: joi.boolean()
+    touch: joi.boolean(),
+    promoImage: joi.string().allow(''),
+    promoVideo: joi.string().allow(''),
+    locked: joi.boolean()
 
   }), req, res); 
 
@@ -216,7 +219,10 @@ exports.update = async function(req, res){
     version: joi.number(),
     group: joi.string().allow(''),
     playerCss: joi.string().allow(''),
-    touch: joi.boolean()
+    touch: joi.boolean(),
+    promoImage: joi.string().allow(''),
+    promoVideo: joi.string().allow(''),
+    locked: joi.boolean()
 
   }), req, res); 
 
