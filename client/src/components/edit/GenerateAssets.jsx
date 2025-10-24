@@ -334,6 +334,7 @@ const GenerateAssets = ({
                                 title={selectedGame?.testImage || selectedGame?.testVideo ? t('edit.regenerate.dialog.cards.latestAssets') : t('edit.regenerate.dialog.cards.generateAssets')}
                                 className='relative w-1/2 justify-center flex-col gap-3'
                             >
+                            
                                 <MediaPlayer
                                     key={`${reloadTrigger}-${selectedGame?.testImage}-${selectedGame?.testVideo}`}
                                     gameId={selectedGame?.id}
@@ -348,11 +349,11 @@ const GenerateAssets = ({
                                 />
                                 {(selectedGame?.testImage || selectedGame?.testVideo || testImage || testVideoUrl) && (
                                     <div className="mt-4 flex justify-between gap-2">
-                                        <Button color="red" className="w-1/3" onClick={handleDeleteClick}>{t('Delete Last')}</Button>
-                                        <Button color="green" className="w-1/3" onClick={handleAcceptTestAssets}>
+                                        <Button disabled={isGenerating} color="red" className="w-1/3" onClick={handleDeleteClick}>{t('Delete Last')}</Button>
+                                        <Button disabled={isGenerating} color="green" className="w-1/3" onClick={handleAcceptTestAssets}>
                                             {t('Accept Last')}
                                         </Button>
-                                        <Button onClick={handleArchiveAssets} color="green" className="w-1/3">
+                                        <Button disabled={isGenerating} onClick={handleArchiveAssets} color="green" className="w-1/3">
                                             {t('Archive')}
                                         </Button>
                                     </div>
@@ -361,7 +362,7 @@ const GenerateAssets = ({
                         </div>
                     </div>
                     <DialogFooter>
-                        <Button color={customPrompt ? 'green' : 'blue'} onClick={() => setShowDescribeChangesDialog(true)}>{t('Describe Changes')}</Button>
+                        <Button disabled={isGenerating} color={customPrompt ? 'green' : 'blue'} onClick={() => setShowDescribeChangesDialog(true)}>{t('Describe Changes')}</Button>
                         <Button
                             color={madeSelection ? 'green' : 'gray'}
                             onClick={handleRegenerate}

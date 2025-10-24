@@ -19,6 +19,32 @@ const DescribeChangesDialog = ({
         console.log('Selected video:', videoUrl);
     };
 
+    const getImageUrl = () => {
+        if (assetType === 'original') {
+            return selectedGame?.defaultImage;
+        }
+
+        if (!generateImage && !generateVideo) {
+            return selectedGame?.defaultImage;
+        }
+
+        if (generateImage && !generateVideo) {
+            setGenerateVideo(true);
+        }
+        
+        // For non-original asset types, use default image if generating, otherwise current image
+        return generateImage ? selectedGame?.defaultImage : selectedGame?.currentImage;
+    };
+
+    const getVideoUrl = () => {
+        if (assetType === 'original') {
+            return selectedGame?.defaultVideo;
+        }
+        
+        // For non-original asset types, use default video if generating, otherwise current video
+        return generateVideo ? selectedGame?.defaultVideo : selectedGame?.currentVideo;
+    };
+
     return (
         <Dialog open={isOpen} onClose={onClose}>
             <DialogContent className="max-w-4xl">
@@ -32,8 +58,8 @@ const DescribeChangesDialog = ({
                         <div className="relative w-full" style={{ aspectRatio: '220/280' }}>
                             <MediaPlayer
                                 gameId={selectedGame?.id}
-                                imageUrl={assetType !== 'original' ?( generateImage ? selectedGame?.defaultImage : selectedGame?.currentImage) : selectedGame?.defaultImage}
-                                videoUrl={assetType !== 'original' ?( generateVideo ? selectedGame?.defaultVideo : selectedGame?.currentVideo) : selectedGame?.defaultVideo}
+                                imageUrl={getImageUrl()}
+                                videoUrl={getVideoUrl()}
                                 onSelect={handleSelect}
                                 type="image"
                                 canSelect={false}
