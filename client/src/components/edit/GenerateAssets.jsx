@@ -23,7 +23,6 @@ const GenerateAssets = ({
     const [customPrompt, setCustomPrompt] = useState('');
     const [showDescribeChangesDialog, setShowDescribeChangesDialog] = useState(false);
     const [showDeleteConfirmationDialog, setShowDeleteConfirmationDialog] = useState(false);
-    const [showAssetSelectionDialog, setShowAssetSelectionDialog] = useState(false);
     const [generateImage, setGenerateImage] = useState();
     const [generateVideo, setGenerateVideo] = useState(true);
     const [testImage, setTestImage] = useState(null);
@@ -33,7 +32,6 @@ const GenerateAssets = ({
     const [showArchiveConfirmationDialog, setShowArchiveConfirmationDialog] = useState(false);
     const [isArchiving, setIsArchiving] = useState(false);
     const [madeSelection, setMadeSelection] = useState(false);
-    const [reloadTrigger2, setReloadTrigger2] = useState(0);
 
     const viewContext = useContext(ViewContext);
 
@@ -365,9 +363,12 @@ const GenerateAssets = ({
                     <DialogFooter>
                         <Button color={customPrompt ? 'green' : 'blue'} onClick={() => setShowDescribeChangesDialog(true)}>{t('Describe Changes')}</Button>
                         <Button
+                            color={madeSelection ? 'green' : 'gray'}
                             onClick={handleRegenerate}
                             disabled={isGenerating || !madeSelection}
+                            
                         >
+                            
                             {isGenerating && (
                                 <Icon name="loader-2" size={16} className="mr-2 animate-spin" />
                             )}
@@ -388,7 +389,6 @@ const GenerateAssets = ({
                 selectedGame={selectedGame}
                 assetType={assetType}
                 setMadeSelection={setMadeSelection}
-                reloadTrigger2={reloadTrigger2}
                 t={t}
             />
             <DeleteConfirmationDialog

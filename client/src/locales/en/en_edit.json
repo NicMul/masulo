@@ -81,7 +81,7 @@
       "videoPromptPlaceholder": "Describe the video/animation you want to generate...",
       "generate": "Generate New Assets{{theme}}",
       "generating": "Generating...",
-      "generatedAssets": "Generated Assets",
+      "generateAssets": "Generate New Assets",
       "generatedImage": "Generated Image",
       "generatedVideo": "Generated Video",
       "accept": "Accept & Save",

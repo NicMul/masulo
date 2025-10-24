@@ -13,7 +13,6 @@ const DescribeChangesDialog = ({
     selectedGame,
     assetType,
     setMadeSelection,
-    reloadTrigger2,
     t
 }) => {
     const handleSelect = (videoUrl) => {
@@ -32,7 +31,6 @@ const DescribeChangesDialog = ({
                     <div className="w-2/5 flex-shrink-0">
                         <div className="relative w-full" style={{ aspectRatio: '220/280' }}>
                             <MediaPlayer
-                                key={reloadTrigger2}
                                 gameId={selectedGame?.id}
                                 imageUrl={assetType !== 'original' ?( generateImage ? selectedGame?.defaultImage : selectedGame?.currentImage) : selectedGame?.defaultImage}
                                 videoUrl={assetType !== 'original' ?( generateVideo ? selectedGame?.defaultVideo : selectedGame?.currentVideo) : selectedGame?.defaultVideo}
@@ -91,7 +89,13 @@ const DescribeChangesDialog = ({
                 <DialogFooter className="mt-6">
                     <Button
                         variant="outline"
-                        onClick={onClose}
+                        onClick={() => {
+                            onClose();
+                            setMadeSelection(false);
+                            setGenerateImage(false);
+                            setGenerateVideo(false);
+                            setCustomPrompt('');    
+                        }}
                     >
                         {t('Cancel')}
                     </Button>

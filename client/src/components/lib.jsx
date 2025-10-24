@@ -17,7 +17,7 @@ export { ViewContext } from './view/context';
 export { Animate } from './animate/animate';
 
 // dialogs
-export { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogDescription } from './dialog/dialog';
+export { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from './dialog/dialog';
 export { Popover, PopoverContent, PopoverTrigger } from './popover/popover';
 export { Sheet, SheetTrigger, SheetClose } from './sheet/sheet';
 
