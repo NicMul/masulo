@@ -25,6 +25,8 @@ const GenerateAssets = ({
     const [testVideoUrl, setTestVideoUrl] = useState(null);
     const [reloadTrigger, setReloadTrigger] = useState(0);
     const [showAcceptConfirmationDialog, setShowAcceptConfirmationDialog] = useState(false);
+    const [showArchiveConfirmationDialog, setShowArchiveConfirmationDialog] = useState(false);
+    const [isArchiving, setIsArchiving] = useState(false);
     const [madeSelection, setMadeSelection] = useState(false);
     const [reloadTrigger2, setReloadTrigger2] = useState(0);
 
@@ -34,6 +36,7 @@ const GenerateAssets = ({
     const generateAssetsMutation = useMutation('/api/ai/process', 'POST');
     const deleteTestAssetsMutation = useMutation(`/api/game/${selectedGame?.id}/test-assets`, 'DELETE');
     const acceptTestAssetsMutation = useMutation(`/api/game/${selectedGame?.id}/test-assets/accept`, 'POST');
+    const archiveTestAssetsMutation = useMutation(`/api/game/${selectedGame?.id}/test-assets/archive`, 'POST');
 
 
     const handleSelect = (videoUrl) => {
@@ -165,6 +168,45 @@ const GenerateAssets = ({
         setShowAcceptConfirmationDialog(true);
     }, []);
 
+    const handleArchiveAssets = useCallback(async () => {
+        setShowArchiveConfirmationDialog(true);
+    }, []);
+
+    const confirmArchiveTestAssets = useCallback(async () => {
+        try {
+            setIsArchiving(true);
+            await archiveTestAssetsMutation.execute({});
+
+            // Clear local state
+            setTestVideoUrl(null);
+            setTestImage(null);
+
+            // Trigger parent refresh to get updated game data
+            if (onGameUpdate) {
+                onGameUpdate();
+            }
+
+            // Refresh component data
+            setReloadTrigger(reloadTrigger + 1);
+
+            // Close confirmation dialog
+            setShowArchiveConfirmationDialog(false);
+
+            viewContext.notification({
+                description: t('Test assets archived successfully'),
+                variant: 'success'
+            });
+        } catch (err) {
+            console.error('Error archiving test assets:', err);
+            viewContext.notification({
+                description: t('Failed to archive test assets'),
+                variant: 'error'
+            });
+        } finally {
+            setIsArchiving(false);
+        }
+    }, [archiveTestAssetsMutation, reloadTrigger, viewContext, t, onGameUpdate]);
+
     const confirmAcceptTestAssets = useCallback(async () => {
         try {
             await acceptTestAssetsMutation.execute({
@@ -233,21 +275,6 @@ const GenerateAssets = ({
       if (assetType === 'theme') return selectedGame?.themeVideo;
       return null;
     }, [assetType, selectedGame, generateVideo, generateImage]);
-
-    const getImageNewUrls = useCallback(() => {
-        if (assetType === 'original') return selectedGame?.defaultImage;
-        if (assetType === 'current') return generateVideo ? selectedGame?.defaultImage : selectedGame?.currentImage;
-        if (assetType === 'theme') return selectedGame?.themeImage;
-        return null;
-      }, [assetType, selectedGame]);
-  
-      const getVideoNewUrls = useCallback(() => {
-  
-        if (assetType === 'original') return selectedGame?.defaultVideo;
-        if (assetType === 'current') return selectedGame?.currentVideo;
-        if (assetType === 'theme') return selectedGame?.themeVideo;
-        return null;
-      }, [assetType, selectedGame, generateVideo, generateImage]);
 
 
 
@@ -338,9 +365,12 @@ const GenerateAssets = ({
                                 />
                                 {(selectedGame?.testImage || selectedGame?.testVideo || testImage || testVideoUrl) && (
                                     <div className="mt-4 flex justify-between gap-2">
-                                        <Button color="red" className="w-1/2" onClick={handleDeleteClick}>{t('Delete Last')}</Button>
-                                        <Button color="green" className="w-1/2" onClick={handleAcceptTestAssets}>
+                                        <Button color="red" className="w-1/3" onClick={handleDeleteClick}>{t('Delete Last')}</Button>
+                                        <Button color="green" className="w-1/3" onClick={handleAcceptTestAssets}>
                                             {t('Accept Last')}
+                                        </Button>
+                                        <Button onClick={handleArchiveAssets} color="green" className="w-1/3">
+                                            {t('Archive')}
                                         </Button>
                                     </div>
                                 )}
@@ -484,6 +514,33 @@ const GenerateAssets = ({
                         </Button>
                         <Button color="green" onClick={confirmAcceptTestAssets}>
                             {t('Accept')}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+            <Dialog open={showArchiveConfirmationDialog} onClose={() => setShowArchiveConfirmationDialog(false)}>
+                <DialogContent>
+                    <DialogHeader>
+                        <h1>{t('Archive Test Assets')}</h1>
+                    </DialogHeader>
+                    <div className="py-4">
+                        <p>
+                            {t('All test assets will be moved to the archive folder and deleted from the test directory. Archived files can be accessed later if needed. This will clear all test assets from this game.')}
+                        </p>
+                    </div>
+                    <DialogFooter>
+                        <Button color="gray" onClick={() => setShowArchiveConfirmationDialog(false)}>
+                            {t('Cancel')}
+                        </Button>
+                        <Button 
+                            color="orange" 
+                            onClick={confirmArchiveTestAssets}
+                            disabled={isArchiving}
+                        >
+                            {isArchiving && (
+                                <Icon name="loader-2" size={16} className="mr-2 animate-spin" />
+                            )}
+                            {t('Archive')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

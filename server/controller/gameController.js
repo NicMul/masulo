@@ -391,6 +391,125 @@ exports.acceptTestAssets = async function(req, res){
 
 }
 
+exports.archiveTestAssets = async function(req, res){
+
+  utility.assert(req.params.id, res.__('game.update.id_required'));
+
+  try {
+    // Get current game data to retrieve test assets
+    const gameData = await game.get({ id: req.params.id, user: req.user });
+    
+    if (!gameData || gameData.length === 0) {
+      return res.status(404).send({ message: res.__('game.update.not_found') });
+    }
+
+    const currentGame = gameData[0];
+    
+    // Validate that we have test assets to archive
+    if ((!currentGame.testVideo || currentGame.testVideo.trim() === '') && 
+        (!currentGame.testImage || currentGame.testImage.trim() === '')) {
+      return res.status(400).send({ message: 'No test assets to archive' });
+    }
+
+    // Import Bunny CDN functions
+    const { 
+      findCdnConfigurationByUserId, 
+      listFilesInFolder,
+      moveFileBetweenFolders,
+      deleteFromBunnyStorage 
+    } = require('../services/bunny-cdn');
+
+    // Get user's CDN configuration
+    const cdnConfig = await findCdnConfigurationByUserId(req.user, req.account);
+    if (!cdnConfig) {
+      return res.status(500).send({ message: 'CDN configuration not found' });
+    }
+
+    console.log('🗄️ Archiving test assets for game:', req.params.id);
+    console.log('📹 Test video URL:', currentGame.testVideo);
+    if (currentGame.testImage) {
+      console.log('🖼️ Test image URL:', currentGame.testImage);
+    }
+
+    const archivedAssets = {};
+    const filesToDelete = [];
+
+    // Archive test video if it exists
+    if (currentGame.testVideo && currentGame.testVideo.trim() !== '') {
+      try {
+        const archivedVideoUrl = await moveFileBetweenFolders(currentGame.testVideo, cdnConfig, 'archive');
+        archivedAssets.video = archivedVideoUrl;
+        filesToDelete.push(currentGame.testVideo);
+        console.log('✅ Test video archived:', archivedVideoUrl);
+      } catch (error) {
+        console.error('❌ Failed to archive test video:', error);
+        // Continue with other operations even if one fails
+      }
+    }
+
+    // Archive test image if it exists
+    if (currentGame.testImage && currentGame.testImage.trim() !== '') {
+      try {
+        const archivedImageUrl = await moveFileBetweenFolders(currentGame.testImage, cdnConfig, 'archive');
+        archivedAssets.image = archivedImageUrl;
+        filesToDelete.push(currentGame.testImage);
+        console.log('✅ Test image archived:', archivedImageUrl);
+      } catch (error) {
+        console.error('❌ Failed to archive test image:', error);
+        // Continue with other operations even if one fails
+      }
+    }
+
+    // List all files in /test/ folder and delete them
+    try {
+      const testFiles = await listFilesInFolder(cdnConfig, 'test');
+      console.log(`🗑️ Found ${testFiles.length} files in /test/ folder to delete`);
+      
+      for (const file of testFiles) {
+        try {
+          const fileUrl = `https://${cdnConfig.cdnUrl}/test/${file.name}`;
+          await deleteFromBunnyStorage(fileUrl, cdnConfig);
+          console.log(`✅ Deleted file from /test/: ${file.name}`);
+        } catch (error) {
+          console.error(`❌ Failed to delete file ${file.name}:`, error);
+        }
+      }
+    } catch (error) {
+      console.error('❌ Failed to list/delete files in /test/ folder:', error);
+      // Continue with database update even if cleanup fails
+    }
+
+    // Update game document to clear test assets
+    const updateData = {
+      testVideo: '',
+      testImage: ''
+    };
+
+    const updatedGameData = await game.update({ id: req.params.id, user: req.user, data: updateData });
+    
+    if (!updatedGameData) {
+      return res.status(500).send({ message: 'Failed to update game' });
+    }
+
+    console.log('✅ Test assets archived successfully');
+    console.log('📊 Archived assets:', archivedAssets);
+
+    return res.status(200).send({ 
+      message: 'Test assets archived successfully', 
+      archived: archivedAssets,
+      data: updatedGameData 
+    });
+
+  } catch (error) {
+    console.error('❌ Error archiving test assets:', error);
+    return res.status(500).send({ 
+      message: 'Failed to archive test assets', 
+      error: error.message 
+    });
+  }
+
+}
+
 // Helper function to generate random alphanumeric string
 function generateRandomString(length) {
   const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';

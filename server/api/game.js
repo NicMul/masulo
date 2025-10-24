@@ -22,6 +22,8 @@ api.delete('/api/game/:id/test-assets', auth.verify('user'), use(gameController.
 
 api.post('/api/game/:id/test-assets/accept', auth.verify('user'), use(gameController.acceptTestAssets));
 
+api.post('/api/game/:id/test-assets/archive', auth.verify('user'), use(gameController.archiveTestAssets));
+
 api.delete('/api/game/:id', auth.verify('user'), use(gameController.delete));
 
 module.exports = api;

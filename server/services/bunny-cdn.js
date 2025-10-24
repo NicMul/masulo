@@ -255,13 +255,87 @@ async function uploadToBunnyStorage(filePath, cdnConfig, folder, filename) {
   }
 }
 
+// Helper function to list files in a Bunny storage folder
+async function listFilesInFolder(cdnConfig, folder) {
+  try {
+    console.log(`📋 Listing files in folder: ${folder}`);
+    
+    // List files in Bunny storage folder
+    const listUrl = `https://storage.bunnycdn.com/${cdnConfig.storageZoneName}/${folder}/`;
+    
+    const response = await axios.get(listUrl, {
+      headers: {
+        'AccessKey': cdnConfig.storageKey
+      }
+    });
+    
+    // Parse the response to get file list
+    const files = response.data.map(file => ({
+      name: file.ObjectName,
+      size: file.Length,
+      lastModified: file.LastChanged
+    }));
+    
+    console.log(`✅ Found ${files.length} files in ${folder}`);
+    return files;
+    
+  } catch (error) {
+    console.error(`❌ Failed to list files in ${folder}:`, error.message);
+    throw error;
+  }
+}
+
+// Helper function to move file between folders
+async function moveFileBetweenFolders(cdnUrl, cdnConfig, targetFolder) {
+  try {
+    console.log(`🔄 Moving file from ${cdnUrl} to ${targetFolder}/`);
+    
+    // Extract filename from URL
+    const urlParts = cdnUrl.split('/');
+    const filename = urlParts[urlParts.length - 1];
+    
+    // Download file from current location
+    const tempPath = await downloadFromBunnyStorage(cdnUrl, cdnConfig);
+    
+    // Generate archived filename with timestamp
+    const timestamp = Date.now();
+    const fileExt = filename.split('.').pop();
+    const baseName = filename.replace(`.${fileExt}`, '');
+    const archivedFilename = `${baseName}-archived-${timestamp}.${fileExt}`;
+    
+    // Upload to target folder
+    const newCdnUrl = await uploadToBunnyStorage(tempPath, cdnConfig, targetFolder, archivedFilename);
+    
+    // Delete from original location
+    await deleteFromBunnyStorage(cdnUrl, cdnConfig);
+    
+    // Clean up temp file
+    try {
+      const fs = require('fs');
+      fs.unlinkSync(tempPath);
+      console.log('✅ Cleaned up temp file');
+    } catch (cleanupError) {
+      console.warn('⚠️ Failed to cleanup temp file:', cleanupError);
+    }
+    
+    console.log(`✅ File moved successfully: ${newCdnUrl}`);
+    return newCdnUrl;
+    
+  } catch (error) {
+    console.error(`❌ Failed to move file:`, error.message);
+    throw error;
+  }
+}
+
 // Export the functions for use in other modules
 module.exports = {
   findCdnConfigurationByUserId,
   createCdnConfiguration,
   downloadFromBunnyStorage,
   deleteFromBunnyStorage,
-  uploadToBunnyStorage
+  uploadToBunnyStorage,
+  listFilesInFolder,
+  moveFileBetweenFolders
 };
 
 
