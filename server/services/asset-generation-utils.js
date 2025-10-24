@@ -47,6 +47,34 @@ function convertImageToDataURI(imagePath) {
   return `data:image/jpeg;base64,${imageBase64}`;
 }
 
+// Helper function to generate AI image with Replicate
+async function generateAIImage(imageDataURI, prompt, replicate) {
+  console.log('  🎨 Calling nano-banana API...');
+  const imageInput = {
+    prompt: prompt,
+    image_input: [imageDataURI] // Nano Banana expects 'image_input' (with underscore) as an array
+  };
+
+  console.log('  📋 Nano Banana input:', { 
+    imageCount: imageInput.image_input.length, 
+    promptLength: prompt.length,
+    imagePreview: imageDataURI.substring(0, 50) + '...'
+  });
+
+  const imageOutput = await replicate.run("google/nano-banana", { input: imageInput });
+
+  // Save image to temp file
+  const tempDir = path.join(process.cwd(), 'temp');
+  const imageFileName = `image-generated-${Date.now()}.jpg`;
+  const imagePath = path.join(tempDir, imageFileName);
+  
+  // Write the output directly (Nano Banana returns binary data)
+  await fs.promises.writeFile(imagePath, imageOutput);
+  console.log('  ✅ Image saved to:', imagePath);
+  
+  return imagePath;
+}
+
 // Helper function to generate AI video with Replicate
 async function generateAIVideo(imageDataURI, prompt, replicate) {
   console.log('  🎥 Calling wan-video API...');
@@ -109,6 +137,7 @@ module.exports = {
   generateRandomString,
   downloadImageToTemp,
   convertImageToDataURI,
+  generateAIImage,
   generateAIVideo,
   optimizeVideoForWeb,
   cleanupTempFile

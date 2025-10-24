@@ -87,13 +87,13 @@ export function Edit({ t }){
     
         <div className='grid grid-cols-1 lg:grid-cols-3 gap-6 justify-center items-center'>
       
-          <OriginalAssets t={t} selectedGame={selectedGame}  />
+          <OriginalAssets t={t} selectedGame={selectedGame} onGameUpdate={handleGameUpdate} />
 
        
-          <CurrentAssets t={t} selectedGame={selectedGame} />
+          <CurrentAssets t={t} selectedGame={selectedGame} onGameUpdate={handleGameUpdate} />
 
          
-          <ThemeAssets t={t} selectedGame={selectedGame}  />
+          <ThemeAssets t={t} selectedGame={selectedGame} onGameUpdate={handleGameUpdate} />
         </div>
       </div>
     </Animate>

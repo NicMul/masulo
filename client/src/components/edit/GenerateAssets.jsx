@@ -12,6 +12,7 @@ const GenerateAssets = ({
     onClose,
     selectedGame,
     assetType,
+    onGameUpdate,
 }) => {
     const [isGenerating, setIsGenerating] = useState(false);
     const [customPrompt, setCustomPrompt] = useState('');
@@ -74,15 +75,20 @@ const GenerateAssets = ({
             const result = await generateAssetsMutation.execute(payload);
 
             if (result) {
-                if (result.data.assetType === 'original') {
-                    console.log('Result:', result.data);
-                    setTestVideoUrl(result.data.url);
-                    setReloadTrigger(reloadTrigger + 1);
-                } else {
-                    return
-                }
-
                 console.log('Result:', result.data);
+                
+                // Handle both 'original' and 'current' asset types
+                if (result.data.assetType === 'original' || result.data.assetType === 'current') {
+                    setTestImage(result.data.imageUrl);
+                    setTestVideoUrl(result.data.videoUrl);
+                    
+                    // Trigger parent refresh to get updated game data
+                    if (onGameUpdate) {
+                        onGameUpdate();
+                    }
+                    
+                    setReloadTrigger(reloadTrigger + 1);
+                }
 
                 viewContext.notification({
                     description: t('edit.regenerate.dialog.success'),
@@ -93,10 +99,34 @@ const GenerateAssets = ({
         } catch (err) {
             console.error('Error generating assets:', err);
             setCustomPrompt('');
+            
+            // Handle different error types with user-friendly messages
+            let errorMessage = t('edit.regenerate.dialog.error');
+            
+            if (err?.response?.data?.error) {
+                const backendError = err.response.data.error;
+                
+                if (backendError.includes('temporarily unavailable')) {
+                    errorMessage = t('edit.regenerate.dialog.serviceUnavailable', 'AI service is temporarily unavailable. Please try again in a few minutes.');
+                } else if (backendError.includes('Rate limit exceeded')) {
+                    errorMessage = t('edit.regenerate.dialog.rateLimit', 'Rate limit exceeded. Please wait a moment and try again.');
+                } else if (backendError.includes('AI generation failed')) {
+                    errorMessage = t('edit.regenerate.dialog.generationFailed', 'AI generation failed. Please try again with a different image or prompt.');
+                } else {
+                    errorMessage = backendError;
+                }
+            } else if (err?.message) {
+                errorMessage = err.message;
+            }
+            
+            viewContext.notification({
+                description: errorMessage,
+                variant: 'error'
+            });
         } finally {
             setIsGenerating(false);
         }
-    }, [selectedGame, assetType, customPrompt, viewContext, t, generateAssetsMutation]);
+    }, [selectedGame, assetType, customPrompt, viewContext, t, generateAssetsMutation, onGameUpdate]);
 
     const handleDeleteTestAssets = useCallback(async () => {
         try {
@@ -105,6 +135,11 @@ const GenerateAssets = ({
             // Clear local state
             setTestVideoUrl(null);
             setTestImage(null);
+
+            // Trigger parent refresh to get updated game data
+            if (onGameUpdate) {
+                onGameUpdate();
+            }
 
             // Refresh component data
             setReloadTrigger(reloadTrigger + 1);
@@ -123,7 +158,7 @@ const GenerateAssets = ({
                 variant: 'error'
             });
         }
-    }, [deleteTestAssetsMutation, reloadTrigger, viewContext, t]);
+    }, [deleteTestAssetsMutation, reloadTrigger, viewContext, t, onGameUpdate]);
 
     const handleAcceptTestAssets = useCallback(async () => {
         setShowAcceptConfirmationDialog(true);
@@ -136,6 +171,11 @@ const GenerateAssets = ({
             // Clear local state
             setTestVideoUrl(null);
             setTestImage(null);
+
+            // Trigger parent refresh to get updated game data
+            if (onGameUpdate) {
+                onGameUpdate();
+            }
 
             // Refresh component data
             setReloadTrigger(reloadTrigger + 1);
@@ -154,7 +194,7 @@ const GenerateAssets = ({
                 variant: 'error'
             });
         }
-    }, [acceptTestAssetsMutation, reloadTrigger, viewContext, t]);
+    }, [acceptTestAssetsMutation, reloadTrigger, viewContext, t, onGameUpdate]);
 
     const handleDeleteClick = useCallback(() => {
         setShowDeleteConfirmationDialog(true);
@@ -266,14 +306,14 @@ const GenerateAssets = ({
                                 className='relative w-1/2 justify-center flex-col gap-3'
                             >
                                 <MediaPlayer
-                                    key={reloadTrigger}
+                                    key={`${reloadTrigger}-${selectedGame?.testImage}-${selectedGame?.testVideo}`}
                                     gameId={selectedGame?.id}
-                                    imageUrl={selectedGame?.testImage}
-                                    videoUrl={getTestVideoUrl()}
+                                    imageUrl={testImage || selectedGame?.testImage}
+                                    videoUrl={testVideoUrl || selectedGame?.testVideo}
                                     onSelect={handleSelect}
                                     type={mediaPlayerType}
                                     canSelect={false}
-                                    showPlayIcon={!testImage || !selectedGame?.testImage}
+                                    showPlayIcon={!testImage && !selectedGame?.testImage}
                                     readOnly={false}
                                     isSelected={false}
                                 />

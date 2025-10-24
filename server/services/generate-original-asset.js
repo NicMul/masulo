@@ -111,8 +111,8 @@ async function generateOriginalAsset({ imageUrl, prompt, userId, accountId, game
     // Return specific payload format for original assets
     return {
       assetType: 'original',
-      media: 'video',
-      url: testVideoUrl
+      imageUrl: null,  // original only generates video
+      videoUrl: testVideoUrl
     };
     
   } catch (error) {

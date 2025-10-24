@@ -142,6 +142,7 @@ export function ThemeAssets({ t, selectedGame, onGameUpdate }) {
         onClose={() => setShowRegenerateDialog(false)}
         selectedGame={selectedGame}
         assetType="theme"
+        onGameUpdate={onGameUpdate}
       />
     </Card>
   );

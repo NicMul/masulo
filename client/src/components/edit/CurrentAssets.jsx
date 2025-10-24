@@ -119,7 +119,7 @@ export function CurrentAssets({ t, selectedGame, onGameUpdate }) {
         onClose={() => setShowRegenerateDialog(false)}
         selectedGame={selectedGame}
         assetType="current"
-       
+        onGameUpdate={onGameUpdate}
       />
     </Card>
   );

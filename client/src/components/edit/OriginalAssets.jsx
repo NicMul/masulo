@@ -11,7 +11,7 @@ import { GenerateAssets } from './GenerateAssets';
 import { GameEditActionMenu } from './GameEditActionMenu';
 import  MediaPlayer from './MediaPlayer';
 
-export function OriginalAssets({ t, selectedGame }) {
+export function OriginalAssets({ t, selectedGame, onGameUpdate }) {
   const [originalLocked, setOriginalLocked] = useState(false);
   const [showRegenerateDialog, setShowRegenerateDialog] = useState(false);
 
@@ -101,6 +101,7 @@ export function OriginalAssets({ t, selectedGame }) {
         onClose={() => setShowRegenerateDialog(false)}
         selectedGame={selectedGame}
         assetType="original"
+        onGameUpdate={onGameUpdate}
       />
     </Card>
   );

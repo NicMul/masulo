@@ -1,4 +1,5 @@
 const { generateOriginalAsset } = require('./generate-original-asset');
+const { generateCurrentAsset } = require('./generate-current-asset');
 
 
 
@@ -24,12 +25,6 @@ async function generateImageAndVideoWithPrompt(imageUrl, prompt = '', theme = 'd
         throw new Error('generateImage or generateVideo are required and cannot be empty');
     }
     
-    // Short circuit for non-original assets during testing
-    if (assetType !== 'original') {
-      console.log('⚠️ Short-circuiting: Only original asset type is allowed during testing');
-      throw new Error('Only original asset type is allowed during testing');
-    }
-    
     // Route to appropriate asset generator based on assetType
     if (assetType === 'original') {
       return await generateOriginalAsset({
@@ -39,8 +34,18 @@ async function generateImageAndVideoWithPrompt(imageUrl, prompt = '', theme = 'd
         accountId,
         gameId
       });
+    } else if (assetType === 'current') {
+      return await generateCurrentAsset({
+        imageUrl,
+        prompt,
+        userId,
+        accountId,
+        gameId,
+        generateImage,
+        generateVideo
+      });
     } else {
-      // TODO: Implement current and theme asset generators
+      // TODO: Implement theme asset generator
       throw new Error(`Asset type '${assetType}' not yet implemented`);
     }
 }
