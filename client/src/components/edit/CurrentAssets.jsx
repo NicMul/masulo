@@ -8,6 +8,7 @@
 import { useState, useCallback, useContext, useMemo } from 'react';
 import { Card, Button, Switch } from 'components/lib';
 import { ViewContext } from 'components/lib';
+import { GameEditActionMenu } from './GameEditActionMenu';
 import  MediaPlayer from './MediaPlayer';
 import { GenerateAssets } from './GenerateAssets';
 
@@ -50,7 +51,19 @@ export function CurrentAssets({ t, selectedGame, onGameUpdate }) {
   };
 
   return (
-    <Card title={ t('edit.current.title') }>
+    <Card 
+      title={ t('edit.current.title') }
+      headerAction={
+        <GameEditActionMenu 
+          selectedGame={selectedGame}
+          locked={currentLocked}
+          onRegenerate={regenerateCurrentAssets}
+          onLock={() => setCurrentLocked(!currentLocked)}
+          onDelete={clearThemeContent}
+          onSave={() => console.log('Save current assets')}
+        />
+      }
+    >
       <div className='space-y-4'>
         {/* Image and Video Row */}
         <div className='grid grid-cols-2 gap-3'>

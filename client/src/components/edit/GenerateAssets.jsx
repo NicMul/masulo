@@ -20,6 +20,7 @@ const GenerateAssets = ({
     const [testImage, setTestImage] = useState(null);
     const [testVideoUrl, setTestVideoUrl] = useState(null);
     const [reloadTrigger, setReloadTrigger] = useState(0);
+    const [showAcceptConfirmationDialog, setShowAcceptConfirmationDialog] = useState(false);
 
     const viewContext = useContext(ViewContext);
 
@@ -119,6 +120,10 @@ const GenerateAssets = ({
     }, [deleteTestAssetsMutation, reloadTrigger, viewContext, t]);
 
     const handleAcceptTestAssets = useCallback(async () => {
+        setShowAcceptConfirmationDialog(true);
+    }, []);
+
+    const confirmAcceptTestAssets = useCallback(async () => {
         try {
             await acceptTestAssetsMutation.execute();
             
@@ -128,6 +133,9 @@ const GenerateAssets = ({
             
             // Refresh component data
             setReloadTrigger(reloadTrigger + 1);
+            
+            // Close confirmation dialog
+            setShowAcceptConfirmationDialog(false);
             
             viewContext.notification({
                 description: t('Test assets accepted successfully'),
@@ -192,6 +200,7 @@ const GenerateAssets = ({
                                         className='w-1/2 flex-col gap-3'
                                     >
                                         <MediaPlayer
+                                            key={reloadTrigger}
                                             gameId={selectedGame?.id}
                                             imageUrl={selectedGame?.defaultImage}
                                             videoUrl={selectedGame?.defaultVideo}
@@ -205,6 +214,7 @@ const GenerateAssets = ({
                                     </Card>
                                     <Card title={t('edit.regenerate.dialog.cards.aiGeneratedVideo')} className='w-1/2 flex-col gap-3'>
                                         <MediaPlayer
+                                            key={reloadTrigger}
                                             gameId={selectedGame?.id}
                                             imageUrl={selectedGame?.defaultImage}
                                             videoUrl={selectedGame?.defaultVideo}
@@ -248,7 +258,7 @@ const GenerateAssets = ({
                         </div>
                     </div>
                     <DialogFooter>
-                        <Button color="blue" onClick={() => setShowDescribeChangesDialog(true)}>{t('Describe Changes')}</Button>
+                        <Button color={customPrompt ? 'green' : 'blue'} onClick={() => setShowDescribeChangesDialog(true)}>{t('Describe Changes')}</Button>
                         <Button
                             onClick={handleRegenerate}
                             disabled={isGenerating}
@@ -309,6 +319,29 @@ const GenerateAssets = ({
                         </Button>
                         <Button color="red" onClick={handleDeleteTestAssets}>
                             {t('Delete')}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+            <Dialog open={showAcceptConfirmationDialog} onClose={() => setShowAcceptConfirmationDialog(false)}>
+                <DialogContent>
+                    <DialogHeader>
+                        <h1>{t('Accept Test Assets')}</h1>
+                    </DialogHeader>
+                    <div className="py-4">
+                        <p>
+                            {assetType === 'original' 
+                                ? t('Accepting will replace animation for your default image. The image will not be changed.')
+                                : t('Are you sure you want to accept the test assets? This action cannot be undone.')
+                            }
+                        </p>
+                    </div>
+                    <DialogFooter>
+                        <Button color="gray" onClick={() => setShowAcceptConfirmationDialog(false)}>
+                            {t('Cancel')}
+                        </Button>
+                        <Button color="green" onClick={confirmAcceptTestAssets}>
+                            {t('Accept')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

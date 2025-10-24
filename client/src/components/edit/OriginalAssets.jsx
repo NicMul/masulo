@@ -9,6 +9,7 @@ import { useState } from 'react';
 import { Card, Button, Switch } from 'components/lib';
 import { RegenerateAiAssetsDialog } from './RegenerateAiAssetsDialog';
 import { GenerateAssets } from './GenerateAssets';
+import { GameEditActionMenu } from './GameEditActionMenu';
 import  MediaPlayer from './MediaPlayer';
 
 export function OriginalAssets({ t, selectedGame }) {
@@ -29,7 +30,19 @@ export function OriginalAssets({ t, selectedGame }) {
   };
 
   return (
-    <Card title={ t('edit.original.title') }>
+    <Card 
+      title={ t('edit.original.title') }
+      headerAction={
+        <GameEditActionMenu 
+          selectedGame={selectedGame}
+          locked={originalLocked}
+          onRegenerate={regenerateOriginalVideo}
+          onLock={() => setOriginalLocked(!originalLocked)}
+          onDelete={clearOriginalVideo}
+          onSave={() => console.log('Save original assets')}
+        />
+      }
+    >
       <div className='space-y-4'>
         {/* Image and Video Row */}
         <div className='grid grid-cols-2 gap-3'>
@@ -72,38 +85,15 @@ export function OriginalAssets({ t, selectedGame }) {
           </div>
         </div>
         
-        <div className='space-y-2'>
-          <div className='flex items-center justify-between gap-2'>
+        <div className='space-y-2 flex justify-center items-center'>
           <Button 
             icon='refresh-cw' 
             text={ t('edit.original.regenerateVideo') } 
             onClick={ regenerateOriginalVideo }
             disabled={ originalLocked || !selectedGame }
-            className='w-full'
+            className="w-1/2"
             color='blue'
           />
-          <Button 
-            icon='trash-2' 
-            text={ t('edit.original.deleteVideo') } 
-            onClick={ clearOriginalVideo }
-            color='red'
-            disabled={ originalLocked || !selectedGame }
-            className='w-full'
-          />
-          </div>
-          
-          <div className='flex items-center justify-end'>
-            <span className='text-sm text-slate-600 dark:text-slate-400 mr-2'>
-              { t('edit.original.lock') }
-            </span>
-            <Switch
-              name="originalLock"
-              value={ originalLocked }
-              onChange={ (e) => setOriginalLocked(e.target.value) }
-              disabled={ !selectedGame }
-            />
-          </div>
-          
         </div>
       </div>
       

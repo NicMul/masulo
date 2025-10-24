@@ -8,6 +8,7 @@
 import { useState, useCallback, useContext } from 'react';
 import { Card, Button, Switch } from 'components/lib';
 import { ViewContext } from 'components/lib';
+import { GameEditActionMenu } from './GameEditActionMenu';
 import { GenerateAssets } from './GenerateAssets';
 import  MediaPlayer from './MediaPlayer';
 
@@ -50,7 +51,19 @@ export function ThemeAssets({ t, selectedGame, onGameUpdate }) {
   };
 
   return (
-    <Card title={ t('edit.theme.title', { theme: selectedGame?.theme || 'DEFAULT' }) }>
+    <Card 
+      title={ t('edit.theme.title', { theme: selectedGame?.theme || 'DEFAULT' }) }
+      headerAction={
+        <GameEditActionMenu 
+          selectedGame={selectedGame}
+          locked={themeLocked}
+          onRegenerate={regenerateThemeAssets}
+          onLock={() => setThemeLocked(!themeLocked)}
+          onDelete={clearThemeContent}
+          onSave={() => console.log('Save theme assets')}
+        />
+      }
+    >
       <div className='space-y-4'>
         {/* Image and Video Row */}
         <div className='grid grid-cols-2 gap-3'>

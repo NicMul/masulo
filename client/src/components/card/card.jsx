@@ -12,6 +12,7 @@
 *   children: children to render (component(s), required)
 *   className: custom class (SCSS or tailwind style, optional)
 *   description: header description (string, optional)
+*   headerAction: React component to display on the right side of the header (component, optional)
 *   loading: toggle the loading animation (boolean, optional)
 *   title: header title (string, optional)
 *
@@ -20,7 +21,7 @@
 import { Fragment, forwardRef, Children, isValidElement } from 'react';
 import { cn, Loader } from 'components/lib';
 
-const Card = forwardRef(({ className, title, loading, description, center, children, ...props }, ref) => {
+const Card = forwardRef(({ className, title, loading, description, center, headerAction, children, ...props }, ref) => {
 
   let footer = null;
   
@@ -51,15 +52,23 @@ const Card = forwardRef(({ className, title, loading, description, center, child
         <Loader/> :
         <Fragment>
 
-          { (title || description) &&
+          { (title || description || headerAction) &&
             <CardHeader>
 
-              { title && 
-                <CardTitle>{ title }</CardTitle> 
-              }
+              <div className="flex flex-col">
+                { title && 
+                  <CardTitle>{ title }</CardTitle> 
+                }
 
-              { description &&
-                <CardDescription>{ description }</CardDescription> 
+                { description &&
+                  <CardDescription>{ description }</CardDescription> 
+                }
+              </div>
+
+              { headerAction &&
+                <div className="flex items-center">
+                  { headerAction }
+                </div>
               }
 
             </CardHeader> 

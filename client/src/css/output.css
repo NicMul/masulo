@@ -768,6 +768,9 @@ table tbody tr:last-child td {
 .m-6 {
   margin: 1.5rem;
 }
+.m-auto {
+  margin: auto;
+}
 .-mx-1 {
   margin-left: -0.25rem;
   margin-right: -0.25rem;
@@ -1229,6 +1232,9 @@ table tbody tr:last-child td {
 }
 .w-\[200px\] {
   width: 200px;
+}
+.w-48 {
+  width: 12rem;
 }
 .min-w-\[8rem\] {
   min-width: 8rem;
