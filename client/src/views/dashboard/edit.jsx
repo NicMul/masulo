@@ -9,7 +9,6 @@ import { useState, useCallback, useContext, useEffect } from 'react';
 import { ViewContext, Animate, useAPI } from 'components/lib';
 import { GameSelector } from 'components/edit/GameSelector';
 import { EditHeader } from 'components/edit/EditHeader';
-import { ContentSourceBanner } from 'components/edit/ContentSourceBanner';
 import { OriginalAssets } from 'components/edit/OriginalAssets';
 import { CurrentAssets } from 'components/edit/CurrentAssets';
 import { ThemeAssets } from 'components/edit/ThemeAssets';
