@@ -109,29 +109,9 @@ export function ThemeAssets({ t, selectedGame, onGameUpdate }) {
             text={ t('edit.theme.regenerate') } 
             onClick={ regenerateThemeAssets }
             disabled={ themeLocked || !selectedGame }
-            className='w-full'
+            className='w-3/5 mx-auto'
             color='blue'
           />
-          <Button 
-            icon='trash-2' 
-            text={ t('edit.theme.clear') } 
-            onClick={ clearThemeContent }
-            color='red'
-            disabled={ themeLocked || !selectedGame }
-            className='w-full'
-          />
-          </div>
-          
-          <div className='flex items-center justify-end'>
-            <span className='text-sm text-slate-600 dark:text-slate-400 mr-2'>
-              { t('edit.theme.lock') }
-            </span>
-            <Switch
-              name="themeLock"
-              value={ themeLocked }
-              onChange={ (e) => setThemeLocked(e.target.value) }
-              disabled={ !selectedGame }
-            />
           </div>
           
         </div>
