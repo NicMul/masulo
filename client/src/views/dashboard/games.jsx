@@ -184,7 +184,9 @@ export function Games({ t }){
         <Button icon='upload' text={ t('games.csv.action') } onClick={ uploadCSV } />
         <Button icon='plus' text={ t('games.create.action') } onClick={ createGame } />
       </div>
-      <Card title={ t('games.table.title') }>
+      <Card title={ t('games.table.title') } headerAction={
+        <Button color='green' icon='plus' text={ t('games.save.bulk') } onClick={ createGame } />
+      }>
         
         <Table
         sortable
