@@ -1,10 +1,15 @@
-import { Dialog, DialogContent, DialogHeader, Tabs, TabsList, TabsTrigger, TabsContent, Card, Button, Icon, Textarea, Switch, Label } from 'components/lib';
+import { Dialog, DialogContent, DialogHeader, Tabs, TabsList, TabsTrigger, TabsContent, Card, Button, Icon } from 'components/lib';
 import { useTranslation } from 'react-i18next';
 import MediaPlayer from './MediaPlayer';
 import { useState, useMemo, useCallback, useContext } from 'react';
 import { DialogFooter } from 'components/dialog/dialog';
 import { useMutation } from 'components/hooks/mutation';
 import { ViewContext } from 'components/view/context';
+import { DescribeChangesDialog } from './dialogs/DescribeChangesDialog';
+import { DeleteConfirmationDialog } from './dialogs/DeleteConfirmationDialog';
+import { AcceptConfirmationDialog } from './dialogs/AcceptConfirmationDialog';
+import { ArchiveConfirmationDialog } from './dialogs/ArchiveConfirmationDialog';
+import { getButtonText, getMediaPlayerType, getImageUrl, getVideoUrl, getTestVideoUrl, generateDescriptionPlaceholder } from './utilities';
 
 
 const GenerateAssets = ({
@@ -44,19 +49,12 @@ const GenerateAssets = ({
     };
 
     const mediaPlayerType = useMemo(() => {
-
-        const hasImage = selectedGame?.testImage || testImage;
-        const hasVideo = selectedGame?.testVideo || testVideoUrl;
-        if (hasImage && hasVideo) return 'both';
-        if (hasImage) return 'image';
-        if (hasVideo) return 'video';
-        return 'both';
+        return getMediaPlayerType(selectedGame, testImage, testVideoUrl);
     }, [selectedGame, testImage, testVideoUrl]);
 
-    const getButtonText = useCallback(() => {
-        if (isGenerating) return t('edit.regenerate.dialog.generating');
-        return t('edit.regenerate.dialog.generateAssets');
-    }, [isGenerating]);
+    const buttonText = useMemo(() => {
+        return getButtonText(isGenerating, t);
+    }, [isGenerating, t]);
 
     const handleRegenerate = useCallback(async () => {
 
@@ -245,36 +243,23 @@ const GenerateAssets = ({
         setShowDeleteConfirmationDialog(true);
     }, []);
 
-    const getTestVideoUrl = useCallback(() => {
-        if (testVideoUrl) {
-            return testVideoUrl;
-        }
-        return selectedGame?.testVideo;
-    }, [testVideoUrl, selectedGame?.testVideo])
+    const testVideoUrlValue = useMemo(() => {
+        return getTestVideoUrl(testVideoUrl, selectedGame);
+    }, [testVideoUrl, selectedGame]);
 
-    const generateDescriptionPlaceholder = useCallback(() => {
-        if (assetType === 'original') {
-            return t('edit.regenerate.dialog.placeholders.originalImagePrompt');
-        }
-        return t('edit.regenerate.dialog.placeholders.aiGeneratedImagePrompt');
-    }, [assetType]);
+    const descriptionPlaceholder = useMemo(() => {
+        return generateDescriptionPlaceholder(assetType, t);
+    }, [assetType, t]);
 
 
 
-    const getImageUrl = useCallback(() => {
-      if (assetType === 'original') return selectedGame?.defaultImage;
-      if (assetType === 'current') return selectedGame?.currentImage;
-      if (assetType === 'theme') return selectedGame?.themeImage;
-      return null;
+    const imageUrl = useMemo(() => {
+        return getImageUrl(assetType, selectedGame);
     }, [assetType, selectedGame]);
 
-    const getVideoUrl = useCallback(() => {
-
-      if (assetType === 'original') return selectedGame?.defaultVideo;
-      if (assetType === 'current') return selectedGame?.currentVideo;
-      if (assetType === 'theme') return selectedGame?.themeVideo;
-      return null;
-    }, [assetType, selectedGame, generateVideo, generateImage]);
+    const videoUrl = useMemo(() => {
+        return getVideoUrl(assetType, selectedGame);
+    }, [assetType, selectedGame]);
 
 
 
@@ -319,8 +304,8 @@ const GenerateAssets = ({
                                         <MediaPlayer
                                             key={reloadTrigger}
                                             gameId={selectedGame?.id}
-                                            imageUrl={getImageUrl()}
-                                            videoUrl={getVideoUrl()}
+                                            imageUrl={imageUrl}
+                                            videoUrl={videoUrl}
                                             onSelect={handleSelect}
                                             type="image"
                                             canSelect={false}
@@ -333,8 +318,8 @@ const GenerateAssets = ({
                                         <MediaPlayer
                                             key={reloadTrigger}
                                             gameId={selectedGame?.id}
-                                            imageUrl={getImageUrl()}
-                                            videoUrl={getVideoUrl()}
+                                            imageUrl={imageUrl}
+                                            videoUrl={videoUrl}
                                             onSelect={handleSelect}
                                             type="video"
                                             canSelect={false}
@@ -355,7 +340,7 @@ const GenerateAssets = ({
                                     key={`${reloadTrigger}-${selectedGame?.testImage}-${selectedGame?.testVideo}`}
                                     gameId={selectedGame?.id}
                                     imageUrl={testImage || selectedGame?.testImage}
-                                    videoUrl={testVideoUrl || selectedGame?.testVideo}
+                                    videoUrl={testVideoUrlValue}
                                     onSelect={handleSelect}
                                     type={mediaPlayerType}
                                     canSelect={false}
@@ -386,165 +371,46 @@ const GenerateAssets = ({
                             {isGenerating && (
                                 <Icon name="loader-2" size={16} className="mr-2 animate-spin" />
                             )}
-                            {getButtonText()}
+                            {buttonText}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-            <Dialog open={showDescribeChangesDialog} onClose={() => setShowDescribeChangesDialog(false) }>
-                <DialogContent className="max-w-4xl">
-                    <DialogHeader>
-                        <h1 className="text-2xl font-semibold">Describe Changes</h1>
-                    </DialogHeader>
-
-                    <div className="flex gap-6 mt-6">
-                        {/* Media Player - maintains 220:280 aspect ratio */}
-                        <div className="w-2/5 flex-shrink-0">
-                            <div className="relative w-full" style={{ aspectRatio: '220/280' }}>
-                                <MediaPlayer
-                                    key={reloadTrigger2}
-                                    gameId={selectedGame?.id}
-                                    imageUrl={assetType !== 'original' ?( generateImage ? selectedGame?.defaultImage : selectedGame?.currentImage) : selectedGame?.defaultImage}
-                                    videoUrl={assetType !== 'original' ?( generateVideo ? selectedGame?.defaultVideo : selectedGame?.currentVideo) : selectedGame?.defaultVideo}
-                                    onSelect={handleSelect}
-                                    type="image"
-                                    canSelect={false}
-                                    showPlayIcon={false}
-                                    readOnly={assetType === 'original' ? true : false}
-                                    isSelected={false}
-                                />
-                            </div>
-                        </div>
-
-                        {/* Textarea */}
-                        <div className="flex-1 flex flex-col">
-                            <label className="text-lg font-medium mb-2">
-                                Description for the Ai
-                            </label>
-                            <Textarea
-                                value={customPrompt}
-                                onChange={(e) => setCustomPrompt(e.target.value)}
-                                placeholder={generateDescriptionPlaceholder()}
-                                className="flex-1 resize-none min-h-[300px]"
-                            />
-                        </div>
-                    </div>
-
-                    {/* Generation Options */}
-                    <div className="flex items-center gap-6 mt-6 p-4 bg-muted/50 rounded-lg justify-end">
-                        <span className="text-lg font-medium text-muted-foreground">
-                            Generate:
-                        </span>
-                       
-                        <div className="flex items-center gap-2">
-                            <Switch
-                               disabled={assetType === 'original'}
-                                name="generateImage"
-                                value={generateImage}
-                                onChange={(e) => setGenerateImage(e.target.value)}
-                            />
-                            <Label className="cursor-pointer">{t('Image')}</Label>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <Switch
-                                name="generateVideo"
-                                value={generateVideo}
-                                onChange={(e) => setGenerateVideo(e.target.value)}
-                            />
-                            <Label className="cursor-pointer">{t('Video')}</Label>
-                        </div>
-                    </div>
-
-                    <DialogFooter className="mt-6">
-                        <Button
-                            variant="outline"
-                            onClick={() => setShowDescribeChangesDialog(false)}
-                        >
-                            {t('Cancel')}
-                        </Button>
-                        <Button
-                            disabled={!generateImage && !generateVideo}
-                            onClick={() => {
-                                setShowDescribeChangesDialog(false);
-                                setMadeSelection(true);
-                            }}
-                            className="bg-green-600 hover:bg-green-700"
-                        >
-                            {t('Continue')}
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-            <Dialog open={showDeleteConfirmationDialog} onClose={() => setShowDeleteConfirmationDialog(false)}>
-                <DialogContent>
-                    <DialogHeader>
-                        <h1>{t('Delete Test Assets')}</h1>
-                    </DialogHeader>
-                    <div className="py-4">
-                        <p>{t('Are you sure you want to delete the test assets? This action cannot be undone.')}</p>
-                    </div>
-                    <DialogFooter>
-                        <Button color="gray" onClick={() => setShowDeleteConfirmationDialog(false)}>
-                            {t('Cancel')}
-                        </Button>
-                        <Button color="red" onClick={handleDeleteTestAssets}>
-                            {t('Delete')}
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-            <Dialog open={showAcceptConfirmationDialog} onClose={() => setShowAcceptConfirmationDialog(false)}>
-                <DialogContent>
-                    <DialogHeader>
-                        <h1>{t('Accept Test Assets')}</h1>
-                    </DialogHeader>
-                    <div className="py-4">
-                        <p>
-                            {assetType === 'original'
-                                ? t('Accepting will replace animation for your default image. The image will not be changed.')
-                                : assetType === 'current'
-                                ? t('Accepting will replace both your current image and video with the test versions.')
-                                : t('Are you sure you want to accept the test assets? This action cannot be undone.')
-                            }
-                        </p>
-                    </div>
-                    <DialogFooter>
-                        <Button color="gray" onClick={() => setShowAcceptConfirmationDialog(false)}>
-                            {t('Cancel')}
-                        </Button>
-                        <Button color="green" onClick={confirmAcceptTestAssets}>
-                            {t('Accept')}
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-            <Dialog open={showArchiveConfirmationDialog} onClose={() => setShowArchiveConfirmationDialog(false)}>
-                <DialogContent>
-                    <DialogHeader>
-                        <h1>{t('Archive Test Assets')}</h1>
-                    </DialogHeader>
-                    <div className="py-4">
-                        <p>
-                            {t('All test assets will be moved to the archive folder and deleted from the test directory. Archived files can be accessed later if needed. This will clear all test assets from this game.')}
-                        </p>
-                    </div>
-                    <DialogFooter>
-                        <Button color="gray" onClick={() => setShowArchiveConfirmationDialog(false)}>
-                            {t('Cancel')}
-                        </Button>
-                        <Button 
-                            color="orange" 
-                            onClick={confirmArchiveTestAssets}
-                            disabled={isArchiving}
-                        >
-                            {isArchiving && (
-                                <Icon name="loader-2" size={16} className="mr-2 animate-spin" />
-                            )}
-                            {t('Archive')}
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
+            <DescribeChangesDialog
+                isOpen={showDescribeChangesDialog}
+                onClose={() => setShowDescribeChangesDialog(false)}
+                customPrompt={customPrompt}
+                setCustomPrompt={setCustomPrompt}
+                generateImage={generateImage}
+                setGenerateImage={setGenerateImage}
+                generateVideo={generateVideo}
+                setGenerateVideo={setGenerateVideo}
+                selectedGame={selectedGame}
+                assetType={assetType}
+                setMadeSelection={setMadeSelection}
+                reloadTrigger2={reloadTrigger2}
+                t={t}
+            />
+            <DeleteConfirmationDialog
+                isOpen={showDeleteConfirmationDialog}
+                onClose={() => setShowDeleteConfirmationDialog(false)}
+                onConfirm={handleDeleteTestAssets}
+                t={t}
+            />
+            <AcceptConfirmationDialog
+                isOpen={showAcceptConfirmationDialog}
+                onClose={() => setShowAcceptConfirmationDialog(false)}
+                onConfirm={confirmAcceptTestAssets}
+                assetType={assetType}
+                t={t}
+            />
+            <ArchiveConfirmationDialog
+                isOpen={showArchiveConfirmationDialog}
+                onClose={() => setShowArchiveConfirmationDialog(false)}
+                onConfirm={confirmArchiveTestAssets}
+                isArchiving={isArchiving}
+                t={t}
+            />
         </div>
     );
 };
