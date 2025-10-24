@@ -45,6 +45,13 @@ const Routes = [
     title: 'ab_testing.title'
   },
   {
+    path: '/edit/:gameId',
+    view: Edit,
+    layout: 'app',
+    permission: 'user',
+    title: 'edit.title'
+  },
+  {
     path: '/edit',
     view: Edit,
     layout: 'app',

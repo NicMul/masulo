@@ -8,10 +8,11 @@
     "action": "Nuevo Juego",
     "button": "Crear Juego"
   },
-  "edit": {
-    "title": "Editar Juego",
-    "action": "Editar",
-    "button": "Guardar Cambios"
+  "edit_game": {
+    "action": "Editar Juego"
+  },
+  "new_ai_assets": {
+    "action": "Nuevos Assets IA"
   },
   "delete": {
     "title": "Eliminar Juego",

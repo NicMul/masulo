@@ -6,7 +6,7 @@
 **********/
 
 import { useState, useCallback, useContext, useEffect } from 'react';
-import { ViewContext, Animate, useAPI } from 'components/lib';
+import { ViewContext, Animate, useAPI, useParams } from 'components/lib';
 import { GameSelector } from 'components/edit/GameSelector';
 import { EditHeader } from 'components/edit/EditHeader';
 import { OriginalAssets } from 'components/edit/OriginalAssets';
@@ -16,6 +16,7 @@ import { ThemeAssets } from 'components/edit/ThemeAssets';
 export function Edit({ t }){
 
   const viewContext = useContext(ViewContext);
+  const { gameId } = useParams();
   const [selectedGame, setSelectedGame] = useState(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   
@@ -31,6 +32,17 @@ export function Edit({ t }){
 
     setRefreshTrigger(prev => prev + 1);
   }, []);
+
+  // Auto-select game from URL parameter when games data loads
+  useEffect(() => {
+    if (gamesRes.data && gameId && !selectedGame) {
+      // Find the game matching the URL parameter
+      const game = gamesRes.data.find(g => g.id === parseInt(gameId) || g.id === gameId);
+      if (game) {
+        setSelectedGame(game);
+      }
+    }
+  }, [gamesRes.data, gameId, selectedGame]);
 
   // Update selectedGame when games data changes (after refresh)
   useEffect(() => {

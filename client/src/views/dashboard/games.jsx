@@ -6,7 +6,7 @@
 **********/
 
 import { useContext, useCallback, useState, useEffect } from 'react';
-import { ViewContext, Card, Table, Animate, useAPI, Button } from 'components/lib';
+import { ViewContext, Card, Table, Animate, useAPI, Button, useNavigate } from 'components/lib';
 import { GameEditForm } from 'components/games/GameEditForm';
 import { GameCreateForm } from 'components/games/GameCreateForm';
 import axios from 'axios';
@@ -15,6 +15,7 @@ export function Games({ t }){
 
   // context
   const viewContext = useContext(ViewContext);
+  const navigate = useNavigate();
 
   // state
   const [games, setGames] = useState([]);
@@ -150,33 +151,23 @@ export function Games({ t }){
     });
   }, [t, viewContext]);
 
+  // navigate to edit page with selected game
+  const newImages = useCallback(({ row }) => {
+    navigate(`/edit/${row.id}`);
+  }, [navigate]);
+
   const actions = [
     {
-      label: t('games.create.action'),
-      icon: 'plus',
-      global: true,
-      color: 'green',
-      action: createGame
-    },
-    {
-      label: t('games.csv.action'),
-      icon: 'upload',
-      global: true,
-      color: 'blue',
-      action: uploadCSV
-    },
-    {
-      label: t('games.template.action'),
-      icon: 'download',
-      global: true,
-      color: 'gray',
-      action: downloadTemplate
-    },
-    {
-      label: t('games.edit.action'),
+      label: t('games.edit_game.action'),
       icon: 'pencil',
       globalOnly: false,
       action: editGame
+    },
+    {
+      label: t('games.new_ai_assets.action'),
+      icon: 'image',
+      globalOnly: false,
+      action: newImages
     },
     {
       label: t('games.delete.action'),
