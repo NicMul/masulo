@@ -222,7 +222,9 @@ exports.update = async function(req, res){
     touch: joi.boolean(),
     promoImage: joi.string().allow(''),
     promoVideo: joi.string().allow(''),
-    locked: joi.boolean()
+    locked: joi.boolean(),
+    published: joi.boolean(),
+    publishedType: joi.string().valid('default', 'current', 'theme', 'promo')
 
   }), req, res); 
 

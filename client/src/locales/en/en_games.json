@@ -71,7 +71,7 @@
       "error": "Theme video URL is required"
     },
     "scrape": {
-      "label": "Enable Scraping"
+      "label": "Enable Discovery Mode"
     },
     "theme": {
       "label": "Theme",
@@ -97,6 +97,20 @@
     },
     "touch": {
       "label": "Enable Touch Support"
+    },
+    "published": {
+      "label": "Published",
+      "description": "Toggle to publish this game"
+    },
+    "publishedType": {
+      "label": "Published Type",
+      "description": "Select the type of published content",
+      "options": {
+        "default": "Default",
+        "current": "Current",
+        "theme": "Theme",
+        "promo": "Promo"
+      }
     }
   },
   "imageEdit": {

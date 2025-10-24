@@ -26,6 +26,8 @@ const GameSchema = new Schema({
   promoImage: { type: String, default: '' },
   promoVideo: { type: String, default: '' },
   locked: { type: Boolean, default: false },
+  published: { type: Boolean, default: false },
+  publishedType: { type: String, enum: ['default', 'current', 'theme', 'promo'], default: 'default' },
   user_id: { type: String, required: true },
   date_created: Date,
   date_updated: Date
@@ -64,6 +66,8 @@ exports.create = async function({ data, user }){
     promoImage: data.promoImage || '',
     promoVideo: data.promoVideo || '',
     locked: data.locked !== undefined ? data.locked : false,
+    published: data.published !== undefined ? data.published : false,
+    publishedType: data.publishedType || 'default',
     user_id: user,
     date_created: new Date(),
     date_updated: new Date()
