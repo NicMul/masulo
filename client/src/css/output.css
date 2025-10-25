@@ -906,6 +906,9 @@ table tbody tr:last-child td {
 .mt-0\.5 {
   margin-top: 0.125rem;
 }
+.mr-5 {
+  margin-right: 1.25rem;
+}
 .block {
   display: block;
 }
@@ -1319,6 +1322,15 @@ table tbody tr:last-child td {
 }
 .max-w-\[0\%\] {
   max-width: 0%;
+}
+.max-w-7xl {
+  max-width: 80rem;
+}
+.max-w-\[220px\] {
+  max-width: 220px;
+}
+.max-w-5xl {
+  max-width: 64rem;
 }
 .flex-1 {
   flex: 1 1 0%;
@@ -4598,6 +4610,10 @@ html, #root, body {
 
   .xl\:grid-cols-5 {
     grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .xl\:grid-cols-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 

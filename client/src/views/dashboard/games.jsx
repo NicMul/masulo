@@ -11,6 +11,7 @@ import { GameEditForm } from 'components/games/GameEditForm';
 import { GameCreateForm } from 'components/games/GameCreateForm';
 import { BulkActionsDialog } from 'components/games/BulkActionsDialog';
 import { BulkDeleteDialog } from 'components/games/BulkDeleteDialog';
+import { GameMediaViewDialog } from 'components/games/GameMediaViewDialog';
 import { useMutation } from 'components/hooks/mutation';
 import axios from 'axios';
 
@@ -19,7 +20,8 @@ export function Games({ t }){
   const [selectedGames, setSelectedGames] = useState([]);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showViewGameMedia, setShowViewGameMedia] = useState(false);
-  
+  const [selectedGameForView, setSelectedGameForView] = useState(null);
+
   // context
   const viewContext = useContext(ViewContext);
   const navigate = useNavigate();
@@ -167,6 +169,12 @@ export function Games({ t }){
     navigate(`/edit/${row.id}`);
   }, [navigate]);
 
+  // open view game media dialog
+  const openViewGameMedia = useCallback((game) => {
+    setSelectedGameForView(game);
+    setShowViewGameMedia(true);
+  }, []);
+
   // Handle bulk delete
   const handleBulkDelete = useCallback(() => {
     setShowDeleteDialog(true);
@@ -270,7 +278,7 @@ export function Games({ t }){
       label: t('games.view.action'),
       icon: 'eye',
       globalOnly: false,
-      action: () => openViewGameMedia(true)
+      action: ({ row }) => openViewGameMedia(row)
     },
     {
       label: t('games.edit_game.action'),
@@ -406,6 +414,14 @@ export function Games({ t }){
         onConfirm={executeBulkDelete}
         isDeleting={bulkDeleteMutation.loading}
         selectedGames={selectedGames}
+        t={t}
+      />
+      
+      {/* Game Media View Dialog */}
+      <GameMediaViewDialog
+        isOpen={showViewGameMedia}
+        onClose={() => setShowViewGameMedia(false)}
+        game={selectedGameForView}
         t={t}
       />
     </Animate>

@@ -11,6 +11,17 @@
   "edit_game": {
     "action": "Edit Game"
   },
+  "view": {
+    "action": "View Assets",
+    "dialog": {
+      "title": "View Game Assets",
+      "default": "Default",
+      "current": "Current",
+      "theme": "Theme",
+      "promotion": "Promotion",
+      "edit": "Edit Game"
+    }
+  },
   "new_ai_assets": {
     "action": "New AI Assets"
   },
