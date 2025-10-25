@@ -78,6 +78,10 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
+        pointer-events: none;
       }
       
       /* Show loader over old image (old image stays visible) */
@@ -139,6 +143,10 @@
         object-fit: cover;
         display: none;
         z-index: 2;
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
+        pointer-events: none;
       }
       
       /* Style existing play buttons - hidden initially */
@@ -151,7 +159,8 @@
       }
       
       /* Hover state - show translucent and blurred button */
-      .masulo-image-container:hover .masulo-play-button {
+      .masulo-image-container:hover .masulo-play-button,
+      .masulo-image-container.masulo-touch-active .masulo-play-button {
         background: rgba(0, 0, 0, 0.5) !important;
         border-color: #ffd700 !important;
         backdrop-filter: blur(2px) !important;
@@ -380,6 +389,18 @@
         container.removeEventListener('mouseleave', container._masuloMouseLeave);
         container._masuloMouseLeave = null;
       }
+      if (container._masuloTouchStart) {
+        container.removeEventListener('touchstart', container._masuloTouchStart);
+        container._masuloTouchStart = null;
+      }
+      if (container._masuloTouchEnd) {
+        container.removeEventListener('touchend', container._masuloTouchEnd);
+        container._masuloTouchEnd = null;
+      }
+      if (container._masuloContextMenu) {
+        container.removeEventListener('contextmenu', container._masuloContextMenu);
+        container._masuloContextMenu = null;
+      }
       
       // Set up tracking for default image only
       this.setupAssetTracking(container, gameId, 'defaultImage', defaultImageUrl);
@@ -461,6 +482,9 @@
               videoElement.loop = true;
               videoElement.muted = true;
               videoElement.autoplay = false; // Will be controlled by hover
+              videoElement.playsInline = true; // Prevent iOS fullscreen
+              videoElement.setAttribute('webkit-playsinline', 'true'); // Older iOS support
+              videoElement.disablePictureInPicture = true; // Prevent PiP mode
               container.appendChild(videoElement);
             }
             
@@ -515,6 +539,9 @@
       // Remove existing event listeners to prevent duplicates
       container.removeEventListener('mouseenter', container._masuloMouseEnter);
       container.removeEventListener('mouseleave', container._masuloMouseLeave);
+      container.removeEventListener('touchstart', container._masuloTouchStart);
+      container.removeEventListener('touchend', container._masuloTouchEnd);
+      container.removeEventListener('contextmenu', container._masuloContextMenu);
       
       // Mouse enter - show video
       container._masuloMouseEnter = () => {
@@ -533,8 +560,38 @@
         imgElement.style.display = 'block';
       };
       
+      // Touch start - show video and play button
+      container._masuloTouchStart = (e) => {
+        e.preventDefault(); // Prevent default touch behavior
+        container.classList.add('masulo-touch-active');
+        imgElement.style.display = 'none';
+        videoElement.style.display = 'block';
+        videoElement.play().catch(e => {
+          // Video autoplay failed
+        });
+      };
+      
+      // Touch end - hide video and play button
+      container._masuloTouchEnd = (e) => {
+        e.preventDefault(); // Prevent default touch behavior
+        container.classList.remove('masulo-touch-active');
+        videoElement.pause();
+        videoElement.currentTime = 0; // Reset to beginning
+        videoElement.style.display = 'none';
+        imgElement.style.display = 'block';
+      };
+      
+      // Prevent context menu on images and videos
+      container._masuloContextMenu = (e) => {
+        e.preventDefault();
+        return false;
+      };
+      
       container.addEventListener('mouseenter', container._masuloMouseEnter);
       container.addEventListener('mouseleave', container._masuloMouseLeave);
+      container.addEventListener('touchstart', container._masuloTouchStart, { passive: false });
+      container.addEventListener('touchend', container._masuloTouchEnd, { passive: false });
+      container.addEventListener('contextmenu', container._masuloContextMenu);
     }
     
     // Status management
