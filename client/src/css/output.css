@@ -2391,6 +2391,9 @@ table tbody tr:last-child td {
 .pb-8 {
   padding-bottom: 2rem;
 }
+.pl-10 {
+  padding-left: 2.5rem;
+}
 .\!text-left {
   text-align: left !important;
 }
@@ -2817,6 +2820,10 @@ table tbody tr:last-child td {
 .ring-offset-white {
   --tw-ring-offset-color: #fff;
 }
+.blur {
+  --tw-blur: blur(8px);
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+}
 .drop-shadow-lg {
   --tw-drop-shadow: drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1));
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
@@ -2869,6 +2876,9 @@ table tbody tr:last-child td {
 .duration-700 {
   transition-duration: 700ms;
 }
+.duration-150 {
+  transition-duration: 150ms;
+}
 .ease-in-out {
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -2915,6 +2925,9 @@ table tbody tr:last-child td {
 }
 .duration-700 {
   animation-duration: 700ms;
+}
+.duration-150 {
+  animation-duration: 150ms;
 }
 .ease-in-out {
   animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
@@ -3988,6 +4001,10 @@ html, #root, body {
 .dark\:bg-gray-700:is(.dark *) {
   --tw-bg-opacity: 1;
   background-color: rgb(55 65 81 / var(--tw-bg-opacity, 1));
+}
+
+.dark\:bg-blue-900\/20:is(.dark *) {
+  background-color: rgb(30 58 138 / 0.2);
 }
 
 .dark\:bg-opacity-30:is(.dark *) {

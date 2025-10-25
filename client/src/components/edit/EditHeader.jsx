@@ -39,46 +39,7 @@ export function EditHeader({ t, selectedGame, onSaveAndPublish }) {
           </p>
           
         </div>
-        <div className='flex'>
-        
-          <Switch
-              name="animate"
-              value={ animateEnabled }
-              label={ t('edit.header.animate') }
-              onChange={ (e) => setAnimateEnabled(e.target.value) }
-              disabled={ !selectedGame }
-            />
-            <div className='mr-4'></div>
-            <Switch
-              name="hover"
-              value={ hoverEnabled }
-              label={ t('edit.header.hover') }
-              onChange={ (e) => setHoverEnabled(e.target.value) }
-              disabled={ !selectedGame }
-            />
-            <div className='mr-4'></div>
-            <Switch
-              name="touch"
-              value={ touchEnabled }
-              label={ t('edit.header.touch') }
-              onChange={ (e) => setTouchEnabled(e.target.value) }
-              disabled={ !selectedGame }
-            />
-        </div>
        
-        <div className='flex items-center gap-4'>
-          
-          <div className='flex items-center gap-2'>
-            
-          </div>
-          <Button 
-            icon='save' 
-            color='green'
-            text={ t('edit.header.savePublish') } 
-            onClick={ onSaveAndPublish }
-            disabled={ !selectedGame }
-          />
-        </div>
       </div>
     </div>
   );

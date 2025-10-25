@@ -92,7 +92,7 @@ export function Edit({ t }){
     <Animate type='pop'>
       <div className='space-y-6'>
 
-        <GameSelector t={t} onGameSelect={handleGameSelect} games={gamesRes.data || []} />
+        <GameSelector t={t} onGameSelect={handleGameSelect} games={gamesRes.data || []} selectedGame={selectedGame} />
 
     
         <EditHeader 
