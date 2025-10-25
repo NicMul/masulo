@@ -27,7 +27,7 @@ export function useAPI(url, method, trigger){
 
       if (!url){
 
-        setState({ data: null, loading: false });
+        setState(prev => ({ ...prev, loading: true }));
         return false;
 
       }

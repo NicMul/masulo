@@ -1,5 +1,6 @@
 const { Server } = require('socket.io');
 const user = require('../model/user');
+const analytics = require('../model/analytics');
 const { getGamesById } = require('../services/realtime');
 
 let io = null;
@@ -157,6 +158,31 @@ function initializeSocketIO(server) {
         }
       } catch (error) {
         console.error('Error processing SDK event:', error);
+      }
+    });
+
+    // Handle analytics events
+    socket.on('analytics-event', async (data) => {
+      try {
+        // Validate required fields
+        if (!data.event_type || !data.game_id || !data.asset_type || !data.asset_url || !data.session_id) {
+          console.warn('Invalid analytics event data:', data);
+          return;
+        }
+
+        // Add user context
+        const analyticsData = {
+          ...data,
+          user_id: userData.id,
+          account_id: userData.id // Using user_id as account_id for now
+        };
+
+        // Store analytics event (fire-and-forget for performance)
+        analytics.create({ data: analyticsData, user: userData.id, account: userData.id })
+          .catch(error => console.error('Error storing analytics event:', error));
+
+      } catch (error) {
+        console.error('Error processing analytics event:', error);
       }
     });
 

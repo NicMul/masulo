@@ -174,6 +174,11 @@
         ...options.statusConfig
       };
       
+      // Analytics tracking properties
+      this.sessionId = this.generateSessionId();
+      this.analyticsEnabled = options.analyticsEnabled !== false; // Default to true
+      this.trackingData = new Map(); // Store tracking data for cleanup
+      
       injectStyles();
       this.init();
     }
@@ -321,7 +326,7 @@
         }
         
         // Update the game image using existing method
-        this.updateGameImage(game.id, imageUrl, videoUrl);
+        this.updateGameImage(game.id, imageUrl, videoUrl, game.publishedType);
       });
     }
     
@@ -331,6 +336,15 @@
         console.warn(`No element found for game ID: ${gameId}`);
         return;
       }
+      
+      // Remove all existing analytics tracking
+      this.removeAssetTracking(container);
+      
+      // Track game unpublish event
+      this.trackAssetEvent('game_unpublished', gameId, 'defaultImage', defaultImageUrl, {
+        reason: 'game_unpublished',
+        reverted_to: 'defaultImage'
+      });
       
       // Remove loading/transition classes
       container.classList.remove('masulo-loading', 'masulo-fade-out', 'masulo-loaded');
@@ -364,15 +378,21 @@
         container._masuloMouseLeave = null;
       }
       
+      // Set up tracking for default image only
+      this.setupAssetTracking(container, gameId, 'defaultImage', defaultImageUrl);
+      
       console.log(`✓ Reverted game ${gameId} to defaultImage: ${defaultImageUrl}`);
     }
     
-    updateGameImage(gameId, imageUrl, videoUrl = null) {
+    updateGameImage(gameId, imageUrl, videoUrl = null, publishedType = 'default') {
       const container = document.querySelector(`[data-masulo-game-id="${gameId}"]`);
       if (!container) {
         console.warn(`No element found for game ID: ${gameId}`);
         return;
       }
+      
+      // Remove existing tracking before updating
+      this.removeAssetTracking(container);
       
       // Add container class for transitions
       container.classList.add('masulo-image-container');
@@ -391,22 +411,22 @@
           const videoPreloader = document.createElement('video');
           videoPreloader.preload = 'metadata';
           videoPreloader.onloadedmetadata = () => {
-            this.applyImageTransition(container, imageUrl, videoUrl);
+            this.applyImageTransition(container, imageUrl, videoUrl, publishedType);
           };
           videoPreloader.onerror = () => {
             console.warn(`Failed to preload video for game ${gameId}, proceeding with image only`);
-            this.applyImageTransition(container, imageUrl);
+            this.applyImageTransition(container, imageUrl, null, publishedType);
           };
           videoPreloader.src = videoUrl;
         } else {
-          this.applyImageTransition(container, imageUrl);
+          this.applyImageTransition(container, imageUrl, null, publishedType);
         }
       };
       preloader.onerror = () => console.error(`Failed to load image for game ${gameId}:`, imageUrl);
       preloader.src = imageUrl;
     }
     
-    applyImageTransition(container, imageUrl, videoUrl = null) {
+    applyImageTransition(container, imageUrl, videoUrl = null, publishedType = 'default') {
       // Show loader at bottom right over the old image
       container.classList.add('masulo-loading');
       
@@ -465,6 +485,20 @@
             // Clean up after transition completes
             setTimeout(() => {
               container.classList.remove('masulo-loaded');
+              
+              // Set up analytics tracking after transition completes
+              const gameId = container.getAttribute('data-masulo-game-id');
+              if (gameId) {
+                // Determine asset type based on publishedType
+                let imageAssetType = publishedType + 'Image';
+                let videoAssetType = publishedType + 'Video';
+                
+                // Set up tracking for both image and video if present
+                this.setupAssetTracking(container, gameId, imageAssetType, imageUrl);
+                if (videoUrl) {
+                  this.setupAssetTracking(container, gameId, videoAssetType, videoUrl);
+                }
+              }
             }, 500);
           });
           
@@ -562,6 +596,235 @@
           console.error(`Error in event listener for ${event}:`, error);
         }
       });
+    }
+
+    // Analytics Methods
+    
+    generateSessionId() {
+      // Try to get existing session from sessionStorage
+      const existingSession = sessionStorage.getItem('masulo_session_id');
+      if (existingSession) {
+        return existingSession;
+      }
+      
+      // Generate new session ID
+      const sessionId = 'masulo_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+      sessionStorage.setItem('masulo_session_id', sessionId);
+      return sessionId;
+    }
+
+    getDeviceType() {
+      const userAgent = navigator.userAgent.toLowerCase();
+      if (/mobile|android|iphone|ipad|phone/i.test(userAgent)) {
+        return 'mobile';
+      } else if (/tablet|ipad/i.test(userAgent)) {
+        return 'tablet';
+      }
+      return 'desktop';
+    }
+
+    getViewportInfo() {
+      return {
+        width: window.innerWidth,
+        height: window.innerHeight,
+        device_type: this.getDeviceType(),
+        timestamp: new Date().toISOString()
+      };
+    }
+
+    trackAssetEvent(eventType, gameId, assetType, assetUrl, metadata = {}) {
+      if (!this.analyticsEnabled || !this.isConnected || !this.socket) {
+        return;
+      }
+
+      const eventData = {
+        event_type: eventType,
+        game_id: gameId,
+        asset_type: assetType,
+        asset_url: assetUrl,
+        session_id: this.sessionId,
+        metadata: {
+          ...this.getViewportInfo(),
+          ...metadata
+        }
+      };
+
+      this.socket.emit('analytics-event', eventData);
+      console.log('Analytics event tracked:', eventData);
+    }
+
+    removeAssetTracking(container) {
+      if (!container || !this.trackingData.has(container)) {
+        return;
+      }
+
+      const trackingInfo = this.trackingData.get(container);
+      
+      // Remove all event listeners
+      if (trackingInfo.listeners) {
+        trackingInfo.listeners.forEach(({ element, event, handler }) => {
+          element.removeEventListener(event, handler);
+        });
+      }
+
+      // Clear tracking data
+      this.trackingData.delete(container);
+      console.log('Asset tracking removed for container:', container);
+    }
+
+    setupAssetTracking(container, gameId, assetType, assetUrl) {
+      if (!this.analyticsEnabled || !container) {
+        return;
+      }
+
+      // Remove existing tracking first
+      this.removeAssetTracking(container);
+
+      const listeners = [];
+      const trackingInfo = {
+        gameId,
+        assetType,
+        assetUrl,
+        listeners
+      };
+
+      // Get asset elements
+      const imgElement = container.querySelector('img') || container.querySelector('.game-image');
+      const videoElement = container.querySelector('video');
+      const playButton = container.querySelector('button, .play-button, .cta-button, [class*="play"], [class*="cta"]');
+
+      // Image hover tracking (debounced)
+      if (imgElement) {
+        let hoverStartTime = null;
+        let hoverTimeout = null;
+
+        const handleMouseEnter = () => {
+          hoverStartTime = Date.now();
+          this.trackAssetEvent('hover', gameId, assetType, assetUrl, {
+            hover_start: hoverStartTime
+          });
+        };
+
+        const handleMouseLeave = () => {
+          if (hoverStartTime) {
+            const hoverDuration = Date.now() - hoverStartTime;
+            this.trackAssetEvent('hover', gameId, assetType, assetUrl, {
+              hover_duration: hoverDuration,
+              hover_end: Date.now()
+            });
+            hoverStartTime = null;
+          }
+        };
+
+        imgElement.addEventListener('mouseenter', handleMouseEnter);
+        imgElement.addEventListener('mouseleave', handleMouseLeave);
+        listeners.push({ element: imgElement, event: 'mouseenter', handler: handleMouseEnter });
+        listeners.push({ element: imgElement, event: 'mouseleave', handler: handleMouseLeave });
+      }
+
+      // Image click tracking
+      if (imgElement) {
+        const handleClick = (e) => {
+          this.trackAssetEvent('click', gameId, assetType, assetUrl, {
+            click_x: e.clientX,
+            click_y: e.clientY,
+            click_target: e.target.tagName
+          });
+        };
+
+        imgElement.addEventListener('click', handleClick);
+        listeners.push({ element: imgElement, event: 'click', handler: handleClick });
+      }
+
+      // Touch events (mobile)
+      if (imgElement) {
+        const handleTouchStart = (e) => {
+          this.trackAssetEvent('touch', gameId, assetType, assetUrl, {
+            touch_start: Date.now(),
+            touch_x: e.touches[0].clientX,
+            touch_y: e.touches[0].clientY
+          });
+        };
+
+        const handleTouchEnd = (e) => {
+          this.trackAssetEvent('touch', gameId, assetType, assetUrl, {
+            touch_end: Date.now(),
+            touch_x: e.changedTouches[0].clientX,
+            touch_y: e.changedTouches[0].clientY
+          });
+        };
+
+        imgElement.addEventListener('touchstart', handleTouchStart);
+        imgElement.addEventListener('touchend', handleTouchEnd);
+        listeners.push({ element: imgElement, event: 'touchstart', handler: handleTouchStart });
+        listeners.push({ element: imgElement, event: 'touchend', handler: handleTouchEnd });
+      }
+
+      // Video tracking
+      if (videoElement) {
+        const handlePlay = () => {
+          this.trackAssetEvent('video_play', gameId, assetType, assetUrl, {
+            video_current_time: videoElement.currentTime,
+            video_duration: videoElement.duration
+          });
+        };
+
+        const handlePause = () => {
+          this.trackAssetEvent('video_pause', gameId, assetType, assetUrl, {
+            video_current_time: videoElement.currentTime,
+            video_duration: videoElement.duration
+          });
+        };
+
+        const handleEnded = () => {
+          this.trackAssetEvent('video_ended', gameId, assetType, assetUrl, {
+            video_duration: videoElement.duration
+          });
+        };
+
+        const handleMouseEnter = () => {
+          this.trackAssetEvent('video_hover', gameId, assetType, assetUrl, {
+            video_hover_start: Date.now()
+          });
+        };
+
+        const handleMouseLeave = () => {
+          this.trackAssetEvent('video_hover', gameId, assetType, assetUrl, {
+            video_hover_end: Date.now()
+          });
+        };
+
+        videoElement.addEventListener('play', handlePlay);
+        videoElement.addEventListener('pause', handlePause);
+        videoElement.addEventListener('ended', handleEnded);
+        videoElement.addEventListener('mouseenter', handleMouseEnter);
+        videoElement.addEventListener('mouseleave', handleMouseLeave);
+        
+        listeners.push({ element: videoElement, event: 'play', handler: handlePlay });
+        listeners.push({ element: videoElement, event: 'pause', handler: handlePause });
+        listeners.push({ element: videoElement, event: 'ended', handler: handleEnded });
+        listeners.push({ element: videoElement, event: 'mouseenter', handler: handleMouseEnter });
+        listeners.push({ element: videoElement, event: 'mouseleave', handler: handleMouseLeave });
+      }
+
+      // Play button tracking
+      if (playButton) {
+        const handleClick = (e) => {
+          this.trackAssetEvent('click', gameId, assetType, assetUrl, {
+            click_x: e.clientX,
+            click_y: e.clientY,
+            click_target: 'play_button',
+            button_text: playButton.textContent || playButton.innerText
+          });
+        };
+
+        playButton.addEventListener('click', handleClick);
+        listeners.push({ element: playButton, event: 'click', handler: handleClick });
+      }
+
+      // Store tracking info for cleanup
+      this.trackingData.set(container, trackingInfo);
+      console.log('Asset tracking setup for:', { gameId, assetType, assetUrl });
     }
   }
   
