@@ -12,7 +12,7 @@ import { GameEditActionMenu } from './GameEditActionMenu';
 import { GenerateAssets } from './GenerateAssets';
 import  MediaPlayer from './MediaPlayer';
 
-export function ThemeAssets({ t, selectedGame, onGameUpdate }) {
+export function ThemeAssets({ t, selectedGame, onGameUpdate, onPublish }) {
   const viewContext = useContext(ViewContext);
   const [themeLocked, setThemeLocked] = useState(false);
   const [showRegenerateDialog, setShowRegenerateDialog] = useState(false);
@@ -60,7 +60,8 @@ export function ThemeAssets({ t, selectedGame, onGameUpdate }) {
           onRegenerate={regenerateThemeAssets}
           onLock={() => setThemeLocked(!themeLocked)}
           onDelete={clearThemeContent}
-          onSave={() => console.log('Save theme assets')}
+          onSave={onPublish}
+          assetType="theme"
         />
       }
     >

@@ -11,11 +11,14 @@ import {
   DropdownMenuTrigger, 
   DropdownMenuContent, 
   DropdownMenuItem,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   Button,
   Icon
 } from 'components/lib';
 
-export function GameEditActionMenu({ selectedGame, locked, onRegenerate, onLock, onDelete, onSave }) {
+export function GameEditActionMenu({ selectedGame, locked, onRegenerate, onLock, onDelete, onSave, assetType }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleRegenerate = () => {
@@ -38,10 +41,60 @@ export function GameEditActionMenu({ selectedGame, locked, onRegenerate, onLock,
     setIsOpen(false);
   };
 
-  const handleSave = () => {
+  const handlePublish = () => {
     if (locked) return; // Prevent action if locked
-    console.log('Save clicked for game:', selectedGame?.id);
-    onSave?.();
+    console.log('Publish clicked for game:', selectedGame?.id, 'assetType:', assetType);
+    // Map "original" to "default" for the API
+    const publishType = assetType === 'original' ? 'default' : assetType;
+    onSave?.(publishType);
+    setIsOpen(false);
+  };
+
+  const handleDownloadImage = () => {
+    if (locked || !selectedGame) return; // Prevent action if locked or no game
+    
+    let imageUrl = '';
+    switch (assetType) {
+      case 'original':
+        imageUrl = selectedGame.defaultImage;
+        break;
+      case 'current':
+        imageUrl = selectedGame.currentImage;
+        break;
+      case 'theme':
+        imageUrl = selectedGame.themeImage;
+        break;
+      default:
+        return;
+    }
+    
+    if (imageUrl) {
+      window.open(imageUrl, '_blank');
+    }
+    setIsOpen(false);
+  };
+
+  const handleDownloadVideo = () => {
+    if (locked || !selectedGame) return; // Prevent action if locked or no game
+    
+    let videoUrl = '';
+    switch (assetType) {
+      case 'original':
+        videoUrl = selectedGame.defaultVideo;
+        break;
+      case 'current':
+        videoUrl = selectedGame.currentVideo;
+        break;
+      case 'theme':
+        videoUrl = selectedGame.themeVideo;
+        break;
+      default:
+        return;
+    }
+    
+    if (videoUrl) {
+      window.open(videoUrl, '_blank');
+    }
     setIsOpen(false);
   };
 
@@ -69,6 +122,43 @@ export function GameEditActionMenu({ selectedGame, locked, onRegenerate, onLock,
           Regenerate
         </DropdownMenuItem>
         
+        <DropdownMenuItem 
+          onClick={handlePublish}
+          disabled={locked}
+          className={locked ? "opacity-50 cursor-not-allowed" : ""}
+        >
+          <Icon name="save" className="mr-2 h-4 w-4" />
+          Save and Publish
+        </DropdownMenuItem>
+        
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger 
+            disabled={locked}
+            className={locked ? "opacity-50 cursor-not-allowed" : ""}
+          >
+            <Icon name="download" className="mr-2 h-4 w-4" />
+            Download Assets
+          </DropdownMenuSubTrigger>
+          <DropdownMenuSubContent>
+            <DropdownMenuItem 
+              onClick={handleDownloadImage}
+              disabled={locked}
+              className={locked ? "opacity-50 cursor-not-allowed" : ""}
+            >
+              <Icon name="image" className="mr-2 h-4 w-4" />
+              Download Image
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={handleDownloadVideo}
+              disabled={locked}
+              className={locked ? "opacity-50 cursor-not-allowed" : ""}
+            >
+              <Icon name="play" className="mr-2 h-4 w-4" />
+              Download Video
+            </DropdownMenuItem>
+          </DropdownMenuSubContent>
+        </DropdownMenuSub>
+        
         <DropdownMenuItem onClick={handleLock}>
           <Icon name="lock" className="mr-2 h-4 w-4" />
           {locked ? "Unlock" : "Lock"}
@@ -81,15 +171,6 @@ export function GameEditActionMenu({ selectedGame, locked, onRegenerate, onLock,
         >
           <Icon name="trash-2" className="mr-2 h-4 w-4" />
           Delete
-        </DropdownMenuItem>
-        
-        <DropdownMenuItem 
-          onClick={handleSave}
-          disabled={locked}
-          className={locked ? "opacity-50 cursor-not-allowed" : ""}
-        >
-          <Icon name="save" className="mr-2 h-4 w-4" />
-          Save
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -12,7 +12,7 @@ import { GameEditActionMenu } from './GameEditActionMenu';
 import  MediaPlayer from './MediaPlayer';
 import { GenerateAssets } from './GenerateAssets';
 
-export function CurrentAssets({ t, selectedGame, onGameUpdate }) {
+export function CurrentAssets({ t, selectedGame, onGameUpdate, onPublish }) {
   const viewContext = useContext(ViewContext);
   const [currentLocked, setCurrentLocked] = useState(false);
   const [showRegenerateDialog, setShowRegenerateDialog] = useState(false);
@@ -60,7 +60,8 @@ export function CurrentAssets({ t, selectedGame, onGameUpdate }) {
           onRegenerate={regenerateCurrentAssets}
           onLock={() => setCurrentLocked(!currentLocked)}
           onDelete={clearThemeContent}
-          onSave={() => console.log('Save current assets')}
+          onSave={onPublish}
+          assetType="current"
         />
       }
     >

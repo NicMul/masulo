@@ -54,6 +54,7 @@
       .masulo-image-container {
         position: relative;
         overflow: hidden;
+        cursor: pointer;
       }
       
       .masulo-image-container img,
@@ -63,104 +64,91 @@
         backface-visibility: hidden;
         -webkit-font-smoothing: subpixel-antialiased;
         transform: translateZ(0);
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
       }
       
-       /* Show loader over old image (old image stays visible) */
-       .masulo-image-container.masulo-loading img,
-       .masulo-image-container.masulo-loading .game-image {
-         opacity: 1; /* Keep old image visible while loader shows */
-       }
-       
-       /* Fade out old image during transition */
-       .masulo-image-container.masulo-fade-out img,
-       .masulo-image-container.masulo-fade-out .game-image {
-         opacity: 0;
-       }
-       
-       /* Fade in new image */
-       .masulo-image-container.masulo-loaded img,
-       .masulo-image-container.masulo-loaded .game-image {
-         opacity: 1;
-       }
+      /* Show loader over old image (old image stays visible) */
+      .masulo-image-container.masulo-loading img,
+      .masulo-image-container.masulo-loading .game-image {
+        opacity: 1; /* Keep old image visible while loader shows */
+      }
+      
+      /* Fade out old image during transition */
+      .masulo-image-container.masulo-fade-out img,
+      .masulo-image-container.masulo-fade-out .game-image {
+        opacity: 0;
+      }
+      
+      /* Fade in new image */
+      .masulo-image-container.masulo-loaded img,
+      .masulo-image-container.masulo-loaded .game-image {
+        opacity: 1;
+      }
       
       /* Loader positioned at bottom right */
-       .masulo-image-container::after {
-         content: '';
-         position: absolute !important;
-         bottom: 10px !important;
-         right: 10px !important;
-         top: auto !important;
-         left: auto !important;
-         width: 16px;
-         height: 16px;
-         
-         opacity: 0;
-         transition: opacity 0.3s ease;
-         pointer-events: none;
-         z-index: 10;
-         
-         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Ccircle cx='12' cy='12' r='10' stroke='white' stroke-width='2' stroke-linecap='round' stroke-dasharray='30 10' opacity='0.6'/%3E%3C/svg%3E");
-         background-size: contain;
-         background-repeat: no-repeat;
-         animation: masulo-spin 1s linear infinite;
+      .masulo-image-container::after {
+        content: '';
+        position: absolute !important;
+        bottom: 10px !important;
+        right: 10px !important;
+        top: auto !important;
+        left: auto !important;
+        width: 16px;
+        height: 16px;
+        
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+        z-index: 10;
+        
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Ccircle cx='12' cy='12' r='10' stroke='white' stroke-width='2' stroke-linecap='round' stroke-dasharray='30 10' opacity='0.6'/%3E%3C/svg%3E");
+        background-size: contain;
+        background-repeat: no-repeat;
+        animation: masulo-spin 1s linear infinite;
+      }
       
-       }
-       
-       .masulo-image-container.masulo-loading::after {
-         opacity: 1;
-       }
-       
-       @keyframes masulo-spin {
-         0% { transform: rotate(0deg); }
-         100% { transform: rotate(360deg); }
-       }
-       
-       /* Video styling */
-       .masulo-game-video {
-         position: absolute;
-         top: 0;
-         left: 0;
-         width: 100%;
-         height: 100%;
-         object-fit: cover;
-         display: none;
-         z-index: 2;
-       }
-       
-       /* Style existing play buttons - hidden initially */
-       .masulo-image-container .masulo-play-button {
-         transition: all 0.3s ease !important;
-         backdrop-filter: blur(0px) !important;
-         opacity: 0 !important;
-         visibility: hidden !important;
-         display: block !important;
-       }
-       
-       /* Hover state - show translucent and blurred button */
-       .masulo-image-container:hover .masulo-play-button {
-         background: rgba(0, 0, 0, 0.5) !important;
-         border-color: #ffd700 !important;
-         backdrop-filter: blur(2px) !important;
-         opacity: 0.7 !important;
-         visibility: visible !important;
-         color: white !important;
-         font-weight: bold !important;
-       }
-       
-       /* Ensure container can hold both image and video */
-       .masulo-image-container {
-         position: relative;
-         overflow: hidden;
-         cursor: pointer;
-       }
-       
-       .masulo-image-container img {
-         width: 100%;
-         height: 100%;
-         object-fit: cover;
-       }
+      .masulo-image-container.masulo-loading::after {
+        opacity: 1;
+      }
       
-  
+      @keyframes masulo-spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      
+      /* Video styling */
+      .masulo-game-video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: none;
+        z-index: 2;
+      }
+      
+      /* Style existing play buttons - hidden initially */
+      .masulo-image-container .masulo-play-button {
+        transition: all 0.3s ease !important;
+        backdrop-filter: blur(0px) !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        display: block !important;
+      }
+      
+      /* Hover state - show translucent and blurred button */
+      .masulo-image-container:hover .masulo-play-button {
+        background: rgba(0, 0, 0, 0.5) !important;
+        border-color: #ffd700 !important;
+        backdrop-filter: blur(2px) !important;
+        opacity: 0.7 !important;
+        visibility: visible !important;
+        color: white !important;
+        font-weight: bold !important;
+      }
     `;
     document.head.appendChild(style);
   }
@@ -230,6 +218,7 @@
         this.isConnected = true;
         console.log('Masulo SDK connected');
         this.updateStatus('connected');
+        this.emit('connected');
         this.requestGames();
       });
       
@@ -237,44 +226,145 @@
         this.isConnected = false;
         console.log('Masulo SDK disconnected');
         this.updateStatus('disconnected');
+        this.emit('disconnected');
       });
       
       this.socket.on('connect_error', (error) => {
         console.error('Masulo SDK connection error:', error);
         this.updateStatus('disconnected');
+        this.emit('error', error);
       });
       
        this.socket.on('games-response', (response) => {
          if (response.success) {
            console.log(`Received ${response.count} games:`, response.games);
-           response.games.forEach(game => {
-             if (game.currentImage) {
-               this.updateGameImage(game.id, game.currentImage, game.currentVideo);
-             }
-           });
+           this.updateSpecificGames(response.games);
          } else {
            console.error('Games request failed:', response.error);
+         }
+       });
+
+       this.socket.on('games-updated', (response) => {
+         if (response.success) {
+           console.log(`Received ${response.count} updated games:`, response.games);
+           this.updateSpecificGames(response.games);
+         } else {
+           console.error('Game update failed:', response.error);
          }
        });
     }
     
     requestGames() {
-      const gameElements = document.querySelectorAll('[data-masulo-game-id][data-masulo-tag="true"]');
-      const gameIds = Array.from(gameElements)
+      // Get only tagged games (data-masulo-tag="true") for both initial load and real-time updates
+      const taggedGameElements = document.querySelectorAll('[data-masulo-game-id][data-masulo-tag="true"]');
+      const taggedGameIds = Array.from(taggedGameElements)
         .map(el => el.getAttribute('data-masulo-game-id'))
         .filter(Boolean);
       
-      if (gameIds.length === 0) {
+      if (taggedGameIds.length === 0) {
         console.warn('No games found with data-masulo-tag="true"');
         return;
       }
       
-      console.log(`Requesting ${gameIds.length} tagged games:`, gameIds);
-      this.socket.emit('sdk-event', {
-        event: 'get-games',
-        data: { gameIds },
+      console.log(`Found ${taggedGameIds.length} tagged games for updates:`, taggedGameIds);
+      
+      // Join game rooms for real-time updates
+      this.socket.emit('join-game-rooms', {
+        gameIds: taggedGameIds,
         timestamp: new Date().toISOString()
       });
+      
+      // Request initial game data for tagged games only
+      this.socket.emit('sdk-event', {
+        event: 'get-games',
+        data: { gameIds: taggedGameIds },
+        timestamp: new Date().toISOString()
+      });
+    }
+    
+    updateSpecificGames(gamesData) {
+      gamesData.forEach(game => {
+        // Check if this game exists on the page with data-masulo-tag="true"
+        // Only update games that are explicitly tagged for updates
+        const container = document.querySelector(`[data-masulo-game-id="${game.id}"][data-masulo-tag="true"]`);
+        
+        if (!container) {
+          console.log(`Game ${game.id} not found on page or not tagged for updates (data-masulo-tag="true")`);
+          return;
+        }
+        
+        // If game is not published, revert to defaultImage only (no video)
+        if (!game.published) {
+          console.log(`Game ${game.id} is not published, reverting to defaultImage`);
+          this.revertGameToDefault(game.id, game.defaultImage);
+          return;
+        }
+        
+        console.log(`Updating game: ${game.id} (published: ${game.published})`);
+        
+        // Determine which image/video to use based on publishedType
+        let imageUrl = game.defaultImage;
+        let videoUrl = game.defaultVideo;
+        
+        if (game.publishedType === 'current' && game.currentImage) {
+          imageUrl = game.currentImage;
+          videoUrl = game.currentVideo;
+        } else if (game.publishedType === 'theme' && game.themeImage) {
+          imageUrl = game.themeImage;
+          videoUrl = game.themeVideo;
+        } else if (game.publishedType === 'promo' && game.promoImage) {
+          imageUrl = game.promoImage;
+          videoUrl = game.promoVideo;
+        } else if (game.publishedType === 'default' && game.defaultImage) {
+          imageUrl = game.defaultImage;
+          videoUrl = game.defaultVideo;
+        }
+        
+        // Update the game image using existing method
+        this.updateGameImage(game.id, imageUrl, videoUrl);
+      });
+    }
+    
+    revertGameToDefault(gameId, defaultImageUrl) {
+      const container = document.querySelector(`[data-masulo-game-id="${gameId}"]`);
+      if (!container) {
+        console.warn(`No element found for game ID: ${gameId}`);
+        return;
+      }
+      
+      // Remove loading/transition classes
+      container.classList.remove('masulo-loading', 'masulo-fade-out', 'masulo-loaded');
+      
+      // Find and update the image element to defaultImage only
+      const imgElement = container.querySelector('img') || 
+                        container.querySelector('.game-image');
+      
+      if (imgElement && imgElement.tagName === 'IMG') {
+        imgElement.src = defaultImageUrl;
+        imgElement.style.display = 'block';
+      } else if (container.style) {
+        container.style.backgroundImage = `url(${defaultImageUrl})`;
+      }
+      
+      // Remove video element if it exists
+      const videoElement = container.querySelector('video');
+      if (videoElement) {
+        videoElement.pause();
+        videoElement.style.display = 'none';
+        videoElement.src = '';
+      }
+      
+      // Remove video hover event listeners
+      if (container._masuloMouseEnter) {
+        container.removeEventListener('mouseenter', container._masuloMouseEnter);
+        container._masuloMouseEnter = null;
+      }
+      if (container._masuloMouseLeave) {
+        container.removeEventListener('mouseleave', container._masuloMouseLeave);
+        container._masuloMouseLeave = null;
+      }
+      
+      console.log(`✓ Reverted game ${gameId} to defaultImage: ${defaultImageUrl}`);
     }
     
     updateGameImage(gameId, imageUrl, videoUrl = null) {
@@ -434,6 +524,44 @@
     
     getStatus() {
       return this.isConnected ? 'connected' : 'disconnected';
+    }
+    
+    // Event listener methods
+    on(event, callback) {
+      if (!this.eventListeners) {
+        this.eventListeners = {};
+      }
+      if (!this.eventListeners[event]) {
+        this.eventListeners[event] = [];
+      }
+      this.eventListeners[event].push(callback);
+    }
+    
+    off(event, callback) {
+      if (!this.eventListeners || !this.eventListeners[event]) {
+        return;
+      }
+      if (callback) {
+        const index = this.eventListeners[event].indexOf(callback);
+        if (index > -1) {
+          this.eventListeners[event].splice(index, 1);
+        }
+      } else {
+        this.eventListeners[event] = [];
+      }
+    }
+    
+    emit(event, data) {
+      if (!this.eventListeners || !this.eventListeners[event]) {
+        return;
+      }
+      this.eventListeners[event].forEach(callback => {
+        try {
+          callback(data);
+        } catch (error) {
+          console.error(`Error in event listener for ${event}:`, error);
+        }
+      });
     }
   }
   

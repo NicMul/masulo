@@ -22,6 +22,8 @@ api.get('/api/game/:id', auth.verify('user'), use(gameController.get));
 
 api.patch('/api/game/:id', auth.verify('user'), use(gameController.update));
 
+api.post('/api/game/:id/publish', auth.verify('user'), use(gameController.publish));
+
 api.delete('/api/game/:id/test-assets', auth.verify('user'), use(gameController.deleteTestAssets));
 
 api.post('/api/game/:id/test-assets/accept', auth.verify('user'), use(gameController.acceptTestAssets));

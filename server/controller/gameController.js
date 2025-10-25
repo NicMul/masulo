@@ -3,6 +3,8 @@ const fs = require('fs');
 const csv = require('csv-parser');
 const game = require('../model/game');
 const utility = require('../helper/utility');
+const { emitGameUpdate } = require('../realtime/socket');
+const { emitGameUpdates } = require('../services/realtime');
 
 exports.create = async function(req, res){
 
@@ -232,6 +234,14 @@ exports.update = async function(req, res){
   
   if (!gameData) {
     return res.status(404).send({ message: res.__('game.update.not_found') });
+  }
+
+  // Emit socket update for the updated game
+  try {
+    await emitGameUpdates([req.params.id], req.user.id, emitGameUpdate);
+  } catch (error) {
+    console.error('Error emitting game update:', error);
+    // Don't fail the request if socket emission fails
   }
 
   return res.status(200).send({ message: res.__('game.update.success'), data: gameData });
@@ -547,6 +557,14 @@ exports.bulkUpdate = async function(req, res){
       }
     }
 
+    // Emit socket updates for all updated games
+    try {
+      await emitGameUpdates(gameIds, req.user.id, emitGameUpdate);
+    } catch (error) {
+      console.error('Error emitting bulk game updates:', error);
+      // Don't fail the request if socket emission fails
+    }
+
     return res.status(200).send({ 
       message: res.__('game.bulk.update.success'), 
       data: updatedGames,
@@ -555,6 +573,43 @@ exports.bulkUpdate = async function(req, res){
 
   } catch (error) {
     return res.status(500).send({ message: res.__('game.bulk.update.error') });
+  }
+
+}
+
+exports.publish = async function(req, res){
+
+  utility.assert(req.params.id, res.__('game.update.id_required'));
+
+  // validate
+  const data = utility.validate(joi.object({
+    publishedType: joi.string().valid('default', 'current', 'theme', 'promo').required()
+  }), req, res);
+
+  try {
+    // Update game with published status and type
+    const gameData = await game.update({ 
+      id: req.params.id, 
+      data: { 
+        published: true, 
+        publishedType: data.publishedType 
+      }, 
+      user: req.user 
+    });
+
+    // Emit socket event to notify SDK
+    await emitGameUpdates([req.params.id], req.user, emitGameUpdate);
+
+    return res.status(200).send({ 
+      message: res.__('game.publish.success'), 
+      data: gameData 
+    });
+
+  } catch (error) {
+    console.error('Error publishing game:', error);
+    return res.status(500).send({ 
+      message: res.__('game.publish.error') 
+    });
   }
 
 }

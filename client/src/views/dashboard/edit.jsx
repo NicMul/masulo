@@ -12,6 +12,7 @@ import { EditHeader } from 'components/edit/EditHeader';
 import { OriginalAssets } from 'components/edit/OriginalAssets';
 import { CurrentAssets } from 'components/edit/CurrentAssets';
 import { ThemeAssets } from 'components/edit/ThemeAssets';
+import Axios from 'axios';
 
 export function Edit({ t }){
 
@@ -55,7 +56,7 @@ export function Edit({ t }){
     }
   }, [gamesRes.data, selectedGame]);
 
-  const saveAndPublish = useCallback(() => {
+  const handlePublish = useCallback(async (publishedType) => {
     if (!selectedGame) {
       viewContext.notification({
         description: t('edit.save.noGame'),
@@ -64,10 +65,26 @@ export function Edit({ t }){
       return;
     }
 
-    viewContext.notification({
-      description: t('edit.save.publish.success'),
-      variant: 'success'
-    });
+    try {
+      const res = await Axios({
+        method: 'POST',
+        url: `/api/game/${selectedGame.id}/publish`,
+        data: { publishedType }
+      });
+
+      viewContext.notification({
+        description: t('edit.save.publish.success'),
+        variant: 'success'
+      });
+      // Refresh the games data to get updated published status
+      setRefreshTrigger(prev => prev + 1);
+    } catch (error) {
+      console.error('Error publishing game:', error);
+      viewContext.notification({
+        description: t('edit.save.publish.error'),
+        variant: 'error'
+      });
+    }
   }, [selectedGame, t, viewContext]);
 
 
@@ -81,19 +98,34 @@ export function Edit({ t }){
         <EditHeader 
           t={t} 
           selectedGame={selectedGame} 
-          onSaveAndPublish={saveAndPublish} 
+          onSaveAndPublish={handlePublish} 
         />
 
     
         <div className='grid grid-cols-1 lg:grid-cols-3 gap-6 justify-center items-center'>
       
-          <OriginalAssets t={t} selectedGame={selectedGame} onGameUpdate={handleGameUpdate} />
+          <OriginalAssets 
+            t={t} 
+            selectedGame={selectedGame} 
+            onGameUpdate={handleGameUpdate}
+            onPublish={handlePublish}
+          />
 
        
-          <CurrentAssets t={t} selectedGame={selectedGame} onGameUpdate={handleGameUpdate} />
+          <CurrentAssets 
+            t={t} 
+            selectedGame={selectedGame} 
+            onGameUpdate={handleGameUpdate}
+            onPublish={handlePublish}
+          />
 
          
-          <ThemeAssets t={t} selectedGame={selectedGame} onGameUpdate={handleGameUpdate} />
+          <ThemeAssets 
+            t={t} 
+            selectedGame={selectedGame} 
+            onGameUpdate={handleGameUpdate}
+            onPublish={handlePublish}
+          />
         </div>
       </div>
     </Animate>

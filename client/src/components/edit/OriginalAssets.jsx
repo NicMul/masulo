@@ -11,7 +11,7 @@ import { GenerateAssets } from './GenerateAssets';
 import { GameEditActionMenu } from './GameEditActionMenu';
 import  MediaPlayer from './MediaPlayer';
 
-export function OriginalAssets({ t, selectedGame, onGameUpdate }) {
+export function OriginalAssets({ t, selectedGame, onGameUpdate, onPublish }) {
   const [originalLocked, setOriginalLocked] = useState(false);
   const [showRegenerateDialog, setShowRegenerateDialog] = useState(false);
 
@@ -22,6 +22,19 @@ export function OriginalAssets({ t, selectedGame, onGameUpdate }) {
 
   const clearOriginalVideo = () => {
     console.log('Clear original video');
+  };
+
+  const downloadOriginalAssets = () => {
+    // Open image in new tab
+    if (selectedGame?.defaultImage) {
+      window.open(selectedGame.defaultImage, '_blank');
+    }
+    // Open video in new tab with a small delay to avoid race condition
+    if (selectedGame?.defaultVideo) {
+      setTimeout(() => {
+        window.open(selectedGame.defaultVideo, '_blank');
+      }, 100);
+    }
   };
 
   const handleSelect = (videoUrl) => {
@@ -38,7 +51,8 @@ export function OriginalAssets({ t, selectedGame, onGameUpdate }) {
           onRegenerate={regenerateOriginalVideo}
           onLock={() => setOriginalLocked(!originalLocked)}
           onDelete={clearOriginalVideo}
-          onSave={() => console.log('Save original assets')}
+          onSave={onPublish}
+          assetType="original"
         />
       }
     >

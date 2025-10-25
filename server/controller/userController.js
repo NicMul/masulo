@@ -40,7 +40,8 @@ exports.create = async function(req, res){
     }),
     confirm_password: joi.string().allow(null),
     verify_view_url: joi.string(),
-    invite_id: joi.string().required()
+    invite_id: joi.string().required(),
+    origin_url: joi.string().allow('').optional()
 
   }), req, res);
 
@@ -205,6 +206,7 @@ exports.update = async function(req, res){
     default_account: joi.string(), 
     onboarded: joi.alternatives().try(joi.boolean(), joi.number().valid(0, 1)), 
     account_name: joi.string(),
+    origin_url: joi.string().allow('').optional(),
 
   }), req, res);
 
@@ -337,7 +339,8 @@ exports.update = async function(req, res){
     ...data.onboarded && { onboarded: data.onboarded },
     ...Object.keys(data).includes('dark_mode') && { dark_mode: data.dark_mode },
     ...data.support_enabled && { support_enabled: data.support_enabled },
-    ...data.default_account && { default_account: data.default_account }
+    ...data.default_account && { default_account: data.default_account },
+    ...data.origin_url !== undefined && { origin_url: data.origin_url }
 
   }});
  

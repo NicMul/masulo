@@ -27,7 +27,8 @@ const UserSchema = new Schema({
   push_token: { type: String },
   avatar: { type: String },
   dark_mode: { type: Boolean },
-  verified: { type: Boolean, required: true }
+  verified: { type: Boolean, required: true },
+  origin_url: { type: String, default: '' }
 
 });
 
@@ -54,7 +55,8 @@ exports.create = async function({ user, account }){
     twitter_id: user.twitter_id,
     default_account: account,
     avatar: user.avatar,
-    verified: user.verified
+    verified: user.verified,
+    origin_url: user.origin_url || ''
 
   }
   

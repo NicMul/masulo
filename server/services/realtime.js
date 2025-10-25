@@ -33,4 +33,29 @@ const getGamesById = async (gameIds, userId, socket) => {
     }
 }
 
-module.exports = getGamesById;
+const emitGameUpdates = async (gameIds, userId, emitGameUpdateFn) => {
+    console.log('Emitting game updates for IDs:', gameIds);
+    
+    try {
+        // Query MongoDB for games with the provided IDs
+        const games = await game.getByIds(gameIds);
+        
+        console.log('Found games for update:', games);
+        console.log('Number of games found:', games.length);
+        
+        // Emit updates to specific game rooms
+        if (emitGameUpdateFn) {
+            emitGameUpdateFn(gameIds, games);
+        }
+        
+        return games;
+    } catch (error) {
+        console.error('Error emitting game updates:', error);
+        return [];
+    }
+}
+
+module.exports = {
+    getGamesById,
+    emitGameUpdates
+};
