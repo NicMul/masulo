@@ -247,9 +247,7 @@ export function useAnalytics(dateRange = '7d') {
       const eventData = data.eventTypes.find(item => item._id?.event_type === eventType);
       return {
         label: eventType.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()),
-        data: [eventData ? (eventData.count || 0) : 0],
-        borderColor: colors[index],
-        backgroundColor: colors[index]
+        data: [eventData ? (eventData.count || 0) : 0]
       };
     });
 

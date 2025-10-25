@@ -51,7 +51,7 @@ export function Chart({ data, color, type = 'line', showLegend = false, loading 
 
     if (chartData){
 
-      setLegend(createLegend({ chartData, type }));
+      // Legend will be created after colors are applied
       
     }
   }, [chartData, color, type]);
@@ -63,6 +63,9 @@ export function Chart({ data, color, type = 'line', showLegend = false, loading 
       const coloredData = JSON.parse(JSON.stringify(chartData));
       setChartColors({ chartData: coloredData, type, color });
       setColoredChartData(coloredData);
+      
+      // Create legend after colors are applied
+      setLegend(createLegend({ chartData: coloredData, type }));
     }
   }, [chartData, type, color]);
 
@@ -155,7 +158,7 @@ function setChartColors({ chartData, color, type }){
     chartData?.datasets?.forEach((ds, i) => {
 
       ds.borderColor = colors[i].borderColor;
-      ds.backgroundColor = colors[i].backgroundColor[i];
+      ds.backgroundColor = colors[i].backgroundColor[0];
 
       if (type === 'line'){
 
