@@ -691,7 +691,7 @@
             <div class="games-grid">
 
                 <div>
-                    <div data-masulo-game-id="d5352f25-9718-44a6-a95d-1ddd47ea63ce" data-masulo-tag="true" class="game-card" onclick="playGame('cleo')">
+                    <div data-masulo-game-id="d5352f25-9718-44a6-a95d-1ddd47ea63ce" data-masulo-tag="true" class="game-card">
                         <img src="images/cleo.jpg" alt="Cleo" class="game-image">
                         <button class="play-button">Play Now</button>
                     </div>
@@ -700,7 +700,7 @@
 
 
                 <div>
-                    <div data-masulo-game-id="7c371c7d-6ec2-494c-a553-1645a70007d3" data-masulo-tag="true"  class="game-card" onclick="playGame('gates')">
+                    <div data-masulo-game-id="7c371c7d-6ec2-494c-a553-1645a70007d3" data-masulo-tag="true"  class="game-card">
                         <img src="images/gates.webp" alt="Gates" class="game-image">
                         <button class="play-button">Play Now</button>
                     </div>
@@ -709,7 +709,7 @@
 
 
                 <div>
-                    <div data-masulo-game-id="b4a40dc5-e950-4e6b-bca9-1ae51589b2b5" data-masulo-tag="true" data-masulo-theme="halloween" data-masulo-version="1.0.0" class="game-card" onclick="playGame('hades')">
+                    <div data-masulo-game-id="b4a40dc5-e950-4e6b-bca9-1ae51589b2b5" data-masulo-tag="true" data-masulo-theme="halloween" data-masulo-version="1.0.0" class="game-card">
                         <img src="images/hades.jpg" alt="Hades" class="game-image">
                         <button class="play-button">Play Now</button>
                     </div>
@@ -718,7 +718,7 @@
 
 
                 <div>
-                    <div data-masulo-game-id="b37b4b9a-4f2f-4a3c-8a58-f4a76d19d88f" data-masulo-tag="true"  class="game-card" onclick="playGame('tome')">
+                    <div data-masulo-game-id="b37b4b9a-4f2f-4a3c-8a58-f4a76d19d88f" data-masulo-tag="true"  class="game-card">
                         <img src="images/tome.webp" alt="Tome" class="game-image">
                         <button class="play-button">Play Now</button>
                     </div>
@@ -727,7 +727,7 @@
 
 
                 <div>
-                    <div data-masulo-game-id="8d0b5e73-13fa-42c4-901d-829406c8e207" data-masulo-tag="true"  class="game-card" onclick="playGame('toonz')">
+                    <div data-masulo-game-id="8d0b5e73-13fa-42c4-901d-829406c8e207" data-masulo-tag="true"  class="game-card">
                         <img src="images/toonz.webp" alt="Toonz" class="game-image">
                         <button class="play-button">Play Now</button>
                     </div>
@@ -761,17 +761,6 @@
     
     <script>
 
-        function playGame(gameId) {
-            console.log(`Starting game: ${gameId}`);
-            
-            document.getElementById('sdk-status').textContent = `Playing ${gameId}`;
-            
-            if (window.masulo) {
-                window.masulo.launchGame(gameId);
-            } else {
-                alert(`Starting ${gameId} game! (SDK not yet loaded)`);
-            }
-        }
 
 
         function setupStatusUpdates() {
@@ -782,6 +771,7 @@
                 
                 window.masulo.on('connected', () => {
                     document.getElementById('connection-status').textContent = 'Connected';
+                    console.log('🎯 Analytics tracking enabled! Try hovering and clicking on game images.');
                 });
                 
                 window.masulo.on('disconnected', () => {
