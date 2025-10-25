@@ -45,7 +45,9 @@ const opts = { origin: [
   process.env.CLIENT_URL, 
   process.env.WEBSITE_URL,
   process.env.MISSION_CONTROL_CLIENT, 
-  process.env.PRODUCTION_DOMAIN
+  process.env.PRODUCTION_DOMAIN,
+  'https://nodejs-production-76b33.up.railway.app',
+  'https://app.mesulo.com'
 ]};
 
 app.use(i18n.init)

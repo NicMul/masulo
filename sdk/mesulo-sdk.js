@@ -6,14 +6,25 @@
 (function() {
   'use strict';
   
-  // Configuration
+  // // Configuration
+  // const CONFIG = {
+  //   development: {
+  //     serverUrl: 'http://localhost:8080',
+  //     cdnUrl: 'https://mesulo.b-cdn.net'
+  //   },
+  //   production: {
+  //     serverUrl: 'https://www.mesulo.com',
+  //     cdnUrl: 'https://mesulo.b-cdn.net'
+  //   }
+  // };
+
   const CONFIG = {
     development: {
-      serverUrl: 'http://localhost:8080',
+      serverUrl: 'https://nodejs-production-9eae9.up.railway.app',
       cdnUrl: 'https://mesulo.b-cdn.net'
     },
     production: {
-      serverUrl: 'https://www.mesulo.com',
+      serverUrl: 'https://nodejs-production-9eae9.up.railway.app',
       cdnUrl: 'https://mesulo.b-cdn.net'
     }
   };
@@ -188,7 +199,7 @@
         await this.loadSocketIO();
         this.connect();
       } catch (error) {
-        console.error('Failed to initialize Masulo SDK:', error);
+        // Failed to initialize Masulo SDK
       }
     }
     
@@ -221,7 +232,7 @@
       
       this.socket.on('connect', () => {
         this.isConnected = true;
-        console.log('Masulo SDK connected');
+        console.log('🚀 MESULO AI : connected');
         this.updateStatus('connected');
         this.emit('connected');
         this.requestGames();
@@ -229,32 +240,28 @@
       
       this.socket.on('disconnect', () => {
         this.isConnected = false;
-        console.log('Masulo SDK disconnected');
         this.updateStatus('disconnected');
         this.emit('disconnected');
       });
       
       this.socket.on('connect_error', (error) => {
-        console.error('Masulo SDK connection error:', error);
         this.updateStatus('disconnected');
         this.emit('error', error);
       });
       
        this.socket.on('games-response', (response) => {
          if (response.success) {
-           console.log(`Received ${response.count} games:`, response.games);
            this.updateSpecificGames(response.games);
          } else {
-           console.error('Games request failed:', response.error);
+           // Games request failed
          }
        });
 
        this.socket.on('games-updated', (response) => {
          if (response.success) {
-           console.log(`Received ${response.count} updated games:`, response.games);
            this.updateSpecificGames(response.games);
          } else {
-           console.error('Game update failed:', response.error);
+           // Game update failed
          }
        });
     }
@@ -267,11 +274,10 @@
         .filter(Boolean);
       
       if (taggedGameIds.length === 0) {
-        console.warn('No games found with data-masulo-tag="true"');
         return;
       }
       
-      console.log(`Found ${taggedGameIds.length} tagged games for updates:`, taggedGameIds);
+      // Found tagged games for updates
       
       // Join game rooms for real-time updates
       this.socket.emit('join-game-rooms', {
@@ -294,18 +300,16 @@
         const container = document.querySelector(`[data-masulo-game-id="${game.id}"][data-masulo-tag="true"]`);
         
         if (!container) {
-          console.log(`Game ${game.id} not found on page or not tagged for updates (data-masulo-tag="true")`);
           return;
         }
         
         // If game is not published, revert to defaultImage only (no video)
         if (!game.published) {
-          console.log(`Game ${game.id} is not published, reverting to defaultImage`);
           this.revertGameToDefault(game.id, game.defaultImage);
           return;
         }
         
-        console.log(`Updating game: ${game.id} (published: ${game.published})`);
+        // Updating game
         
         // Determine which image/video to use based on publishedType
         let imageUrl = game.defaultImage;
@@ -333,7 +337,6 @@
     revertGameToDefault(gameId, defaultImageUrl) {
       const container = document.querySelector(`[data-masulo-game-id="${gameId}"]`);
       if (!container) {
-        console.warn(`No element found for game ID: ${gameId}`);
         return;
       }
       
@@ -381,13 +384,12 @@
       // Set up tracking for default image only
       this.setupAssetTracking(container, gameId, 'defaultImage', defaultImageUrl);
       
-      console.log(`✓ Reverted game ${gameId} to defaultImage: ${defaultImageUrl}`);
+      // Reverted game to defaultImage
     }
     
     updateGameImage(gameId, imageUrl, videoUrl = null, publishedType = 'default') {
       const container = document.querySelector(`[data-masulo-game-id="${gameId}"]`);
       if (!container) {
-        console.warn(`No element found for game ID: ${gameId}`);
         return;
       }
       
@@ -414,7 +416,6 @@
             this.applyImageTransition(container, imageUrl, videoUrl, publishedType);
           };
           videoPreloader.onerror = () => {
-            console.warn(`Failed to preload video for game ${gameId}, proceeding with image only`);
             this.applyImageTransition(container, imageUrl, null, publishedType);
           };
           videoPreloader.src = videoUrl;
@@ -422,7 +423,9 @@
           this.applyImageTransition(container, imageUrl, null, publishedType);
         }
       };
-      preloader.onerror = () => console.error(`Failed to load image for game ${gameId}:`, imageUrl);
+      preloader.onerror = () => {
+        // Failed to load image
+      };
       preloader.src = imageUrl;
     }
     
@@ -502,7 +505,7 @@
             }, 500);
           });
           
-          console.log(`✓ Updated image: ${imageUrl}${videoUrl ? ` and video: ${videoUrl}` : ''}`);
+          // Updated image and video
         }, 300); // Wait for fade out to complete
       }, 3000); // Wait 3 seconds before starting transition
     }
@@ -517,7 +520,9 @@
       container._masuloMouseEnter = () => {
         imgElement.style.display = 'none';
         videoElement.style.display = 'block';
-        videoElement.play().catch(e => console.warn('Video autoplay failed:', e));
+        videoElement.play().catch(e => {
+          // Video autoplay failed
+        });
       };
       
       // Mouse leave - show image
@@ -593,7 +598,7 @@
         try {
           callback(data);
         } catch (error) {
-          console.error(`Error in event listener for ${event}:`, error);
+          // Error in event listener
         }
       });
     }
@@ -650,7 +655,6 @@
       };
 
       this.socket.emit('analytics-event', eventData);
-      console.log('Analytics event tracked:', eventData);
     }
 
     removeAssetTracking(container) {
@@ -669,7 +673,6 @@
 
       // Clear tracking data
       this.trackingData.delete(container);
-      console.log('Asset tracking removed for container:', container);
     }
 
     setupAssetTracking(container, gameId, assetType, assetUrl) {
@@ -824,7 +827,6 @@
 
       // Store tracking info for cleanup
       this.trackingData.set(container, trackingInfo);
-      console.log('Asset tracking setup for:', { gameId, assetType, assetUrl });
     }
   }
   
