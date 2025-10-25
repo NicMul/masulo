@@ -6,7 +6,7 @@
 **********/
 
 import { useContext, useCallback, useState, useEffect } from 'react';
-import { ViewContext, Card, Table, Animate, useAPI, Button, useNavigate } from 'components/lib';
+import { ViewContext, Card, Table, Animate, useAPI, Button, useNavigate, DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from 'components/lib';
 import { GameEditForm } from 'components/games/GameEditForm';
 import { GameCreateForm } from 'components/games/GameCreateForm';
 import { BulkActionsDialog } from 'components/games/BulkActionsDialog';
@@ -282,11 +282,6 @@ export function Games({ t }){
 
   return (
     <Animate type='pop'>
-      <div className='flex justify-end gap-2 mb-4'>
-        <Button icon='download' text={ t('games.template.action') } onClick={ downloadTemplate } />
-        <Button icon='upload' text={ t('games.csv.action') } onClick={ uploadCSV } />
-        <Button icon='plus' text={ t('games.create.action') } onClick={ createGame } />
-      </div>
       <Card title={ t('games.table.title') } headerAction={
         <div className="flex gap-2">
           <Button 
@@ -298,11 +293,37 @@ export function Games({ t }){
           />
           <Button 
             disabled={ !selectedGames.length } 
-            color='green' 
+            color='blue' 
             icon='edit' 
             text={ t('games.action.bulk') } 
             onClick={ () => setBulkAction(true) } 
           />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button icon='sheet' text={ t('games.csv.action') } />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align='end'>
+              <DropdownMenuItem>
+                <Button 
+                  variant='naked' 
+                  icon='download' 
+                  text={ t('games.template.action') } 
+                  onClick={ downloadTemplate }
+                  className='justify-start'
+                />
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Button 
+                  variant='naked' 
+                  icon='upload' 
+                  text={ t('games.csv.action') } 
+                  onClick={ uploadCSV }
+                  className='justify-start'
+                />
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Button color='green' icon='plus' text={ t('games.create.action') } onClick={ createGame } />
         </div>
       }>
         
