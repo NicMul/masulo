@@ -4,8 +4,8 @@
   "description": "Mesulo Thumbnail SDK - Handles dynamic game image updates with beautiful transitions",
   "main": "mesulo-sdk.js",
   "scripts": {
-    "build:clean": "rm -f mesulo-sdk.min.js",
-    "build:obfuscate": "javascript-obfuscator mesulo-sdk.js --output mesulo-sdk.min.js --config .obfuscatorrc.json",
+    "build:clean": "rm -f mesulo-ai-sdk.min.js",
+    "build:obfuscate": "javascript-obfuscator mesulo-sdk.js --output mesulo-ai-sdk.min.js --config .obfuscatorrc.json",
     "build": "npm run build:clean && npm run build:obfuscate"
   },
   "keywords": [

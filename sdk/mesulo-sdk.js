@@ -1,6 +1,6 @@
 /**
  * Masulo Thumbnail SDK
- * Version: 1.0.1
+ * Version: 1.0.2
  * Handles dynamic game image updates with beautiful transitions
  */
 (function() {
@@ -66,6 +66,9 @@
         position: relative;
         overflow: hidden;
         cursor: pointer;
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
       }
       
       .masulo-image-container img,
@@ -156,11 +159,12 @@
         opacity: 0 !important;
         visibility: hidden !important;
         display: block !important;
+        pointer-events: none !important;
       }
       
-      /* Hover state - show translucent and blurred button */
+      /* Active state - show translucent and blurred button */
       .masulo-image-container:hover .masulo-play-button,
-      .masulo-image-container.masulo-touch-active .masulo-play-button {
+      .masulo-image-container.masulo-video-active .masulo-play-button {
         background: rgba(0, 0, 0, 0.5) !important;
         border-color: #ffd700 !important;
         backdrop-filter: blur(2px) !important;
@@ -168,6 +172,7 @@
         visibility: visible !important;
         color: white !important;
         font-weight: bold !important;
+        pointer-events: auto !important;
       }
     `;
     document.head.appendChild(style);
@@ -199,8 +204,16 @@
       this.analyticsEnabled = options.analyticsEnabled !== false; // Default to true
       this.trackingData = new Map(); // Store tracking data for cleanup
       
+      // Track active video container globally
+      this.activeVideoContainer = null;
+      
+      // Track scroll state
+      this.scrollStartY = 0;
+      this.isScrolling = false;
+      
       injectStyles();
       this.init();
+      this.setupGlobalScrollDetection();
     }
     
     async init() {
@@ -273,6 +286,63 @@
            // Game update failed
          }
        });
+    }
+    
+    // Global scroll detection to deactivate videos when scrolling >30px
+    setupGlobalScrollDetection() {
+      let scrollTimeout;
+      
+      const handleTouchStart = (e) => {
+        this.scrollStartY = e.touches[0].clientY;
+        this.isScrolling = false;
+      };
+      
+      const handleTouchMove = (e) => {
+        const currentY = e.touches[0].clientY;
+        const scrollDistance = Math.abs(currentY - this.scrollStartY);
+        
+        // If scrolled more than 30px, deactivate all videos
+        if (scrollDistance > 30 && !this.isScrolling) {
+          this.isScrolling = true;
+          this.deactivateAllVideos();
+        }
+      };
+      
+      const handleTouchEnd = () => {
+        // Reset scroll tracking after a short delay
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+          this.isScrolling = false;
+        }, 100);
+      };
+      
+      // Add global scroll detection
+      document.addEventListener('touchstart', handleTouchStart, { passive: true });
+      document.addEventListener('touchmove', handleTouchMove, { passive: true });
+      document.addEventListener('touchend', handleTouchEnd, { passive: true });
+    }
+    
+    // Deactivate all videos (stop playing, hide button/CSS)
+    deactivateAllVideos() {
+      if (this.activeVideoContainer) {
+        const container = this.activeVideoContainer;
+        const videoElement = container.querySelector('video');
+        const imgElement = container.querySelector('img') || container.querySelector('.game-image');
+        
+        if (videoElement) {
+          videoElement.pause();
+          videoElement.currentTime = 0;
+          videoElement.style.display = 'none';
+        }
+        
+        if (imgElement) {
+          imgElement.style.display = 'block';
+        }
+        
+        container.classList.remove('masulo-video-active');
+        container._masuloIsPlaying = false;
+        this.activeVideoContainer = null;
+      }
     }
     
     requestGames() {
@@ -359,7 +429,7 @@
       });
       
       // Remove loading/transition classes
-      container.classList.remove('masulo-loading', 'masulo-fade-out', 'masulo-loaded');
+      container.classList.remove('masulo-loading', 'masulo-fade-out', 'masulo-loaded', 'masulo-video-active');
       
       // Find and update the image element to defaultImage only
       const imgElement = container.querySelector('img') || 
@@ -380,7 +450,7 @@
         videoElement.src = '';
       }
       
-      // Remove video hover event listeners
+      // Remove video event listeners
       if (container._masuloMouseEnter) {
         container.removeEventListener('mouseenter', container._masuloMouseEnter);
         container._masuloMouseEnter = null;
@@ -389,17 +459,19 @@
         container.removeEventListener('mouseleave', container._masuloMouseLeave);
         container._masuloMouseLeave = null;
       }
-      if (container._masuloTouchStart) {
-        container.removeEventListener('touchstart', container._masuloTouchStart);
-        container._masuloTouchStart = null;
-      }
-      if (container._masuloTouchEnd) {
-        container.removeEventListener('touchend', container._masuloTouchEnd);
-        container._masuloTouchEnd = null;
+      if (container._masuloTouchHandler) {
+        container.removeEventListener('touchend', container._masuloTouchHandler);
+        container._masuloTouchHandler = null;
       }
       if (container._masuloContextMenu) {
         container.removeEventListener('contextmenu', container._masuloContextMenu);
         container._masuloContextMenu = null;
+      }
+      
+      // Reset state
+      container._masuloIsPlaying = false;
+      if (this.activeVideoContainer === container) {
+        this.activeVideoContainer = null;
       }
       
       // Set up tracking for default image only
@@ -450,46 +522,43 @@
       preloader.src = imageUrl;
     }
     
-    applyImageTransition(container, imageUrl, videoUrl = null, publishedType = 'default') {
-      // Show loader at bottom right over the old image
+    applyImageTransition(container, imageUrl, videoUrl, publishedType) {
+      // Show loader immediately
       container.classList.add('masulo-loading');
       
-      // Wait a few seconds, then start the transition
+      // Wait 3 seconds before showing the loader
       setTimeout(() => {
-        // Start fade out of old image
+        // Start fade out
         container.classList.add('masulo-fade-out');
         
-        // Wait for fade out to complete, then replace image
+        // Wait for fade out to complete, then swap images
         setTimeout(() => {
-          // Find and update the image element
+          // Find the image element
           const imgElement = container.querySelector('img') || 
                             container.querySelector('.game-image');
           
+          // Update the image
           if (imgElement && imgElement.tagName === 'IMG') {
             imgElement.src = imageUrl;
+            imgElement.style.display = 'block';
           } else if (container.style) {
             container.style.backgroundImage = `url(${imageUrl})`;
           }
           
-          // Update video if present
+          // Add video element if video URL exists
           if (videoUrl) {
             let videoElement = container.querySelector('video');
             if (!videoElement) {
-              // Create video element if it doesn't exist
               videoElement = document.createElement('video');
-              videoElement.className = 'masulo-game-video';
-              videoElement.controls = false;
-              videoElement.loop = true;
+              videoElement.classList.add('masulo-game-video');
               videoElement.muted = true;
-              videoElement.autoplay = false; // Will be controlled by hover
-              videoElement.playsInline = true; // Prevent iOS fullscreen
-              videoElement.setAttribute('webkit-playsinline', 'true'); // Older iOS support
-              videoElement.disablePictureInPicture = true; // Prevent PiP mode
+              videoElement.loop = true;
+              videoElement.playsInline = true;
+              videoElement.preload = 'metadata';
               container.appendChild(videoElement);
             }
-            
             videoElement.src = videoUrl;
-            videoElement.poster = imageUrl; // Use image as poster
+            videoElement.style.display = 'none';
             
             // Style existing play button if it exists
             const existingPlayButton = container.querySelector('button, .play-button, .cta-button, [class*="play"], [class*="cta"]');
@@ -497,8 +566,8 @@
               existingPlayButton.classList.add('masulo-play-button');
             }
             
-            // Add hover event listeners
-            this.addVideoHoverEvents(container, imgElement, videoElement);
+            // Add tap-to-toggle functionality
+            this.addVideoTapToggle(container, imgElement, videoElement);
           }
           
           // Force reflow to ensure image is loaded
@@ -534,16 +603,27 @@
       }, 3000); // Wait 3 seconds before starting transition
     }
     
-    // Add video hover functionality
-    addVideoHoverEvents(container, imgElement, videoElement) {
+    // Add tap-to-toggle video functionality
+    addVideoTapToggle(container, imgElement, videoElement) {
       // Remove existing event listeners to prevent duplicates
-      container.removeEventListener('mouseenter', container._masuloMouseEnter);
-      container.removeEventListener('mouseleave', container._masuloMouseLeave);
-      container.removeEventListener('touchstart', container._masuloTouchStart);
-      container.removeEventListener('touchend', container._masuloTouchEnd);
-      container.removeEventListener('contextmenu', container._masuloContextMenu);
+      if (container._masuloMouseEnter) {
+        container.removeEventListener('mouseenter', container._masuloMouseEnter);
+        container._masuloMouseEnter = null;
+      }
+      if (container._masuloMouseLeave) {
+        container.removeEventListener('mouseleave', container._masuloMouseLeave);
+        container._masuloMouseLeave = null;
+      }
+      if (container._masuloTouchHandler) {
+        container.removeEventListener('touchend', container._masuloTouchHandler);
+        container._masuloTouchHandler = null;
+      }
+      if (container._masuloContextMenu) {
+        container.removeEventListener('contextmenu', container._masuloContextMenu);
+        container._masuloContextMenu = null;
+      }
       
-      // Mouse enter - show video
+      // Desktop: Mouse enter - show video
       container._masuloMouseEnter = () => {
         imgElement.style.display = 'none';
         videoElement.style.display = 'block';
@@ -552,33 +632,50 @@
         });
       };
       
-      // Mouse leave - show image
+      // Desktop: Mouse leave - show image
       container._masuloMouseLeave = () => {
         videoElement.pause();
-        videoElement.currentTime = 0; // Reset to beginning
+        videoElement.currentTime = 0;
         videoElement.style.display = 'none';
         imgElement.style.display = 'block';
       };
       
-      // Touch start - show video and play button
-      container._masuloTouchStart = (e) => {
-        e.preventDefault(); // Prevent default touch behavior
-        container.classList.add('masulo-touch-active');
-        imgElement.style.display = 'none';
-        videoElement.style.display = 'block';
-        videoElement.play().catch(e => {
-          // Video autoplay failed
-        });
-      };
-      
-      // Touch end - hide video and play button
-      container._masuloTouchEnd = (e) => {
-        e.preventDefault(); // Prevent default touch behavior
-        container.classList.remove('masulo-touch-active');
-        videoElement.pause();
-        videoElement.currentTime = 0; // Reset to beginning
-        videoElement.style.display = 'none';
-        imgElement.style.display = 'block';
+      // Mobile: Tap to toggle
+      container._masuloTouchHandler = (e) => {
+        // Check if tap was on the button - if so, let it navigate (don't toggle video)
+        const button = container.querySelector('.masulo-play-button');
+        if (button && e.target === button) {
+          // Button click - let it navigate, don't prevent default
+          return;
+        }
+        
+        // Prevent default to avoid unwanted behaviors
+        e.preventDefault();
+        
+        // If this container is already active
+        if (container._masuloIsPlaying) {
+          // Toggle: stop video if playing, play if paused
+          if (!videoElement.paused) {
+            videoElement.pause();
+          } else {
+            videoElement.play().catch(err => {
+              // Video play failed
+            });
+          }
+        } else {
+          // New video clicked - deactivate all others first
+          this.deactivateAllVideos();
+          
+          // Activate this video
+          container._masuloIsPlaying = true;
+          this.activeVideoContainer = container;
+          container.classList.add('masulo-video-active');
+          imgElement.style.display = 'none';
+          videoElement.style.display = 'block';
+          videoElement.play().catch(e => {
+            // Video autoplay failed
+          });
+        }
       };
       
       // Prevent context menu on images and videos
@@ -587,10 +684,13 @@
         return false;
       };
       
+      // Initialize state
+      container._masuloIsPlaying = false;
+      
+      // Add event listeners
       container.addEventListener('mouseenter', container._masuloMouseEnter);
       container.addEventListener('mouseleave', container._masuloMouseLeave);
-      container.addEventListener('touchstart', container._masuloTouchStart, { passive: false });
-      container.addEventListener('touchend', container._masuloTouchEnd, { passive: false });
+      container.addEventListener('touchend', container._masuloTouchHandler, { passive: false });
       container.addEventListener('contextmenu', container._masuloContextMenu);
     }
     
@@ -756,7 +856,6 @@
       // Image hover tracking (debounced)
       if (imgElement) {
         let hoverStartTime = null;
-        let hoverTimeout = null;
 
         const handleMouseEnter = () => {
           hoverStartTime = Date.now();
