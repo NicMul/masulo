@@ -10,6 +10,10 @@ api.post('/api/game', auth.verify('user'), use(gameController.create));
 
 api.post('/api/game/bulk', auth.verify('user'), upload.single('file'), use(gameController.bulkCreate));
 
+api.patch('/api/game/bulk', auth.verify('user'), use(gameController.bulkUpdate));
+
+api.delete('/api/game/bulk', auth.verify('user'), use(gameController.bulkDelete));
+
 api.get('/api/game/template', auth.verify('user'), use(gameController.downloadTemplate));
 
 api.get('/api/game', auth.verify('user'), use(gameController.get));

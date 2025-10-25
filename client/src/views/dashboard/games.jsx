@@ -9,9 +9,15 @@ import { useContext, useCallback, useState, useEffect } from 'react';
 import { ViewContext, Card, Table, Animate, useAPI, Button, useNavigate } from 'components/lib';
 import { GameEditForm } from 'components/games/GameEditForm';
 import { GameCreateForm } from 'components/games/GameCreateForm';
+import { BulkActionsDialog } from 'components/games/BulkActionsDialog';
+import { BulkDeleteDialog } from 'components/games/BulkDeleteDialog';
+import { useMutation } from 'components/hooks/mutation';
 import axios from 'axios';
 
 export function Games({ t }){
+  const [bulkAction, setBulkAction] = useState(false);
+  const [selectedGames, setSelectedGames] = useState([]);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   // context
   const viewContext = useContext(ViewContext);
@@ -22,6 +28,10 @@ export function Games({ t }){
 
   // fetch games data
   const res = useAPI('/api/game');
+  
+  // Bulk operation mutations
+  const bulkUpdateMutation = useMutation('/api/game/bulk', 'PATCH');
+  const bulkDeleteMutation = useMutation('/api/game/bulk', 'DELETE');
 
   // update state when data loads
   useEffect(() => {
@@ -156,6 +166,99 @@ export function Games({ t }){
     navigate(`/edit/${row.id}`);
   }, [navigate]);
 
+  // Handle bulk delete
+  const handleBulkDelete = useCallback(() => {
+    setShowDeleteDialog(true);
+  }, []);
+
+  // Execute bulk changes (publish, group, theme)
+  const executeBulkChanges = useCallback(async (changes) => {
+    try {
+      const gameIds = selectedGames.map(g => g.id);
+      
+      const result = await bulkUpdateMutation.execute({
+        gameIds,
+        ...changes
+      });
+      
+      if (result) {
+        // Update local state based on changes
+        setGames(prevGames => prevGames.map(game => {
+          if (!gameIds.includes(game.id)) return game;
+          
+          const updatedGame = { ...game };
+          if (changes.published !== undefined) {
+            updatedGame.published = changes.published;
+          }
+          if (changes.group !== undefined) {
+            updatedGame.group = changes.group;
+          }
+          if (changes.theme !== undefined) {
+            updatedGame.theme = changes.theme;
+          }
+          return updatedGame;
+        }));
+        
+        // Clear selection
+        setSelectedGames([]);
+        
+        // Show success notification
+        const changeTypes = [];
+        if (changes.published !== undefined) {
+          changeTypes.push(changes.published ? 'published' : 'unpublished');
+        }
+        if (changes.group !== undefined) {
+          changeTypes.push('group updated');
+        }
+        if (changes.theme !== undefined) {
+          changeTypes.push('theme updated');
+        }
+        
+        viewContext.notification({
+          description: `Games ${changeTypes.join(', ')} successfully`,
+          variant: 'success'
+        });
+      }
+    } catch (error) {
+      viewContext.notification({
+        description: 'Error updating games',
+        variant: 'error'
+      });
+    }
+  }, [selectedGames, bulkUpdateMutation, viewContext]);
+
+  // Execute bulk delete
+  const executeBulkDelete = useCallback(async () => {
+    try {
+      const gameIds = selectedGames.map(g => g.id);
+      
+      const result = await bulkDeleteMutation.execute({
+        gameIds
+      });
+      
+      if (result) {
+        // Update local state - remove deleted games
+        setGames(prevGames => prevGames.filter(game => !gameIds.includes(game.id)));
+        
+        // Clear selection
+        setSelectedGames([]);
+        
+        // Show success notification
+        viewContext.notification({
+          description: t('games.bulk.delete.success'),
+          variant: 'success'
+        });
+        
+        setShowDeleteDialog(false);
+      }
+    } catch (error) {
+      viewContext.notification({
+        description: 'Error deleting games',
+        variant: 'error'
+      });
+    }
+  }, [selectedGames, bulkDeleteMutation, viewContext, t]);
+
   const actions = [
     {
       label: t('games.edit_game.action'),
@@ -185,16 +288,36 @@ export function Games({ t }){
         <Button icon='plus' text={ t('games.create.action') } onClick={ createGame } />
       </div>
       <Card title={ t('games.table.title') } headerAction={
-        <Button color='green' icon='plus' text={ t('games.save.bulk') } onClick={ createGame } />
+        <div className="flex gap-2">
+          <Button 
+            disabled={ !selectedGames.length } 
+            color='red' 
+            icon='trash-2' 
+            text={ t('games.bulk.delete.action') } 
+            onClick={ handleBulkDelete } 
+          />
+          <Button 
+            disabled={ !selectedGames.length } 
+            color='green' 
+            icon='edit' 
+            text={ t('games.action.bulk') } 
+            onClick={ () => setBulkAction(true) } 
+          />
+        </div>
       }>
         
         <Table
-        sortable
+        sortable="true"
         selectable
-      searchable
+        searchable
           data={ games }
           loading={ res.loading }
           actions={ actions }
+          onSelectionChange={(selection) => {
+            // Map selection to full game objects
+            const selected = selection.map(s => games.find(g => g.id === s.id)).filter(Boolean);
+            setSelectedGames(selected);
+          }}
           show={ ['published', 'version','cmsId', 'group', 'theme', 'defaultImage', 'currentImage', 'themeImage', 'animate', 'hover', 'touch'] }
           badge={ [
             { 
@@ -234,6 +357,24 @@ export function Games({ t }){
           ]}
         />
       </Card>
+      
+      {/* Bulk Action Dialogs */}
+      <BulkActionsDialog
+        isOpen={bulkAction}
+        onClose={() => setBulkAction(false)}
+        selectedGames={selectedGames}
+        onApplyChanges={executeBulkChanges}
+        t={t}
+      />
+      
+      <BulkDeleteDialog
+        isOpen={showDeleteDialog}
+        onClose={() => setShowDeleteDialog(false)}
+        onConfirm={executeBulkDelete}
+        isDeleting={bulkDeleteMutation.loading}
+        selectedGames={selectedGames}
+        t={t}
+      />
     </Animate>
   );
 }

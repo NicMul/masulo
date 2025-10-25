@@ -494,6 +494,104 @@ exports.archiveTestAssets = async function(req, res){
 
 }
 
+exports.bulkUpdate = async function(req, res){
+
+  // validate
+  const data = utility.validate(joi.object({
+    
+    gameIds: joi.array().items(joi.string()).min(1).required(),
+    cmsId: joi.string(),
+    defaultImage: joi.string(),
+    defaultVideo: joi.string().allow('', null),
+    currentImage: joi.string().allow('', null),
+    currentVideo: joi.string().allow('', null),
+    themeImage: joi.string().allow('', null),
+    themeVideo: joi.string().allow('', null),
+    testImage: joi.string().allow('', null),
+    testVideo: joi.string().allow('', null),
+    scrape: joi.boolean(),
+    theme: joi.string().allow('', null),
+    animate: joi.boolean(),
+    hover: joi.boolean(),
+    version: joi.number(),
+    group: joi.string().allow(''),
+    playerCss: joi.string().allow(''),
+    touch: joi.boolean(),
+    promoImage: joi.string().allow(''),
+    promoVideo: joi.string().allow(''),
+    locked: joi.boolean(),
+    published: joi.boolean(),
+    publishedType: joi.string().valid('default', 'current', 'theme', 'promo')
+
+  }), req, res); 
+
+  const { gameIds, ...updateData } = data;
+  
+  // Remove undefined values
+  const cleanUpdateData = Object.fromEntries(
+    Object.entries(updateData).filter(([_, value]) => value !== undefined)
+  );
+
+  if (Object.keys(cleanUpdateData).length === 0) {
+    return res.status(400).send({ message: 'No update data provided' });
+  }
+
+  try {
+    const updatedGames = [];
+    
+    // Update each game
+    for (const gameId of gameIds) {
+      const updatedGame = await game.update({ id: gameId, user: req.user, data: cleanUpdateData });
+      if (updatedGame) {
+        updatedGames.push(updatedGame);
+      }
+    }
+
+    return res.status(200).send({ 
+      message: res.__('game.bulk.update.success'), 
+      data: updatedGames,
+      count: updatedGames.length 
+    });
+
+  } catch (error) {
+    return res.status(500).send({ message: res.__('game.bulk.update.error') });
+  }
+
+}
+
+exports.bulkDelete = async function(req, res){
+
+  // validate
+  const data = utility.validate(joi.object({
+    
+    gameIds: joi.array().items(joi.string()).min(1).required()
+
+  }), req, res); 
+
+  const { gameIds } = data;
+
+  try {
+    let deletedCount = 0;
+    
+    // Delete each game
+    for (const gameId of gameIds) {
+      const result = await game.delete({ id: gameId, user: req.user });
+      if (result.deletedCount > 0) {
+        deletedCount++;
+      }
+    }
+
+    return res.status(200).send({ 
+      message: res.__('game.bulk.delete.success'), 
+      count: deletedCount 
+    });
+
+  } catch (error) {
+    return res.status(500).send({ message: res.__('game.bulk.delete.error') });
+  }
+
+}
+
 // Helper function to generate random alphanumeric string
 function generateRandomString(length) {
   const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';

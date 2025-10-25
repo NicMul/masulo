@@ -136,5 +136,39 @@
   "game_created": "Game created successfully",
   "game_updated": "Game updated successfully",
   "game_deleted": "Game deleted successfully",
-  "error_saving": "Error saving game"
+  "error_saving": "Error saving game",
+  "action": {
+    "bulk": "Bulk Actions"
+  },
+  "bulk": {
+    "title": "Bulk Actions",
+    "selected": "{{count}} games selected",
+    "publish": {
+      "action": "Publish Games",
+      "confirm": "Are you sure you would like to publish {{count}} games? This affects {{count}} game assets on your live application.",
+      "success": "Games published successfully"
+    },
+    "unpublish": {
+      "action": "Unpublish Games", 
+      "confirm": "Are you sure you would like to unpublish {{count}} games? This affects {{count}} game assets on your live application.",
+      "success": "Games unpublished successfully"
+    },
+    "group": {
+      "action": "Change Group",
+      "label": "Select Group",
+      "confirm": "Are you sure you would like to change the group? This affects {{count}} published game assets on your live application.",
+      "success": "Group updated successfully"
+    },
+    "theme": {
+      "action": "Change Theme",
+      "label": "Select Theme",
+      "confirm": "Are you sure you would like to change the theme? This affects {{count}} published game assets on your live application.",
+      "success": "Theme updated successfully"
+    },
+    "delete": {
+      "action": "Delete Games",
+      "confirm": "Are you sure you want to delete {{count}} games? This action cannot be undone.",
+      "success": "Games deleted successfully"
+    }
+  }
 }
