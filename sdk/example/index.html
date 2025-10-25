@@ -139,7 +139,7 @@
             flex: 1;
             overflow: hidden;
             min-height: 0;
-            margin-bottom: 72px;
+            margin-bottom: 60px;
         }
 
         /* Sidebar */
@@ -213,7 +213,7 @@
                 rgba(218, 165, 32, 0.15), 
                 rgba(255, 215, 0, 0.1));
             border-left-color: #FFD700;
-            transform: translateX(8px);
+            /* transform: translateX(8px); */
             color: #FFD700;
         }
 
@@ -234,7 +234,7 @@
         }
 
         .lobby-header {
-            padding: 40px 40px 20px;
+            padding: 30px 40px 0;
             flex-shrink: 0;
         }
 
@@ -255,6 +255,84 @@
             font-size: 1.2rem;
             font-weight: 300;
             letter-spacing: 1px;
+            margin-bottom: 20px;
+        }
+
+        /* Tab Navigation */
+        .tab-navigation {
+            display: flex;
+            gap: 10px;
+            padding: 0 40px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid rgba(218, 165, 32, 0.2);
+        }
+
+        .tab-button {
+            padding: 16px 32px;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.6);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: 0.5px;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .tab-button::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%) scaleX(0);
+            width: 80%;
+            height: 3px;
+            background: linear-gradient(90deg, #FFD700, #FFA500);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 3px 3px 0 0;
+        }
+
+        .tab-button:hover {
+            color: rgba(255, 255, 255, 0.9);
+            background: rgba(218, 165, 32, 0.1);
+        }
+
+        .tab-button.active {
+            color: #FFD700;
+            background: linear-gradient(180deg, 
+                rgba(218, 165, 32, 0.15), 
+                rgba(218, 165, 32, 0.05));
+        }
+
+        .tab-button.active::before {
+            transform: translateX(-50%) scaleX(1);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            flex: 1;
+            overflow: hidden;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .tab-content.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* Games Grid */
@@ -262,135 +340,100 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 35px;
-            padding: 40px 40px;
+            padding: 40px;
             overflow-y: auto;
-            flex: 1;
-            scroll-behavior: smooth;
         }
 
         .game-card {
-            position: relative;
-            background: linear-gradient(135deg, 
-                rgba(30, 30, 45, 0.6), 
-                rgba(20, 20, 35, 0.8));
-            backdrop-filter: blur(15px);
+            background: linear-gradient(145deg, rgba(20, 20, 35, 0.9), rgba(15, 15, 25, 0.95));
             border-radius: 20px;
             overflow: hidden;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1px solid rgba(218, 165, 32, 0.2);
+            position: relative;
             cursor: pointer;
-            aspect-ratio: 18/25;
-            margin-bottom: 15px;
-            box-shadow: 
-                0 10px 40px rgba(0, 0, 0, 0.5),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            /* box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.6),
+                0 0 0 1px rgba(218, 165, 32, 0.1); */
+            aspect-ratio: 3/4;
         }
 
         .game-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(
-                45deg,
-                transparent,
-                transparent 40%,
-                rgba(255, 215, 0, 0.1) 50%,
-                transparent 60%,
-                transparent
-            );
-            transform: translateX(-100%) translateY(-100%) rotate(45deg);
-            transition: transform 0.6s;
-        }
-
-        .game-card:hover::before {
-            transform: translateX(0%) translateY(0%) rotate(45deg);
-        }
-
-        .game-card:hover {
-            transform: translateY(-12px) scale(1.02);
-            box-shadow: 
-                0 25px 60px rgba(0, 0, 0, 0.6),
-                0 0 40px rgba(218, 165, 32, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            border-color: rgba(255, 215, 0, 0.6);
-        }
-
-        .game-card::after {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(180deg, 
-                transparent 0%, 
-                transparent 50%, 
-                rgba(0, 0, 0, 0.7) 100%);
-            pointer-events: none;
+            background: linear-gradient(135deg, 
+                rgba(218, 165, 32, 0) 0%, 
+                rgba(255, 215, 0, 0.15) 100%);
+            opacity: 0;
+            transition: opacity 0.5s;
+            z-index: 1;
+        }
+
+        .game-card:hover {
+            /* transform: translateY(-12px) scale(1.03); */
+            box-shadow: 
+                0 5px 15px rgba(218, 165, 32, 0.4),
+                0 0 0 2px rgba(218, 165, 32, 0.5),
+                0 0 5px rgba(255, 215, 0, 0.3);
+        }
+
+        .game-card:hover::before {
+            opacity: 1;
         }
 
         .game-image {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            filter: brightness(0.85);
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .game-card:hover .game-image {
-            transform: scale(1.01);
-            filter: brightness(1.1);
+            /* transform: scale(1.1); */
         }
 
-        .game-name {
-            text-align: center;
-            color: white;
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-top: 15px;
-            letter-spacing: 1px;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-        }
-
-        .play-button {
+        .mesulo-button {
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%) scale(0.9);
-            background: linear-gradient(135deg, 
-                rgba(218, 165, 32, 0.9), 
-                rgba(255, 215, 0, 0.8));
-            backdrop-filter: blur(10px);
+            transform: translateX(-50%) translateY(-50%);
+            padding: 8px 7px;
+            width: 120px;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
             color: #000;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            padding: 9px 20px;
-            border-radius: 50px;
+            border: linear-gradient(135deg, #ffd900ed, #e79804);;
+            border-radius: 25px;
             font-weight: 700;
-            font-size: 0.8rem;
+            font-size: 14px;
             cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             opacity: 0;
-            visibility: hidden;
-            pointer-events: auto;
-            z-index: 10;
+            transition: opacity 0.3s ease;
+            box-shadow: 0 8px 24px rgba(255, 215, 0, 0.5);
+            z-index: 2;
             letter-spacing: 1px;
             text-transform: uppercase;
         }
 
-        .game-card:hover .play-button {
+        .game-card:hover .mesulo-button {
             opacity: 1;
-            visibility: visible;
-            transform: translate(-50%, -50%) scale(1);
         }
 
-        .play-button:hover {
-            transform: translate(-50%, -50%) scale(1.05);
-            background: linear-gradient(135deg, 
-                rgba(255, 215, 0, 1), 
-                rgba(255, 193, 37, 1));
+        .mesulo-button:hover {
+            background: linear-gradient(135deg, #FFA500, #FFD700);
+            /* box-shadow: 0 12px 32px rgba(255, 215, 0, 0.7); */
+            /* transform: translateX(-50%) translateY(-2px); */
+        }
+
+        .game-name {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            letter-spacing: 0.5px;
         }
 
         /* Status Bar */
@@ -400,91 +443,77 @@
             left: 0;
             right: 0;
             background: linear-gradient(180deg, 
-                rgba(10, 10, 20, 0.95), 
-                rgba(5, 5, 15, 0.98));
+                rgba(15, 15, 25, 0.95) 0%, 
+                rgba(10, 10, 15, 0.98) 100%);
             backdrop-filter: blur(20px);
-            padding: 20px 40px;
             border-top: 1px solid rgba(218, 165, 32, 0.3);
-            box-shadow: 
-                0 -8px 32px rgba(0, 0, 0, 0.5),
-                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            padding: 20px 40px;
             z-index: 100;
+            box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.5);
         }
 
         .status {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1600px;
+            max-width: 1400px;
             margin: 0 auto;
         }
 
         .status-info {
             display: flex;
-            gap: 50px;
+            justify-content: flex-start;
+            gap: 40px;
+            flex-wrap: wrap;
         }
 
         .status-item {
             display: flex;
             align-items: center;
             gap: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95rem;
             font-weight: 500;
-            letter-spacing: 0.5px;
         }
 
         .status-dot {
-            width: 12px;
-            height: 12px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #FFD700, #FFA500);
+            background: linear-gradient(135deg, #4ade80, #22c55e);
+            box-shadow: 0 0 12px rgba(74, 222, 128, 0.6);
             animation: pulse 2s ease-in-out infinite;
-            box-shadow: 
-                0 0 15px rgba(255, 215, 0, 0.8),
-                0 0 30px rgba(255, 215, 0, 0.4);
         }
 
         @keyframes pulse {
-            0%, 100% { 
-                opacity: 1; 
+            0%, 100% {
+                opacity: 1;
                 transform: scale(1);
-                box-shadow: 
-                    0 0 15px rgba(255, 215, 0, 0.8),
-                    0 0 30px rgba(255, 215, 0, 0.4);
             }
-            50% { 
-                opacity: 0.6; 
-                transform: scale(0.95);
-                box-shadow: 
-                    0 0 10px rgba(255, 215, 0, 0.6),
-                    0 0 20px rgba(255, 215, 0, 0.3);
+            50% {
+                opacity: 0.7;
+                transform: scale(1.1);
             }
         }
 
-        #sdk-status, #connection-status {
-            color: #FFD700;
-            font-weight: 600;
-        }
-
-        /* Loading animation */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .game-card {
-            animation: fadeIn 0.6s ease-out forwards;
-        }
-
-        .game-card:nth-child(1) { animation-delay: 0.1s; }
-        .game-card:nth-child(2) { animation-delay: 0.2s; }
-        .game-card:nth-child(3) { animation-delay: 0.3s; }
-        .game-card:nth-child(4) { animation-delay: 0.4s; }
-        .game-card:nth-child(5) { animation-delay: 0.5s; }
-
-        /* Responsive */
+        /* Responsive Design */
         @media (max-width: 1024px) {
+            .sidebar {
+                width: 220px;
+                padding: 30px 20px;
+            }
+
+            .sidebar h3 {
+                font-size: 1.3rem;
+            }
+
+            .lobby-header {
+                padding: 25px 30px 0;
+            }
+
+            .tab-navigation {
+                padding: 0 30px;
+            }
+
             .games-grid {
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                padding: 0 30px 30px;
                 gap: 25px;
             }
         }
@@ -495,47 +524,48 @@
             }
 
             .main-container {
-                flex-direction: column;
-                flex: 1;
-                min-height: 0;
-                margin-bottom: 40px;
+                margin-bottom: 60px;
             }
-            
+
             .sidebar {
-                display: none;
+                position: fixed;
+                left: -280px;
+                top: 0;
+                bottom: 0;
+                z-index: 1000;
+                transition: left 0.3s ease;
             }
 
-            .sidebar h3 {
-                font-size: 1.2rem;
-                margin-bottom: 15px;
-            }
-
-            .nav-menu a {
-                padding: 12px 15px;
-                font-size: 0.9rem;
-            }
-            
-            .main-content {
-                flex: 1;
-                min-height: 0;
+            .sidebar.open {
+                left: 0;
             }
 
             .lobby-header {
-                padding: 25px 20px 15px;
+                padding: 25px 20px 0;
+            }
+
+            .lobby-header h2 {
+                font-size: 2rem;
+            }
+
+            .lobby-header p {
+                font-size: 1rem;
+            }
+
+            .tab-navigation {
+                padding: 0 20px;
+                gap: 5px;
+            }
+
+            .tab-button {
+                padding: 14px 24px;
+                font-size: 1rem;
             }
             
             .games-grid {
                 grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
                 gap: 20px;
                 padding: 0 20px 20px;
-            }
-
-            .lobby-header h2 {
-                font-size: 1.8rem;
-            }
-
-            .lobby-header p {
-                font-size: 1rem;
             }
 
             .status-bar {
@@ -575,14 +605,8 @@
                 display: none;
             }
 
-            .games-grid {
-                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-                gap: 15px;
-                padding: 0 15px 15px;
-            }
-
             .lobby-header {
-                padding: 20px 15px 10px;
+                padding: 20px 15px 0;
             }
 
             .lobby-header h2 {
@@ -593,9 +617,24 @@
                 font-size: 0.9rem;
             }
 
-            .play-button {
+            .tab-navigation {
+                padding: 0 15px;
+            }
+
+            .tab-button {
+                padding: 12px 20px;
+                font-size: 0.9rem;
+            }
+
+            .games-grid {
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                gap: 15px;
+                padding: 0 15px 15px;
+            }
+
+            .mesulo-button {
                 padding: 8px 16px;
-                font-size: 0.7rem;
+                font-size: 14px;
             }
 
             .status-bar {
@@ -614,7 +653,7 @@
             }
 
             .lobby-header {
-                padding: 15px 20px 10px;
+                padding: 15px 20px 0;
             }
 
             .lobby-header h2 {
@@ -623,6 +662,15 @@
 
             .lobby-header p {
                 font-size: 0.85rem;
+            }
+
+            .tab-navigation {
+                margin-bottom: 10px;
+            }
+
+            .tab-button {
+                padding: 10px 20px;
+                font-size: 0.9rem;
             }
 
             .games-grid {
@@ -642,132 +690,158 @@
 </head>
 <body>
 
-    <div class="banner">
-    </div>
-
+    <div class="banner"></div>
 
     <div class="main-container">
 
         <nav class="sidebar">
-            <h3>🎮 Navigation</h3>
+            <h3>Your Casino</h3>
             <ul class="nav-menu">
                 <li><a href="#" class="active">🏠 Lobby</a></li>
-                <li><a href="#">🎯 Slots</a></li>
-                <li><a href="#">🃏 Table Games</a></li>
-                <li><a href="#">🎲 Live Casino</a></li>
-                <li><a href="#">🏆 Tournaments</a></li>
+                <li><a href="#">Slots</a></li>
+                <li><a href="#">Table Games</a></li>
+                <li><a href="#">Live Casino</a></li>
                 <li><a href="#">💰 Promotions</a></li>
-                <li><a href="#">👤 Profile</a></li>
-                <li><a href="#">⚙️ Settings</a></li>
             </ul>
         </nav>
 
-
         <main class="main-content">
             <div class="lobby-header">
-                <h2>Popular</h2>
+                
+                
             </div>
 
+            <!-- Tab Navigation -->
+            <div class="tab-navigation">
+                <button class="tab-button active" data-tab="with-mesulo">✨ With Mesulo</button>
+                <button class="tab-button" data-tab="no-mesulo">:sad No Mesulo</button>
+            </div>
 
-            <div class="games-grid">
-
-                <div>
-                    <div data-masulo-game-id="d5352f25-9718-44a6-a95d-1ddd47ea63ce" data-masulo-tag="true" class="game-card">
-                        <img src="./images/cleo.jpg" alt="Cleo" class="game-image">
-                        <button class="play-button">Play Now</button>
+            <!-- With Mesulo Tab -->
+            <div class="tab-content active" id="with-mesulo">
+                <div class="games-grid">
+                    <div>
+                        <div data-masulo-game-id="d5352f25-9718-44a6-a95d-1ddd47ea63ce" data-masulo-tag="true" class="game-card">
+                            <img src="./images/cleo.jpg" alt="Cleo" class="game-image">
+                            <button class="mesulo-button">Play Now</button>
+                        </div>
+                        <div class="game-name">Cleocatra</div>
                     </div>
-                    <div class="game-name">Cleocatra</div>
+
+                    <div>
+                        <div data-masulo-game-id="7c371c7d-6ec2-494c-a553-1645a70007d3" data-masulo-tag="true" class="game-card">
+                            <img src="./images/gates.webp" alt="Gates" class="game-image">
+                            <button class="mesulo-button">Play Now</button>
+                        </div>
+                        <div class="game-name">Gates of Olympus</div>
+                    </div>
+
+                    <div>
+                        <div data-masulo-game-id="b4a40dc5-e950-4e6b-bca9-1ae51589b2b5" data-masulo-tag="true" data-masulo-theme="halloween" data-masulo-version="1.0.0" class="game-card">
+                            <img src="./images/hades.jpg" alt="Hades" class="game-image">
+                            <button class="mesulo-button">Play Now</button>
+                        </div>
+                        <div class="game-name">Hot as Hades</div>
+                    </div>
+
+                    <div>
+                        <div data-masulo-game-id="b37b4b9a-4f2f-4a3c-8a58-f4a76d19d88f" data-masulo-tag="true" class="game-card">
+                            <img src="./images/tome.webp" alt="Tome" class="game-image">
+                            <button class="mesulo-button">Play Now</button>
+                        </div>
+                        <div class="game-name">Tome of Insanity</div>
+                    </div>
+
+                    <div>
+                        <div data-masulo-game-id="8d0b5e73-13fa-42c4-901d-829406c8e207" data-masulo-tag="true" class="game-card">
+                            <img src="./images/toonz.webp" alt="Toonz" class="game-image">
+                            <button class="mesulo-button">Play Now</button>
+                        </div>
+                        <div class="game-name">Gargantoonz</div>
+                    </div>
                 </div>
+            </div>
 
-
-                <div>
-                    <div data-masulo-game-id="7c371c7d-6ec2-494c-a553-1645a70007d3" data-masulo-tag="true"  class="game-card">
-                        <img src="./images/gates.webp" alt="Gates" class="game-image">
-                        <button class="play-button">Play Now</button>
+            <!-- No Mesulo Tab -->
+            <div class="tab-content" id="no-mesulo">
+                <div class="games-grid">
+                    <div>
+                        <div class="game-card">
+                            <img src="./images/cleo.jpg" alt="Cleo" class="game-image">
+                            <button class="mesulo-button">Play Now</button>
+                        </div>
+                        <div class="game-name">Cleocatra</div>
                     </div>
-                    <div class="game-name">Gates of Olympus</div>
-                </div>
 
-
-                <div>
-                    <div data-masulo-game-id="b4a40dc5-e950-4e6b-bca9-1ae51589b2b5" data-masulo-tag="true" data-masulo-theme="halloween" data-masulo-version="1.0.0" class="game-card">
-                        <img src="./images/hades.jpg" alt="Hades" class="game-image">
-                        <button class="play-button">Play Now</button>
+                    <div>
+                        <div class="game-card">
+                            <img src="./images/gates.webp" alt="Gates" class="game-image">
+                            <button class="mesulo-button">Play Now</button>
+                        </div>
+                        <div class="game-name">Gates of Olympus</div>
                     </div>
-                    <div class="game-name">Hot as Hades</div>
-                </div>
 
-
-                <div>
-                    <div data-masulo-game-id="b37b4b9a-4f2f-4a3c-8a58-f4a76d19d88f" data-masulo-tag="true"  class="game-card">
-                        <img src="./images/tome.webp" alt="Tome" class="game-image">
-                        <button class="play-button">Play Now</button>
+                    <div>
+                        <div class="game-card">
+                            <img src="./images/hades.jpg" alt="Hades" class="game-image">
+                            <button class="mesulo-button">Play Now</button>
+                        </div>
+                        <div class="game-name">Hot as Hades</div>
                     </div>
-                    <div class="game-name">Tome of Insanity</div>
-                </div>
 
-
-                <div>
-                    <div data-masulo-game-id="8d0b5e73-13fa-42c4-901d-829406c8e207" data-masulo-tag="true"  class="game-card">
-                        <img src="./images/toonz.webp" alt="Toonz" class="game-image">
-                        <button class="play-button">Play Now</button>
+                    <div>
+                        <div class="game-card">
+                            <img src="./images/tome.webp" alt="Tome" class="game-image">
+                            <button class="mesulo-button">Play Now</button>
+                        </div>
+                        <div class="game-name">Tome of Insanity</div>
                     </div>
-                    <div class="game-name">Gargantoonz</div>
+
+                    <div>
+                        <div class="game-card">
+                            <img src="./images/toonz.webp" alt="Toonz" class="game-image">
+                            <button class="mesulo-button">Play Now</button>
+                        </div>
+                        <div class="game-name">Gargantoonz</div>
+                    </div>
                 </div>
             </div>
         </main>
     </div>
-
 
     <div class="status-bar">
         <div class="status">
             <div class="status-info">
                 <div class="status-item">
                     <div class="status-dot"></div>
-                    <span>SDK Status: <span id="sdk-status">Loading...</span></span>
+                    <span>Masulo Ai Status: <span id="sdk-status">Loading...</span></span>
                 </div>
-                
             </div>
         </div>
     </div>
-
-
     <script src="../mesulo-sdk.js" data-application-key="5f61931c-187c-4341-8874-360d29907b00"></script>
     
     <script>
-
-
-
-        function setupStatusUpdates() {
-            if (window.masulo) {
-
-                document.getElementById('sdk-status').textContent = 'Ready';
-                document.getElementById('connection-status').textContent = 'Connected';
-                
-                window.masulo.on('connected', () => {
-                    document.getElementById('connection-status').textContent = 'Connected';
-                });
-                
-                window.masulo.on('disconnected', () => {
-                    document.getElementById('connection-status').textContent = 'Disconnected';
-                });
-                
-                window.masulo.on('gameLaunched', (gameId) => {
-                    console.log(`Game launched: ${gameId}`);
-                });
-                
-            } else {
-                // Retry after a short delay
-                setTimeout(setupStatusUpdates, 100);
-            }
-        }
-        
-        // Start checking for SDK initialization
-        setupStatusUpdates();
-
-        // Add some interactive effects
+        // Tab switching functionality
         document.addEventListener('DOMContentLoaded', function() {
-            // Add click effects to navigation
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const targetTab = this.getAttribute('data-tab');
+
+                    // Remove active class from all buttons and contents
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+
+                    // Add active class to clicked button and corresponding content
+                    this.classList.add('active');
+                    document.getElementById(targetTab).classList.add('active');
+                });
+            });
+
+            // Navigation menu interactions
             const navLinks = document.querySelectorAll('.nav-menu a');
             navLinks.forEach(link => {
                 link.addEventListener('click', function(e) {
@@ -781,6 +855,31 @@
                 });
             });
         });
+
+        // SDK Status Updates
+        function setupStatusUpdates() {
+            if (window.masulo) {
+                document.getElementById('sdk-status').textContent = 'Ready';
+                
+                window.masulo.on('connected', () => {
+                    console.log('Mesulo SDK connected');
+                });
+                
+                window.masulo.on('disconnected', () => {
+                    console.log('Mesulo SDK disconnected');
+                });
+                
+                window.masulo.on('gameLaunched', (gameId) => {
+                    console.log(`Game launched: ${gameId}`);
+                });
+            } else {
+                // Retry after a short delay
+                setTimeout(setupStatusUpdates, 100);
+            }
+        }
+        
+        // Start checking for SDK initialization
+        setupStatusUpdates();
     </script>
 </body>
 </html>
