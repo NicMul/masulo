@@ -232,7 +232,7 @@
       
       this.socket.on('connect', () => {
         this.isConnected = true;
-        console.log('🚀 MESULO AI : connected');
+        console.log('🚀 Mesulo Ai connected!');
         this.updateStatus('connected');
         this.emit('connected');
         this.requestGames();

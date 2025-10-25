@@ -87,18 +87,41 @@ export function Chart({ data, color, type = 'line', showLegend = false, loading 
   const options = useMemo(() => {
 
     const chartOptions = JSON.parse(JSON.stringify(Options));
-    chartOptions.scales.y.ticks.callback = RoundTicks;
+    
+    // Ensure scales structure exists
+    if (!chartOptions.scales) {
+      chartOptions.scales = { x: {}, y: {} };
+    }
+    if (!chartOptions.scales.x) {
+      chartOptions.scales.x = {};
+    }
+    if (!chartOptions.scales.y) {
+      chartOptions.scales.y = {};
+    }
+    if (!chartOptions.scales.x.ticks) {
+      chartOptions.scales.x.ticks = {};
+    }
+    if (!chartOptions.scales.y.ticks) {
+      chartOptions.scales.y.ticks = {};
+    }
+    
+    // Set callback safely
+    if (chartOptions.scales.y.ticks) {
+      chartOptions.scales.y.ticks.callback = RoundTicks;
+    }
 
-    if (authContext.user.dark_mode){
-
-      chartOptions.scales.y.ticks.color = 'white';
-      chartOptions.scales.x.ticks.color = 'white';
-
+    if (authContext?.user?.dark_mode){
+      if (chartOptions.scales.y.ticks) {
+        chartOptions.scales.y.ticks.color = 'white';
+      }
+      if (chartOptions.scales.x.ticks) {
+        chartOptions.scales.x.ticks.color = 'white';
+      }
     }
 
     return chartOptions;
 
-  }, [authContext.user.dark_mode]);
+  }, [authContext?.user?.dark_mode]);
 
   // chart is loading
   if (loading){
@@ -129,7 +152,7 @@ export function Chart({ data, color, type = 'line', showLegend = false, loading 
       { showLegend && <ul className='overflow-hidden mb-4'>{ legend }</ul> }
 
       <div className='h-[13.5em] m-h-[13.5em] cursor-pointer'>
-        <ChartComponent data={ coloredChartData || chartData } options={ options } />
+        <ChartComponent data={ coloredChartData || chartData } options={ JSON.parse(JSON.stringify(options)) } />
       </div>
 
     </div>
@@ -155,21 +178,30 @@ function setChartColors({ chartData, color, type }){
 
     colors.push(Colors[color]);
 
-    chartData?.datasets?.forEach((ds, i) => {
+  }
 
-      ds.borderColor = colors[i].borderColor;
-      ds.backgroundColor = colors[i].backgroundColor[0];
+  // Apply colors to datasets
+  chartData?.datasets?.forEach((ds, i) => {
+
+    // Ensure we have a color for this dataset, cycle through available colors
+    const colorIndex = i % colors.length;
+    const currentColor = colors[colorIndex];
+
+    // Only apply colors if the color object exists
+    if (currentColor) {
+      ds.borderColor = currentColor.borderColor;
+      ds.backgroundColor = currentColor.backgroundColor[0];
 
       if (type === 'line'){
 
-        ds.pointBackgroundColor = colors[i].pointBackgroundColor;
-        ds.backgroundColor = colors[i].transparentColor;
-        ds.pointRadius = colors[i].pointRadius;
-        ds.pointHoverRadius = colors[i].pointHoverRadius;
-        ds.pointBorderWidth = colors[i].pointBorderWidth;
-        ds.pointBackgroundColor = colors[i].pointBackgroundColor;
-        ds.pointHoverBackgroundColor = colors[i].pointHoverBackgroundColor;
-        ds.pointHoverBorderColor = colors[i].pointHoverBorderColor;
+        ds.pointBackgroundColor = currentColor.pointBackgroundColor;
+        ds.backgroundColor = currentColor.transparentColor;
+        ds.pointRadius = currentColor.pointRadius;
+        ds.pointHoverRadius = currentColor.pointHoverRadius;
+        ds.pointBorderWidth = currentColor.pointBorderWidth;
+        ds.pointBackgroundColor = currentColor.pointBackgroundColor;
+        ds.pointHoverBackgroundColor = currentColor.pointHoverBackgroundColor;
+        ds.pointHoverBorderColor = currentColor.pointHoverBorderColor;
 
       }
 
@@ -185,11 +217,11 @@ function setChartColors({ chartData, color, type }){
 
         ds.borderColor = '#FFFFFF';
         ds.hoverBorderColor = 'transparent';
-        ds.backgroundColor = colors[i].backgroundColor;
+        ds.backgroundColor = currentColor.backgroundColor;
 
       }
-    });
-  }
+    }
+  });
 }
 
 function createLegend({ chartData, type, ...props }){
