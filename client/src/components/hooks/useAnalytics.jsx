@@ -277,12 +277,14 @@ export function useAnalytics(dateRange = '7d') {
 
   const topGames = useMemo(() => {
     if (!data?.topGames || !Array.isArray(data.topGames)) return [];
+
+    console.log('Top Games:', data.topGames);
     
     return data.topGames
       .sort((a, b) => (b.count || 0) - (a.count || 0))
       .slice(0, 10)
       .map(item => ({
-        game_id: item._id?.game_id || 'Unknown',
+        game_id: item._id || item._id?.gameId || 'Unknown',
         total_events: item.count || 0,
         unique_sessions: item.unique_session_count || 0,
         last_seen: item.last_seen ? new Date(item.last_seen).toLocaleDateString() : 'N/A'

@@ -42,12 +42,11 @@ export function Dashboard({ t }){
   }, [dateRange]);
 
   useEffect(() => {
-    const title = t('dashboard.message.title');
-    const description = t('dashboard.message.text');
     
     viewContext.notification({ 
-      title: typeof title === 'string' ? title : 'Welcome to Analytics Dashboard',
-      description: typeof description === 'string' ? description : 'Track your casino lobby engagement metrics',
+      variant: 'success',
+      title: 'Welcome to the Mesulo Analytics Dashboard',
+      description: 'Track your game relatedasset engagement metrics and improve your casino lobby performance',
     });
   }, []);
 
@@ -180,7 +179,7 @@ export function Dashboard({ t }){
       </Row>
 
       <Row>
-        <Card title="Top Performing Games" loading={loading}>
+        <Card title="Top Performing Games Assets" loading={loading}>
           <Table
             searchable
             data={ topGames }
