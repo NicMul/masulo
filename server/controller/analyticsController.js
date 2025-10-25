@@ -85,7 +85,18 @@ exports.getDashboardData = async function(req, res){
     const { start_date, end_date } = req.query;
     
     // Run all aggregations in parallel for better performance
-    const [stats, eventTypes, assetTypes, topGames, recentEvents] = await Promise.all([
+    const [
+      stats, 
+      eventTypes, 
+      assetTypes, 
+      topGames, 
+      recentEvents,
+      assetPerformance,
+      conversionMetrics,
+      engagementQuality,
+      realTimeMetrics,
+      videoMetrics
+    ] = await Promise.all([
       analytics.aggregate({ 
         groupBy: ['event_type'], 
         start_date, 
@@ -104,8 +115,7 @@ exports.getDashboardData = async function(req, res){
         end_date,
         user_id: req.user
       }),
-      analytics.aggregate({ 
-        groupBy: ['game_id'], 
+      analytics.getTopGames({ 
         start_date, 
         end_date,
         limit: 10,
@@ -117,16 +127,44 @@ exports.getDashboardData = async function(req, res){
         start_date,
         end_date,
         user_id: req.user
+      }),
+      analytics.getAssetPerformanceComparison({ 
+        user_id: req.user, 
+        start_date, 
+        end_date 
+      }),
+      analytics.getConversionMetrics({ 
+        user_id: req.user, 
+        start_date, 
+        end_date 
+      }),
+      analytics.getEngagementQuality({ 
+        user_id: req.user, 
+        start_date, 
+        end_date 
+      }),
+      analytics.getRealTimeMetrics({ 
+        user_id: req.user 
+      }),
+      analytics.getVideoMetrics({ 
+        user_id: req.user, 
+        start_date, 
+        end_date 
       })
     ]);
     
     return res.status(200).send({ data: {
-        stats: stats || [],
-        eventTypes: eventTypes || [],
-        assetTypes: assetTypes || [],
-        topGames: topGames || [],
-        recentEvents: recentEvents || []
-      }});
+      stats: stats || [],
+      eventTypes: eventTypes || [],
+      assetTypes: assetTypes || [],
+      topGames: topGames || [],
+      recentEvents: recentEvents || [],
+      assetPerformance: assetPerformance || [],
+      conversionMetrics: conversionMetrics || {},
+      engagementQuality: engagementQuality || {},
+      realTimeMetrics: realTimeMetrics || {},
+      videoMetrics: videoMetrics || {}
+    }});
     
   } catch (error) {
     console.error('Error fetching dashboard data:', error);

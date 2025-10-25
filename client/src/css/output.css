@@ -759,6 +759,9 @@ table tbody tr:last-child td {
 .z-20 {
   z-index: 20;
 }
+.col-span-3 {
+  grid-column: span 3 / span 3;
+}
 .float-left {
   float: left;
 }

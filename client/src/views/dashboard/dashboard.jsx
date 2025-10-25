@@ -11,18 +11,29 @@ import { useAnalytics } from 'components/hooks/useAnalytics';
 
 export function Dashboard({ t }){
 
-  // context
+
   const viewContext = useContext(ViewContext);
-  
-  // state
+
   const [dateRange, setDateRange] = useState('7d');
   const [debouncedDateRange, setDebouncedDateRange] = useState('7d');
 
-  // Use real analytics data with debounced date range
-  const { stats, eventTypesChart, assetTypesChart, topGames, recentEvents, loading, refresh, isRefreshing } = useAnalytics(debouncedDateRange);
+  const { 
+    stats, 
+    eventTypesChart, 
+    assetTypesChart, 
+    topGames, 
+    recentEvents, 
+    assetPerformanceChart,
+    conversionMetrics,
+    engagementQuality,
+    realTimeEngagement,
+    videoMetrics,
+    loading, 
+    refresh, 
+    isRefreshing 
+  } = useAnalytics(debouncedDateRange);
 
-  // Debounce date range changes to prevent rapid API calls
-  useEffect(() => {
+  useEffect(() => { 
     const timer = setTimeout(() => {
       setDebouncedDateRange(dateRange);
     }, 300);
@@ -30,39 +41,50 @@ export function Dashboard({ t }){
     return () => clearTimeout(timer);
   }, [dateRange]);
 
-  // show welcome message
   useEffect(() => {
+    const title = t('dashboard.message.title');
+    const description = t('dashboard.message.text');
+    
     viewContext.notification({ 
-      title: t('dashboard.message.title'),
-      description: t('dashboard.message.text'),
+      title: typeof title === 'string' ? title : 'Welcome to Analytics Dashboard',
+      description: typeof description === 'string' ? description : 'Track your casino lobby engagement metrics',
     });
   }, []);
 
   return (
     <Animate type='pop'>
 
-      {/* Date Range Filter */}
       <div className="mb-6 flex justify-between items-center">
         <div className="flex items-center gap-2">
           <h1 className="text-2xl font-bold">Analytics Dashboard</h1>
           {loading && !isRefreshing && (
             <span className="text-sm text-gray-500">Updating...</span>
           )}
+          {realTimeEngagement && (
+            <div className="flex items-center gap-2 ml-4">
+              <div className="flex items-center gap-1 px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span>{realTimeEngagement.activeSessions5Min} active</span>
+              </div>
+              <span className="text-xs text-gray-500">
+                {realTimeEngagement.eventsLast5Min} events (5m)
+              </span>
+            </div>
+          )}
         </div>
         
         <div className="flex gap-3 items-center">
-          {/* Refresh Button */}
           <Button 
-            onClick={refresh}
+            action={refresh}
             loading={isRefreshing}
-            icon="refresh"
+            icon="rotate-cw"
             variant="outline"
           >
             Refresh
           </Button>
           
-          {/* Date Range Selector */}
           <Select 
+            name="dateRange"
             value={dateRange}
             onValueChange={setDateRange}
             options={[
@@ -76,7 +98,6 @@ export function Dashboard({ t }){
         </div>
       </div>
 
-      {/* Stats Cards */}
       <Grid max={ 4 }>
         { stats.map(stat => (
           <Card key={ stat.label } loading={ stat.loading }>
@@ -85,7 +106,6 @@ export function Dashboard({ t }){
         ))}
       </Grid>
 
-      {/* Charts Row */}
       <Row>
         <Card title="Event Types Distribution" loading={loading}>
           <Chart
@@ -105,12 +125,60 @@ export function Dashboard({ t }){
             showLegend
             loading={ loading }
             data={ assetTypesChart }
-            color={['blue', 'red', 'green', 'purple', 'orange']}
+            color={['blue', 'red', 'green', 'purple']}
           />
         </Card> 
       </Row>
 
-      {/* Tables Row */}
+      {assetPerformanceChart.labels.length > 0 && (
+        <Row>
+          <Card title="Asset Performance Comparison (Default vs Theme vs Promo vs Current)" loading={loading}>
+            <Chart
+              type='bar'
+              showLegend
+              loading={ loading }
+              data={ assetPerformanceChart }
+              color={['blue', 'green', 'purple']}
+            />
+          </Card> 
+        </Row>
+      )}
+
+      {conversionMetrics.length > 0 && (
+        <Row>
+          <div className="grid grid-cols-3 gap-4">
+            {conversionMetrics.map(metric => (
+              <Card key={metric.label} loading={metric.loading}>
+                <Stat {...metric} />
+              </Card>
+            ))}
+          </div>
+        </Row>
+      )}
+
+      <Row>
+        <Card title="Video Performance" loading={loading}>
+          <Chart
+            type='doughnut'
+            showLegend
+            loading={ loading }
+            data={ videoMetrics }
+            color={['blue', 'green', 'purple']}
+          />
+        </Card>
+        <Card title="Engagement Quality" loading={loading}>
+          <div className="grid grid-cols-3 gap-4">
+            {engagementQuality.length > 0 ? engagementQuality.map(metric => (
+              <Stat key={metric.label} {...metric} />
+            )) : (
+              <div className="col-span-3 text-center text-gray-500 py-4">
+                No engagement quality data available
+              </div>
+            )}
+          </div>
+        </Card>
+      </Row>
+
       <Row>
         <Card title="Top Performing Games" loading={loading}>
           <Table

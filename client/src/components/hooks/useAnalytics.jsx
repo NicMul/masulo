@@ -13,7 +13,6 @@ export function useAnalytics(dateRange = '7d') {
   const [refreshKey, setRefreshKey] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
   
-  // Calculate date range
   const getDateRange = useCallback((range) => {
     const now = new Date();
     const startDate = new Date();
@@ -45,7 +44,6 @@ export function useAnalytics(dateRange = '7d') {
 
   const dateParams = useMemo(() => getDateRange(dateRange), [dateRange, getDateRange]);
   
-  // Single API call with refresh key for cache busting
   const url = useMemo(() => {
     if (dateParams) {
       return `/api/analytics/dashboard?start_date=${dateParams.start_date}&end_date=${dateParams.end_date}&_refresh=${refreshKey}`;
@@ -54,17 +52,13 @@ export function useAnalytics(dateRange = '7d') {
   }, [dateParams, refreshKey]);
   
   const { data, loading } = useAPI(url);
-
-  console.log('Analytics data:', data, 'loading:', loading);
   
-  // Manual refresh function
   const refresh = useCallback(() => {
     setIsRefreshing(true);
     setRefreshKey(prev => prev + 1);
-    setTimeout(() => setIsRefreshing(false), 500);
+    setTimeout(() => setIsRefreshing(false), 300000); // Every 5 minutes
   }, []);
   
-  // Auto-refresh every 60 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       setRefreshKey(prev => prev + 1);
@@ -73,22 +67,18 @@ export function useAnalytics(dateRange = '7d') {
     return () => clearInterval(interval);
   }, []);
 
-  // Format stats data
   const stats = useMemo(() => {
     if (!data) return [];
     
-    // Fixed: Sum from eventTypes array, not data itself
     const totalEvents = data.eventTypes?.reduce((sum, item) => sum + (item.count || 0), 0) || 0;
     
     const uniqueSessions = data.recentEvents && Array.isArray(data.recentEvents) ? 
       [...new Set(data.recentEvents.map(e => e.session_id))].length : 0;
     
-    // Find most engaged asset type
     const mostEngagedAsset = data.assetTypes && Array.isArray(data.assetTypes) && data.assetTypes.length > 0 ? 
       data.assetTypes.reduce((max, item) => (item.count || 0) > max.count ? item : max, { count: 0, _id: { asset_type: 'N/A' } })
       : { count: 0, _id: { asset_type: 'N/A' } };
     
-    // Calculate average hover duration
     const hoverEvents = data.recentEvents && Array.isArray(data.recentEvents) ? 
       data.recentEvents.filter(e => e.event_type === 'hover' && e.metadata?.hover_duration)
       : [];
@@ -101,39 +91,157 @@ export function useAnalytics(dateRange = '7d') {
         label: 'Total Events',
         value: totalEvents.toLocaleString(),
         icon: 'activity',
-        color: 'blue',
         loading: loading || isRefreshing
       },
       {
         label: 'Unique Sessions',
         value: uniqueSessions.toLocaleString(),
         icon: 'users',
-        color: 'green',
         loading: loading || isRefreshing
       },
       {
         label: 'Most Engaged Asset',
         value: mostEngagedAsset._id?.asset_type?.replace('Image', '').replace('Video', '') || 'N/A',
         icon: 'star',
-        color: 'purple',
         loading: loading || isRefreshing
       },
       {
         label: 'Avg Hover Duration',
         value: `${avgHoverDuration}ms`,
         icon: 'clock',
-        color: 'orange',
         loading: loading || isRefreshing
       }
     ];
   }, [data, loading, isRefreshing]);
 
-  // Format event types chart data
+  const assetPerformanceChart = useMemo(() => {
+    if (!data?.assetPerformance || !Array.isArray(data.assetPerformance)) return { labels: [], datasets: [] };
+    
+    const labels = data.assetPerformance.map(item => 
+      item._id?.charAt(0).toUpperCase() + item._id?.slice(1) || 'Unknown'
+    );
+    
+    const datasets = [
+      {
+        label: 'Total Interactions',
+        data: data.assetPerformance.map(item => item.total_interactions || 0),
+        backgroundColor: '#3B82F6',
+        borderColor: '#3B82F6'
+      },
+      {
+        label: 'CTR (%)',
+        data: data.assetPerformance.map(item => Math.round(item.ctr || 0)),
+        backgroundColor: '#10B981',
+        borderColor: '#10B981'
+      },
+      {
+        label: 'Video Completion Rate (%)',
+        data: data.assetPerformance.map(item => Math.round(item.video_completion_rate || 0)),
+        backgroundColor: '#8B5CF6',
+        borderColor: '#8B5CF6'
+      }
+    ];
+
+    return {
+      labels,
+      datasets
+    };
+  }, [data]);
+
+  const conversionMetrics = useMemo(() => {
+    if (!data?.conversionMetrics) return [];
+    
+    const metrics = data.conversionMetrics;
+    
+    return [
+      {
+        label: 'Click-Through Rate',
+        value: `${Math.round(metrics.ctr || 0)}%`,
+        icon: 'mouse-pointer-2',
+        loading: loading || isRefreshing
+      },
+      {
+        label: 'Hover-to-Click Rate',
+        value: `${Math.round(metrics.hover_to_click_rate || 0)}%`,
+        icon: 'target',
+        loading: loading || isRefreshing
+      },
+      {
+        label: 'Video Completion Rate',
+        value: `${Math.round(metrics.video_completion_rate || 0)}%`,
+        icon: 'play-circle',
+        loading: loading || isRefreshing
+      }
+    ];
+  }, [data, loading, isRefreshing]);
+
+  const engagementQuality = useMemo(() => {
+    if (!data?.engagementQuality) return [];
+    
+    const quality = data.engagementQuality;
+    
+    return [
+      {
+        label: 'Session Depth',
+        value: Math.round(quality.avg_interactions_per_session || 0).toString(),
+        icon: 'layers-3',
+        loading: loading || isRefreshing
+      },
+      {
+        label: 'Bounce Rate',
+        value: `${Math.round(quality.bounce_rate || 0)}%`,
+        icon: 'trending-down',
+        loading: loading || isRefreshing
+      },
+      {
+        label: 'Repeat Interaction Rate',
+        value: `${Math.round(quality.repeat_interaction_rate || 0)}%`,
+        icon: 'repeat-2',
+        loading: loading || isRefreshing
+      }
+    ];
+  }, [data, loading, isRefreshing]);
+
+  const realTimeEngagement = useMemo(() => {
+    if (!data?.realTimeMetrics) return null;
+    
+    const realTime = data.realTimeMetrics;
+    
+    return {
+      activeSessions5Min: realTime.active_sessions_5_min_count || 0,
+      activeSessions15Min: realTime.active_sessions_15_min_count || 0,
+      eventsLast5Min: realTime.events_last_5_min || 0,
+      eventsLast15Min: realTime.events_last_15_min || 0,
+      loading: loading || isRefreshing
+    };
+  }, [data, loading, isRefreshing]);
+
+  const videoMetrics = useMemo(() => {
+    if (!data?.videoMetrics) return { labels: [], datasets: [] };
+    
+    const video = data.videoMetrics;
+    
+    return {
+      labels: ['Video Plays', 'Video Pauses', 'Video Ends', 'Video Hovers'],
+      datasets: [{
+        label: 'Video Events',
+        data: [
+          video.video_plays || 0,
+          video.video_pauses || 0,
+          video.video_ends || 0,
+          
+          video.video_hovers || 0
+        ],
+        backgroundColor: ['#3B82F6', '#F59E0B', '#10B981', '#8B5CF6']
+      }]
+    };
+  }, [data]);
+
   const eventTypesChart = useMemo(() => {
     if (!data?.eventTypes || !Array.isArray(data.eventTypes)) return { labels: [], datasets: [] };
     
     const eventTypes = ['hover', 'click', 'touch', 'video_play', 'video_pause', 'video_ended', 'video_hover'];
-    const colors = ['blue', 'red', 'green', 'purple', 'purple', 'purple', 'purple'];
+    const colors = ['blue', 'red', 'green', 'purple', 'orange', 'purple', 'pink'];
     
     const datasets = eventTypes.map((eventType, index) => {
       const eventData = data.eventTypes.find(item => item._id?.event_type === eventType);
@@ -151,7 +259,6 @@ export function useAnalytics(dateRange = '7d') {
     };
   }, [data]);
 
-  // Format asset types chart data
   const assetTypesChart = useMemo(() => {
     if (!data?.assetTypes || !Array.isArray(data.assetTypes)) return { labels: [], datasets: [] };
     
@@ -170,7 +277,6 @@ export function useAnalytics(dateRange = '7d') {
     };
   }, [data]);
 
-  // Format top games table data
   const topGames = useMemo(() => {
     if (!data?.topGames || !Array.isArray(data.topGames)) return [];
     
@@ -185,7 +291,6 @@ export function useAnalytics(dateRange = '7d') {
       }));
   }, [data]);
 
-  // Format recent events table data
   const recentEvents = useMemo(() => {
     if (!data?.recentEvents || !Array.isArray(data.recentEvents)) return [];
     
@@ -203,6 +308,11 @@ export function useAnalytics(dateRange = '7d') {
     assetTypesChart,
     topGames,
     recentEvents,
+    assetPerformanceChart,
+    conversionMetrics,
+    engagementQuality,
+    realTimeEngagement,
+    videoMetrics,
     loading: loading || isRefreshing,
     refresh,
     isRefreshing

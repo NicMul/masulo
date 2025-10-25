@@ -26,7 +26,7 @@ const SelectRoot = SelectPrimitive.Root
 const SelectGroup = SelectPrimitive.Group
 const SelectValue = SelectPrimitive.Value
 
-const Select = forwardRef(({ name, options, onChange, defaultValue, placeholder, className, ...props }, ref) => {
+const Select = forwardRef(({ name, options, onChange, onValueChange, defaultValue, value, placeholder, className, ...props }, ref) => {
 
   const { t } = useTranslation();
 
@@ -49,8 +49,17 @@ const Select = forwardRef(({ name, options, onChange, defaultValue, placeholder,
     return acc;
   }, {}) : {};
 
+  // Handle both onChange and onValueChange for compatibility
+  const handleValueChange = (value) => {
+    if (onValueChange) {
+      onValueChange(value);
+    } else if (onChange) {
+      onChange({ target: { name, value }, type: 'change' });
+    }
+  };
+
   return (
-    <SelectRoot {...props  } defaultValue={ defaultValue } onValueChange={ value => onChange({ target: { name, value }, type: 'change' })}>
+    <SelectRoot {...props} value={value} defaultValue={defaultValue} onValueChange={handleValueChange}>
 
       <SelectTrigger valid={ !props['aria-invalid'] } className='flex h-10 w-full items-center justify-between rounded-md border border-slate-200 bg-white px-3 py-2 ring-offset-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-300 focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-800 dark:bg-slate-900 dark:ring-offset-slate-950 dark:placeholder:text-slate-400 dark:focus:ring-slate-300'>
         <SelectValue placeholder={ placeholder || t('global.form.select.placeholder') }/>

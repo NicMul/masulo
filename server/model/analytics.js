@@ -13,7 +13,7 @@ const AnalyticsSchema = new Schema({
   session_id: { type: String, required: true },
   metadata: { type: Object },
   user_id: { type: String, required: true },
-  timestamp: { type: Date, required: true },
+  timestamp: { type: Date, required: true }, 
   variant_id: { type: String, default: null }
 
 });
@@ -143,6 +143,407 @@ exports.getByGame = async function(game_id, user_id, start_date, end_date){
       }
     },
     { $sort: { count: -1 } }
+  ];
+
+  const data = await Analytics.aggregate(pipeline);
+  return data;
+
+}
+
+/*
+* analytics.getAssetPerformanceComparison()
+* compare performance of different asset types (default/theme/promo/current)
+*/
+
+exports.getAssetPerformanceComparison = async function({ user_id, start_date, end_date }){
+
+  const matchQuery = { user_id };
+  
+  if (start_date || end_date) {
+    matchQuery.timestamp = {};
+    if (start_date) matchQuery.timestamp.$gte = new Date(start_date);
+    if (end_date) matchQuery.timestamp.$lte = new Date(end_date);
+  }
+
+  const pipeline = [
+    { $match: matchQuery },
+    {
+      $addFields: {
+        publishedType: {
+          $cond: {
+            if: { $regexMatch: { input: "$asset_type", regex: /^default/i } },
+            then: "default",
+            else: {
+              $cond: {
+                if: { $regexMatch: { input: "$asset_type", regex: /^theme/i } },
+                then: "theme",
+                else: {
+                  $cond: {
+                    if: { $regexMatch: { input: "$asset_type", regex: /^promo/i } },
+                    then: "promo",
+                    else: {
+                      $cond: {
+                        if: { $regexMatch: { input: "$asset_type", regex: /^current/i } },
+                        then: "current",
+                        else: "unknown"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      $group: {
+        _id: "$publishedType",
+        total_interactions: { $sum: 1 },
+        unique_sessions: { $addToSet: "$session_id" },
+        clicks: { $sum: { $cond: [{ $eq: ["$event_type", "click"] }, 1, 0] } },
+        hovers: { $sum: { $cond: [{ $eq: ["$event_type", "hover"] }, 1, 0] } },
+        video_plays: { $sum: { $cond: [{ $eq: ["$event_type", "video_play"] }, 1, 0] } },
+        video_ends: { $sum: { $cond: [{ $eq: ["$event_type", "video_ended"] }, 1, 0] } },
+        avg_hover_duration: { $avg: "$metadata.hover_duration" },
+        first_seen: { $min: "$timestamp" },
+        last_seen: { $max: "$timestamp" }
+      }
+    },
+    {
+      $addFields: {
+        unique_session_count: { $size: "$unique_sessions" },
+        ctr: {
+          $cond: {
+            if: { $gt: ["$total_interactions", 0] },
+            then: { $multiply: [{ $divide: ["$clicks", "$total_interactions"] }, 100] },
+            else: 0
+          }
+        },
+        hover_to_click_rate: {
+          $cond: {
+            if: { $gt: ["$hovers", 0] },
+            then: { $multiply: [{ $divide: ["$clicks", "$hovers"] }, 100] },
+            else: 0
+          }
+        },
+        video_completion_rate: {
+          $cond: {
+            if: { $gt: ["$video_plays", 0] },
+            then: { $multiply: [{ $divide: ["$video_ends", "$video_plays"] }, 100] },
+            else: 0
+          }
+        }
+      }
+    },
+    { $sort: { total_interactions: -1 } }
+  ];
+
+  const data = await Analytics.aggregate(pipeline);
+  return data;
+
+}
+
+/*
+* analytics.getConversionMetrics()
+* calculate conversion metrics across all assets
+*/
+
+exports.getConversionMetrics = async function({ user_id, start_date, end_date }){
+
+  const matchQuery = { user_id };
+  
+  if (start_date || end_date) {
+    matchQuery.timestamp = {};
+    if (start_date) matchQuery.timestamp.$gte = new Date(start_date);
+    if (end_date) matchQuery.timestamp.$lte = new Date(end_date);
+  }
+
+  const pipeline = [
+    { $match: matchQuery },
+    {
+      $group: {
+        _id: null,
+        total_interactions: { $sum: 1 },
+        unique_sessions: { $addToSet: "$session_id" },
+        clicks: { $sum: { $cond: [{ $eq: ["$event_type", "click"] }, 1, 0] } },
+        hovers: { $sum: { $cond: [{ $eq: ["$event_type", "hover"] }, 1, 0] } },
+        touches: { $sum: { $cond: [{ $eq: ["$event_type", "touch"] }, 1, 0] } },
+        video_plays: { $sum: { $cond: [{ $eq: ["$event_type", "video_play"] }, 1, 0] } },
+        video_ends: { $sum: { $cond: [{ $eq: ["$event_type", "video_ended"] }, 1, 0] } },
+        avg_hover_duration: { $avg: "$metadata.hover_duration" }
+      }
+    },
+    {
+      $addFields: {
+        unique_session_count: { $size: "$unique_sessions" },
+        ctr: {
+          $cond: {
+            if: { $gt: ["$total_interactions", 0] },
+            then: { $multiply: [{ $divide: ["$clicks", "$total_interactions"] }, 100] },
+            else: 0
+          }
+        },
+        hover_to_click_rate: {
+          $cond: {
+            if: { $gt: ["$hovers", 0] },
+            then: { $multiply: [{ $divide: ["$clicks", "$hovers"] }, 100] },
+            else: 0
+          }
+        },
+        video_completion_rate: {
+          $cond: {
+            if: { $gt: ["$video_plays", 0] },
+            then: { $multiply: [{ $divide: ["$video_ends", "$video_plays"] }, 100] },
+            else: 0
+          }
+        },
+        video_play_rate: {
+          $cond: {
+            if: { $gt: [{ $add: ["$hovers", "$clicks"] }, 0] },
+            then: { $multiply: [{ $divide: ["$video_plays", { $add: ["$hovers", "$clicks"] }] }, 100] },
+            else: 0
+          }
+        }
+      }
+    }
+  ];
+
+  const data = await Analytics.aggregate(pipeline);
+  return data[0] || {};
+
+}
+
+/*
+* analytics.getEngagementQuality()
+* calculate engagement quality metrics
+*/
+
+exports.getEngagementQuality = async function({ user_id, start_date, end_date }){
+
+  const matchQuery = { user_id };
+  
+  if (start_date || end_date) {
+    matchQuery.timestamp = {};
+    if (start_date) matchQuery.timestamp.$gte = new Date(start_date);
+    if (end_date) matchQuery.timestamp.$lte = new Date(end_date);
+  }
+
+  const pipeline = [
+    { $match: matchQuery },
+    {
+      $group: {
+        _id: "$session_id",
+        interaction_count: { $sum: 1 },
+        unique_games: { $addToSet: "$game_id" },
+        max_timestamp: { $max: "$timestamp" },  // ✅ Accumulate first
+        min_timestamp: { $min: "$timestamp" }   // ✅ Accumulate first
+      }
+    },
+    {
+      $addFields: {  // ✅ Then calculate the difference
+        session_duration_ms: {
+          $subtract: ["$max_timestamp", "$min_timestamp"]
+        }
+      }
+    },
+    {
+      $group: {
+        _id: null,
+        total_sessions: { $sum: 1 },
+        single_interaction_sessions: { $sum: { $cond: [{ $eq: ["$interaction_count", 1] }, 1, 0] } },
+        multi_interaction_sessions: { $sum: { $cond: [{ $gt: ["$interaction_count", 1] }, 1, 0] } },
+        avg_interactions_per_session: { $avg: "$interaction_count" },
+        avg_session_duration_ms: { $avg: "$session_duration_ms" },
+        avg_games_per_session: { $avg: { $size: "$unique_games" } }
+      }
+    },
+    {
+      $addFields: {
+        bounce_rate: {
+          $cond: {
+            if: { $gt: ["$total_sessions", 0] },
+            then: { $multiply: [{ $divide: ["$single_interaction_sessions", "$total_sessions"] }, 100] },
+            else: 0
+          }
+        },
+        repeat_interaction_rate: {
+          $cond: {
+            if: { $gt: ["$total_sessions", 0] },
+            then: { $multiply: [{ $divide: ["$multi_interaction_sessions", "$total_sessions"] }, 100] },
+            else: 0
+          }
+        }
+      }
+    }
+  ];
+
+  const data = await Analytics.aggregate(pipeline);
+  return data[0] || {};
+
+}
+
+/*
+* analytics.getRealTimeMetrics()
+* get real-time engagement metrics (last 5 and 15 minutes)
+*/
+
+exports.getRealTimeMetrics = async function({ user_id }){
+
+  const now = new Date();
+  const fiveMinutesAgo = new Date(now.getTime() - 5 * 60 * 1000);
+  const fifteenMinutesAgo = new Date(now.getTime() - 15 * 60 * 1000);
+
+  const pipeline = [
+    {
+      $match: {
+        user_id,
+        timestamp: { $gte: fifteenMinutesAgo }
+      }
+    },
+    {
+      $addFields: {
+        is_last_5_min: { $gte: ["$timestamp", fiveMinutesAgo] },
+        is_last_15_min: { $gte: ["$timestamp", fifteenMinutesAgo] }
+      }
+    },
+    {
+      $group: {
+        _id: null,
+        events_last_5_min: { $sum: { $cond: ["$is_last_5_min", 1, 0] } },
+        events_last_15_min: { $sum: { $cond: ["$is_last_15_min", 1, 0] } },
+        active_sessions_5_min: { $addToSet: { $cond: ["$is_last_5_min", "$session_id", null] } },
+        active_sessions_15_min: { $addToSet: { $cond: ["$is_last_15_min", "$session_id", null] } },
+        trending_games_5_min: {
+          $push: {
+            $cond: ["$is_last_5_min", "$game_id", null]
+          }
+        }
+      }
+    },
+    {
+      $addFields: {
+        active_sessions_5_min_count: {
+          $size: {
+            $filter: {
+              input: "$active_sessions_5_min",
+              cond: { $ne: ["$$this", null] }
+            }
+          }
+        },
+        active_sessions_15_min_count: {
+          $size: {
+            $filter: {
+              input: "$active_sessions_15_min",
+              cond: { $ne: ["$$this", null] }
+            }
+          }
+        }
+      }
+    }
+  ];
+
+  const data = await Analytics.aggregate(pipeline);
+  return data[0] || {};
+
+}
+
+/*
+* analytics.getVideoMetrics()
+* get video-specific engagement metrics
+*/
+
+exports.getVideoMetrics = async function({ user_id, start_date, end_date }){
+
+  const matchQuery = { 
+    user_id,
+    event_type: { $in: ["video_play", "video_pause", "video_ended", "video_hover"] }
+  };
+  
+  if (start_date || end_date) {
+    matchQuery.timestamp = {};
+    if (start_date) matchQuery.timestamp.$gte = new Date(start_date);
+    if (end_date) matchQuery.timestamp.$lte = new Date(end_date);
+  }
+
+  const pipeline = [
+    { $match: matchQuery },
+    {
+      $group: {
+        _id: "$event_type",
+        count: { $sum: 1 },
+        avg_duration: { $avg: "$metadata.video_duration" },
+        avg_current_time: { $avg: "$metadata.video_current_time" }
+      }
+    },
+    {
+      $group: {
+        _id: null,
+        video_plays: { $sum: { $cond: [{ $eq: ["$_id", "video_play"] }, "$count", 0] } },
+        video_pauses: { $sum: { $cond: [{ $eq: ["$_id", "video_pause"] }, "$count", 0] } },
+        video_ends: { $sum: { $cond: [{ $eq: ["$_id", "video_ended"] }, "$count", 0] } },
+        video_hovers: { $sum: { $cond: [{ $eq: ["$_id", "video_hover"] }, "$count", 0] } },
+        avg_video_duration: { $avg: "$avg_duration" }
+      }
+    },
+    {
+      $addFields: {
+        video_completion_rate: {
+          $cond: {
+            if: { $gt: ["$video_plays", 0] },
+            then: { $multiply: [{ $divide: ["$video_ends", "$video_plays"] }, 100] },
+            else: 0
+          }
+        },
+        video_engagement_rate: {
+          $cond: {
+            if: { $gt: ["$video_plays", 0] },
+            then: { $multiply: [{ $divide: [{ $add: ["$video_pauses", "$video_ends"] }, "$video_plays"] }, 100] },
+            else: 0
+          }
+        }
+      }
+    }
+  ];
+
+  const data = await Analytics.aggregate(pipeline);
+  return data[0] || {};
+
+}
+
+/*
+* analytics.getTopGames()
+* get top performing games with session counts
+*/
+
+exports.getTopGames = async function({ user_id, start_date, end_date, limit = 10 }){
+
+  const matchQuery = { user_id };
+  
+  if (start_date || end_date) {
+    matchQuery.timestamp = {};
+    if (start_date) matchQuery.timestamp.$gte = new Date(start_date);
+    if (end_date) matchQuery.timestamp.$lte = new Date(end_date);
+  }
+
+  const pipeline = [
+    { $match: matchQuery },
+    { 
+      $group: { 
+        _id: '$game_id',
+        count: { $sum: 1 },
+        unique_sessions: { $addToSet: '$session_id' },
+        first_seen: { $min: '$timestamp' },
+        last_seen: { $max: '$timestamp' }
+      }
+    },
+    {
+      $addFields: {
+        unique_session_count: { $size: '$unique_sessions' }
+      }
+    },
+    { $sort: { count: -1 } },
+    { $limit: limit }
   ];
 
   const data = await Analytics.aggregate(pipeline);

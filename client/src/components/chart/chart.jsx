@@ -37,6 +37,7 @@ export function Chart({ data, color, type = 'line', showLegend = false, loading 
   // state
   const [legend, setLegend] = useState(null);
   const [chartData, setChartData] = useState(null);
+  const [coloredChartData, setColoredChartData] = useState(null);
 
   // update chart data
   useEffect(() => {
@@ -55,6 +56,16 @@ export function Chart({ data, color, type = 'line', showLegend = false, loading 
     }
   }, [chartData, color, type]);
 
+  // apply chart colors
+  useEffect(() => {
+    if (chartData) {
+      // Create a deep copy to avoid mutating the original data
+      const coloredData = JSON.parse(JSON.stringify(chartData));
+      setChartColors({ chartData: coloredData, type, color });
+      setColoredChartData(coloredData);
+    }
+  }, [chartData, type, color]);
+
   // chart types
   const charts = {
 
@@ -62,6 +73,7 @@ export function Chart({ data, color, type = 'line', showLegend = false, loading 
     bar: BarChart,
     pie: PieChart,
     donut: DonutChart,
+    doughnut: DonutChart,
     sparkline: SparkLineChart
 
   }
@@ -106,8 +118,6 @@ export function Chart({ data, color, type = 'line', showLegend = false, loading 
     );
   }
 
-  setChartColors({ chartData, type, color });
-
   // render the chart
   return (
     <div className='relative min-h-[10rem] dark:text-slate-50'>
@@ -116,7 +126,7 @@ export function Chart({ data, color, type = 'line', showLegend = false, loading 
       { showLegend && <ul className='overflow-hidden mb-4'>{ legend }</ul> }
 
       <div className='h-[13.5em] m-h-[13.5em] cursor-pointer'>
-        <ChartComponent data={ chartData } options={ options } />
+        <ChartComponent data={ coloredChartData || chartData } options={ options } />
       </div>
 
     </div>
