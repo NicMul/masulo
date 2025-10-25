@@ -18,7 +18,8 @@ export function Games({ t }){
   const [bulkAction, setBulkAction] = useState(false);
   const [selectedGames, setSelectedGames] = useState([]);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-
+  const [showViewGameMedia, setShowViewGameMedia] = useState(false);
+  
   // context
   const viewContext = useContext(ViewContext);
   const navigate = useNavigate();
@@ -213,6 +214,8 @@ export function Games({ t }){
         if (changes.theme !== undefined) {
           changeTypes.push('theme updated');
         }
+
+        setSelectedGames([]);
         
         viewContext.notification({
           description: `Games ${changeTypes.join(', ')} successfully`,
@@ -220,6 +223,7 @@ export function Games({ t }){
         });
       }
     } catch (error) {
+      setSelectedGames([]);
       viewContext.notification({
         description: 'Error updating games',
         variant: 'error'
@@ -250,8 +254,10 @@ export function Games({ t }){
         });
         
         setShowDeleteDialog(false);
+        setSelectedGames([]);
       }
     } catch (error) {
+      setSelectedGames([]);
       viewContext.notification({
         description: 'Error deleting games',
         variant: 'error'
@@ -260,6 +266,12 @@ export function Games({ t }){
   }, [selectedGames, bulkDeleteMutation, viewContext, t]);
 
   const actions = [
+    {
+      label: t('games.view.action'),
+      icon: 'eye',
+      globalOnly: false,
+      action: () => openViewGameMedia(true)
+    },
     {
       label: t('games.edit_game.action'),
       icon: 'pencil',
@@ -300,7 +312,7 @@ export function Games({ t }){
           />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button icon='sheet' text={ t('games.csv.action') } />
+              <Button color='primary' icon='sheet' text={ t('games.csv.action') } />
             </DropdownMenuTrigger>
             <DropdownMenuContent align='end'>
               <DropdownMenuItem>

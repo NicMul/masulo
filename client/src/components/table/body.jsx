@@ -1,20 +1,11 @@
-import { forwardRef, isValidElement, useState } from 'react';
-import { Badge, Checkbox, Icon, Link, cn, useTranslation, Dialog } from 'components/lib';
+import { forwardRef, isValidElement } from 'react';
+import { Badge, Checkbox, Icon, Link, cn, useTranslation } from 'components/lib';
 import { TableRow, TableCell } from './table'
 import { RowActions } from './actions';
 
 const TableBody = forwardRef(({ className, rows, show, hide, badge, translation, actions, editRowCallback, deleteRowCallback, select, selected, ...props }, ref) => {
   
   const { t } = useTranslation();
-  const [imagePreview, setImagePreview] = useState({ open: false, src: '', alt: '' });
-
-  const openImagePreview = (src, alt) => {
-    setImagePreview({ open: true, src, alt });
-  };
-
-  const closeImagePreview = () => {
-    setImagePreview({ open: false, src: '', alt: '' });
-  };
 
   return (
     <>
@@ -93,8 +84,7 @@ const TableBody = forwardRef(({ className, rows, show, hide, badge, translation,
                       <img 
                         src={ value } 
                         alt={ col }
-                        className="w-16 h-16 object-cover rounded border cursor-pointer hover:opacity-80 transition-opacity"
-                        onClick={() => openImagePreview(value, col)}
+                        className="w-16 h-16 object-cover rounded border"
                         onError={(e) => {
                           e.target.style.display = 'none';
                           e.target.nextSibling.style.display = 'inline';
@@ -147,21 +137,6 @@ const TableBody = forwardRef(({ className, rows, show, hide, badge, translation,
         </TableRow>
       }
     </tbody>
-    
-    {/* Image Preview Dialog */}
-    <Dialog
-      open={imagePreview.open}
-      onClose={closeImagePreview}
-      title=""
-    >
-      <div className="flex justify-center">
-        <img
-          src={imagePreview.src}
-          alt={imagePreview.alt}
-          className="w-full max-h-[80vh] object-contain rounded-lg"
-        />
-      </div>
-    </Dialog>
     </>
   )
 })
