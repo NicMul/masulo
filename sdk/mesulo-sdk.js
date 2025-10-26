@@ -508,7 +508,7 @@
           100% { transform: rotate(360deg); }
         }
         
-        .game-card .mesulo-button {
+        .game-card[data-masulo-tag="true"] .mesulo-button {
           transition: all 0.3s ease !important;
           backdrop-filter: blur(0px) !important;
           opacity: 0 !important;
@@ -516,7 +516,7 @@
           pointer-events: none !important;
         }
         
-        .game-card.video-active .mesulo-button {
+        .game-card[data-masulo-tag="true"].video-active .mesulo-button {
           background: rgba(0, 0, 0, 0.5) !important;
           border-color: #ffd700 !important;
           backdrop-filter: blur(2px) !important;
@@ -755,13 +755,12 @@
           videoUrl = game.defaultVideo;
         }
         
-        // Check if update is needed
-        const currentImg = container.querySelector('img');
-        const currentVideo = container.querySelector('video');
-        const needsUpdate = (currentImg && currentImg.src !== imageUrl) || 
-                            (currentVideo && currentVideo.poster !== imageUrl);
+        // Check if container has img element (needs conversion to video)
+        const imgElement = container.querySelector('img');
+        const videoElement = container.querySelector('video');
         
-        if (needsUpdate) {
+        // Always convert img to video, or update existing video if poster changed
+        if (imgElement || (videoElement && videoElement.poster !== imageUrl)) {
           containersToUpdate.push({ container, game, imageUrl, videoUrl });
         }
       });
