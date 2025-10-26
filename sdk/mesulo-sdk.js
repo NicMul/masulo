@@ -25,6 +25,10 @@
   
   const currentConfig = isDevelopment ? CONFIG.development : CONFIG.production;
   
+  // Debug logging helper (disabled for production)
+  const debugLog = isDevelopment ? console.log : () => {};
+  const debugError = isDevelopment ? console.error : () => {};
+  
   // Web Component for Masulo Game
   class MasuloGameElement extends HTMLElement {
     constructor() {
@@ -179,13 +183,13 @@
       const container = this.shadowRoot.querySelector('.container');
       const videoElement = this.shadowRoot.querySelector('.game-video');
       
-      console.log(`Device detection: isTouchDevice=${this.isTouchDevice}, ontouchstart=${'ontouchstart' in window}, maxTouchPoints=${navigator.maxTouchPoints}`);
+      debugLog(`Device detection: isTouchDevice=${this.isTouchDevice}, ontouchstart=${'ontouchstart' in window}, maxTouchPoints=${navigator.maxTouchPoints}`);
       
       if (this.isTouchDevice) {
-        console.log(`Setting up TOUCH events for game ${this.gameId}`);
+        debugLog(`Setting up TOUCH events for game ${this.gameId}`);
         this.setupMobileControls(container, videoElement);
       } else {
-        console.log(`Setting up MOUSE events for game ${this.gameId}`);
+        debugLog(`Setting up MOUSE events for game ${this.gameId}`);
         this.setupDesktopControls(container, videoElement);
       }
     }
@@ -193,12 +197,12 @@
     setupMobileControls(container, videoElement) {
       // Mobile behavior: Tap to toggle video
       container.addEventListener('touchend', (e) => {
-        console.log(`Touch end on game ${this.gameId}`);
+        debugLog(`Touch end on game ${this.gameId}`);
         
         // Check if tap was on the button - if so, let it navigate (don't toggle video)
         const button = this.querySelector('[slot="button"]');
         if (button && e.composedPath().includes(button)) {
-          console.log(`Tap was on button for game ${this.gameId}, allowing navigation`);
+          debugLog(`Tap was on button for game ${this.gameId}, allowing navigation`);
           return; // Let button handle the navigation
         }
         
@@ -208,11 +212,11 @@
         
         if (this.isPlaying) {
           // Stop video and hide button
-          console.log(`Stopping video for game ${this.gameId}, hiding button`);
+          debugLog(`Stopping video for game ${this.gameId}, hiding button`);
           this.stopVideo(true); // true = hide button
         } else {
           // Start video - deactivate any other playing video first
-          console.log(`Starting video for game ${this.gameId}`);
+          debugLog(`Starting video for game ${this.gameId}`);
           if (this.sdk) {
             this.sdk.deactivateAllVideos(true, false); // Hide other video buttons
           }
@@ -224,12 +228,12 @@
     setupDesktopControls(container, videoElement) {
       // Desktop behavior: Click on video area (not button) to toggle
       container.addEventListener('click', (e) => {
-        console.log(`Click on game ${this.gameId}`);
+        debugLog(`Click on game ${this.gameId}`);
         
         // Check if click was on the button - if so, let it navigate
         const button = this.querySelector('[slot="button"]');
         if (button && e.composedPath().includes(button)) {
-          console.log(`Click was on button for game ${this.gameId}, allowing navigation`);
+          debugLog(`Click was on button for game ${this.gameId}, allowing navigation`);
           return; // Let button handle the navigation
         }
         
@@ -238,10 +242,10 @@
         e.stopPropagation();
         
         if (this.isPlaying) {
-          console.log(`Stopping video for game ${this.gameId}`);
+          debugLog(`Stopping video for game ${this.gameId}`);
           this.stopVideo(true); // Hide button when stopping
         } else {
-          console.log(`Starting video for game ${this.gameId}`);
+          debugLog(`Starting video for game ${this.gameId}`);
           if (this.sdk) {
             this.sdk.deactivateAllVideos(true, false);
           }
@@ -321,11 +325,11 @@
       const videoElement = this.shadowRoot.querySelector('.game-video');
       
       if (!videoElement.src) {
-        console.log(`No video source for game ${this.gameId}`);
+        debugLog(`No video source for game ${this.gameId}`);
         return;
       }
       
-      console.log(`Playing video for game ${this.gameId}`);
+      debugLog(`Playing video for game ${this.gameId}`);
       
       // Register this as the active video
       if (this.sdk) {
@@ -336,7 +340,7 @@
       container.classList.add('video-active');
       
       videoElement.play().catch(err => {
-        console.error(`Error playing video for game ${this.gameId}:`, err);
+        debugError(`Error playing video for game ${this.gameId}:`, err);
         this.isPlaying = false;
         container.classList.remove('video-active');
       });
@@ -346,7 +350,7 @@
       const container = this.shadowRoot.querySelector('.container');
       const videoElement = this.shadowRoot.querySelector('.game-video');
       
-      console.log(`Stopping video for game ${this.gameId}, hideButton=${hideButton}`);
+      debugLog(`Stopping video for game ${this.gameId}, hideButton=${hideButton}`);
       
       this.isPlaying = false;
       videoElement.pause();
@@ -360,7 +364,7 @@
       const container = this.shadowRoot.querySelector('.container');
       const videoElement = this.shadowRoot.querySelector('.game-video');
       
-      console.log(`Deactivating game ${this.gameId}, hideButton=${hideButton}, forceHideButton=${forceHideButton}`);
+      debugLog(`Deactivating game ${this.gameId}, hideButton=${hideButton}, forceHideButton=${forceHideButton}`);
       
       this.isPlaying = false;
       videoElement.pause();
@@ -412,16 +416,16 @@
     
     testVideo() {
       const videoElement = this.shadowRoot.querySelector('.game-video');
-      console.log('Video element:', videoElement);
-      console.log('Video src:', videoElement?.src);
-      console.log('Is playing:', this.isPlaying);
-      console.log('Game ID:', this.gameId);
+      debugLog('Video element:', videoElement);
+      debugLog('Video src:', videoElement?.src);
+      debugLog('Is playing:', this.isPlaying);
+      debugLog('Game ID:', this.gameId);
       
       if (videoElement && videoElement.src) {
-        console.log('Testing video playback...');
+        debugLog('Testing video playback...');
         this.playVideo();
       } else {
-        console.log('No video source available');
+        debugLog('No video source available');
       }
     }
   }
@@ -533,26 +537,26 @@
     waitForSocketIO() {
       // Check if Socket.IO is already loaded
       if (typeof io !== 'undefined') {
-        console.log('Socket.IO detected, connecting...');
+        debugLog('Socket.IO detected, connecting...');
         this.connect();
         return;
       }
       
       // Dynamically load Socket.IO from Mesulo CDN
-      console.log('Loading Socket.IO from Mesulo CDN...');
+      debugLog('Loading Socket.IO from Mesulo CDN...');
       
       const script = document.createElement('script');
       script.src = `${currentConfig.cdnUrl}/socket.io.min.js`;
       script.async = true;
       
       script.onload = () => {
-        console.log('Socket.IO loaded successfully, connecting...');
+        debugLog('Socket.IO loaded successfully, connecting...');
         this.connect();
       };
       
       script.onerror = () => {
-        console.error('Failed to load Socket.IO from Mesulo CDN');
-        console.error('Please check your internet connection or contact support');
+        debugError('Failed to load Socket.IO from Mesulo CDN');
+        debugError('Please check your internet connection or contact support');
         this.updateStatus('disconnected');
       };
       
@@ -567,8 +571,8 @@
       
       // Safety check for Socket.IO
       if (typeof io === 'undefined') {
-        console.error('Socket.IO (io) is not defined. Cannot connect.');
-        console.error('Socket.IO should have been auto-loaded from Mesulo CDN. Please check your internet connection.');
+        debugError('Socket.IO (io) is not defined. Cannot connect.');
+        debugError('Socket.IO should have been auto-loaded from Mesulo CDN. Please check your internet connection.');
         this.updateStatus('disconnected');
         return;
       }
@@ -586,32 +590,34 @@
         });
         
         this.socket.on('connect', () => {
-          console.log('SDK connected to server');
+          debugLog('SDK connected to server');
           this.isConnected = true;
           this.updateStatus('connected');
           this.emit('connected');
+
+          this.requestGames();
           
           // Wait 2 seconds before requesting games
-          setTimeout(() => {
-            this.requestGames();
-          }, 2000);
+          // setTimeout(() => {
+            
+          // }, 2000);
         });
         
         this.socket.on('disconnect', (reason) => {
-          console.log('SDK disconnected:', reason);
+          debugLog('SDK disconnected:', reason);
           this.isConnected = false;
           this.updateStatus('disconnected');
           this.emit('disconnected', { reason });
         });
         
         this.socket.on('connect_error', (error) => {
-          console.error('SDK connection error:', error);
+          debugError('SDK connection error:', error);
           this.updateStatus('disconnected');
           this.emit('error', { type: 'connection', error });
         });
         
         this.socket.on('games-updated', (data) => {
-          console.log('Received game update:', data);
+          debugLog('Received game update:', data);
           this.emit('game-updated', data);
           if (data.games) {
             this.updateSpecificGames(data.games);
@@ -619,14 +625,14 @@
         });
         
         this.socket.on('games-response', (data) => {
-          console.log('Received initial games data');
+          debugLog('Received initial games data');
           if (data.games) {
             this.updateSpecificGames(data.games);
           }
         });
         
       } catch (error) {
-        console.error('Socket initialization error:', error);
+        debugError('Socket initialization error:', error);
         this.updateStatus('disconnected');
       }
     }
@@ -647,7 +653,7 @@
         // If user scrolls more than threshold, mark as scrolling and deactivate video
         if (deltaY > this.SCROLL_THRESHOLD && !this.isScrolling) {
           this.isScrolling = true;
-          console.log(`Scroll detected (${deltaY}px), deactivating video`);
+          debugLog(`Scroll detected (${deltaY}px), deactivating video`);
           // When scrolling >30px, hide button and stop video (full deactivation)
           this.deactivateAllVideos(true, true);
         }
@@ -692,11 +698,11 @@
         .map(el => el.getAttribute('data-masulo-game-id'))
         .filter(Boolean);
       
-      console.log('Found tagged game elements:', taggedGameElements.length);
-      console.log('Game IDs to request:', taggedGameIds);
+      debugLog('Found tagged game elements:', taggedGameElements.length);
+      debugLog('Game IDs to request:', taggedGameIds);
       
       if (taggedGameIds.length === 0) {
-        console.log('No tagged games found, skipping request');
+        debugLog('No tagged games found, skipping request');
         return;
       }
       
@@ -715,7 +721,7 @@
     }
     
     updateSpecificGames(gamesData) {
-      console.log('Updating games with data:', gamesData);
+      debugLog('Updating games with data:', gamesData);
       
       // 1. Find containers that need updates
       const containersToUpdate = [];
@@ -725,11 +731,11 @@
         const container = document.querySelector(`[data-masulo-game-id="${game.id}"][data-masulo-tag="true"]`);
         
         if (!container) {
-          console.log(`No container found for game ${game.id}`);
+          debugLog(`No container found for game ${game.id}`);
           return;
         }
         
-        console.log(`Updating game ${game.id}:`, game);
+        debugLog(`Updating game ${game.id}:`, game);
         
         // If game is not published, revert to defaultImage only (no video)
         if (!game.published) {
@@ -789,9 +795,39 @@
     
     smoothReplaceWithVideo(container, imageUrl, videoUrl, gameId) {
       const imgElement = container.querySelector('img');
-      if (!imgElement) return;
+      const existingVideoElement = container.querySelector('video');
       
-      console.log(`Starting smooth transition for ${gameId}`);
+      debugLog(`Starting smooth transition for ${gameId}`);
+      
+      // If container already has a video element, just update it
+      if (existingVideoElement && !imgElement) {
+        debugLog(`Video already exists for ${gameId}, updating poster and src`);
+        
+        // Remove loader
+        container.classList.remove('loading');
+        
+        // Update existing video element
+        if (imageUrl) {
+          existingVideoElement.poster = imageUrl;
+        }
+        if (videoUrl) {
+          existingVideoElement.src = videoUrl;
+          existingVideoElement.load();
+        } else {
+          existingVideoElement.removeAttribute('src');
+          existingVideoElement.load();
+        }
+        
+        debugLog(`Completed video update for ${gameId}`);
+        return;
+      }
+      
+      // If no img element exists, nothing to do
+      if (!imgElement) {
+        debugLog(`No img element found for ${gameId}, skipping`);
+        container.classList.remove('loading');
+        return;
+      }
       
       // Fade out current image
       container.classList.add('fading-out');
@@ -843,7 +879,7 @@
         // Add event listeners
         this.addVideoEventListeners(container, videoElement, gameId);
         
-        console.log(`Completed smooth transition for ${gameId}`);
+        debugLog(`Completed smooth transition for ${gameId}`);
       }, 500); // Match CSS transition duration
     }
     
@@ -880,11 +916,11 @@
         });
       }
       
-      console.log(`Added ${isTouchDevice ? 'touch' : 'hover'} event listeners for ${gameId}`);
+      debugLog(`Added ${isTouchDevice ? 'touch' : 'hover'} event listeners for ${gameId}`);
     }
     
     playContainerVideo(container, videoElement, gameId) {
-      console.log(`Playing video for ${gameId}`);
+      debugLog(`Playing video for ${gameId}`);
       
       // Deactivate all other videos first
       this.deactivateAllVideos();
@@ -895,7 +931,7 @@
       
       // Play video
       videoElement.play().catch(err => {
-        console.error(`Error playing video for ${gameId}:`, err);
+        debugError(`Error playing video for ${gameId}:`, err);
       });
       
       container.dataset.masuloVideoPlaying = 'true';
@@ -910,7 +946,7 @@
     }
     
     pauseContainerVideo(container, videoElement, gameId) {
-      console.log(`Pausing video for ${gameId}`);
+      debugLog(`Pausing video for ${gameId}`);
       
       // Pause video but keep currentTime
       videoElement.pause();
@@ -931,7 +967,7 @@
     }
     
     stopContainerVideo(container, videoElement, gameId) {
-      console.log(`Stopping video for ${gameId}`);
+      debugLog(`Stopping video for ${gameId}`);
       
       // Stop and reset video
       videoElement.pause();
@@ -1036,7 +1072,7 @@
         try {
           callback(data);
         } catch (error) {
-          console.error('Error in event listener:', error);
+          debugError('Error in event listener:', error);
         }
       });
     }
@@ -1099,9 +1135,9 @@
   // Add test function for debugging
   window.testMasuloVideo = function() {
     const gameElements = document.querySelectorAll('masulo-game');
-    console.log(`Found ${gameElements.length} masulo-game elements`);
+    debugLog(`Found ${gameElements.length} masulo-game elements`);
     gameElements.forEach((element, index) => {
-      console.log(`Testing element ${index + 1}:`, element);
+      debugLog(`Testing element ${index + 1}:`, element);
       element.testVideo();
     });
   };

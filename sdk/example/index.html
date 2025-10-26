@@ -555,6 +555,7 @@
             .tab-navigation {
                 padding: 0 20px;
                 gap: 5px;
+                justify-content: center;
             }
 
             .tab-button {
@@ -619,6 +620,7 @@
 
             .tab-navigation {
                 padding: 0 15px;
+                justify-content: center;
             }
 
             .tab-button {
@@ -666,6 +668,7 @@
 
             .tab-navigation {
                 margin-bottom: 10px;
+                justify-content: center;
             }
 
             .tab-button {
@@ -686,6 +689,235 @@
                 padding: 10px 20px;
             }
         }
+
+        /* Popup/Modal Styles */
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .popup-overlay.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .popup-content {
+            background: linear-gradient(180deg, 
+                rgba(20, 20, 35, 0.98) 0%, 
+                rgba(15, 15, 25, 0.98) 100%);
+            border-radius: 20px;
+            width: 90%;
+            max-width: 500px;
+            padding: 0;
+            position: relative;
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.8),
+                0 0 100px rgba(218, 165, 32, 0.3),
+                inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(218, 165, 32, 0.3);
+            animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .popup-header {
+            background: linear-gradient(135deg, 
+                rgba(218, 165, 32, 0.2) 0%, 
+                rgba(255, 215, 0, 0.1) 100%);
+            padding: 30px 40px;
+            border-bottom: 2px solid rgba(218, 165, 32, 0.3);
+            position: relative;
+        }
+
+        .popup-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(218, 165, 32, 0.1), 
+                transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { transform: translateX(-100%); }
+            50% { transform: translateX(100%); }
+        }
+
+        .popup-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0;
+            letter-spacing: 1px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .popup-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(218, 165, 32, 0.3);
+            color: rgba(255, 255, 255, 0.8);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+
+        .popup-close:hover {
+            background: rgba(218, 165, 32, 0.2);
+            border-color: #FFD700;
+            color: #FFD700;
+            transform: rotate(90deg);
+        }
+
+        .popup-body {
+            padding: 40px;
+        }
+
+        .popup-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .popup-list li {
+            padding: 16px 0;
+            padding-left: 35px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            line-height: 1.6;
+            position: relative;
+            border-bottom: 1px solid rgba(218, 165, 32, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .popup-list li:last-child {
+            border-bottom: none;
+        }
+
+        .popup-list li:hover {
+            padding-left: 40px;
+            color: #FFD700;
+        }
+
+        .popup-list li::before {
+            content: '✦';
+            position: absolute;
+            left: 0;
+            color: #FFD700;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .popup-list li:hover::before {
+            transform: rotate(180deg);
+        }
+
+        /* Sad face for "without mesulo" */
+        .popup-list.sad-list li::before {
+            content: '✖';
+            color: #ff6b6b;
+        }
+
+        .popup-list.sad-list li {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .popup-list.sad-list li:hover {
+            color: #ff6b6b;
+        }
+
+        .popup-footer {
+            background: linear-gradient(180deg, 
+                rgba(10, 10, 20, 0.5) 0%, 
+                rgba(15, 15, 25, 0.8) 100%);
+            padding: 25px 40px;
+            text-align: center;
+            border-top: 2px solid rgba(218, 165, 32, 0.3);
+        }
+
+        .popup-footer a {
+            color: #FFD700;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 8px;
+            background: rgba(218, 165, 32, 0.1);
+        }
+
+        .popup-footer a:hover {
+            background: rgba(218, 165, 32, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(218, 165, 32, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .popup-content {
+                width: 95%;
+                max-width: none;
+                margin: 20px;
+            }
+
+            .popup-header,
+            .popup-body,
+            .popup-footer {
+                padding: 25px;
+            }
+
+            .popup-title {
+                font-size: 1.4rem;
+            }
+
+            .popup-list li {
+                font-size: 0.95rem;
+                padding: 14px 0 14px 30px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -701,7 +933,7 @@
                 <li><a href="#">Slots</a></li>
                 <li><a href="#">Table Games</a></li>
                 <li><a href="#">Live Casino</a></li>
-                <li><a href="#">💰 Promotions</a></li>
+                <li><a href="#">Promotions</a></li>
             </ul>
         </nav>
 
@@ -714,7 +946,7 @@
             <!-- Tab Navigation -->
             <div class="tab-navigation">
                 <button class="tab-button active" data-tab="with-mesulo">✨ With Mesulo</button>
-                <button class="tab-button" data-tab="no-mesulo">:sad No Mesulo</button>
+                <button class="tab-button" data-tab="no-mesulo">😞 No Mesulo</button>
             </div>
 
             <!-- With Mesulo Tab -->
@@ -723,23 +955,15 @@
                     <div>
                         <div data-masulo-game-id="d5352f25-9718-44a6-a95d-1ddd47ea63ce" data-masulo-tag="true" class="game-card">
                             <img src="./images/cleo.jpg" alt="Cleo" class="game-image">
-                            <button class="mesulo-button">Play Now</button>
+                            <button class="mesulo-button">See More</button>
                         </div>
                         <div class="game-name">Cleocatra</div>
                     </div>
 
                     <div>
-                        <div data-masulo-game-id="7c371c7d-6ec2-494c-a553-1645a70007d3" data-masulo-tag="true" class="game-card">
-                            <img src="./images/gates.webp" alt="Gates" class="game-image">
-                            <button class="mesulo-button">Play Now</button>
-                        </div>
-                        <div class="game-name">Gates of Olympus</div>
-                    </div>
-
-                    <div>
                         <div data-masulo-game-id="b4a40dc5-e950-4e6b-bca9-1ae51589b2b5" data-masulo-tag="true" data-masulo-theme="halloween" data-masulo-version="1.0.0" class="game-card">
                             <img src="./images/hades.jpg" alt="Hades" class="game-image">
-                            <button class="mesulo-button">Play Now</button>
+                            <button class="mesulo-button">See More</button>
                         </div>
                         <div class="game-name">Hot as Hades</div>
                     </div>
@@ -747,7 +971,7 @@
                     <div>
                         <div data-masulo-game-id="b37b4b9a-4f2f-4a3c-8a58-f4a76d19d88f" data-masulo-tag="true" class="game-card">
                             <img src="./images/tome.webp" alt="Tome" class="game-image">
-                            <button class="mesulo-button">Play Now</button>
+                            <button class="mesulo-button">See More</button>
                         </div>
                         <div class="game-name">Tome of Insanity</div>
                     </div>
@@ -755,10 +979,19 @@
                     <div>
                         <div data-masulo-game-id="8d0b5e73-13fa-42c4-901d-829406c8e207" data-masulo-tag="true" class="game-card">
                             <img src="./images/toonz.webp" alt="Toonz" class="game-image">
-                            <button class="mesulo-button">Play Now</button>
+                            <button class="mesulo-button">See More</button>
                         </div>
                         <div class="game-name">Gargantoonz</div>
                     </div>
+
+                    <div>
+                        <div data-masulo-game-id="7c371c7d-6ec2-494c-a553-1645a70007d3" data-masulo-tag="true" class="game-card">
+                            <img src="./images/gates.webp" alt="Gates" class="game-image">
+                            <button class="mesulo-button">See More</button>
+                        </div>
+                        <div class="game-name">Gates of Olympus</div>
+                    </div>
+
                 </div>
             </div>
 
@@ -768,7 +1001,7 @@
                     <div>
                         <div class="game-card">
                             <img src="./images/cleo.jpg" alt="Cleo" class="game-image">
-                            <button class="mesulo-button">Play Now</button>
+                            <button class="mesulo-button">See More</button>
                         </div>
                         <div class="game-name">Cleocatra</div>
                     </div>
@@ -776,7 +1009,7 @@
                     <div>
                         <div class="game-card">
                             <img src="./images/gates.webp" alt="Gates" class="game-image">
-                            <button class="mesulo-button">Play Now</button>
+                            <button class="mesulo-button">See More</button> 
                         </div>
                         <div class="game-name">Gates of Olympus</div>
                     </div>
@@ -784,7 +1017,7 @@
                     <div>
                         <div class="game-card">
                             <img src="./images/hades.jpg" alt="Hades" class="game-image">
-                            <button class="mesulo-button">Play Now</button>
+                            <button class="mesulo-button">See More</button> 
                         </div>
                         <div class="game-name">Hot as Hades</div>
                     </div>
@@ -792,7 +1025,7 @@
                     <div>
                         <div class="game-card">
                             <img src="./images/tome.webp" alt="Tome" class="game-image">
-                            <button class="mesulo-button">Play Now</button>
+                            <button class="mesulo-button">See More</button> 
                         </div>
                         <div class="game-name">Tome of Insanity</div>
                     </div>
@@ -800,7 +1033,7 @@
                     <div>
                         <div class="game-card">
                             <img src="./images/toonz.webp" alt="Toonz" class="game-image">
-                            <button class="mesulo-button">Play Now</button>
+                            <button class="mesulo-button">See More</button> 
                         </div>
                         <div class="game-name">Gargantoonz</div>
                     </div>
@@ -814,11 +1047,57 @@
             <div class="status-info">
                 <div class="status-item">
                     <div class="status-dot"></div>
-                    <span>Masulo Ai Status: <span id="sdk-status">Loading...</span></span>
+                    <span>Masulo SDK Status: <span id="sdk-status">Loading...</span></span>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- "With Mesulo" Popup -->
+    <div class="popup-overlay" id="popup-with-mesulo">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h2 class="popup-title">With Mesulo SDK</h2>
+                <button class="popup-close" onclick="closePopup('popup-with-mesulo')">×</button>
+            </div>
+            <div class="popup-body">
+                <ul class="popup-list">
+                    <li>Hot-swap game images and videos without rebuild</li>
+                    <li>Generate new assets on the fly with custom Ai model</li>
+                    <li>Auto optimizes videos and images for web and mobile</li>
+                    <li>Keep existing links, styles and data atrributes of game cards</li>
+                    <li>Create game groups, campaigns and promotions</li>
+                    <li>A/B test assets</li>
+                    <li>Granular asset analytics</li>
+                </ul>
+            </div>
+            <div class="popup-footer">
+                <a href="mailto:hello@mesulo.com">hello@mesulo.com</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- "Without Mesulo" Popup -->
+    <div class="popup-overlay" id="popup-without-mesulo">
+        <div class="popup-content">
+            <div class="popup-header">
+                <h2 class="popup-title">No Mesulo SDK</h2>
+                <button class="popup-close" onclick="closePopup('popup-without-mesulo')">×</button>
+            </div>
+            <div class="popup-body">
+                <ul class="popup-list sad-list">
+                    <li>Go through lengthy asset creation processes for each game</li>
+                    <li>Update images and videos in CMS which requires requids</li>
+                    <li>Tedious campaign / promotion asset linkages</li>
+                    <li>Separate tooling for analytics and data</li>
+                </ul>
+            </div>
+            <div class="popup-footer">
+                <a href="mailto:hello@mesulo.com">hello@mesulo.com</a>
+            </div>
+        </div>
+    </div>
+
     <!-- <script src="https://mesulo.b-cdn.net/mesulo-ai-sdk.min.js" data-application-key="5f61931c-187c-4341-8874-360d29907b00"></script> -->
     <script src="../mesulo-sdk.js" data-application-key="5f61931c-187c-4341-8874-360d29907b00"></script>
     
@@ -881,6 +1160,62 @@
         
         // Start checking for SDK initialization
         setupStatusUpdates();
+
+        // Popup functionality
+        function openPopup(popupId) {
+            const popup = document.getElementById(popupId);
+            if (popup) {
+                popup.classList.add('active');
+                document.body.style.overflow = 'hidden'; // Prevent background scrolling
+            }
+        }
+
+        function closePopup(popupId) {
+            const popup = document.getElementById(popupId);
+            if (popup) {
+                popup.classList.remove('active');
+                document.body.style.overflow = ''; // Restore scrolling
+            }
+        }
+
+        // Add click handlers to all "Play Now" buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            const withMesuloButtons = document.querySelectorAll('#with-mesulo .mesulo-button');
+            const withoutMesuloButtons = document.querySelectorAll('#no-mesulo .mesulo-button');
+
+            // Add event listeners to "With Mesulo" tab buttons
+            withMesuloButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    openPopup('popup-with-mesulo');
+                });
+            });
+
+            // Add event listeners to "No Mesulo" tab buttons
+            withoutMesuloButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    openPopup('popup-without-mesulo');
+                });
+            });
+
+            // Close popup when clicking on overlay background
+            document.querySelectorAll('.popup-overlay').forEach(overlay => {
+                overlay.addEventListener('click', function(e) {
+                    if (e.target === overlay) {
+                        closePopup(overlay.id);
+                    }
+                });
+            });
+
+            // Close popup with Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closePopup('popup-with-mesulo');
+                    closePopup('popup-without-mesulo');
+                }
+            });
+        });
     </script>
 </body>
 </html>
