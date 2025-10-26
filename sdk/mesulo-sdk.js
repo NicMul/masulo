@@ -105,35 +105,15 @@
             overflow: hidden;
           }
           
-          .game-image {
+          .game-video {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            will-change: opacity;
-            transition: opacity 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-            backface-visibility: hidden;
-            -webkit-font-smoothing: subpixel-antialiased;
-            transform: translateZ(0);
             user-select: none;
             -webkit-user-select: none;
             -webkit-touch-callout: none;
             pointer-events: none;
             display: block;
-          }
-          
-          .game-video {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: none;
-            z-index: 2;
-            user-select: none;
-            -webkit-user-select: none;
-            -webkit-touch-callout: none;
-            pointer-events: none;
           }
           
           .loader {
@@ -154,22 +134,6 @@
           
           .container.loading .loader {
             opacity: 1;
-          }
-          
-          .container.loading .game-image {
-            opacity: 1;
-          }
-          
-          .container.fade-out .game-image {
-            opacity: 0;
-          }
-          
-          .container.loaded .game-image {
-            opacity: 1;
-          }
-          
-          .container.video-active .game-image {
-            display: none;
           }
           
           .container.video-active .game-video {
@@ -204,8 +168,7 @@
           }
         </style>
         <div class="container">
-          <img class="game-image" src="${this.fallbackSrc || ''}" alt="Game">
-          <video class="game-video" muted loop playsinline preload="metadata"></video>
+          <video class="game-video" muted loop playsinline preload="metadata" poster="${this.fallbackSrc || ''}"></video>
           <div class="loader"></div>
           <slot name="button"></slot>
         </div>
@@ -214,7 +177,6 @@
     
     setupVideoControls() {
       const container = this.shadowRoot.querySelector('.container');
-      const imgElement = this.shadowRoot.querySelector('.game-image');
       const videoElement = this.shadowRoot.querySelector('.game-video');
       
       console.log(`Device detection: isTouchDevice=${this.isTouchDevice}, ontouchstart=${'ontouchstart' in window}, maxTouchPoints=${navigator.maxTouchPoints}`);
@@ -245,9 +207,9 @@
         e.stopPropagation();
         
         if (this.isPlaying) {
-          // Stop video but keep button visible
-          console.log(`Stopping video for game ${this.gameId}, keeping button visible`);
-          this.stopVideo(false); // false = don't hide button
+          // Stop video and hide button
+          console.log(`Stopping video for game ${this.gameId}, hiding button`);
+          this.stopVideo(true); // true = hide button
         } else {
           // Start video - deactivate any other playing video first
           console.log(`Starting video for game ${this.gameId}`);
@@ -277,7 +239,7 @@
         
         if (this.isPlaying) {
           console.log(`Stopping video for game ${this.gameId}`);
-          this.stopVideo(false); // Keep button visible on desktop too
+          this.stopVideo(true); // Hide button when stopping
         } else {
           console.log(`Starting video for game ${this.gameId}`);
           if (this.sdk) {
@@ -293,16 +255,15 @@
     
     setupAnalytics() {
       const container = this.shadowRoot.querySelector('.container');
-      const imgElement = this.shadowRoot.querySelector('.game-image');
       const videoElement = this.shadowRoot.querySelector('.game-video');
       
-      // Track image impressions
-      const imageObserver = new IntersectionObserver((entries) => {
+      // Track video poster impressions
+      const videoObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting && this.sdk && this.sdk.analyticsEnabled) {
-            const imageUrl = imgElement.src;
-            if (imageUrl && !this.trackingData?.lastImageUrl || this.trackingData.lastImageUrl !== imageUrl) {
-              this.sdk.trackAssetEvent('image_impression', this.gameId, 'image', imageUrl, {
+            const posterUrl = videoElement.poster;
+            if (posterUrl && !this.trackingData?.lastPosterUrl || this.trackingData.lastPosterUrl !== posterUrl) {
+              this.sdk.trackAssetEvent('poster_impression', this.gameId, 'poster', posterUrl, {
                 visibility_ratio: entry.intersectionRatio,
                 viewport: this.sdk.getViewportInfo()
               });
@@ -310,13 +271,13 @@
               if (!this.trackingData) {
                 this.trackingData = {};
               }
-              this.trackingData.lastImageUrl = imageUrl;
+              this.trackingData.lastPosterUrl = posterUrl;
             }
           }
         });
       }, { threshold: [0.5] });
       
-      imageObserver.observe(container);
+      videoObserver.observe(container);
       
       // Track video playback
       if (videoElement) {
@@ -352,7 +313,7 @@
       }
       
       // Store observer for cleanup
-      this.imageObserver = imageObserver;
+      this.videoObserver = videoObserver;
     }
     
     playVideo() {
@@ -391,11 +352,8 @@
       videoElement.pause();
       videoElement.currentTime = 0;
       
-      if (hideButton) {
-        // Full deactivation - hide button
-        container.classList.remove('video-active');
-      }
-      // If hideButton is false, keep video-active class so button stays visible
+      // Always hide button when stopping video (mobile behavior)
+      container.classList.remove('video-active');
     }
     
     deactivate(hideButton = false, forceHideButton = false) {
@@ -408,14 +366,12 @@
       videoElement.pause();
       videoElement.currentTime = 0;
       
-      if (hideButton || forceHideButton) {
-        container.classList.remove('video-active');
-      }
+      // Always hide button when deactivating
+      container.classList.remove('video-active');
     }
     
-    updateImage(imageUrl, videoUrl) {
+    updateVideo(imageUrl, videoUrl) {
       const container = this.shadowRoot.querySelector('.container');
-      const imgElement = this.shadowRoot.querySelector('.game-image');
       const videoElement = this.shadowRoot.querySelector('.game-video');
       
       // If currently playing, stop it
@@ -423,7 +379,11 @@
         this.stopVideo(true);
       }
       
-      // Update video source
+      // Update video poster (image) and source
+      if (imageUrl) {
+        videoElement.poster = imageUrl;
+      }
+      
       if (videoUrl) {
         videoElement.src = videoUrl;
         videoElement.load();
@@ -431,35 +391,15 @@
         videoElement.removeAttribute('src');
         videoElement.load();
       }
-      
-      // Update image with fade effect
-      if (imageUrl && imageUrl !== imgElement.src) {
-        container.classList.add('loading', 'fade-out');
-        
-        const newImg = new Image();
-        newImg.onload = () => {
-          imgElement.src = imageUrl;
-          container.classList.remove('fade-out');
-          setTimeout(() => {
-            container.classList.remove('loading');
-            container.classList.add('loaded');
-            setTimeout(() => container.classList.remove('loaded'), 300);
-          }, 50);
-        };
-        newImg.onerror = () => {
-          container.classList.remove('loading', 'fade-out');
-        };
-        newImg.src = imageUrl;
-      }
     }
     
     revertToDefault(defaultImageUrl) {
-      this.updateImage(defaultImageUrl, null);
+      this.updateVideo(defaultImageUrl, null);
     }
     
     cleanup() {
-      if (this.imageObserver) {
-        this.imageObserver.disconnect();
+      if (this.videoObserver) {
+        this.videoObserver.disconnect();
       }
       
       const videoElement = this.shadowRoot.querySelector('.game-video');
@@ -522,7 +462,35 @@
       if (this.applicationKey) {
         this.waitForSocketIO();
         this.setupScrollDetection();
+        this.injectButtonStyles();
       }
+    }
+    
+    injectButtonStyles() {
+      // Inject CSS for button visibility control
+      const style = document.createElement('style');
+      style.textContent = `
+        /* Masulo SDK Button Styles */
+        .game-card .mesulo-button {
+          transition: all 0.3s ease !important;
+          backdrop-filter: blur(0px) !important;
+          opacity: 0 !important;
+          visibility: hidden !important;
+          pointer-events: none !important;
+        }
+        
+        .game-card.video-active .mesulo-button {
+          background: rgba(0, 0, 0, 0.5) !important;
+          border-color: #ffd700 !important;
+          backdrop-filter: blur(2px) !important;
+          opacity: 0.7 !important;
+          visibility: visible !important;
+          color: white !important;
+          font-weight: bold !important;
+          pointer-events: auto !important;
+        }
+      `;
+      document.head.appendChild(style);
     }
     
     waitForSocketIO() {
@@ -659,12 +627,21 @@
       document.addEventListener('touchend', handleTouchEnd, { passive: true });
     }
     
-    // Deactivate all videos (stop playing, optionally hide button)
+    // Deactivate all videos (stop playing, hide button)
     deactivateAllVideos(hideButton = false, forceHideButton = false) {
-      if (this.activeVideoContainer) {
-        this.activeVideoContainer.deactivate(hideButton, forceHideButton);
-        this.activeVideoContainer = null;
-      }
+      // Find all containers with playing videos
+      const playingContainers = document.querySelectorAll('[data-masulo-video-playing="true"]');
+      playingContainers.forEach(container => {
+        const videoElement = container.querySelector('video');
+        if (videoElement) {
+          videoElement.pause();
+          videoElement.currentTime = 0;
+          container.dataset.masuloVideoPlaying = 'false';
+          
+          // Hide button
+          container.classList.remove('video-active');
+        }
+      });
     }
     
     requestGames() {
@@ -734,87 +711,53 @@
           videoUrl = game.defaultVideo;
         }
         
-        // Update the image
+        // Convert img to video element with poster
         const imgElement = container.querySelector('img');
-        if (imgElement && imageUrl) {
-          console.log(`Updating image for ${game.id} to:`, imageUrl);
-          imgElement.src = imageUrl;
+        if (imgElement) {
+          // Create video element
+          const videoElement = document.createElement('video');
+          videoElement.className = 'game-video';
+          videoElement.muted = true;
+          videoElement.loop = true;
+          videoElement.playsInline = true;
+          videoElement.preload = 'metadata';
+          videoElement.style.cssText = `
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            pointer-events: none;
+            display: block;
+          `;
           
-          // Ensure image has transition for smooth video fade effects
-          if (!imgElement.style.transition) {
-            imgElement.style.transition = 'opacity 0.3s ease';
+          // Set poster and src
+          if (imageUrl) {
+            videoElement.poster = imageUrl;
           }
-        }
-        
-        // Setup video functionality if video URL is available
-        if (videoUrl) {
-          console.log(`Setting up video for ${game.id}:`, videoUrl);
-          this.setupVideoForContainer(container, game.id, videoUrl, imgElement);
+          if (videoUrl) {
+            videoElement.src = videoUrl;
+            videoElement.load();
+          }
+          
+          // Replace img with video
+          imgElement.parentNode.replaceChild(videoElement, imgElement);
+          
+          // Add event listeners for video interaction
+          this.addVideoEventListeners(container, videoElement, game.id);
+          
+          console.log(`Converted img to video for ${game.id} - poster:`, imageUrl, 'src:', videoUrl);
         }
       });
     }
     
-    setupVideoForContainer(container, gameId, videoUrl, imgElement) {
-      // Check if video element already exists
-      let videoElement = container.querySelector('.masulo-video');
-      
-      if (!videoElement) {
-        // Create video element
-        videoElement = document.createElement('video');
-        videoElement.className = 'masulo-video';
-        videoElement.muted = true;
-        videoElement.loop = true;
-        videoElement.playsInline = true;
-        videoElement.preload = 'metadata';
-        videoElement.style.cssText = `
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          opacity: 0;
-          transition: opacity 0.3s ease;
-          pointer-events: none;
-          z-index: 1;
-        `;
-        
-        // Insert video after image
-        if (imgElement && imgElement.parentNode === container) {
-          imgElement.parentNode.insertBefore(videoElement, imgElement.nextSibling);
-        } else {
-          container.appendChild(videoElement);
-        }
-        
-        console.log(`Created video element for ${gameId}`);
-      }
-      
-      // Update video source
-      videoElement.src = videoUrl;
-      
-      // Store reference for later use
-      container.dataset.masuloVideoUrl = videoUrl;
-      container.dataset.masuloHasVideo = 'true';
-      
-      // Make container position relative if not already
-      const computedStyle = window.getComputedStyle(container);
-      if (computedStyle.position === 'static') {
-        container.style.position = 'relative';
-      }
-      
-      // Add hover/click event listeners if not already added
-      if (!container.dataset.masuloVideoSetup) {
-        this.addVideoEventListeners(container, videoElement, imgElement, gameId);
-        container.dataset.masuloVideoSetup = 'true';
-      }
-    }
-    
-    addVideoEventListeners(container, videoElement, imgElement, gameId) {
+    addVideoEventListeners(container, videoElement, gameId) {
       const isTouchDevice = ('ontouchstart' in window && navigator.maxTouchPoints > 0) || 
                            (navigator.userAgent.includes('Mobile') || navigator.userAgent.includes('Tablet'));
       
       if (isTouchDevice) {
-        // Mobile: Click to toggle video
+        // Mobile: Tap to toggle video
         container.addEventListener('click', (e) => {
           // Don't trigger if clicking on a button
           if (e.target.tagName === 'BUTTON' || e.target.closest('button')) {
@@ -825,33 +768,31 @@
           const isPlaying = container.dataset.masuloVideoPlaying === 'true';
           
           if (isPlaying) {
-            this.stopContainerVideo(container, videoElement, imgElement, gameId);
+            this.stopContainerVideo(container, videoElement, gameId);
           } else {
-            this.playContainerVideo(container, videoElement, imgElement, gameId);
+            this.playContainerVideo(container, videoElement, gameId);
           }
         });
       } else {
         // Desktop: Hover to play video
         container.addEventListener('mouseenter', () => {
-          this.playContainerVideo(container, videoElement, imgElement, gameId);
+          this.playContainerVideo(container, videoElement, gameId);
         });
         
         container.addEventListener('mouseleave', () => {
-          this.stopContainerVideo(container, videoElement, imgElement, gameId);
+          this.stopContainerVideo(container, videoElement, gameId);
         });
       }
       
       console.log(`Added ${isTouchDevice ? 'touch' : 'hover'} event listeners for ${gameId}`);
     }
     
-    playContainerVideo(container, videoElement, imgElement, gameId) {
+    playContainerVideo(container, videoElement, gameId) {
       console.log(`Playing video for ${gameId}`);
       
-      // Fade out image, fade in video
-      if (imgElement) {
-        imgElement.style.opacity = '0';
-      }
-      videoElement.style.opacity = '1';
+      // Show video and button
+      videoElement.style.display = 'block';
+      container.classList.add('video-active');
       
       // Play video
       videoElement.play().catch(err => {
@@ -869,18 +810,15 @@
       }
     }
     
-    stopContainerVideo(container, videoElement, imgElement, gameId) {
+    stopContainerVideo(container, videoElement, gameId) {
       console.log(`Stopping video for ${gameId}`);
-      
-      // Fade in image, fade out video
-      if (imgElement) {
-        imgElement.style.opacity = '1';
-      }
-      videoElement.style.opacity = '0';
       
       // Stop and reset video
       videoElement.pause();
       videoElement.currentTime = 0;
+      
+      // Hide button
+      container.classList.remove('video-active');
       
       container.dataset.masuloVideoPlaying = 'false';
       
@@ -905,10 +843,12 @@
         reverted_to: 'defaultImage'
       });
       
-      // Update the image to default
-      const imgElement = container.querySelector('img');
-      if (imgElement && defaultImageUrl) {
-        imgElement.src = defaultImageUrl;
+      // Update the video poster to default
+      const videoElement = container.querySelector('video');
+      if (videoElement && defaultImageUrl) {
+        videoElement.poster = defaultImageUrl;
+        videoElement.removeAttribute('src');
+        videoElement.load();
       }
       
       // Remove video URL
