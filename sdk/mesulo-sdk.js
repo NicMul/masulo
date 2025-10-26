@@ -471,6 +471,43 @@
       const style = document.createElement('style');
       style.textContent = `
         /* Masulo SDK Button Styles */
+        .game-card {
+          position: relative;
+        }
+        
+        .game-card img,
+        .game-card video {
+          transition: opacity 0.5s ease-in-out;
+        }
+        
+        .game-card.fading-out img {
+          opacity: 0;
+        }
+        
+        .game-card .loader {
+          position: absolute;
+          bottom: 10px;
+          right: 10px;
+          width: 16px;
+          height: 16px;
+          opacity: 0;
+          transition: opacity 0.3s ease;
+          z-index: 10;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Ccircle cx='12' cy='12' r='10' stroke='white' stroke-width='2' stroke-linecap='round' stroke-dasharray='30 10' opacity='0.6'/%3E%3C/svg%3E");
+          background-size: contain;
+          background-repeat: no-repeat;
+          animation: spin 1s linear infinite;
+        }
+        
+        .game-card.loading .loader {
+          opacity: 1;
+        }
+        
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        
         .game-card .mesulo-button {
           transition: all 0.3s ease !important;
           backdrop-filter: blur(0px) !important;
@@ -553,7 +590,11 @@
           this.isConnected = true;
           this.updateStatus('connected');
           this.emit('connected');
-          this.requestGames();
+          
+          // Wait 2 seconds before requesting games
+          setTimeout(() => {
+            this.requestGames();
+          }, 2000);
         });
         
         this.socket.on('disconnect', (reason) => {
@@ -629,9 +670,9 @@
     
     // Deactivate all videos (stop playing, hide button)
     deactivateAllVideos(hideButton = false, forceHideButton = false) {
-      // Find all containers with playing videos
-      const playingContainers = document.querySelectorAll('[data-masulo-video-playing="true"]');
-      playingContainers.forEach(container => {
+      // Find all containers with video-active class (playing OR paused)
+      const activeContainers = document.querySelectorAll('.game-card.video-active');
+      activeContainers.forEach(container => {
         const videoElement = container.querySelector('video');
         if (videoElement) {
           videoElement.pause();
@@ -676,6 +717,9 @@
     updateSpecificGames(gamesData) {
       console.log('Updating games with data:', gamesData);
       
+      // 1. Find containers that need updates
+      const containersToUpdate = [];
+      
       gamesData.forEach(game => {
         // Check if this game exists on the page with data-masulo-tag="true"
         const container = document.querySelector(`[data-masulo-game-id="${game.id}"][data-masulo-tag="true"]`);
@@ -711,45 +755,97 @@
           videoUrl = game.defaultVideo;
         }
         
-        // Convert img to video element with poster
-        const imgElement = container.querySelector('img');
-        if (imgElement) {
-          // Create video element
-          const videoElement = document.createElement('video');
-          videoElement.className = 'game-video';
-          videoElement.muted = true;
-          videoElement.loop = true;
-          videoElement.playsInline = true;
-          videoElement.preload = 'metadata';
-          videoElement.style.cssText = `
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            user-select: none;
-            -webkit-user-select: none;
-            -webkit-touch-callout: none;
-            pointer-events: none;
-            display: block;
-          `;
-          
-          // Set poster and src
-          if (imageUrl) {
-            videoElement.poster = imageUrl;
-          }
-          if (videoUrl) {
-            videoElement.src = videoUrl;
-            videoElement.load();
-          }
-          
-          // Replace img with video
-          imgElement.parentNode.replaceChild(videoElement, imgElement);
-          
-          // Add event listeners for video interaction
-          this.addVideoEventListeners(container, videoElement, game.id);
-          
-          console.log(`Converted img to video for ${game.id} - poster:`, imageUrl, 'src:', videoUrl);
+        // Check if update is needed
+        const currentImg = container.querySelector('img');
+        const currentVideo = container.querySelector('video');
+        const needsUpdate = (currentImg && currentImg.src !== imageUrl) || 
+                            (currentVideo && currentVideo.poster !== imageUrl);
+        
+        if (needsUpdate) {
+          containersToUpdate.push({ container, game, imageUrl, videoUrl });
         }
       });
+      
+      if (containersToUpdate.length === 0) return;
+      
+      // 2. Show loaders
+      containersToUpdate.forEach(({ container }) => {
+        // Add loader element if it doesn't exist
+        if (!container.querySelector('.loader')) {
+          const loader = document.createElement('div');
+          loader.className = 'loader';
+          container.appendChild(loader);
+        }
+        container.classList.add('loading');
+      });
+      
+      // 3. Wait 2 seconds for loader visibility
+      setTimeout(() => {
+        // 4. Start transitions
+        containersToUpdate.forEach(({ container, game, imageUrl, videoUrl }) => {
+          this.smoothReplaceWithVideo(container, imageUrl, videoUrl, game.id);
+        });
+      }, 2000);
+    }
+    
+    smoothReplaceWithVideo(container, imageUrl, videoUrl, gameId) {
+      const imgElement = container.querySelector('img');
+      if (!imgElement) return;
+      
+      console.log(`Starting smooth transition for ${gameId}`);
+      
+      // Fade out current image
+      container.classList.add('fading-out');
+      
+      // After fade out, replace with video
+      setTimeout(() => {
+        // Remove loader
+        container.classList.remove('loading');
+        
+        // Create video with opacity 0
+        const videoElement = document.createElement('video');
+        videoElement.className = 'game-video';
+        videoElement.muted = true;
+        videoElement.loop = true;
+        videoElement.playsInline = true;
+        videoElement.preload = 'metadata';
+        videoElement.style.cssText = `
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          user-select: none;
+          -webkit-user-select: none;
+          -webkit-touch-callout: none;
+          pointer-events: none;
+          display: block;
+          opacity: 0;
+        `;
+        
+        // Set poster and src
+        if (imageUrl) {
+          videoElement.poster = imageUrl;
+        }
+        if (videoUrl) {
+          videoElement.src = videoUrl;
+          videoElement.load();
+        }
+        
+        // Replace img with video
+        imgElement.parentNode.replaceChild(videoElement, imgElement);
+        
+        // Remove fading-out class
+        container.classList.remove('fading-out');
+        
+        // Fade in video
+        setTimeout(() => {
+          videoElement.style.opacity = '1';
+        }, 50);
+        
+        // Add event listeners
+        this.addVideoEventListeners(container, videoElement, gameId);
+        
+        console.log(`Completed smooth transition for ${gameId}`);
+      }, 500); // Match CSS transition duration
     }
     
     addVideoEventListeners(container, videoElement, gameId) {
@@ -757,9 +853,9 @@
                            (navigator.userAgent.includes('Mobile') || navigator.userAgent.includes('Tablet'));
       
       if (isTouchDevice) {
-        // Mobile: Tap to toggle video
-        container.addEventListener('click', (e) => {
-          // Don't trigger if clicking on a button
+        // Mobile: Touch to toggle video
+        container.addEventListener('touchend', (e) => {
+          // Don't trigger if tapping on a button
           if (e.target.tagName === 'BUTTON' || e.target.closest('button')) {
             return;
           }
@@ -768,11 +864,12 @@
           const isPlaying = container.dataset.masuloVideoPlaying === 'true';
           
           if (isPlaying) {
-            this.stopContainerVideo(container, videoElement, gameId);
+            // Just pause, don't reset
+            this.pauseContainerVideo(container, videoElement, gameId);
           } else {
             this.playContainerVideo(container, videoElement, gameId);
           }
-        });
+        }, { passive: false });
       } else {
         // Desktop: Hover to play video
         container.addEventListener('mouseenter', () => {
@@ -790,6 +887,9 @@
     playContainerVideo(container, videoElement, gameId) {
       console.log(`Playing video for ${gameId}`);
       
+      // Deactivate all other videos first
+      this.deactivateAllVideos();
+      
       // Show video and button
       videoElement.style.display = 'block';
       container.classList.add('video-active');
@@ -805,6 +905,27 @@
       if (this.analyticsEnabled) {
         this.trackAssetEvent('video_play', gameId, 'video', videoElement.src, {
           trigger: 'hover',
+          viewport: this.getViewportInfo()
+        });
+      }
+    }
+    
+    pauseContainerVideo(container, videoElement, gameId) {
+      console.log(`Pausing video for ${gameId}`);
+      
+      // Pause video but keep currentTime
+      videoElement.pause();
+      
+      // Keep button visible (don't remove video-active class)
+      // container.classList.remove('video-active'); // DON'T do this
+      
+      container.dataset.masuloVideoPlaying = 'false';
+      
+      // Track analytics if enabled
+      if (this.analyticsEnabled) {
+        this.trackAssetEvent('video_pause', gameId, 'video', videoElement.src, {
+          trigger: 'tap',
+          currentTime: videoElement.currentTime,
           viewport: this.getViewportInfo()
         });
       }
