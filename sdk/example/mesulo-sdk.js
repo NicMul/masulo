@@ -25,10 +25,6 @@
   
   const currentConfig = isDevelopment ? CONFIG.development : CONFIG.production;
   
-  // Debug logging helper (disabled for production)
-  const debugLog = isDevelopment ? console.log : () => {};
-  const debugError = isDevelopment ? console.error : () => {};
-  
   // Web Component for Masulo Game
   class MasuloGameElement extends HTMLElement {
     constructor() {
@@ -109,15 +105,35 @@
             overflow: hidden;
           }
           
-          .game-video {
+          .game-image {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            will-change: opacity;
+            transition: opacity 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+            backface-visibility: hidden;
+            -webkit-font-smoothing: subpixel-antialiased;
+            transform: translateZ(0);
             user-select: none;
             -webkit-user-select: none;
             -webkit-touch-callout: none;
             pointer-events: none;
             display: block;
+          }
+          
+          .game-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+            z-index: 2;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+            pointer-events: none;
           }
           
           .loader {
@@ -138,6 +154,22 @@
           
           .container.loading .loader {
             opacity: 1;
+          }
+          
+          .container.loading .game-image {
+            opacity: 1;
+          }
+          
+          .container.fade-out .game-image {
+            opacity: 0;
+          }
+          
+          .container.loaded .game-image {
+            opacity: 1;
+          }
+          
+          .container.video-active .game-image {
+            display: none;
           }
           
           .container.video-active .game-video {
@@ -172,7 +204,8 @@
           }
         </style>
         <div class="container">
-          <video class="game-video" muted loop playsinline preload="metadata" poster="${this.fallbackSrc || ''}"></video>
+          <img class="game-image" src="${this.fallbackSrc || ''}" alt="Game">
+          <video class="game-video" muted loop playsinline preload="metadata"></video>
           <div class="loader"></div>
           <slot name="button"></slot>
         </div>
@@ -181,15 +214,16 @@
     
     setupVideoControls() {
       const container = this.shadowRoot.querySelector('.container');
+      const imgElement = this.shadowRoot.querySelector('.game-image');
       const videoElement = this.shadowRoot.querySelector('.game-video');
       
-      debugLog(`Device detection: isTouchDevice=${this.isTouchDevice}, ontouchstart=${'ontouchstart' in window}, maxTouchPoints=${navigator.maxTouchPoints}`);
+      console.log(`Device detection: isTouchDevice=${this.isTouchDevice}, ontouchstart=${'ontouchstart' in window}, maxTouchPoints=${navigator.maxTouchPoints}`);
       
       if (this.isTouchDevice) {
-        debugLog(`Setting up TOUCH events for game ${this.gameId}`);
+        console.log(`Setting up TOUCH events for game ${this.gameId}`);
         this.setupMobileControls(container, videoElement);
       } else {
-        debugLog(`Setting up MOUSE events for game ${this.gameId}`);
+        console.log(`Setting up MOUSE events for game ${this.gameId}`);
         this.setupDesktopControls(container, videoElement);
       }
     }
@@ -197,12 +231,12 @@
     setupMobileControls(container, videoElement) {
       // Mobile behavior: Tap to toggle video
       container.addEventListener('touchend', (e) => {
-        debugLog(`Touch end on game ${this.gameId}`);
+        console.log(`Touch end on game ${this.gameId}`);
         
         // Check if tap was on the button - if so, let it navigate (don't toggle video)
         const button = this.querySelector('[slot="button"]');
         if (button && e.composedPath().includes(button)) {
-          debugLog(`Tap was on button for game ${this.gameId}, allowing navigation`);
+          console.log(`Tap was on button for game ${this.gameId}, allowing navigation`);
           return; // Let button handle the navigation
         }
         
@@ -211,12 +245,12 @@
         e.stopPropagation();
         
         if (this.isPlaying) {
-          // Stop video and hide button
-          debugLog(`Stopping video for game ${this.gameId}, hiding button`);
-          this.stopVideo(true); // true = hide button
+          // Stop video but keep button visible
+          console.log(`Stopping video for game ${this.gameId}, keeping button visible`);
+          this.stopVideo(false); // false = don't hide button
         } else {
           // Start video - deactivate any other playing video first
-          debugLog(`Starting video for game ${this.gameId}`);
+          console.log(`Starting video for game ${this.gameId}`);
           if (this.sdk) {
             this.sdk.deactivateAllVideos(true, false); // Hide other video buttons
           }
@@ -228,12 +262,12 @@
     setupDesktopControls(container, videoElement) {
       // Desktop behavior: Click on video area (not button) to toggle
       container.addEventListener('click', (e) => {
-        debugLog(`Click on game ${this.gameId}`);
+        console.log(`Click on game ${this.gameId}`);
         
         // Check if click was on the button - if so, let it navigate
         const button = this.querySelector('[slot="button"]');
         if (button && e.composedPath().includes(button)) {
-          debugLog(`Click was on button for game ${this.gameId}, allowing navigation`);
+          console.log(`Click was on button for game ${this.gameId}, allowing navigation`);
           return; // Let button handle the navigation
         }
         
@@ -242,10 +276,10 @@
         e.stopPropagation();
         
         if (this.isPlaying) {
-          debugLog(`Stopping video for game ${this.gameId}`);
-          this.stopVideo(true); // Hide button when stopping
+          console.log(`Stopping video for game ${this.gameId}`);
+          this.stopVideo(false); // Keep button visible on desktop too
         } else {
-          debugLog(`Starting video for game ${this.gameId}`);
+          console.log(`Starting video for game ${this.gameId}`);
           if (this.sdk) {
             this.sdk.deactivateAllVideos(true, false);
           }
@@ -259,15 +293,16 @@
     
     setupAnalytics() {
       const container = this.shadowRoot.querySelector('.container');
+      const imgElement = this.shadowRoot.querySelector('.game-image');
       const videoElement = this.shadowRoot.querySelector('.game-video');
       
-      // Track video poster impressions
-      const videoObserver = new IntersectionObserver((entries) => {
+      // Track image impressions
+      const imageObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting && this.sdk && this.sdk.analyticsEnabled) {
-            const posterUrl = videoElement.poster;
-            if (posterUrl && !this.trackingData?.lastPosterUrl || this.trackingData.lastPosterUrl !== posterUrl) {
-              this.sdk.trackAssetEvent('poster_impression', this.gameId, 'poster', posterUrl, {
+            const imageUrl = imgElement.src;
+            if (imageUrl && !this.trackingData?.lastImageUrl || this.trackingData.lastImageUrl !== imageUrl) {
+              this.sdk.trackAssetEvent('image_impression', this.gameId, 'image', imageUrl, {
                 visibility_ratio: entry.intersectionRatio,
                 viewport: this.sdk.getViewportInfo()
               });
@@ -275,13 +310,13 @@
               if (!this.trackingData) {
                 this.trackingData = {};
               }
-              this.trackingData.lastPosterUrl = posterUrl;
+              this.trackingData.lastImageUrl = imageUrl;
             }
           }
         });
       }, { threshold: [0.5] });
       
-      videoObserver.observe(container);
+      imageObserver.observe(container);
       
       // Track video playback
       if (videoElement) {
@@ -317,7 +352,7 @@
       }
       
       // Store observer for cleanup
-      this.videoObserver = videoObserver;
+      this.imageObserver = imageObserver;
     }
     
     playVideo() {
@@ -325,11 +360,11 @@
       const videoElement = this.shadowRoot.querySelector('.game-video');
       
       if (!videoElement.src) {
-        debugLog(`No video source for game ${this.gameId}`);
+        console.log(`No video source for game ${this.gameId}`);
         return;
       }
       
-      debugLog(`Playing video for game ${this.gameId}`);
+      console.log(`Playing video for game ${this.gameId}`);
       
       // Register this as the active video
       if (this.sdk) {
@@ -340,7 +375,7 @@
       container.classList.add('video-active');
       
       videoElement.play().catch(err => {
-        debugError(`Error playing video for game ${this.gameId}:`, err);
+        console.error(`Error playing video for game ${this.gameId}:`, err);
         this.isPlaying = false;
         container.classList.remove('video-active');
       });
@@ -350,32 +385,37 @@
       const container = this.shadowRoot.querySelector('.container');
       const videoElement = this.shadowRoot.querySelector('.game-video');
       
-      debugLog(`Stopping video for game ${this.gameId}, hideButton=${hideButton}`);
+      console.log(`Stopping video for game ${this.gameId}, hideButton=${hideButton}`);
       
       this.isPlaying = false;
       videoElement.pause();
       videoElement.currentTime = 0;
       
-      // Always hide button when stopping video (mobile behavior)
-      container.classList.remove('video-active');
+      if (hideButton) {
+        // Full deactivation - hide button
+        container.classList.remove('video-active');
+      }
+      // If hideButton is false, keep video-active class so button stays visible
     }
     
     deactivate(hideButton = false, forceHideButton = false) {
       const container = this.shadowRoot.querySelector('.container');
       const videoElement = this.shadowRoot.querySelector('.game-video');
       
-      debugLog(`Deactivating game ${this.gameId}, hideButton=${hideButton}, forceHideButton=${forceHideButton}`);
+      console.log(`Deactivating game ${this.gameId}, hideButton=${hideButton}, forceHideButton=${forceHideButton}`);
       
       this.isPlaying = false;
       videoElement.pause();
       videoElement.currentTime = 0;
       
-      // Always hide button when deactivating
-      container.classList.remove('video-active');
+      if (hideButton || forceHideButton) {
+        container.classList.remove('video-active');
+      }
     }
     
-    updateVideo(imageUrl, videoUrl) {
+    updateImage(imageUrl, videoUrl) {
       const container = this.shadowRoot.querySelector('.container');
+      const imgElement = this.shadowRoot.querySelector('.game-image');
       const videoElement = this.shadowRoot.querySelector('.game-video');
       
       // If currently playing, stop it
@@ -383,11 +423,7 @@
         this.stopVideo(true);
       }
       
-      // Update video poster (image) and source
-      if (imageUrl) {
-        videoElement.poster = imageUrl;
-      }
-      
+      // Update video source
       if (videoUrl) {
         videoElement.src = videoUrl;
         videoElement.load();
@@ -395,15 +431,35 @@
         videoElement.removeAttribute('src');
         videoElement.load();
       }
+      
+      // Update image with fade effect
+      if (imageUrl && imageUrl !== imgElement.src) {
+        container.classList.add('loading', 'fade-out');
+        
+        const newImg = new Image();
+        newImg.onload = () => {
+          imgElement.src = imageUrl;
+          container.classList.remove('fade-out');
+          setTimeout(() => {
+            container.classList.remove('loading');
+            container.classList.add('loaded');
+            setTimeout(() => container.classList.remove('loaded'), 300);
+          }, 50);
+        };
+        newImg.onerror = () => {
+          container.classList.remove('loading', 'fade-out');
+        };
+        newImg.src = imageUrl;
+      }
     }
     
     revertToDefault(defaultImageUrl) {
-      this.updateVideo(defaultImageUrl, null);
+      this.updateImage(defaultImageUrl, null);
     }
     
     cleanup() {
-      if (this.videoObserver) {
-        this.videoObserver.disconnect();
+      if (this.imageObserver) {
+        this.imageObserver.disconnect();
       }
       
       const videoElement = this.shadowRoot.querySelector('.game-video');
@@ -416,16 +472,16 @@
     
     testVideo() {
       const videoElement = this.shadowRoot.querySelector('.game-video');
-      debugLog('Video element:', videoElement);
-      debugLog('Video src:', videoElement?.src);
-      debugLog('Is playing:', this.isPlaying);
-      debugLog('Game ID:', this.gameId);
+      console.log('Video element:', videoElement);
+      console.log('Video src:', videoElement?.src);
+      console.log('Is playing:', this.isPlaying);
+      console.log('Game ID:', this.gameId);
       
       if (videoElement && videoElement.src) {
-        debugLog('Testing video playback...');
+        console.log('Testing video playback...');
         this.playVideo();
       } else {
-        debugLog('No video source available');
+        console.log('No video source available');
       }
     }
   }
@@ -466,97 +522,32 @@
       if (this.applicationKey) {
         this.waitForSocketIO();
         this.setupScrollDetection();
-        this.injectButtonStyles();
       }
-    }
-    
-    injectButtonStyles() {
-      // Inject CSS for button visibility control
-      const style = document.createElement('style');
-      style.textContent = `
-        /* Masulo SDK Button Styles */
-        .game-card {
-          position: relative;
-        }
-        
-        .game-card img,
-        .game-card video {
-          transition: opacity 0.5s ease-in-out;
-        }
-        
-        .game-card.fading-out img {
-          opacity: 0;
-        }
-        
-        .game-card .loader {
-          position: absolute;
-          bottom: 10px;
-          right: 10px;
-          width: 16px;
-          height: 16px;
-          opacity: 0;
-          transition: opacity 0.3s ease;
-          z-index: 10;
-          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Ccircle cx='12' cy='12' r='10' stroke='white' stroke-width='2' stroke-linecap='round' stroke-dasharray='30 10' opacity='0.6'/%3E%3C/svg%3E");
-          background-size: contain;
-          background-repeat: no-repeat;
-          animation: spin 1s linear infinite;
-        }
-        
-        .game-card.loading .loader {
-          opacity: 1;
-        }
-        
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-        
-        .game-card[data-masulo-tag="true"] .mesulo-button {
-          transition: all 0.3s ease !important;
-          backdrop-filter: blur(0px) !important;
-          opacity: 0 !important;
-          visibility: hidden !important;
-          pointer-events: none !important;
-        }
-        
-        .game-card[data-masulo-tag="true"].video-active .mesulo-button {
-          background: rgba(0, 0, 0, 0.5) !important;
-          border-color: #ffd700 !important;
-          backdrop-filter: blur(2px) !important;
-          opacity: 0.7 !important;
-          visibility: visible !important;
-          color: white !important;
-          font-weight: bold !important;
-          pointer-events: auto !important;
-        }
-      `;
-      document.head.appendChild(style);
     }
     
     waitForSocketIO() {
       // Check if Socket.IO is already loaded
       if (typeof io !== 'undefined') {
-        debugLog('Socket.IO detected, connecting...');
+        console.log('Socket.IO detected, connecting...');
         this.connect();
         return;
       }
       
       // Dynamically load Socket.IO from Mesulo CDN
-      debugLog('Loading Socket.IO from Mesulo CDN...');
+      console.log('Loading Socket.IO from Mesulo CDN...');
       
       const script = document.createElement('script');
       script.src = `${currentConfig.cdnUrl}/socket.io.min.js`;
       script.async = true;
       
       script.onload = () => {
-        debugLog('Socket.IO loaded successfully, connecting...');
+        console.log('Socket.IO loaded successfully, connecting...');
         this.connect();
       };
       
       script.onerror = () => {
-        debugError('Failed to load Socket.IO from Mesulo CDN');
-        debugError('Please check your internet connection or contact support');
+        console.error('Failed to load Socket.IO from Mesulo CDN');
+        console.error('Please check your internet connection or contact support');
         this.updateStatus('disconnected');
       };
       
@@ -571,8 +562,8 @@
       
       // Safety check for Socket.IO
       if (typeof io === 'undefined') {
-        debugError('Socket.IO (io) is not defined. Cannot connect.');
-        debugError('Socket.IO should have been auto-loaded from Mesulo CDN. Please check your internet connection.');
+        console.error('Socket.IO (io) is not defined. Cannot connect.');
+        console.error('Socket.IO should have been auto-loaded from Mesulo CDN. Please check your internet connection.');
         this.updateStatus('disconnected');
         return;
       }
@@ -590,34 +581,28 @@
         });
         
         this.socket.on('connect', () => {
-          debugLog('SDK connected to server');
+          console.log('SDK connected to server');
           this.isConnected = true;
           this.updateStatus('connected');
           this.emit('connected');
-
           this.requestGames();
-          
-          // Wait 2 seconds before requesting games
-          // setTimeout(() => {
-            
-          // }, 2000);
         });
         
         this.socket.on('disconnect', (reason) => {
-          debugLog('SDK disconnected:', reason);
+          console.log('SDK disconnected:', reason);
           this.isConnected = false;
           this.updateStatus('disconnected');
           this.emit('disconnected', { reason });
         });
         
         this.socket.on('connect_error', (error) => {
-          debugError('SDK connection error:', error);
+          console.error('SDK connection error:', error);
           this.updateStatus('disconnected');
           this.emit('error', { type: 'connection', error });
         });
         
         this.socket.on('games-updated', (data) => {
-          debugLog('Received game update:', data);
+          console.log('Received game update:', data);
           this.emit('game-updated', data);
           if (data.games) {
             this.updateSpecificGames(data.games);
@@ -625,14 +610,14 @@
         });
         
         this.socket.on('games-response', (data) => {
-          debugLog('Received initial games data');
+          console.log('Received initial games data');
           if (data.games) {
             this.updateSpecificGames(data.games);
           }
         });
         
       } catch (error) {
-        debugError('Socket initialization error:', error);
+        console.error('Socket initialization error:', error);
         this.updateStatus('disconnected');
       }
     }
@@ -653,7 +638,7 @@
         // If user scrolls more than threshold, mark as scrolling and deactivate video
         if (deltaY > this.SCROLL_THRESHOLD && !this.isScrolling) {
           this.isScrolling = true;
-          debugLog(`Scroll detected (${deltaY}px), deactivating video`);
+          console.log(`Scroll detected (${deltaY}px), deactivating video`);
           // When scrolling >30px, hide button and stop video (full deactivation)
           this.deactivateAllVideos(true, true);
         }
@@ -674,21 +659,12 @@
       document.addEventListener('touchend', handleTouchEnd, { passive: true });
     }
     
-    // Deactivate all videos (stop playing, hide button)
+    // Deactivate all videos (stop playing, optionally hide button)
     deactivateAllVideos(hideButton = false, forceHideButton = false) {
-      // Find all containers with video-active class (playing OR paused)
-      const activeContainers = document.querySelectorAll('.game-card.video-active');
-      activeContainers.forEach(container => {
-        const videoElement = container.querySelector('video');
-        if (videoElement) {
-          videoElement.pause();
-          videoElement.currentTime = 0;
-          container.dataset.masuloVideoPlaying = 'false';
-          
-          // Hide button
-          container.classList.remove('video-active');
-        }
-      });
+      if (this.activeVideoContainer) {
+        this.activeVideoContainer.deactivate(hideButton, forceHideButton);
+        this.activeVideoContainer = null;
+      }
     }
     
     requestGames() {
@@ -698,11 +674,11 @@
         .map(el => el.getAttribute('data-masulo-game-id'))
         .filter(Boolean);
       
-      debugLog('Found tagged game elements:', taggedGameElements.length);
-      debugLog('Game IDs to request:', taggedGameIds);
+      console.log('Found tagged game elements:', taggedGameElements.length);
+      console.log('Game IDs to request:', taggedGameIds);
       
       if (taggedGameIds.length === 0) {
-        debugLog('No tagged games found, skipping request');
+        console.log('No tagged games found, skipping request');
         return;
       }
       
@@ -721,21 +697,18 @@
     }
     
     updateSpecificGames(gamesData) {
-      debugLog('Updating games with data:', gamesData);
-      
-      // 1. Find containers that need updates
-      const containersToUpdate = [];
+      console.log('Updating games with data:', gamesData);
       
       gamesData.forEach(game => {
         // Check if this game exists on the page with data-masulo-tag="true"
         const container = document.querySelector(`[data-masulo-game-id="${game.id}"][data-masulo-tag="true"]`);
         
         if (!container) {
-          debugLog(`No container found for game ${game.id}`);
+          console.log(`No container found for game ${game.id}`);
           return;
         }
         
-        debugLog(`Updating game ${game.id}:`, game);
+        console.log(`Updating game ${game.id}:`, game);
         
         // If game is not published, revert to defaultImage only (no video)
         if (!game.published) {
@@ -761,136 +734,89 @@
           videoUrl = game.defaultVideo;
         }
         
-        // Check if container has img element (needs conversion to video)
+        // Update the image
         const imgElement = container.querySelector('img');
-        const videoElement = container.querySelector('video');
+        if (imgElement && imageUrl) {
+          console.log(`Updating image for ${game.id} to:`, imageUrl);
+          imgElement.src = imageUrl;
+          
+          // Ensure image has transition for smooth video fade effects
+          if (!imgElement.style.transition) {
+            imgElement.style.transition = 'opacity 0.3s ease';
+          }
+        }
         
-        // Always convert img to video, or update existing video if poster changed
-        if (imgElement || (videoElement && videoElement.poster !== imageUrl)) {
-          containersToUpdate.push({ container, game, imageUrl, videoUrl });
+        // Setup video functionality if video URL is available
+        if (videoUrl) {
+          console.log(`Setting up video for ${game.id}:`, videoUrl);
+          this.setupVideoForContainer(container, game.id, videoUrl, imgElement);
         }
       });
-      
-      if (containersToUpdate.length === 0) return;
-      
-      // 2. Show loaders
-      containersToUpdate.forEach(({ container }) => {
-        // Add loader element if it doesn't exist
-        if (!container.querySelector('.loader')) {
-          const loader = document.createElement('div');
-          loader.className = 'loader';
-          container.appendChild(loader);
-        }
-        container.classList.add('loading');
-      });
-      
-      // 3. Wait 2 seconds for loader visibility
-      setTimeout(() => {
-        // 4. Start transitions
-        containersToUpdate.forEach(({ container, game, imageUrl, videoUrl }) => {
-          this.smoothReplaceWithVideo(container, imageUrl, videoUrl, game.id);
-        });
-      }, 2000);
     }
     
-    smoothReplaceWithVideo(container, imageUrl, videoUrl, gameId) {
-      const imgElement = container.querySelector('img');
-      const existingVideoElement = container.querySelector('video');
+    setupVideoForContainer(container, gameId, videoUrl, imgElement) {
+      // Check if video element already exists
+      let videoElement = container.querySelector('.masulo-video');
       
-      debugLog(`Starting smooth transition for ${gameId}`);
-      
-      // If container already has a video element, just update it
-      if (existingVideoElement && !imgElement) {
-        debugLog(`Video already exists for ${gameId}, updating poster and src`);
-        
-        // Remove loader
-        container.classList.remove('loading');
-        
-        // Update existing video element
-        if (imageUrl) {
-          existingVideoElement.poster = imageUrl;
-        }
-        if (videoUrl) {
-          existingVideoElement.src = videoUrl;
-          existingVideoElement.load();
-        } else {
-          existingVideoElement.removeAttribute('src');
-          existingVideoElement.load();
-        }
-        
-        debugLog(`Completed video update for ${gameId}`);
-        return;
-      }
-      
-      // If no img element exists, nothing to do
-      if (!imgElement) {
-        debugLog(`No img element found for ${gameId}, skipping`);
-        container.classList.remove('loading');
-        return;
-      }
-      
-      // Fade out current image
-      container.classList.add('fading-out');
-      
-      // After fade out, replace with video
-      setTimeout(() => {
-        // Remove loader
-        container.classList.remove('loading');
-        
-        // Create video with opacity 0
-        const videoElement = document.createElement('video');
-        videoElement.className = 'game-video';
+      if (!videoElement) {
+        // Create video element
+        videoElement = document.createElement('video');
+        videoElement.className = 'masulo-video';
         videoElement.muted = true;
         videoElement.loop = true;
         videoElement.playsInline = true;
         videoElement.preload = 'metadata';
         videoElement.style.cssText = `
+          position: absolute;
+          top: 0;
+          left: 0;
           width: 100%;
           height: 100%;
           object-fit: cover;
-          user-select: none;
-          -webkit-user-select: none;
-          -webkit-touch-callout: none;
-          pointer-events: none;
-          display: block;
           opacity: 0;
+          transition: opacity 0.3s ease;
+          pointer-events: none;
+          z-index: 1;
         `;
         
-        // Set poster and src
-        if (imageUrl) {
-          videoElement.poster = imageUrl;
-        }
-        if (videoUrl) {
-          videoElement.src = videoUrl;
-          videoElement.load();
+        // Insert video after image
+        if (imgElement && imgElement.parentNode === container) {
+          imgElement.parentNode.insertBefore(videoElement, imgElement.nextSibling);
+        } else {
+          container.appendChild(videoElement);
         }
         
-        // Replace img with video
-        imgElement.parentNode.replaceChild(videoElement, imgElement);
-        
-        // Remove fading-out class
-        container.classList.remove('fading-out');
-        
-        // Fade in video
-        setTimeout(() => {
-          videoElement.style.opacity = '1';
-        }, 50);
-        
-        // Add event listeners
-        this.addVideoEventListeners(container, videoElement, gameId);
-        
-        debugLog(`Completed smooth transition for ${gameId}`);
-      }, 500); // Match CSS transition duration
+        console.log(`Created video element for ${gameId}`);
+      }
+      
+      // Update video source
+      videoElement.src = videoUrl;
+      
+      // Store reference for later use
+      container.dataset.masuloVideoUrl = videoUrl;
+      container.dataset.masuloHasVideo = 'true';
+      
+      // Make container position relative if not already
+      const computedStyle = window.getComputedStyle(container);
+      if (computedStyle.position === 'static') {
+        container.style.position = 'relative';
+      }
+      
+      // Add hover/click event listeners if not already added
+      if (!container.dataset.masuloVideoSetup) {
+        this.addVideoEventListeners(container, videoElement, imgElement, gameId);
+        container.dataset.masuloVideoSetup = 'true';
+      }
     }
     
-    addVideoEventListeners(container, videoElement, gameId) {
+    addVideoEventListeners(container, videoElement, imgElement, gameId) {
       const isTouchDevice = ('ontouchstart' in window && navigator.maxTouchPoints > 0) || 
                            (navigator.userAgent.includes('Mobile') || navigator.userAgent.includes('Tablet'));
       
       if (isTouchDevice) {
-        // Mobile: Touch to toggle video
-        container.addEventListener('touchend', (e) => {
-          // Don't trigger if tapping on a button
+        // Mobile: Click to toggle video
+        container.addEventListener('click', (e) => {
+          // Don't trigger if clicking on a button
           if (e.target.tagName === 'BUTTON' || e.target.closest('button')) {
             return;
           }
@@ -899,39 +825,37 @@
           const isPlaying = container.dataset.masuloVideoPlaying === 'true';
           
           if (isPlaying) {
-            // Just pause, don't reset
-            this.pauseContainerVideo(container, videoElement, gameId);
+            this.stopContainerVideo(container, videoElement, imgElement, gameId);
           } else {
-            this.playContainerVideo(container, videoElement, gameId);
+            this.playContainerVideo(container, videoElement, imgElement, gameId);
           }
-        }, { passive: false });
+        });
       } else {
         // Desktop: Hover to play video
         container.addEventListener('mouseenter', () => {
-          this.playContainerVideo(container, videoElement, gameId);
+          this.playContainerVideo(container, videoElement, imgElement, gameId);
         });
         
         container.addEventListener('mouseleave', () => {
-          this.stopContainerVideo(container, videoElement, gameId);
+          this.stopContainerVideo(container, videoElement, imgElement, gameId);
         });
       }
       
-      debugLog(`Added ${isTouchDevice ? 'touch' : 'hover'} event listeners for ${gameId}`);
+      console.log(`Added ${isTouchDevice ? 'touch' : 'hover'} event listeners for ${gameId}`);
     }
     
-    playContainerVideo(container, videoElement, gameId) {
-      debugLog(`Playing video for ${gameId}`);
+    playContainerVideo(container, videoElement, imgElement, gameId) {
+      console.log(`Playing video for ${gameId}`);
       
-      // Deactivate all other videos first
-      this.deactivateAllVideos();
-      
-      // Show video and button
-      videoElement.style.display = 'block';
-      container.classList.add('video-active');
+      // Fade out image, fade in video
+      if (imgElement) {
+        imgElement.style.opacity = '0';
+      }
+      videoElement.style.opacity = '1';
       
       // Play video
       videoElement.play().catch(err => {
-        debugError(`Error playing video for ${gameId}:`, err);
+        console.error(`Error playing video for ${gameId}:`, err);
       });
       
       container.dataset.masuloVideoPlaying = 'true';
@@ -945,36 +869,18 @@
       }
     }
     
-    pauseContainerVideo(container, videoElement, gameId) {
-      debugLog(`Pausing video for ${gameId}`);
+    stopContainerVideo(container, videoElement, imgElement, gameId) {
+      console.log(`Stopping video for ${gameId}`);
       
-      // Pause video but keep currentTime
-      videoElement.pause();
-      
-      // Keep button visible (don't remove video-active class)
-      // container.classList.remove('video-active'); // DON'T do this
-      
-      container.dataset.masuloVideoPlaying = 'false';
-      
-      // Track analytics if enabled
-      if (this.analyticsEnabled) {
-        this.trackAssetEvent('video_pause', gameId, 'video', videoElement.src, {
-          trigger: 'tap',
-          currentTime: videoElement.currentTime,
-          viewport: this.getViewportInfo()
-        });
+      // Fade in image, fade out video
+      if (imgElement) {
+        imgElement.style.opacity = '1';
       }
-    }
-    
-    stopContainerVideo(container, videoElement, gameId) {
-      debugLog(`Stopping video for ${gameId}`);
+      videoElement.style.opacity = '0';
       
       // Stop and reset video
       videoElement.pause();
       videoElement.currentTime = 0;
-      
-      // Hide button
-      container.classList.remove('video-active');
       
       container.dataset.masuloVideoPlaying = 'false';
       
@@ -999,12 +905,10 @@
         reverted_to: 'defaultImage'
       });
       
-      // Update the video poster to default
-      const videoElement = container.querySelector('video');
-      if (videoElement && defaultImageUrl) {
-        videoElement.poster = defaultImageUrl;
-        videoElement.removeAttribute('src');
-        videoElement.load();
+      // Update the image to default
+      const imgElement = container.querySelector('img');
+      if (imgElement && defaultImageUrl) {
+        imgElement.src = defaultImageUrl;
       }
       
       // Remove video URL
@@ -1072,7 +976,7 @@
         try {
           callback(data);
         } catch (error) {
-          debugError('Error in event listener:', error);
+          console.error('Error in event listener:', error);
         }
       });
     }
@@ -1135,9 +1039,9 @@
   // Add test function for debugging
   window.testMasuloVideo = function() {
     const gameElements = document.querySelectorAll('masulo-game');
-    debugLog(`Found ${gameElements.length} masulo-game elements`);
+    console.log(`Found ${gameElements.length} masulo-game elements`);
     gameElements.forEach((element, index) => {
-      debugLog(`Testing element ${index + 1}:`, element);
+      console.log(`Testing element ${index + 1}:`, element);
       element.testVideo();
     });
   };
