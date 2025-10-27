@@ -1065,7 +1065,7 @@
                     <li>Hot-swap game images and videos without rebuild</li>
                     <li>Generate new assets on the fly with custom Ai model</li>
                    
-                    <li>Create custo themes, campaigns and promotions</li>
+                    <li>Create custom themes, campaigns and promotions</li>
                     <li>A/B test assets and anlytics</li>
                      <li>Auto optimizes videos and images for web and mobile</li>
                     
@@ -1142,12 +1142,6 @@
         function setupStatusUpdates() {
             if (window.mesulo) {
                 document.getElementById('sdk-status').textContent = 'Ready';
-                
-
-                
-                window.mesulo.on('disconnected', () => {
-                    console.log('Mesulo SDK disconnected');
-                });
                 
                 window.mesulo.on('gameLaunched', (gameId) => {
                     console.log(`Game launched: ${gameId}`);
