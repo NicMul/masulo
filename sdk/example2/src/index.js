@@ -1,64 +1,48 @@
 // Main entry point for the Mesulo Game Components SDK
 // This SDK automatically detects and upgrades existing HTML elements
 
-import './components/game-card.js';
+import { GameCardManager } from './components/game-card-manager.js';
 import { MesuloSDK } from './sdk/core.js';
 
 // Track upgraded elements to avoid double-processing
-const upgradedElements = new WeakSet();
+const upgradedManagers = new Map();
 
 /**
- * Upgrades a single element with data-masulo-game-id to a game-card web component
+ * Upgrades a single element with data-masulo-game-id to use GameCardManager
  */
 function upgradeElement(element) {
   // Skip if already upgraded or not a valid element
-  if (upgradedElements.has(element) || 
-      !element.hasAttribute('data-masulo-game-id') ||
-      element.tagName.toLowerCase() === 'game-card') {
+  if (!element.hasAttribute('data-masulo-game-id')) {
     return;
   }
 
-  // Extract data from the existing element
+  // Extract game ID
   const gameId = element.getAttribute('data-masulo-game-id');
-  const theme = element.getAttribute('data-masulo-theme') || '';
-  const version = element.getAttribute('data-masulo-version') || '';
   
-  // Get image source from img tag
-  const imgElement = element.querySelector('.game-image, img');
-  const image = imgElement?.src || imgElement?.getAttribute('src') || '';
-  
-  // Get game name from sibling or parent structure
-  let name = '';
-  const nameElement = element.parentElement?.querySelector('.game-name');
-  if (nameElement) {
-    name = nameElement.textContent.trim();
-  } else {
-    // Fallback to alt text or empty
-    name = imgElement?.alt || '';
+  // Skip if already has a manager
+  if (upgradedManagers.has(element)) {
+    return;
   }
 
-  // Create the new game-card web component
-  const gameCard = document.createElement('game-card');
-  gameCard.setAttribute('game-id', gameId);
-  gameCard.setAttribute('image', image);
-  gameCard.setAttribute('name', name);
-  if (theme) gameCard.setAttribute('theme', theme);
-  if (version) gameCard.setAttribute('version', version);
-
-  // Mark as upgraded before replacement
-  upgradedElements.add(gameCard);
-
-  // Replace the old element with the new web component
-  element.replaceWith(gameCard);
+  // Create game card manager for this element
+  const manager = new GameCardManager(element, gameId);
   
-  console.log(`[Mesulo SDK] Upgraded game card: ${name} (${gameId})`);
+  // Register manager with SDK
+  if (window.mesulo) {
+    window.mesulo.registerGameCard(manager, gameId);
+  }
+  
+  // Store manager reference
+  upgradedManagers.set(element, manager);
+  
+  console.log(`[Mesulo SDK] Upgraded game card: ${gameId}`);
 }
 
 /**
  * Scans the DOM and upgrades all matching elements
  */
 function upgradeAllElements() {
-  const elements = document.querySelectorAll('[data-masulo-game-id]:not(game-card)');
+  const elements = document.querySelectorAll('[data-masulo-game-id]');
   console.log(`[Mesulo SDK] Found ${elements.length} elements to upgrade`);
   
   elements.forEach(element => {
@@ -73,37 +57,37 @@ function upgradeAllElements() {
 /**
  * Set up MutationObserver to handle dynamically added content
  */
-function observeDynamicContent() {
-  const observer = new MutationObserver((mutations) => {
-    mutations.forEach((mutation) => {
-      // Check added nodes
-      mutation.addedNodes.forEach((node) => {
-        if (node.nodeType === Node.ELEMENT_NODE) {
-          const element = node;
+// function observeDynamicContent() {
+//   const observer = new MutationObserver((mutations) => {
+//     mutations.forEach((mutation) => {
+//       // Check added nodes
+//       mutation.addedNodes.forEach((node) => {
+//         if (node.nodeType === Node.ELEMENT_NODE) {
+//           const element = node;
           
-          // Check if the node itself needs upgrading
-          if (element.hasAttribute && element.hasAttribute('data-masulo-game-id')) {
-            upgradeElement(element);
-          }
+//           // Check if the node itself needs upgrading
+//           if (element.hasAttribute && element.hasAttribute('data-masulo-game-id')) {
+//             upgradeElement(element);
+//           }
           
-          // Check children
-          if (element.querySelectorAll) {
-            const children = element.querySelectorAll('[data-masulo-game-id]:not(game-card)');
-            children.forEach(child => upgradeElement(child));
-          }
-        }
-      });
-    });
-  });
+//           // Check children
+//           if (element.querySelectorAll) {
+//             const children = element.querySelectorAll('[data-masulo-game-id]:not(game-card)');
+//             children.forEach(child => upgradeElement(child));
+//           }
+//         }
+//       });
+//     });
+//   });
 
-  // Start observing the document body for changes
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true
-  });
+//   // Start observing the document body for changes
+//   observer.observe(document.body, {
+//     childList: true,
+//     subtree: true
+//   });
 
-  console.log('[Mesulo SDK] MutationObserver initialized');
-}
+//   console.log('[Mesulo SDK] MutationObserver initialized');
+// }
 
 // Global SDK instance
 let sdkInstance = null;
@@ -134,7 +118,7 @@ function init() {
   upgradeAllElements();
   
   // Watch for dynamic content
-  observeDynamicContent();
+  // observeDynamicContent();
   
   console.log('[Mesulo SDK] Ready');
 }
