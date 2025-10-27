@@ -6,8 +6,8 @@ export default defineConfig({
     lib: {
       entry: 'src/index.js',
       name: 'MesuloGameComponents',
-      fileName: (format) => `game-components.${format === 'es' ? 'js' : 'umd.cjs'}`,
-      formats: ['es', 'umd']
+      fileName: (format) => 'mesulo-ai-sdk.js',
+      formats: ['umd']
     },
     rollupOptions: {
       output: {

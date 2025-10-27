@@ -147,10 +147,14 @@ export class GameCardManager {
   };
   
   handleTouchEnd = (e) => {
-    if (!this.currentVideo || !this.currentVideoUrl) return;
-    
+    // Always prevent default to avoid fullscreen on images
     e.preventDefault();
     e.stopPropagation();
+    
+    if (!this.currentVideo || !this.currentVideoUrl) {
+      // No video yet, just prevent default behavior
+      return;
+    }
     
     if (this.isPlaying) {
       // Second tap: pause video where it is
@@ -218,10 +222,85 @@ export class GameCardManager {
     
     // If we have video, update its sources
     if (this.currentVideo) {
-      this.currentVideo.poster = this.currentImageUrl;
-      if (this.currentVideoUrl) {
-        this.currentVideo.src = this.currentVideoUrl;
-        this.currentVideo.load();
+      // Store current playback state
+      const wasPlaying = this.isPlaying;
+      const currentTime = this.currentVideo.currentTime;
+      
+      // Force a visual refresh on mobile by replacing the entire video element
+      if (this.isTouchDevice && this.currentVideoUrl) {
+        // Pause and replace the video element to force refresh
+        this.currentVideo.pause();
+        
+        // Store reference to old video
+        const oldVideo = this.currentVideo;
+        
+        // Create new video element with updated sources
+        const video = document.createElement('video');
+        
+        // Copy className from old video to preserve styles
+        if (oldVideo.className) {
+          video.className = oldVideo.className;
+        }
+        
+        // Copy other attributes to preserve styling
+        if (oldVideo.hasAttribute('style')) {
+          const existingStyle = oldVideo.getAttribute('style');
+          video.setAttribute('style', existingStyle);
+        }
+        
+        // Ensure opacity and transition are set
+        video.style.opacity = '0';
+        video.style.transition = 'opacity 0.8s ease-in-out';
+        
+        // Set video properties (same as initial load)
+        video.poster = this.currentImageUrl;
+        video.src = this.currentVideoUrl;
+        video.muted = true;
+        video.loop = true;
+        video.playsinline = true;
+        video.preload = 'metadata';
+        video.playsInline = true; // Double check for iOS
+        
+        // Load video metadata first
+        const handleMetadataLoad = () => {
+          // Replace old video with new one
+          oldVideo.replaceWith(video);
+          this.currentVideo = video;
+          
+          // Restore playback state if needed
+          if (wasPlaying) {
+            video.currentTime = currentTime;
+          }
+          
+          // Fade in the new video
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              video.style.opacity = '1';
+            });
+          });
+          
+          console.log(`[Game Card Manager] Video updated for ${this.gameId}`);
+        };
+        
+        video.addEventListener('loadedmetadata', handleMetadataLoad, { once: true });
+        
+        // Fallback: if metadata takes too long, proceed anyway
+        setTimeout(() => {
+          if (oldVideo.parentNode) {
+            oldVideo.replaceWith(video);
+            this.currentVideo = video;
+            requestAnimationFrame(() => {
+              video.style.opacity = '1';
+            });
+          }
+        }, 3000);
+      } else {
+        // Desktop: just update normally
+        this.currentVideo.poster = this.currentImageUrl;
+        if (this.currentVideoUrl) {
+          this.currentVideo.src = this.currentVideoUrl;
+          this.currentVideo.load();
+        }
       }
     }
   }
