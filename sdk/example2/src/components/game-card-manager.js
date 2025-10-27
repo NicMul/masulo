@@ -5,6 +5,7 @@
  */
 
 import { isTouchDevice } from '../utils/device-detection.js';
+import { GameCardAnalytics } from '../utils/analytics.js';
 
 export class GameCardManager {
   constructor(containerElement, gameId) {
@@ -20,6 +21,9 @@ export class GameCardManager {
     this.loadingSpinner = null;
     this.replacementTimer = null;
     this.spinnerFadeTimer = null;
+    
+    // Initialize analytics
+    this.analytics = new GameCardAnalytics(gameId, containerElement);
     
     // Ensure container has relative positioning for spinner
     if (window.getComputedStyle(this.container).position === 'static') {
@@ -37,6 +41,12 @@ export class GameCardManager {
       
       // Add event handlers to container
       this.setupEventHandlers();
+      
+      // Setup analytics for image tracking
+      this.analytics.setupImageTracking(
+        this.originalImg,
+        () => this.originalImg?.src || this.currentImageUrl
+      );
       
       console.log(`[Game Card Manager] Found img tag for ${gameId}`);
     } else {
@@ -120,6 +130,11 @@ export class GameCardManager {
         console.warn(`[Game Card Manager] Play failed on hover for ${this.gameId}:`, err);
         this.isPlaying = false;
       });
+      
+      // Track interaction
+      this.analytics.trackInteraction('video_play', this.currentVideoUrl, {
+        interaction: 'hover_reset'
+      });
       return;
     }
     
@@ -130,12 +145,24 @@ export class GameCardManager {
         console.warn(`[Game Card Manager] Play failed on hover for ${this.gameId}:`, err);
         this.isPlaying = false;
       });
+      
+      // Track interaction
+      this.analytics.trackInteraction('video_play', this.currentVideoUrl, {
+        interaction: 'hover'
+      });
     }
   };
   
   handleMouseLeave = (e) => {
     if (this.currentVideo && this.isPaused) {
       return; // Keep button visible if paused
+    }
+    
+    // Track stop event if video was playing
+    if (this.currentVideo && this.isPlaying) {
+      this.analytics.trackInteraction('video_stop', this.currentVideoUrl, {
+        interaction: 'hover_end'
+      });
     }
     
     // Stop and reset video
@@ -162,6 +189,11 @@ export class GameCardManager {
       this.isPlaying = false;
       this.isPaused = true;
       console.log(`[Game Card Manager] Video paused for ${this.gameId}`);
+      
+      // Track pause
+      this.analytics.trackInteraction('video_pause', this.currentVideoUrl, {
+        interaction: 'tap'
+      });
     } else {
       // First tap: play video
       if (window.mesulo) {
@@ -175,6 +207,11 @@ export class GameCardManager {
         this.isPlaying = false;
       });
       console.log(`[Game Card Manager] Video playing for ${this.gameId}`);
+      
+      // Track play
+      this.analytics.trackInteraction('video_play', this.currentVideoUrl, {
+        interaction: 'tap'
+      });
     }
   };
   
@@ -190,6 +227,11 @@ export class GameCardManager {
       this.isPlaying = false;
       this.isPaused = true;
       console.log(`[Game Card Manager] Video clicked to pause for ${this.gameId}`);
+      
+      // Track pause
+      this.analytics.trackInteraction('video_pause', this.currentVideoUrl, {
+        interaction: 'click'
+      });
     } else if (this.isPaused) {
       // Resume from paused state
       this.isPaused = false;
@@ -199,6 +241,11 @@ export class GameCardManager {
         this.isPlaying = false;
       });
       console.log(`[Game Card Manager] Video resumed for ${this.gameId}`);
+      
+      // Track resume
+      this.analytics.trackInteraction('video_play', this.currentVideoUrl, {
+        interaction: 'click_resume'
+      });
     }
   };
   
@@ -210,6 +257,10 @@ export class GameCardManager {
       clearTimeout(this.replacementTimer);
       this.replacementTimer = null;
     }
+    if (this.spinnerFadeTimer) {
+      clearTimeout(this.spinnerFadeTimer);
+      this.spinnerFadeTimer = null;
+    }
     
     // Update content URLs (but don't apply to DOM yet)
     if (newImageUrl) this.currentImageUrl = newImageUrl;
@@ -220,88 +271,14 @@ export class GameCardManager {
       this.startDelayedVideoSwitch();
     }
     
-    // If we have video, update its sources
-    if (this.currentVideo) {
-      // Store current playback state
-      const wasPlaying = this.isPlaying;
-      const currentTime = this.currentVideo.currentTime;
-      
-      // Force a visual refresh on mobile by replacing the entire video element
-      if (this.isTouchDevice && this.currentVideoUrl) {
-        // Pause and replace the video element to force refresh
-        this.currentVideo.pause();
-        
-        // Store reference to old video
-        const oldVideo = this.currentVideo;
-        
-        // Create new video element with updated sources
-        const video = document.createElement('video');
-        
-        // Copy className from old video to preserve styles
-        if (oldVideo.className) {
-          video.className = oldVideo.className;
-        }
-        
-        // Copy other attributes to preserve styling
-        if (oldVideo.hasAttribute('style')) {
-          const existingStyle = oldVideo.getAttribute('style');
-          video.setAttribute('style', existingStyle);
-        }
-        
-        // Ensure opacity and transition are set
-        video.style.opacity = '0';
-        video.style.transition = 'opacity 0.8s ease-in-out';
-        
-        // Set video properties (same as initial load)
-        video.poster = this.currentImageUrl;
-        video.src = this.currentVideoUrl;
-        video.muted = true;
-        video.loop = true;
-        video.playsinline = true;
-        video.preload = 'metadata';
-        video.playsInline = true; // Double check for iOS
-        
-        // Load video metadata first
-        const handleMetadataLoad = () => {
-          // Replace old video with new one
-          oldVideo.replaceWith(video);
-          this.currentVideo = video;
-          
-          // Restore playback state if needed
-          if (wasPlaying) {
-            video.currentTime = currentTime;
-          }
-          
-          // Fade in the new video
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              video.style.opacity = '1';
-            });
-          });
-          
-          console.log(`[Game Card Manager] Video updated for ${this.gameId}`);
-        };
-        
-        video.addEventListener('loadedmetadata', handleMetadataLoad, { once: true });
-        
-        // Fallback: if metadata takes too long, proceed anyway
-        setTimeout(() => {
-          if (oldVideo.parentNode) {
-            oldVideo.replaceWith(video);
-            this.currentVideo = video;
-            requestAnimationFrame(() => {
-              video.style.opacity = '1';
-            });
-          }
-        }, 3000);
-      } else {
-        // Desktop: just update normally
-        this.currentVideo.poster = this.currentImageUrl;
-        if (this.currentVideoUrl) {
-          this.currentVideo.src = this.currentVideoUrl;
-          this.currentVideo.load();
-        }
-      }
+    // If we have video, update it with the same loading sequence
+    if (this.currentVideo && this.currentVideoUrl) {
+      this.startDelayedVideoUpdate();
+    }
+    
+    // If we're showing an image and only got a new image URL (no video), update it directly
+    if (!this.currentVideo && this.originalImg && newImageUrl && !this.currentVideoUrl) {
+      this.originalImg.src = newImageUrl;
     }
   }
   
@@ -314,6 +291,113 @@ export class GameCardManager {
       this.spinnerFadeTimer = setTimeout(() => {
         this.switchToVideo();
       }, 2000);
+    }, 3000);
+  }
+  
+  startDelayedVideoUpdate() {
+    console.log(`[Game Card Manager] Starting delayed video update for ${this.gameId}`);
+    
+    // Wait 3 seconds before starting the transition
+    this.replacementTimer = setTimeout(() => {
+      this.createLoadingSpinner();
+      
+      // After 2 seconds with spinner visible, replace video
+      this.spinnerFadeTimer = setTimeout(() => {
+        this.replaceCurrentVideo();
+      }, 2000);
+    }, 3000);
+  }
+  
+  replaceCurrentVideo() {
+    if (!this.currentVideo || !this.currentVideoUrl) return;
+    
+    console.log(`[Game Card Manager] Replacing video for ${this.gameId}`);
+    
+    // Store current playback state
+    const wasPlaying = this.isPlaying;
+    const wasPaused = this.isPaused;
+    const currentTime = this.currentVideo.currentTime;
+    
+    // Store reference to old video
+    const oldVideo = this.currentVideo;
+    
+    // Create new video element with updated sources
+    const video = document.createElement('video');
+    
+    // Copy className from old video to preserve styles
+    if (oldVideo.className) {
+      video.className = oldVideo.className;
+    }
+    
+    // Copy other attributes to preserve styling
+    if (oldVideo.hasAttribute('style')) {
+      const existingStyle = oldVideo.getAttribute('style');
+      video.setAttribute('style', existingStyle);
+    }
+    
+    // Set opacity and transition for fade effect
+    video.style.opacity = '0';
+    video.style.transition = 'opacity 0.8s ease-in-out';
+    
+    // Set video properties
+    video.poster = this.currentImageUrl;
+    video.src = this.currentVideoUrl;
+    video.muted = true;
+    video.loop = true;
+    video.playsinline = true;
+    video.preload = 'metadata';
+    video.playsInline = true; // Double check for iOS
+    
+    // Setup analytics for new video
+    this.analytics.setupVideoTracking(video, this.currentVideoUrl);
+    
+    // Load video metadata first
+    const handleMetadataLoad = () => {
+      // Replace old video with new one
+      oldVideo.replaceWith(video);
+      this.currentVideo = video;
+      
+      // Remove spinner
+      this.removeLoadingSpinner();
+      
+      // Restore playback state
+      if (wasPlaying && !wasPaused) {
+        this.isPlaying = true;
+        this.isPaused = false;
+        video.currentTime = currentTime;
+        video.play().catch(err => {
+          console.warn(`[Game Card Manager] Auto-play failed for ${this.gameId}:`, err);
+          this.isPlaying = false;
+        });
+      } else if (wasPaused) {
+        this.isPlaying = false;
+        this.isPaused = true;
+        video.currentTime = currentTime;
+      }
+      
+      // Fade in the new video
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          video.style.opacity = '1';
+        });
+      });
+      
+      console.log(`[Game Card Manager] Video replaced for ${this.gameId}`);
+    };
+    
+    video.addEventListener('loadedmetadata', handleMetadataLoad, { once: true });
+    
+    // Fallback: if metadata takes too long, proceed anyway
+    setTimeout(() => {
+      if (oldVideo.parentNode) {
+        console.warn(`[Game Card Manager] Video metadata timeout for ${this.gameId}, proceeding with replacement`);
+        oldVideo.replaceWith(video);
+        this.currentVideo = video;
+        this.removeLoadingSpinner();
+        requestAnimationFrame(() => {
+          video.style.opacity = '1';
+        });
+      }
     }, 3000);
   }
   
@@ -352,6 +436,9 @@ export class GameCardManager {
     video.playsinline = true;
     video.preload = 'metadata';
     video.playsInline = true; // Double check for iOS
+    
+    // Setup analytics for video events
+    this.analytics.setupVideoTracking(video, this.currentVideoUrl);
     
     // Load video metadata first
     const handleMetadataLoad = () => {
@@ -436,6 +523,11 @@ export class GameCardManager {
       this.container.removeEventListener('touchend', this.handleTouchEnd);
     } else {
       this.container.removeEventListener('click', this.handleVideoClick);
+    }
+    
+    // Cleanup analytics
+    if (this.analytics) {
+      this.analytics.cleanup();
     }
     
     // Revert to image if showing video

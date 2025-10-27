@@ -196,6 +196,12 @@ export class MesuloSDK {
         // Game unpublished, use defaults only
         imageUrl = game.defaultImage;
         videoUrl = null;
+        
+        // Track game unpublish event
+        this.trackAssetEvent('game_unpublished', game.id, 'defaultImage', imageUrl, {
+          reason: 'game_unpublished',
+          reverted_to: 'defaultImage'
+        });
       } else if (game.publishedType === 'current' && game.currentImage) {
         imageUrl = game.currentImage;
         videoUrl = game.currentVideo;
