@@ -206,13 +206,15 @@ export class MesuloSDK {
   
   // ========== Video Management ==========
   
-  deactivateAllVideos(hideButton = false, forceHideButton = false) {
-    if (this.activeVideoContainer) {
-      if (typeof this.activeVideoContainer.deactivate === 'function') {
-        this.activeVideoContainer.deactivate(hideButton, forceHideButton);
+  deactivateAllVideos(resetToStart = true) {
+    // Deactivate all registered components, not just the active one
+    this.registeredComponents.forEach(component => {
+      if (typeof component.deactivate === 'function') {
+        component.deactivate(resetToStart);
       }
-      this.activeVideoContainer = null;
-    }
+    });
+    
+    this.activeVideoContainer = null;
   }
   
   // ========== Scroll Detection ==========
@@ -232,7 +234,7 @@ export class MesuloSDK {
       
       if (deltaY > this.SCROLL_THRESHOLD && !this.isScrolling) {
         this.isScrolling = true;
-        this.deactivateAllVideos(true, true);
+        this.deactivateAllVideos(true); // Reset on scroll
       }
     };
     

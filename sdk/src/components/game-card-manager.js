@@ -192,7 +192,7 @@ export class GameCardManager {
     } else {
       // First tap: play video
       if (window.mesulo) {
-        window.mesulo.deactivateAllVideos(true, true);
+        window.mesulo.deactivateAllVideos(false); // Don't reset, just pause
         window.mesulo.activeVideoContainer = this;
       }
       this.isPlaying = true;
@@ -465,14 +465,19 @@ export class GameCardManager {
     this.isPaused = false;
   }
   
-  deactivate(hideButton = false) {
+  deactivate(resetToStart = true) {
     if (!this.currentVideo) return;
     
-    // Stop video and reset
+    // Stop video
     this.currentVideo.pause();
-    this.currentVideo.currentTime = 0;
+    
+    // Only reset to beginning if requested (desktop behavior)
+    if (resetToStart) {
+      this.currentVideo.currentTime = 0;
+    }
+    
     this.isPlaying = false;
-    this.isPaused = hideButton ? false : this.isPaused; // Keep paused state if not hiding button
+    this.isPaused = !resetToStart; // Mark as paused if not resetting
   }
   
   destroy() {
