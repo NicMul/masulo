@@ -30,8 +30,6 @@ export class GameCardManager {
       this.container.style.position = 'relative';
     }
     
-    console.log(`[Game Card Manager] Initialized for ${gameId}`);
-    
     // Store reference to original img
     this.originalImg = this.container.querySelector('img');
     
@@ -47,8 +45,6 @@ export class GameCardManager {
         this.originalImg,
         () => this.originalImg?.src || this.currentImageUrl
       );
-      
-      console.log(`[Game Card Manager] Found img tag for ${gameId}`);
     } else {
       console.warn(`[Game Card Manager] No img tag found for ${gameId}`);
     }
@@ -188,7 +184,6 @@ export class GameCardManager {
       this.currentVideo.pause();
       this.isPlaying = false;
       this.isPaused = true;
-      console.log(`[Game Card Manager] Video paused for ${this.gameId}`);
       
       // Track pause
       this.analytics.trackInteraction('video_pause', this.currentVideoUrl, {
@@ -206,7 +201,6 @@ export class GameCardManager {
         console.warn(`[Game Card Manager] Play failed on tap for ${this.gameId}:`, err);
         this.isPlaying = false;
       });
-      console.log(`[Game Card Manager] Video playing for ${this.gameId}`);
       
       // Track play
       this.analytics.trackInteraction('video_play', this.currentVideoUrl, {
@@ -226,7 +220,6 @@ export class GameCardManager {
       this.currentVideo.pause();
       this.isPlaying = false;
       this.isPaused = true;
-      console.log(`[Game Card Manager] Video clicked to pause for ${this.gameId}`);
       
       // Track pause
       this.analytics.trackInteraction('video_pause', this.currentVideoUrl, {
@@ -240,7 +233,6 @@ export class GameCardManager {
         console.warn(`[Game Card Manager] Play failed on resume for ${this.gameId}:`, err);
         this.isPlaying = false;
       });
-      console.log(`[Game Card Manager] Video resumed for ${this.gameId}`);
       
       // Track resume
       this.analytics.trackInteraction('video_play', this.currentVideoUrl, {
@@ -250,8 +242,6 @@ export class GameCardManager {
   };
   
   updateContent(newImageUrl, newVideoUrl) {
-    console.log(`[Game Card Manager] Received update for ${this.gameId}:`, { newImageUrl, newVideoUrl });
-    
     // Cancel any pending timers
     if (this.replacementTimer) {
       clearTimeout(this.replacementTimer);
@@ -295,8 +285,6 @@ export class GameCardManager {
   }
   
   startDelayedVideoUpdate() {
-    console.log(`[Game Card Manager] Starting delayed video update for ${this.gameId}`);
-    
     // Wait 3 seconds before starting the transition
     this.replacementTimer = setTimeout(() => {
       this.createLoadingSpinner();
@@ -310,8 +298,6 @@ export class GameCardManager {
   
   replaceCurrentVideo() {
     if (!this.currentVideo || !this.currentVideoUrl) return;
-    
-    console.log(`[Game Card Manager] Replacing video for ${this.gameId}`);
     
     // Store current playback state
     const wasPlaying = this.isPlaying;
@@ -381,8 +367,6 @@ export class GameCardManager {
           video.style.opacity = '1';
         });
       });
-      
-      console.log(`[Game Card Manager] Video replaced for ${this.gameId}`);
     };
     
     video.addEventListener('loadedmetadata', handleMetadataLoad, { once: true });
@@ -403,8 +387,6 @@ export class GameCardManager {
   
   switchToVideo() {
     if (!this.originalImg || this.currentVideo) return;
-    
-    console.log(`[Game Card Manager] Switching to video for ${this.gameId}`);
     
     // Update image src before we replace it with video (preserves poster image)
     if (this.originalImg && this.currentImageUrl) {
@@ -455,8 +437,6 @@ export class GameCardManager {
           video.style.opacity = '1';
         });
       });
-      
-      console.log(`[Game Card Manager] Switched to video for ${this.gameId}`);
     };
     
     video.addEventListener('loadedmetadata', handleMetadataLoad, { once: true });
@@ -478,8 +458,6 @@ export class GameCardManager {
   revert() {
     if (!this.currentVideo || !this.originalImg) return;
     
-    console.log(`[Game Card Manager] Reverting to image for ${this.gameId}`);
-    
     // Replace video with image
     this.currentVideo.replaceWith(this.originalImg);
     this.currentVideo = null;
@@ -489,8 +467,6 @@ export class GameCardManager {
   
   deactivate(hideButton = false) {
     if (!this.currentVideo) return;
-    
-    console.log(`[Game Card Manager] Deactivating ${this.gameId}, hideButton=${hideButton}`);
     
     // Stop video and reset
     this.currentVideo.pause();
@@ -534,8 +510,6 @@ export class GameCardManager {
     if (this.currentVideo) {
       this.revert();
     }
-    
-    console.log(`[Game Card Manager] Destroyed for ${this.gameId}`);
   }
 }
 

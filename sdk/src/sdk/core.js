@@ -41,8 +41,6 @@ export class MesuloSDK {
       connectingClass: config.connectingClass || 'mesulo-connecting'
     };
     
-    console.log('[Mesulo SDK] Initialized with key:', this.applicationKey?.substring(0, 8) + '...');
-    
     // Auto-connect if application key provided
     if (this.applicationKey) {
       this.connect();
@@ -54,12 +52,10 @@ export class MesuloSDK {
   
   connect() {
     if (this.socket?.connected) {
-      console.log('[Mesulo SDK] Already connected');
       return;
     }
     
     this.updateStatus('connecting');
-    console.log('[Mesulo SDK] Connecting to:', this.config.serverUrl);
     
     try {
       this.socket = io(this.config.serverUrl, {
@@ -82,7 +78,7 @@ export class MesuloSDK {
   setupSocketListeners() {
     // Connection established
     this.socket.on('connect', () => {
-      console.log('[Mesulo SDK] Connected to server');
+      console.log('[Mesulo SDK] : Connected 🚀');
       this.isConnected = true;
       this.updateStatus('connected');
       this.emit('connected');
@@ -91,7 +87,7 @@ export class MesuloSDK {
     
     // Connection lost
     this.socket.on('disconnect', (reason) => {
-      console.log('[Mesulo SDK] Disconnected:', reason);
+      console.log('[Mesulo SDK] : Disconnected 😢');
       this.isConnected = false;
       this.updateStatus('disconnected');
       this.emit('disconnected', { reason });
@@ -106,7 +102,6 @@ export class MesuloSDK {
     
     // Real-time game updates
     this.socket.on('games-updated', (data) => {
-      console.log('[Mesulo SDK] Received game update:', data);
       this.emit('game-updated', data);
       if (data.games) {
         this.updateSpecificGames(data.games);
@@ -115,7 +110,6 @@ export class MesuloSDK {
     
     // Initial game data response
     this.socket.on('games-response', (data) => {
-      console.log('[Mesulo SDK] Received initial games data');
       if (data.games) {
         this.updateSpecificGames(data.games);
       }
@@ -127,7 +121,6 @@ export class MesuloSDK {
       this.socket.disconnect();
       this.socket = null;
       this.isConnected = false;
-      console.log('[Mesulo SDK] Disconnected');
     }
   }
   
@@ -135,7 +128,6 @@ export class MesuloSDK {
   
   registerGameCard(component, gameId) {
     this.registeredComponents.set(gameId, component);
-    console.log(`[Mesulo SDK] Registered component for game ${gameId}`);
     
     // If already connected, request game data immediately
     if (this.isConnected) {
@@ -145,23 +137,18 @@ export class MesuloSDK {
   
   unregisterGameCard(gameId) {
     this.registeredComponents.delete(gameId);
-    console.log(`[Mesulo SDK] Unregistered component for game ${gameId}`);
   }
   
   requestGames() {
     if (!this.socket || !this.isConnected) {
-      console.log('[Mesulo SDK] Not connected, skipping game request');
       return;
     }
     
     const gameIds = Array.from(this.registeredComponents.keys());
     
     if (gameIds.length === 0) {
-      console.log('[Mesulo SDK] No games to request');
       return;
     }
-    
-    console.log('[Mesulo SDK] Requesting games:', gameIds);
     
     // Join game rooms for real-time updates
     this.socket.emit('join-game-rooms', {
@@ -178,13 +165,10 @@ export class MesuloSDK {
   }
   
   updateSpecificGames(gamesData) {
-    console.log('[Mesulo SDK] Updating games:', gamesData);
-    
     gamesData.forEach(game => {
       const component = this.registeredComponents.get(game.id);
       
       if (!component) {
-        console.log(`[Mesulo SDK] No component found for game ${game.id}`);
         return;
       }
       
@@ -212,8 +196,6 @@ export class MesuloSDK {
         imageUrl = game.promoImage;
         videoUrl = game.promoVideo;
       }
-      
-      console.log(`[Mesulo SDK] Updating game ${game.id} with image: ${imageUrl}, video: ${videoUrl}`);
       
       // Update component
       if (component.updateContent) {
@@ -250,7 +232,6 @@ export class MesuloSDK {
       
       if (deltaY > this.SCROLL_THRESHOLD && !this.isScrolling) {
         this.isScrolling = true;
-        console.log(`[Mesulo SDK] Scroll detected (${deltaY}px)`);
         this.deactivateAllVideos(true, true);
       }
     };
@@ -266,8 +247,6 @@ export class MesuloSDK {
     document.addEventListener('touchstart', handleTouchStart, { passive: true });
     document.addEventListener('touchmove', handleTouchMove, { passive: true });
     document.addEventListener('touchend', handleTouchEnd, { passive: true });
-    
-    console.log('[Mesulo SDK] Scroll detection initialized');
   }
   
   // ========== Status Management ==========
@@ -369,7 +348,6 @@ export class MesuloSDK {
       }
     };
     
-    console.log('[Mesulo SDK] Tracking event:', eventType, gameId);
     this.socket.emit('analytics-event', eventData);
   }
 }

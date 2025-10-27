@@ -34,8 +34,6 @@ function upgradeElement(element) {
   
   // Store manager reference
   upgradedManagers.set(element, manager);
-  
-  console.log(`[Mesulo SDK] Upgraded game card: ${gameId}`);
 }
 
 /**
@@ -43,7 +41,6 @@ function upgradeElement(element) {
  */
 function upgradeAllElements() {
   const elements = document.querySelectorAll('[data-masulo-game-id]');
-  console.log(`[Mesulo SDK] Found ${elements.length} elements to upgrade`);
   
   elements.forEach(element => {
     try {
@@ -96,8 +93,6 @@ let sdkInstance = null;
  * Initialize the SDK
  */
 function init() {
-  console.log('[Mesulo SDK] Initializing...');
-  
   // Initialize SDK from script tag
   const script = document.currentScript || 
                  document.querySelector('script[data-application-key]');
@@ -109,7 +104,6 @@ function init() {
     
     // Expose globally
     window.mesulo = sdkInstance;
-    console.log('[Mesulo SDK] SDK instance created and exposed as window.mesulo');
   } else {
     console.warn('[Mesulo SDK] No application key found. SDK will not connect to server.');
   }
@@ -119,8 +113,6 @@ function init() {
   
   // Watch for dynamic content
   // observeDynamicContent();
-  
-  console.log('[Mesulo SDK] Ready');
 }
 
 // Auto-initialize when DOM is ready

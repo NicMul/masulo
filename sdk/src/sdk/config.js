@@ -31,7 +31,6 @@ export function detectEnvironment() {
  */
 export function getCurrentConfig() {
   const isDev = detectEnvironment();
-  console.log(`[Mesulo SDK] Environment: ${isDev ? 'development' : 'production'}`);
   return isDev ? CONFIG.development : CONFIG.production;
 }
 
