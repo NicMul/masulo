@@ -14,8 +14,8 @@ import Link from 'next/link';
 import Image from 'next/legacy/image';
 import { ClassHelper } from 'components/lib';
 
-import LogoLight from './logo-white.svg';
-import LogoDark from './logo-color.svg';
+import LogoLight from './logo-white2.svg';
+import LogoDark from './logo-color2.svg';
 
 import Style from './logo.tailwind.js';
 

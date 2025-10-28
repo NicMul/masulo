@@ -1,7 +1,7 @@
 const content = {
   hero: {
-    title: 'AI iGaming Asset Management to Boost Player Clicks',
-    subtitle: 'Instantly Hot Swap Casino Thumbnails and A/B Test for higher conversion, all without touching your CMS.',
+    title: 'AI iGaming Asset Management to Boost Player Engagement',
+    subtitle: 'Instantly Hot Swap Casino Thumbnails and A/B Test for higher conversion, all without touching your CMS or rebuilding your sites.',
     image: {
       width: 1024,
       height: 567,
@@ -28,20 +28,19 @@ const content = {
     list: [
       {
         author: 'Sarah J.',
-        role: 'Head of Retention, SlotNation Casino',
-        url: 'https://slotnation.com',
-        text: "Mesulo is a game-changer. We can A/B test a new slot thumbnail in minutes and instantly see a 15% uplift in clicks. It's the fastest way to optimize our lobby.",
+        role: 'Casino Manager',
+        text: "Mesulo is a game-changer. We can A/B test a new slot thumbnail in minutes and instantly see a an uplift in engagement. It's the fastest way to optimize our lobby.",
         image: '/images/testimonials/sarah-jonhson.jpg'
       },
       {
         author: 'Mark L.',
-        role: 'Chief Product Officer, Zenith Gaming Group',
+        role: 'Chief Product Officer',
         text: "The AI creative tool is phenomenal. It generates 5-second animated thumbnails that perform better than anything our design team produces manually. Massive time saver.",
         image: '/images/testimonials/alex-parker.jpg'
       },
       {
         author: 'David V.',
-        role: 'Marketing Director, RoyalBet',
+        role: 'Head of CRM',
         text: "Before Mesulo, updating one campaign asset took two days of dev work. Now, it's a live hot swap tied to real-time performance data. True operational efficiency.",
         image: '/images/testimonials/david-nguyen.jpg'
       },
@@ -52,7 +51,7 @@ const content = {
     description: 'Eliminate development friction and drive player engagement with intelligent assets.',
     list: [
       {
-        icon: 'play',
+        icon: 'shuffle',
         title: 'Hot Swap Assets Instantly',
         description: 'Update any game thumbnail or video live without needing to rebuild or redeploy your CMS.',
       },
@@ -68,16 +67,16 @@ const content = {
       },
       {
         icon: 'smartphone',
-        title: 'Auto-Optimized for All Devices',
+        title: 'Auto-Optimized Assets',
         description: 'Images and videos are automatically compressed and delivered for perfect web and mobile load speed.',
       },
       {
-        icon: 'list',
+        icon: 'zap',
         title: 'AI Creative Model',
         description: 'Generate new, high-converting thumbnail images and video animations using our custom-trained AI.',
       },
       {
-        icon: 'book',
+        icon: 'trending-up',
         title: 'Seamless A/B Testing',
         description: 'Launch multivariate asset tests with ease and automatically direct traffic to the winning variant.',
       },
@@ -92,7 +91,7 @@ const content = {
         description: 'Assets are served globally via CDN, ensuring 99.9% uptime and lightning-fast delivery worldwide.',
       },
       {
-        icon: 'headphones',
+        icon: 'image',
         title: 'Unified Asset Library',
         description: 'Centralize all your casino creative content in one hub for effortless management and deployment.',
       },
@@ -118,7 +117,7 @@ const content = {
     description: 'Mesulo is designed for zero friction. Go from signup to live optimization in under an hour.',
     steps: [
       { title: 'Import SDK', description: 'Copy and paste our single-line SDK into your casino platform’s front-end code once.' },
-      { title: 'Upload & Create Assets', description: 'Upload existing thumbnails or use our AI to generate new high-performing animated assets.' },
+      { title: 'Upload & Create Assets', description: 'Upload new thumbnails or use our AI to generate high-performing animated asset variations.' },
       { title: 'Hot Swap & Optimize', description: 'Instantly publish new assets, launch an A/B test, and watch your player engagement metrics rise.' }
     ],
     image: {
@@ -160,7 +159,7 @@ const content = {
     ]
   },
   cta: {
-    title: 'Stop Waiting for Dev. Start Winning.',
+    title: 'Stop Being Average. Boost Your Engagement.',
     description: 'Request a free performance audit and demo to see Mesulo’s impact on your lobby today.',
     actions: [
       { text: 'Request Demo', url: `${process.env.NEXT_PUBLIC_URL}/demo` },
