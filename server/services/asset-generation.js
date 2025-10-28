@@ -4,10 +4,10 @@ const { generateThemeAsset } = require('./generate-theme-asset');
 
 
 
-async function generateImageAndVideoWithPrompt(imageUrl, prompt = '', theme = 'default', assetType = 'original', userId = null, accountId = null, gameId = null, generateImage = null, generateVideo = null) {
+async function generateImageAndVideoWithPrompt(imageUrl, imagePrompt = '', videoPrompt = '', theme = 'default', assetType = 'original', userId = null, accountId = null, gameId = null, generateImage = null, generateVideo = null) {
 
     console.log('🎨 Generating AI image and video...');
-    console.log('📋 Parameters:', { imageUrl, prompt, theme, assetType, userId, accountId, gameId });
+    console.log('📋 Parameters:', { imageUrl, imagePrompt, videoPrompt, theme, assetType, userId, accountId, gameId });
     
     // Validate required parameters
     if (!imageUrl || imageUrl.trim() === '') {
@@ -30,7 +30,8 @@ async function generateImageAndVideoWithPrompt(imageUrl, prompt = '', theme = 'd
     if (assetType === 'original') {
       return await generateOriginalAsset({
         imageUrl,
-        prompt,
+        imagePrompt,
+        videoPrompt,
         userId,
         accountId,
         gameId
@@ -38,7 +39,8 @@ async function generateImageAndVideoWithPrompt(imageUrl, prompt = '', theme = 'd
     } else if (assetType === 'current') {
       return await generateCurrentAsset({
         imageUrl,
-        prompt,
+        imagePrompt,
+        videoPrompt,
         userId,
         accountId,
         gameId,
@@ -48,7 +50,8 @@ async function generateImageAndVideoWithPrompt(imageUrl, prompt = '', theme = 'd
     } else if (assetType === 'theme') {
       return await generateThemeAsset({
         imageUrl,
-        prompt,
+        imagePrompt,
+        videoPrompt,
         userId,
         accountId,
         gameId,

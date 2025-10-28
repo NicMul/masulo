@@ -15,9 +15,9 @@ const {
 // Load environment variables
 dotenv.config();
 
-async function generateCurrentAsset({ imageUrl, prompt, userId, accountId, gameId, generateImage, generateVideo }) {
+async function generateCurrentAsset({ imageUrl, imagePrompt, videoPrompt, userId, accountId, gameId, generateImage, generateVideo }) {
   console.log('🎨 Generating current asset...');
-  console.log('📋 Parameters:', { imageUrl, prompt, userId, accountId, gameId, generateImage, generateVideo });
+  console.log('📋 Parameters:', { imageUrl, imagePrompt, videoPrompt, userId, accountId, gameId, generateImage, generateVideo });
   
   // Validate required parameters
   if (!imageUrl || imageUrl.trim() === '') {
@@ -72,14 +72,16 @@ async function generateCurrentAsset({ imageUrl, prompt, userId, accountId, gameI
     let finalImagePrompt = baseImagePrompt;
     let finalVideoPrompt = baseVideoPrompt;
 
-    // Append custom prompt if provided
-    if (prompt && prompt.trim()) {
-      finalImagePrompt += ` ${prompt.trim()}`;
-      finalVideoPrompt += ` ${prompt.trim()}`;
+    // Append custom prompts if provided
+    if (imagePrompt && imagePrompt.trim()) {
+      finalImagePrompt += ` ${imagePrompt.trim()}`;
+    }
+    if (videoPrompt && videoPrompt.trim()) {
+      finalVideoPrompt += ` ${videoPrompt.trim()}`;
     }
     
-    console.log('  📝 Image prompt:', finalImagePrompt);
-    console.log('  📝 Video prompt:', finalVideoPrompt);
+    console.log('  📝 Final Image prompt:', finalImagePrompt);
+    console.log('  📝 Final Video prompt:', finalVideoPrompt);
     
     let testImageUrl = null;
     let testVideoUrl = null;

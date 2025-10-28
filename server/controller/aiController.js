@@ -62,7 +62,8 @@ exports.process = async function(req, res){
   const data = utility.validate(joi.object({
     
     imageUrl: joi.string().required(),
-    prompt: joi.string().allow(''),
+    imagePrompt: joi.string().allow(''),
+    videoPrompt: joi.string().allow(''),
     theme: joi.string().allow(''),
     assetType: joi.string().allow(''),
     gameId: joi.string().required(),
@@ -71,10 +72,16 @@ exports.process = async function(req, res){
 
   }), req, res); 
 
+  console.log('📥 Received prompts from frontend:', {
+    imagePrompt: data.imagePrompt || '(empty)',
+    videoPrompt: data.videoPrompt || '(empty)'
+  });
+
   try{
       const imageAndVideoData = await generateImageAndVideoWithPrompt(
           data.imageUrl, 
-          data.prompt, 
+          data.imagePrompt,
+          data.videoPrompt,
           data.theme, 
           data.assetType,
           req.user,  

@@ -14,9 +14,9 @@ const {
 // Load environment variables
 dotenv.config();
 
-async function generateOriginalAsset({ imageUrl, prompt, userId, accountId, gameId }) {
+async function generateOriginalAsset({ imageUrl, imagePrompt, videoPrompt, userId, accountId, gameId }) {
   console.log('🎨 Generating original asset...');
-  console.log('📋 Parameters:', { imageUrl, prompt, userId, accountId, gameId });
+  console.log('📋 Parameters:', { imageUrl, imagePrompt, videoPrompt, userId, accountId, gameId });
   
   // Validate required parameters
   if (!imageUrl || imageUrl.trim() === '') {
@@ -67,12 +67,12 @@ async function generateOriginalAsset({ imageUrl, prompt, userId, accountId, game
     const baseVideoPrompt = "This is an online casino game thumbnail. Create a beautiful animation that enhances the appeal. The elements in the picture are cinematic and animate professionally. Where possible, use the game's theme color for the animation. Try to make the animation in a loop.";
     let finalVideoPrompt = baseVideoPrompt;
 
-    // Append custom prompt if provided
-    if (prompt && prompt.trim()) {
-      finalVideoPrompt += ` ${prompt.trim()}`;
+    // Append custom video prompt if provided
+    if (videoPrompt && videoPrompt.trim()) {
+      finalVideoPrompt += ` ${videoPrompt.trim()}`;
     }
     
-    console.log('  📝 Video prompt:', finalVideoPrompt);
+    console.log('  📝 Final Video prompt:', finalVideoPrompt);
     
     // Generate video directly from original image
     const videoPath = await generateAIVideo(dataURI, finalVideoPrompt, replicate);

@@ -4,8 +4,10 @@ import MediaPlayer from '../MediaPlayer';
 const DescribeChangesDialog = ({
     isOpen,
     onClose,
-    customPrompt,
-    setCustomPrompt,
+    imagePrompt,
+    setImagePrompt,
+    videoPrompt,
+    setVideoPrompt,
     generateImage,
     setGenerateImage,
     generateVideo,
@@ -70,20 +72,38 @@ const DescribeChangesDialog = ({
                         </div>
                     </div>
 
-                    {/* Textarea */}
-                    <div className="flex-1 flex flex-col">
-                        <label className="text-lg font-medium mb-2">
-                            Description for the Ai
-                        </label>
-                        <Textarea
-                            value={customPrompt}
-                            onChange={(e) => setCustomPrompt(e.target.value)}
-                            placeholder={assetType === 'original' 
-                                ? t('edit.regenerate.dialog.placeholders.originalImagePrompt')
-                                : t('edit.regenerate.dialog.placeholders.aiGeneratedImagePrompt')
-                            }
-                            className="flex-1 resize-none min-h-[300px]"
-                        />
+                    {/* Conditional Textareas */}
+                    <div className="flex-1 flex flex-col gap-4">
+                        {generateImage && !(assetType === 'original') && (
+                            <div className="flex flex-col">
+                                <label className="text-lg font-medium mb-2">
+                                    Image Description
+                                </label>
+                                <Textarea
+                                    value={imagePrompt}
+                                    onChange={(e) => setImagePrompt(e.target.value)}
+                                    placeholder={t('edit.regenerate.dialog.placeholders.aiGeneratedImagePrompt')}
+                                    className="flex-1 resize-none min-h-[140px]"
+                                />
+                            </div>
+                        )}
+                        
+                        {generateVideo && (
+                            <div className="flex flex-col">
+                                <label className="text-lg font-medium mb-2">
+                                    Video Description
+                                </label>
+                                <Textarea
+                                    value={videoPrompt}
+                                    onChange={(e) => setVideoPrompt(e.target.value)}
+                                    placeholder={assetType === 'original' 
+                                        ? t('edit.regenerate.dialog.placeholders.originalImagePrompt')
+                                        : t('edit.regenerate.dialog.placeholders.aiGeneratedImagePrompt')
+                                    }
+                                    className="flex-1 resize-none min-h-[140px]"
+                                />
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -120,7 +140,8 @@ const DescribeChangesDialog = ({
                             setMadeSelection(false);
                             setGenerateImage(false);
                             setGenerateVideo(false);
-                            setCustomPrompt('');    
+                            setImagePrompt('');
+                            setVideoPrompt('');
                         }}
                     >
                         {t('Cancel')}

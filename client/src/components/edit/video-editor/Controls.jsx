@@ -5,7 +5,8 @@ const Controls = ({ isPlaying, onPlay, onPause, onReset, onApply, onPlaySelectio
     const { t } = useTranslation();
     
     return (
-        <div className='flex gap-2 h-full flex-wrap'>
+        <div className='flex gap-2 h-full flex-col'>
+            <div className='flex gap-2 flex-wrap'>
             <Button
                 onClick={isPlaying ? onPause : onPlay}
                 variant='outline'
@@ -15,14 +16,14 @@ const Controls = ({ isPlaying, onPlay, onPause, onReset, onApply, onPlaySelectio
                 {isPlaying ? t('edit.regenerate.dialog.trim.pause') : t('edit.regenerate.dialog.trim.play')}
             </Button>
             
-            <Button
+            {/* <Button
                 onClick={onPlaySelection}
                 variant='outline'
                 size='sm'
             >
                 <Icon name='play' size={16} className='mr-2' />
                 {t('edit.regenerate.dialog.trim.playSelection')}
-            </Button>
+            </Button> */}
             
             <Button
                 onClick={onReset}
@@ -32,8 +33,11 @@ const Controls = ({ isPlaying, onPlay, onPause, onReset, onApply, onPlaySelectio
                 <Icon name='rotate-ccw' size={16} className='mr-2' />
                 {t('edit.regenerate.dialog.trim.resetTrim')}
             </Button>
+            </div>
             
+            <div className='flex gap-2 flex-wrap'>
             <Button
+                className='w-full'
                 onClick={onApply}
                 disabled={!canApply}
                 color='green'
@@ -42,6 +46,8 @@ const Controls = ({ isPlaying, onPlay, onPause, onReset, onApply, onPlaySelectio
                 <Icon name='check' size={16} className='mr-2' />
                 {t('edit.regenerate.dialog.trim.applyTrim')}
             </Button>
+            </div>
+            
         </div>
     );
 };

@@ -21,7 +21,8 @@ const GenerateAssets = ({
     onGameUpdate,
 }) => {
     const [isGenerating, setIsGenerating] = useState(false);
-    const [customPrompt, setCustomPrompt] = useState('');
+    const [imagePrompt, setImagePrompt] = useState('');
+    const [videoPrompt, setVideoPrompt] = useState('');
     const [showDescribeChangesDialog, setShowDescribeChangesDialog] = useState(false);
     const [showDeleteConfirmationDialog, setShowDeleteConfirmationDialog] = useState(false);
     const [generateImage, setGenerateImage] = useState();
@@ -64,11 +65,17 @@ const GenerateAssets = ({
             gameId: selectedGame?.id,
             imageUrl: selectedGame.testImage || testImage ? selectedGame.testImage : selectedGame?.defaultImage,
             assetType: assetType,
-            prompt: customPrompt,
+            imagePrompt: imagePrompt,
+            videoPrompt: videoPrompt,
             theme: selectedGame?.theme,
             generateImage: assetType === 'original' ? false : generateImage,
             generateVideo: generateVideo
         };
+
+        console.log('🎨 Sending prompts to backend:', {
+            imagePrompt: imagePrompt || '(empty)',
+            videoPrompt: videoPrompt || '(empty)'
+        });
 
         try {
 
@@ -95,11 +102,13 @@ const GenerateAssets = ({
                     description: t('edit.regenerate.dialog.success'),
                     variant: 'success'
                 });
-                setCustomPrompt('');
+                setImagePrompt('');
+                setVideoPrompt('');
             }
         } catch (err) {
             console.error('Error generating assets:', err);
-            setCustomPrompt('');
+            setImagePrompt('');
+            setVideoPrompt('');
             
             // Handle different error types with user-friendly messages
             let errorMessage = t('edit.regenerate.dialog.error');
@@ -127,7 +136,7 @@ const GenerateAssets = ({
         } finally {
             setIsGenerating(false);
         }
-    }, [selectedGame, assetType, customPrompt, viewContext, t, generateAssetsMutation, onGameUpdate]);
+    }, [selectedGame, assetType, imagePrompt, videoPrompt, viewContext, t, generateAssetsMutation, onGameUpdate, generateImage, generateVideo, testImage]);
 
     const handleDeleteTestAssets = useCallback(async () => {
         try {
@@ -394,7 +403,7 @@ const GenerateAssets = ({
                         </Tabs>
                     </div>
                     <DialogFooter>
-                        <Button disabled={isGenerating} color={customPrompt ? 'green' : 'blue'} onClick={() => setShowDescribeChangesDialog(true)}>{t('Describe Changes')}</Button>
+                        <Button disabled={isGenerating} color={(imagePrompt || videoPrompt) ? 'green' : 'blue'} onClick={() => setShowDescribeChangesDialog(true)}>{t('Describe Changes')}</Button>
                         <Button
                             color={madeSelection ? 'green' : 'gray'}
                             onClick={handleRegenerate}
@@ -413,8 +422,10 @@ const GenerateAssets = ({
             <DescribeChangesDialog
                 isOpen={showDescribeChangesDialog}
                 onClose={() => setShowDescribeChangesDialog(false)}
-                customPrompt={customPrompt}
-                setCustomPrompt={setCustomPrompt}
+                imagePrompt={imagePrompt}
+                setImagePrompt={setImagePrompt}
+                videoPrompt={videoPrompt}
+                setVideoPrompt={setVideoPrompt}
                 generateImage={generateImage}
                 setGenerateImage={setGenerateImage}
                 generateVideo={generateVideo}
