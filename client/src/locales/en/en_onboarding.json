@@ -5,12 +5,12 @@
     "description": "Welcome",
     "text": [
       "This is an example of the user-onboarding flow. You can replace this with your own content, try out the action in the next step or skip the intro entirely.",
-      "Have fun building with Gravity! 🛠"
+      "Have fun building with Mesulo! 🛠"
     ]
   },
   "invite_team": {
     "title": "Invite your team",
-    "description": "Gravity is more fun when you invite your team.",
+    "description": "Mesulo is more fun when you invite your team.",
     "form": {
       "email": {
         "label": "Email"

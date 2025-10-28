@@ -7,12 +7,12 @@
       "Este es un ejemplo del flujo de incorporación de usuarios.",
       "Puede reemplazar esto con su propio contenido, probar la acción",
       "en el siguiente paso o saltar la introducción por completo.",
-      "¡Diviértase construyendo con Gravity! 🛠"
+      "¡Diviértase construyendo con Mesulo! 🛠"
     ]
   },
   "invite_team": {
     "title": "Invita a tu equipo",
-    "description": "Gravity es más divertido cuando invitas a tu equipo.",
+    "description": "Mesulo es más divertido cuando invitas a tu equipo.",
     "form": {
       "email": {
         "label": "Correo electrónico"
