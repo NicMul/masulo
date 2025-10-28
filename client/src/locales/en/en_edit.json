@@ -97,7 +97,32 @@
       },
       "tabs": {
         "original": "Used for Reference",
-        "selectedForEdit": "Currently Saved"
+        "selectedForEdit": "Currently Saved",
+        "generations": "Generations",
+        "videoEditor": "Video Editor"
+      },
+      "videoUpload": {
+        "uploadVideo": "Upload Video",
+        "clearUploadedVideo": "Clear Uploaded Video",
+        "uploadedVideo": "Uploaded Video",
+        "generatedVideo": "Generated Video",
+        "dropVideo": "Drop video here or click to upload",
+        "noVideo": "No video available. Generate a video first in the Generations tab, or upload one below.",
+        "supportedFormats": "Supported formats: MP4, WebM, MOV"
+      },
+      "trim": {
+        "trimVideo": "Trim Video",
+        "startTime": "Start Time",
+        "endTime": "End Time",
+        "duration": "Duration",
+        "originalDuration": "Original Duration",
+        "trimmedDuration": "Trimmed Duration",
+        "applyTrim": "Apply Trim",
+        "resetTrim": "Reset Trim",
+        "playSelection": "Play Selection",
+        "play": "Play",
+        "pause": "Pause",
+        "noVideo": "No video available"
       },
       "cards": {
         "originalImage": "Reference Image",

@@ -19,21 +19,39 @@ function upgradeElement(element) {
   // Extract game ID
   const gameId = element.getAttribute('data-masulo-game-id');
   
-  // Skip if already has a manager
-  if (upgradedManagers.has(element)) {
-    return;
+  // If the element itself is an img tag, use its parent as the container
+  let containerElement = element;
+  if (element.tagName.toLowerCase() === 'img') {
+    containerElement = element.parentElement;
+    
+    // Skip if no parent or parent is the body tag
+    if (!containerElement || containerElement === document.body) {
+      console.warn(`[Mesulo SDK] No suitable parent container for img element with game ${gameId}`);
+      return;
+    }
+    
+    // Skip if parent is already upgraded to avoid duplicate managers
+    if (upgradedManagers.has(containerElement)) {
+      return;
+    }
+  } else {
+    // Skip if already has a manager
+    if (upgradedManagers.has(element)) {
+      return;
+    }
   }
-
+  
   // Create game card manager for this element
-  const manager = new GameCardManager(element, gameId);
+  const manager = new GameCardManager(containerElement, gameId);
   
   // Register manager with SDK
   if (window.mesulo) {
     window.mesulo.registerGameCard(manager, gameId);
   }
   
-  // Store manager reference
+  // Store manager reference (track by both element and container for img tags)
   upgradedManagers.set(element, manager);
+  upgradedManagers.set(containerElement, manager);
 }
 
 /**

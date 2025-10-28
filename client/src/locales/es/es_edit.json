@@ -87,6 +87,33 @@
       },
       "deleteResult": {
         "success": "Activos generados eliminados"
+      },
+      "tabs": {
+        "generations": "Generaciones",
+        "videoEditor": "Editor de Video"
+      },
+      "videoUpload": {
+        "uploadVideo": "Subir Video",
+        "clearUploadedVideo": "Limpiar Video Subido",
+        "uploadedVideo": "Video Subido",
+        "generatedVideo": "Video Generado",
+        "dropVideo": "Arrastra un video aquí o haz clic para subir",
+        "noVideo": "No hay video disponible. Genera un video primero en la pestaña Generaciones, o sube uno a continuación.",
+        "supportedFormats": "Formatos soportados: MP4, WebM, MOV"
+      },
+      "trim": {
+        "trimVideo": "Recortar Video",
+        "startTime": "Tiempo Inicial",
+        "endTime": "Tiempo Final",
+        "duration": "Duración",
+        "originalDuration": "Duración Original",
+        "trimmedDuration": "Duración Recortada",
+        "applyTrim": "Aplicar Recorte",
+        "resetTrim": "Restablecer Recorte",
+        "playSelection": "Reproducir Selección",
+        "play": "Reproducir",
+        "pause": "Pausar",
+        "noVideo": "No hay video disponible"
       }
     }
   },
