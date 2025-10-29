@@ -12,13 +12,13 @@
   "numbersToExpressions": true,
   "renameGlobals": false,
   "reservedNames": [
-    "MasuloSDK",
-    "masulo",
+    "MesuloSDK",
+    "mesulo",
     "window"
   ],
   "reservedStrings": [
-    "MasuloSDK",
-    "masulo"
+    "MesuloSDK",
+    "mesulo"
   ],
   "selfDefending": true,
   "simplify": true,
