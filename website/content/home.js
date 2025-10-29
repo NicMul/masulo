@@ -1,7 +1,7 @@
 const content = {
   hero: {
     title: 'AI iGaming Asset Management to Boost Player Engagement',
-    subtitle: 'Instantly hot swap casino game thumbnails and A/B Test for higher conversion, all without touching your CMS or rebuilding your sites or apps.',
+    subtitle: 'Instantly hot swap casino game thumbnails and A/B test for higher conversion, all without touching your CMS or rebuilding your sites or apps.',
     image: {
       width: 1024,
       height: 567,
@@ -29,7 +29,7 @@ const content = {
       {
         author: 'Sarah J.',
         role: 'Casino Manager',
-        text: "Mesulo is a game-changer. We can A/B test a new slot thumbnail in minutes and instantly see a an uplift in engagement. It's the fastest way to optimize our lobby.",
+        text: "Mesulo is a game-changer. We can A/B test a new slot thumbnail in minutes and instantly see an uplift in engagement. It's the fastest way to optimize our lobby.",
         image: '/images/testimonials/sarah-jonhson.jpg'
       },
       {
@@ -41,7 +41,7 @@ const content = {
       {
         author: 'David V.',
         role: 'Head of CRM',
-        text: "Before Mesulo, updating one campaign asset took two days of dev work. Now, it's a live hot swap tied to real-time performance data. True operational efficiency.",
+        text: "Before Mesulo, updating one campaign asset took two days of CMS work. Now, it's a live hot swap tied to real-time performance data. True operational efficiency.",
         image: '/images/testimonials/david-nguyen.jpg'
       },
     ],
@@ -61,7 +61,7 @@ const content = {
         description: 'Measure the performance, clicks, and revenue of every asset on your entire platform instantly.',
       },
       {
-        icon: 'wifi',
+        icon: 'code',
         title: 'Zero-Code SDK Integration',
         description: 'A single, lightweight SDK import is all it takes—no complex API configuration or lengthy setup required.',
       },
@@ -81,12 +81,12 @@ const content = {
         description: 'Launch multivariate asset tests with ease and automatically direct traffic to the winning variant.',
       },
       {
-        icon: 'speaker',
+        icon: 'link',
         title: 'Campaign & Promotion Links',
         description: 'Tie specific promotional assets and badges directly to active marketing campaigns in a unified dashboard.',
       },
       {
-        icon: 'share',
+        icon: 'globe',
         title: 'Global CDN Delivery',
         description: 'Assets are served globally via CDN, ensuring 99.9% uptime and lightning-fast delivery worldwide.',
       },
@@ -101,12 +101,12 @@ const content = {
         description: 'Control who can edit, approve, and publish assets with custom team permissions.',
       },
       {
-        icon: 'mic',
+        icon: 'code',
         title: 'API Access for Automation',
         description: 'Advanced API available for programmatic asset management and large-scale operational use.',
       },
       {
-        icon: 'disc',
+        icon: 'target',
         title: 'Localisation Ready',
         description: 'Manage and test localized asset versions to maximize performance in different geographical markets.',
       },
@@ -116,7 +116,7 @@ const content = {
     title: 'Get Instant Asset Control in 3 Simple Steps',
     description: 'Mesulo is designed for zero friction. Go from signup to live optimization in under an hour.',
     steps: [
-      { title: 'Import SDK', description: 'Copy and paste our single-line SDK into your casino platform’s front-end code once.' },
+      { title: 'Import SDK', description: 'Copy and paste our single-line SDK into your casino platform’s front-end code. Also be sure to pass your game id to your game thumbnails.' },
       { title: 'Upload & Create Assets', description: 'Upload new thumbnails or use our AI to generate high-performing animated asset variations.' },
       { title: 'Hot Swap & Optimize', description: 'Instantly publish new assets, launch an A/B test, and watch your player engagement metrics rise.' }
     ],
