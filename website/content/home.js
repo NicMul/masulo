@@ -1,7 +1,7 @@
 const content = {
   hero: {
     title: 'AI iGaming Asset Management to Boost Player Engagement',
-    subtitle: 'Instantly hot swap casino game thumbnails and A/B Test for higher conversion, all without touching your CMS or rebuilding your sites.',
+    subtitle: 'Instantly hot swap casino game thumbnails and A/B Test for higher conversion, all without touching your CMS or rebuilding your sites or apps.',
     image: {
       width: 1024,
       height: 567,
