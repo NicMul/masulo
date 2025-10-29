@@ -172,12 +172,37 @@ export class MesuloSDK {
         return;
       }
       
+      // Get container element from component
+      const container = component.getContainer ? component.getContainer() : component.container;
+      
+      if (!container) {
+        return;
+      }
+      
+      // Read current version from DOM
+      const currentVersionStr = container.getAttribute('data-mesulo-version');
+      const currentVersion = currentVersionStr ? parseInt(currentVersionStr, 10) : undefined;
+      const newVersion = game.version;
+      
+      // If version exists in DOM and hasn't changed, skip the update
+      if (currentVersion !== undefined && currentVersion === newVersion) {
+        console.log(`[Mesulo SDK] : Skipping update for game ${game.id} - version unchanged (${newVersion})`);
+        return;
+      }
+      
+      // Store version in DOM for persistence
+      container.setAttribute('data-mesulo-version', String(newVersion));
+      
+      // Store analytics flag in DOM for persistence
+      container.setAttribute('data-mesulo-analytics', String(game.analytics));
+      
       // Determine which assets to use based on publishedType
       let imageUrl = game.defaultImage;
       let videoUrl = game.defaultVideo;
       
       if (!game.published) {
         // Game unpublished, use defaults only
+        console.log('[Mesulo SDK] : Game unpublished', game);
         imageUrl = game.defaultImage;
         videoUrl = null;
         
@@ -199,7 +224,7 @@ export class MesuloSDK {
       
       // Update component
       if (component.updateContent) {
-        component.updateContent(imageUrl, videoUrl);
+        component.updateContent(imageUrl, videoUrl, game.published);
       }
     });
   }
@@ -334,7 +359,17 @@ export class MesuloSDK {
   }
   
   trackAssetEvent(eventType, gameId, assetType, assetUrl, metadata = {}) {
+    // Check global analytics setting
     if (!this.analyticsEnabled || !this.isConnected || !this.socket) {
+      return;
+    }
+    
+    // Check per-game analytics setting from container data attribute
+    const component = this.registeredComponents.get(gameId);
+    const container = component?.getContainer ? component.getContainer() : component?.container;
+    const gameAnalyticsEnabled = container?.getAttribute('data-mesulo-analytics') !== 'false';
+    
+    if (!gameAnalyticsEnabled) {
       return;
     }
     

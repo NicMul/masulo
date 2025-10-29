@@ -5,7 +5,7 @@
 
 export const CONFIG = {
   development: {
-    serverUrl: 'https://nodejs-production-9eae9.up.railway.app',
+    serverUrl: 'localhost:8080',
     cdnUrl: 'https://mesulo.b-cdn.net'
   },
   production: {

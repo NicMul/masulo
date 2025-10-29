@@ -50,6 +50,10 @@ export class GameCardManager {
     }
   }
   
+  getContainer() {
+    return this.container;
+  }
+  
   setupEventHandlers() {
     // Desktop: hover to play, leave to reset
     this.container.addEventListener('mouseenter', this.handleMouseEnter);
@@ -241,7 +245,7 @@ export class GameCardManager {
     }
   };
   
-  updateContent(newImageUrl, newVideoUrl) {
+  updateContent(newImageUrl, newVideoUrl, published = true) {
     // Cancel any pending timers
     if (this.replacementTimer) {
       clearTimeout(this.replacementTimer);
@@ -255,6 +259,18 @@ export class GameCardManager {
     // Update content URLs (but don't apply to DOM yet)
     if (newImageUrl) this.currentImageUrl = newImageUrl;
     if (newVideoUrl !== undefined) this.currentVideoUrl = newVideoUrl;
+
+    if (published === false && this.currentVideo) {
+      // Update image src to the new default image before reverting
+      if (this.originalImg && newImageUrl) {
+        this.originalImg.src = newImageUrl;
+      }
+      // Revert video element back to image (handles all playback states)
+      this.revert();
+      // Also remove any spinner if present
+      this.removeLoadingSpinner();
+      return; // Exit early since we've handled the unpublish case
+    }
     
     // If we have video URL and we're showing image, delay switch by 3 seconds with spinner
     if (this.currentVideoUrl && !this.currentVideo) {
@@ -333,6 +349,12 @@ export class GameCardManager {
     video.playsinline = true;
     video.preload = 'metadata';
     video.playsInline = true; // Double check for iOS
+    
+    // Copy version from container if it exists
+    const version = this.container.getAttribute('data-mesulo-version');
+    if (version) {
+      video.setAttribute('data-mesulo-version', version);
+    }
     
     // Setup analytics for new video
     this.analytics.setupVideoTracking(video, this.currentVideoUrl);
@@ -418,6 +440,12 @@ export class GameCardManager {
     video.playsinline = true;
     video.preload = 'metadata';
     video.playsInline = true; // Double check for iOS
+    
+    // Copy version from container if it exists
+    const version = this.container.getAttribute('data-mesulo-version');
+    if (version) {
+      video.setAttribute('data-mesulo-version', version);
+    }
     
     // Setup analytics for video events
     this.analytics.setupVideoTracking(video, this.currentVideoUrl);
