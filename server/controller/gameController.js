@@ -28,6 +28,7 @@ exports.create = async function(req, res){
     group: joi.string().allow(''),
     playerCss: joi.string().allow(''),
     touch: joi.boolean(),
+    analytics: joi.boolean(),
     promoImage: joi.string().allow(''),
     promoVideo: joi.string().allow(''),
     locked: joi.boolean()
@@ -222,6 +223,7 @@ exports.update = async function(req, res){
     group: joi.string().allow(''),
     playerCss: joi.string().allow(''),
     touch: joi.boolean(),
+    analytics: joi.boolean(),
     promoImage: joi.string().allow(''),
     promoVideo: joi.string().allow(''),
     locked: joi.boolean(),
@@ -527,6 +529,7 @@ exports.bulkUpdate = async function(req, res){
     group: joi.string().allow(''),
     playerCss: joi.string().allow(''),
     touch: joi.boolean(),
+    analytics: joi.boolean(),
     promoImage: joi.string().allow(''),
     promoVideo: joi.string().allow(''),
     locked: joi.boolean(),

@@ -109,6 +109,9 @@
     "touch": {
       "label": "Enable Touch Support"
     },
+    "analytics": {
+      "label": "Enable Analytics"
+    },
     "published": {
       "label": "Published",
       "description": "Toggle to publish this game"

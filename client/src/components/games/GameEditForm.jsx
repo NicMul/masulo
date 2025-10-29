@@ -38,6 +38,7 @@ export function GameEditForm({ game, onSuccess, onCancel, t }) {
       group: game.group || '',
       playerCss: game.playerCss || '',
       touch: game.touch !== undefined ? game.touch : true,
+      analytics: game.analytics !== undefined ? game.analytics : false,
       published: game.published !== undefined ? game.published : false,
       publishedType: game.publishedType || 'default'
     }
@@ -57,6 +58,8 @@ export function GameEditForm({ game, onSuccess, onCancel, t }) {
     setLoading(true);
     
     try {
+      // we auto increment the version number when the game is updated
+      data.version = data.version + 1;
       const result = await updateGame.execute(data);
       
       if (result) {
@@ -426,6 +429,19 @@ export function GameEditForm({ game, onSuccess, onCancel, t }) {
                       />
                       <span className="text-sm font-semibold text-gray-700 group-hover:text-emerald-700">
                         {t('games.form.touch.label')}
+                      </span>
+                    </label>
+                  </div>
+                  
+                  <div className="group">
+                    <label className="flex items-center space-x-3 p-4 rounded-xl border-2 border-gray-200 bg-gray-50 hover:bg-emerald-50 hover:border-emerald-300 transition-all duration-200 cursor-pointer">
+                      <input
+                        {...register('analytics')}
+                        type="checkbox"
+                        className="w-5 h-5 rounded-md border-gray-300 text-emerald-600 focus:ring-emerald-500 focus:ring-offset-0 cursor-pointer"
+                      />
+                      <span className="text-sm font-semibold text-gray-700 group-hover:text-emerald-700">
+                        {t('games.form.analytics.label')}
                       </span>
                     </label>
                   </div>
