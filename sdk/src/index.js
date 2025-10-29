@@ -12,12 +12,12 @@ const upgradedManagers = new Map();
  */
 function upgradeElement(element) {
   // Skip if already upgraded or not a valid element
-  if (!element.hasAttribute('data-masulo-game-id')) {
+  if (!element.hasAttribute('data-mesulo-game-id')) {
     return;
   }
 
   // Extract game ID
-  const gameId = element.getAttribute('data-masulo-game-id');
+  const gameId = element.getAttribute('data-mesulo-game-id');
   
   // If the element itself is an img tag, use its parent as the container
   let containerElement = element;
@@ -58,7 +58,7 @@ function upgradeElement(element) {
  * Scans the DOM and upgrades all matching elements
  */
 function upgradeAllElements() {
-  const elements = document.querySelectorAll('[data-masulo-game-id]');
+  const elements = document.querySelectorAll('[data-mesulo-game-id]');
   
   elements.forEach(element => {
     try {
