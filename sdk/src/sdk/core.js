@@ -221,14 +221,14 @@ export class MesuloSDK {
         }
 
         // Read current version from DOM
-        const currentVersionStr = container.getAttribute('data-mesulo-version');
-        const currentVersion = currentVersionStr ? parseInt(currentVersionStr, 10) : undefined;
+        // const currentVersionStr = container.getAttribute('data-mesulo-version');
+        // const currentVersion = currentVersionStr ? parseInt(currentVersionStr, 10) : undefined;
         const newVersion = game.version;
 
         // If version exists in DOM and hasn't changed, skip the update for this element
-        if (currentVersion !== undefined && currentVersion === newVersion) {
-          return;
-        }
+        // if (currentVersion !== undefined && currentVersion === newVersion) {
+        //   return;
+        // }
 
         // Store version in DOM for persistence
         container.setAttribute('data-mesulo-version', String(newVersion));
