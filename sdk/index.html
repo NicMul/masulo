@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Masulo Casino Lobby</title>
+    <title>mesulo Casino Lobby</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Montserrat:wght@300;400;500;600;700&display=swap');
 
@@ -213,7 +213,6 @@
                 rgba(218, 165, 32, 0.15), 
                 rgba(255, 215, 0, 0.1));
             border-left-color: #FFD700;
-            /* transform: translateX(8px); */
             color: #FFD700;
         }
 
@@ -342,22 +341,29 @@
             gap: 35px;
             padding: 40px;
             overflow-y: auto;
+            list-style: none;
         }
 
-        .game-card {
+        .game-item {
+            display: block;
+        }
+
+        .game-article {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .game-body {
             background: linear-gradient(145deg, rgba(20, 20, 35, 0.9), rgba(15, 15, 25, 0.95));
             border-radius: 20px;
             overflow: hidden;
             position: relative;
             cursor: pointer;
             transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            /* box-shadow: 
-                0 8px 32px rgba(0, 0, 0, 0.6),
-                0 0 0 1px rgba(218, 165, 32, 0.1); */
             aspect-ratio: 3/4;
         }
 
-        .game-card::before {
+        .game-body::before {
             content: '';
             position: absolute;
             top: 0;
@@ -372,16 +378,21 @@
             z-index: 1;
         }
 
-        .game-card:hover {
-            /* transform: translateY(-12px) scale(1.03); */
+        .game-body:hover {
             box-shadow: 
                 0 5px 15px rgba(218, 165, 32, 0.4),
                 0 0 0 2px rgba(218, 165, 32, 0.5),
                 0 0 5px rgba(255, 215, 0, 0.3);
         }
 
-        .game-card:hover::before {
+        .game-body:hover::before {
             opacity: 1;
+        }
+
+        .img-wrapper {
+            width: 100%;
+            height: 100%;
+            position: relative;
         }
 
         .game-image {
@@ -391,15 +402,26 @@
             transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .game-card:hover .game-image {
-            /* transform: scale(1.1); */
+        .overlaying-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 2;
         }
 
-        .mesulo-button {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translateX(-50%) translateY(-50%);
+        .game-body:hover .overlaying-content {
+            opacity: 1;
+        }
+
+        .play-now-link {
             padding: 8px 7px;
             width: 120px;
             background: linear-gradient(135deg, #ffd900d0, #ffa600d1);
@@ -409,28 +431,46 @@
             font-weight: 700;
             font-size: 14px;
             cursor: pointer;
-            opacity: 0;
-            transition: opacity 0.3s ease;
             box-shadow: 0 8px 24px rgba(255, 215, 0, 0.5);
-            z-index: -2;
             letter-spacing: 1px;
             text-transform: uppercase;
-            touch-action: manipulation;
-             -webkit-tap-highlight-color: transparent;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s ease;
+            display: block;
         }
 
-        .game-card:hover .mesulo-button {
-            opacity: 1;
-            z-index: 2;
-        }
-
-        .mesulo-button:hover {
+        .play-now-link:hover {
             background: linear-gradient(135deg, #FFA500, #FFD700);
-            /* box-shadow: 0 12px 32px rgba(255, 215, 0, 0.7); */
-            /* transform: translateX(-50%) translateY(-2px); */
         }
 
-        .game-name {
+        .overlaying-content-footer {
+            margin-top: 10px;
+        }
+
+        .play-free-link {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: color 0.3s ease;
+        }
+
+        .play-free-link:hover {
+            color: #FFD700;
+        }
+
+        .dummy-link {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 0;
+        }
+
+        .game-title {
             text-align: center;
             margin-top: 15px;
             font-size: 1.1rem;
@@ -586,15 +626,7 @@
                 gap: 8px;
             }
 
-            .game-card {
-                margin-bottom: 10px;
-            }
-
-            .game-card-container {
-                padding-top: 10px;
-            }
-
-            .game-name {
+            .game-title {
                 font-size: 1rem;
                 margin-top: 10px;
             }
@@ -641,7 +673,7 @@
                 padding: 0 15px 15px;
             }
 
-            .mesulo-button {
+            .play-now-link {
                 padding: 8px 16px;
                 font-size: 14px;
             }
@@ -792,7 +824,6 @@
             position: relative;
             z-index: 1;
         }
-
 
         .popup-close {
             position: absolute;
@@ -959,93 +990,348 @@
 
             <!-- With Mesulo Tab -->
             <div class="tab-content active" id="with-mesulo">
-                <div class="games-grid">
-                    <div class="game-card-container">
-                        <div class="game-card" >
-                            <img data-masulo-game-id="d5352f25-9718-44a6-a95d-1ddd47ea63ce" data-masulo-tag="true"  src="./images/cleo.jpg" alt="Cleo" class="game-image">
-                            <button class="mesulo-button">See More</button>
-                        </div>
-                        <div class="game-name">Cleocatra</div>
-                    </div>
+                <ul class="games-grid">
+                    <li  data-mesulo-game-id="d5352f25-9718-44a6-a95d-1ddd47ea63ce" 
+                    data-mesulo-tag="true" class="game-item" data-cy="slider-item" aria-hidden="false">
+                        <article aria-label="Cleocatra" class="game-article">
+                            <div class="game-body">
+                                <div class="img-wrapper">
+                                    <img
+                                         src="./images/cleo.jpg" 
+                                         alt="Cleocatra" 
+                                         class="game-image">
+                                </div>
+                                <div class="overlaying-content">
+                                    <a class="play-now-link" 
+                                       itemprop="url" 
+                                       aria-label="Cleocatra" 
+                                       href="/#">
+                                        <span>Join Now</span>
+                                    </a>
+                                    <div class="overlaying-content-footer">
+                                        <a class="play-free-link" 
+                                           itemprop="url" 
+                                           aria-label="Cleocatra Demo" 
+                                           href="/game/cleocatra?isDemo=true">DEMO PLAY</a>
+                                    </div>
+                                </div>
+                                <a aria-label="Cleocatra" 
+                                   aria-hidden="true" 
+                                   class="dummy-link" 
+                                   tabindex="-1" 
+                                   href="/game/cleocatra"></a>
+                            </div>
+                            <h3 class="game-title">Cleocatra</h3>
+                        </article>
+                    </li>
 
-                    <div class="game-card-container">
-                        <div class="game-card">
-                            <img data-masulo-game-id="b4a40dc5-e950-4e6b-bca9-1ae51589b2b5" data-masulo-tag="true" data-masulo-theme="halloween" src="./images/hades.jpg" alt="Hades" class="game-image">
-                            <button class="mesulo-button">See More</button>
-                        </div>
-                        <div class="game-name">Hot as Hades</div>
-                    </div>
+                    <li data-mesulo-game-id="b4a40dc5-e950-4e6b-bca9-1ae51589b2b5" 
+                    data-mesulo-tag="true"  class="game-item" data-cy="slider-item" aria-hidden="false">
+                        <article aria-label="Hot as Hades" class="game-article">
+                            <div class="game-body">
+                                <div class="img-wrapper">
+                                    <img 
+                                         data-mesulo-theme="halloween" 
+                                         src="./images/hades.jpg" 
+                                         alt="Hot as Hades" 
+                                         class="game-image">
+                                </div>
+                                <div class="overlaying-content">
+                                    <a class="play-now-link" 
+                                       itemprop="url" 
+                                       aria-label="Hot as Hades" 
+                                       href="/#">
+                                        <span>Join Now</span>
+                                    </a>
+                                    <div class="overlaying-content-footer">
+                                        <a class="play-free-link" 
+                                           itemprop="url" 
+                                           aria-label="Hot as Hades Demo" 
+                                           href="/game/hades?isDemo=true">DEMO PLAY</a>
+                                    </div>
+                                </div>
+                                <a aria-label="Hot as Hades" 
+                                   aria-hidden="true" 
+                                   class="dummy-link" 
+                                   tabindex="-1" 
+                                   href="/game/hades"></a>
+                            </div>
+                            <h3 class="game-title">Hot as Hades</h3>
+                        </article>
+                    </li>
 
-                    <div class="game-card-container">
-                        <div class="game-card">
-                            <img data-masulo-game-id="b37b4b9a-4f2f-4a3c-8a58-f4a76d19d88f" data-masulo-tag="true"  src="./images/tome.webp" alt="Tome" class="game-image">
-                            <button class="mesulo-button">See More</button>
-                        </div>
-                        <div class="game-name">Tome of Insanity</div>
-                    </div>
+                    <li data-mesulo-game-id="b37b4b9a-4f2f-4a3c-8a58-f4a76d19d88f" 
+                    data-mesulo-tag="true" class="game-item" data-cy="slider-item" aria-hidden="false">
+                        <article aria-label="Tome of Insanity" class="game-article">
+                            <div class="game-body">
+                                <div class="img-wrapper">
+                                    <img 
+                                         src="./images/tome.webp" 
+                                         alt="Tome of Insanity" 
+                                         class="game-image">
+                                </div>
+                                <div class="overlaying-content">
+                                    <a class="play-now-link" 
+                                       itemprop="url" 
+                                       aria-label="Tome of Insanity" 
+                                       href="/#">
+                                        <span>Join Now</span>
+                                    </a>
+                                    <div class="overlaying-content-footer">
+                                        <a class="play-free-link" 
+                                           itemprop="url" 
+                                           aria-label="Tome of Insanity Demo" 
+                                           href="/game/tome?isDemo=true">DEMO PLAY</a>
+                                    </div>
+                                </div>
+                                <a aria-label="Tome of Insanity" 
+                                   aria-hidden="true" 
+                                   class="dummy-link" 
+                                   tabindex="-1" 
+                                   href="/game/tome"></a>
+                            </div>
+                            <h3 class="game-title">Tome of Insanity</h3>
+                        </article>
+                    </li>
 
-                    <div class="game-card-container">
-                        <div class="game-card">
-                            <img data-masulo-game-id="8d0b5e73-13fa-42c4-901d-829406c8e207" data-masulo-tag="true" src="./images/toonz.webp" alt="Toonz" class="game-image">
-                            <button class="mesulo-button">See More</button>
-                        </div>
-                        <div class="game-name">Gargantoonz</div>
-                    </div>
+                    <li data-mesulo-game-id="8d0b5e73-13fa-42c4-901d-829406c8e207" 
+                    data-mesulo-tag="true"  class="game-item" data-cy="slider-item" aria-hidden="false">
+                        <article aria-label="Gargantoonz" class="game-article">
+                            <div class="game-body">
+                                <div class="img-wrapper">
+                                    <img 
+                                         src="./images/toonz.webp" 
+                                         alt="Gargantoonz" 
+                                         class="game-image">
+                                </div>
+                                <div class="overlaying-content">
+                                    <a class="play-now-link" 
+                                       itemprop="url" 
+                                       aria-label="Gargantoonz" 
+                                       href="/#">
+                                        <span>Join Now</span>
+                                    </a>
+                                    <div class="overlaying-content-footer">
+                                        <a class="play-free-link" 
+                                           itemprop="url" 
+                                           aria-label="Gargantoonz Demo" 
+                                           href="/game/toonz?isDemo=true">DEMO PLAY</a>
+                                    </div>
+                                </div>
+                                <a aria-label="Gargantoonz" 
+                                   aria-hidden="true" 
+                                   class="dummy-link" 
+                                   tabindex="-1" 
+                                   href="/game/toonz"></a>
+                            </div>
+                            <h3 class="game-title">Gargantoonz</h3>
+                        </article>
+                    </li>
 
-                    <div class="game-card-container">
-                        <div  class="game-card">
-                            <img data-masulo-game-id="7c371c7d-6ec2-494c-a553-1645a70007d3" data-masulo-tag="true" src="./images/gates.webp" alt="Gates" class="game-image">
-                            <button class="mesulo-button">See More</button>
-                        </div>
-                        <div class="game-name">Gates of Olympus</div>
-                    </div>
-
-                </div>
+                    <li data-mesulo-game-id="7c371c7d-6ec2-494c-a553-1645a70007d3" 
+                    data-mesulo-tag="true"  class="game-item" data-cy="slider-item" aria-hidden="false">
+                        <article  aria-label="Gates of Olympus" class="game-article">
+                            <div class="game-body">
+                                <div class="img-wrapper">
+                                    <img 
+                                         src="./images/gates.webp" 
+                                         alt="Gates of Olympus" 
+                                         class="game-image">
+                                </div>
+                                <div class="overlaying-content">
+                                    <a class="play-now-link" 
+                                       itemprop="url" 
+                                       aria-label="Gates of Olympus" 
+                                       href="/#">
+                                        <span>Join Now</span>
+                                    </a>
+                                    <div class="overlaying-content-footer">
+                                        <a class="play-free-link" 
+                                           itemprop="url" 
+                                           aria-label="Gates of Olympus Demo" 
+                                           href="/game/gates?isDemo=true">DEMO PLAY</a>
+                                    </div>
+                                </div>
+                                <a aria-label="Gates of Olympus" 
+                                   aria-hidden="true" 
+                                   class="dummy-link" 
+                                   tabindex="-1" 
+                                   href="/game/gates"></a>
+                            </div>
+                            <h3 class="game-title">Gates of Olympus</h3>
+                        </article>
+                    </li>
+                </ul>
             </div>
 
             <!-- No Mesulo Tab -->
             <div class="tab-content" id="no-mesulo">
-                <div class="games-grid">
-                    <div class="game-card-container">
-                        <div class="game-card">
-                            <img loading="lazy" src="./images/cleo.jpg" alt="Cleo" class="game-image">
-                            <button class="mesulo-button">See More</button>
-                        </div>
-                        <div class="game-name">Cleocatra</div>
-                    </div>
+                <ul class="games-grid">
+                    <li class="game-item" data-cy="slider-item" aria-hidden="false">
+                        <article aria-label="Cleocatra" class="game-article">
+                            <div class="game-body">
+                                <div class="img-wrapper">
+                                    <img loading="lazy" 
+                                         src="./images/cleo.jpg" 
+                                         alt="Cleocatra" 
+                                         class="game-image">
+                                </div>
+                                <div class="overlaying-content">
+                                    <a class="play-now-link" 
+                                       itemprop="url" 
+                                       aria-label="Cleocatra" 
+                                       href="/#">
+                                        <span>Join Now</span>
+                                    </a>
+                                    <div class="overlaying-content-footer">
+                                        <a class="play-free-link" 
+                                           itemprop="url" 
+                                           aria-label="Cleocatra Demo" 
+                                           href="/game/cleocatra?isDemo=true">DEMO PLAY</a>
+                                    </div>
+                                </div>
+                                <a aria-label="Cleocatra" 
+                                   aria-hidden="true" 
+                                   class="dummy-link" 
+                                   tabindex="-1" 
+                                   href="/game/cleocatra"></a>
+                            </div>
+                            <h3 class="game-title">Cleocatra</h3>
+                        </article>
+                    </li>
 
-                    <div class="game-card-container">
-                        <div class="game-card">
-                            <img loading="lazy" src="./images/gates.webp" alt="Gates" class="game-image">
-                            <button class="mesulo-button">See More</button> 
-                        </div>
-                        <div class="game-name">Gates of Olympus</div>
-                    </div>
+                    <li class="game-item" data-cy="slider-item" aria-hidden="false">
+                        <article aria-label="Gates of Olympus" class="game-article">
+                            <div class="game-body">
+                                <div class="img-wrapper">
+                                    <img loading="lazy" 
+                                         src="./images/gates.webp" 
+                                         alt="Gates of Olympus" 
+                                         class="game-image">
+                                </div>
+                                <div class="overlaying-content">
+                                    <a class="play-now-link" 
+                                       itemprop="url" 
+                                       aria-label="Gates of Olympus" 
+                                       href="/#">
+                                        <span>Join Now</span>
+                                    </a>
+                                    <div class="overlaying-content-footer">
+                                        <a class="play-free-link" 
+                                           itemprop="url" 
+                                           aria-label="Gates of Olympus Demo" 
+                                           href="/game/gates?isDemo=true">DEMO PLAY</a>
+                                    </div>
+                                </div>
+                                <a aria-label="Gates of Olympus" 
+                                   aria-hidden="true" 
+                                   class="dummy-link" 
+                                   tabindex="-1" 
+                                   href="/game/gates"></a>
+                            </div>
+                            <h3 class="game-title">Gates of Olympus</h3>
+                        </article>
+                    </li>
 
-                    <div class="game-card-container">
-                        <div class="game-card">
-                            <img loading="lazy" src="./images/hades.jpg" alt="Hades" class="game-image">
-                            <button class="mesulo-button">See More</button> 
-                        </div>
-                        <div class="game-name">Hot as Hades</div>
-                    </div>
+                    <li class="game-item" data-cy="slider-item" aria-hidden="false">
+                        <article aria-label="Hot as Hades" class="game-article">
+                            <div class="game-body">
+                                <div class="img-wrapper">
+                                    <img loading="lazy" 
+                                         src="./images/hades.jpg" 
+                                         alt="Hot as Hades" 
+                                         class="game-image">
+                                </div>
+                                <div class="overlaying-content">
+                                    <a class="play-now-link" 
+                                       itemprop="url" 
+                                       aria-label="Hot as Hades" 
+                                       href="/#">
+                                        <span>Join Now</span>
+                                    </a>
+                                    <div class="overlaying-content-footer">
+                                        <a class="play-free-link" 
+                                           itemprop="url" 
+                                           aria-label="Hot as Hades Demo" 
+                                           href="/game/hades?isDemo=true">DEMO PLAY</a>
+                                    </div>
+                                </div>
+                                <a aria-label="Hot as Hades" 
+                                   aria-hidden="true" 
+                                   class="dummy-link" 
+                                   tabindex="-1" 
+                                   href="/game/hades"></a>
+                            </div>
+                            <h3 class="game-title">Hot as Hades</h3>
+                        </article>
+                    </li>
 
-                    <div class="game-card-container">
-                        <div class="game-card">
-                            <img loading="lazy" src="./images/tome.webp" alt="Tome" class="game-image">
-                            <button class="mesulo-button">See More</button> 
-                        </div>
-                        <div class="game-name">Tome of Insanity</div>
-                    </div>
+                    <li class="game-item" data-cy="slider-item" aria-hidden="false">
+                        <article aria-label="Tome of Insanity" class="game-article">
+                            <div class="game-body">
+                                <div class="img-wrapper">
+                                    <img loading="lazy" 
+                                         src="./images/tome.webp" 
+                                         alt="Tome of Insanity" 
+                                         class="game-image">
+                                </div>
+                                <div class="overlaying-content">
+                                    <a class="play-now-link" 
+                                       itemprop="url" 
+                                       aria-label="Tome of Insanity" 
+                                       href="/#">
+                                        <span>Join Now</span>
+                                    </a>
+                                    <div class="overlaying-content-footer">
+                                        <a class="play-free-link" 
+                                           itemprop="url" 
+                                           aria-label="Tome of Insanity Demo" 
+                                           href="/game/tome?isDemo=true">DEMO PLAY</a>
+                                    </div>
+                                </div>
+                                <a aria-label="Tome of Insanity" 
+                                   aria-hidden="true" 
+                                   class="dummy-link" 
+                                   tabindex="-1" 
+                                   href="/game/tome"></a>
+                            </div>
+                            <h3 class="game-title">Tome of Insanity</h3>
+                        </article>
+                    </li>
 
-                    <div class="game-card-container">
-                        <div class="game-card">
-                            <img loading="lazy" src="./images/toonz.webp" alt="Toonz" class="game-image">
-                            <button class="mesulo-button">See More</button> 
-                        </div>
-                        <div class="game-name">Gargantoonz</div>
-                    </div>
-                </div>
+                    <li class="game-item" data-cy="slider-item" aria-hidden="false">
+                        <article aria-label="Gargantoonz" class="game-article">
+                            <div class="game-body">
+                                <div class="img-wrapper">
+                                    <img loading="lazy" 
+                                         src="./images/toonz.webp" 
+                                         alt="Gargantoonz" 
+                                         class="game-image">
+                                </div>
+                                <div class="overlaying-content">
+                                    <a class="play-now-link" 
+                                       itemprop="url" 
+                                       aria-label="Gargantoonz" 
+                                       href="/#">
+                                        <span>Join Now</span>
+                                    </a>
+                                    <div class="overlaying-content-footer">
+                                        <a class="play-free-link" 
+                                           itemprop="url" 
+                                           aria-label="Gargantoonz Demo" 
+                                           href="/game/toonz?isDemo=true">DEMO PLAY</a>
+                                    </div>
+                                </div>
+                                <a aria-label="Gargantoonz" 
+                                   aria-hidden="true" 
+                                   class="dummy-link" 
+                                   tabindex="-1" 
+                                   href="/game/toonz"></a>
+                            </div>
+                            <h3 class="game-title">Gargantoonz</h3>
+                        </article>
+                    </li>
+                </ul>
             </div>
         </main>
     </div>
@@ -1055,7 +1341,7 @@
             <div class="status-info">
                 <div class="status-item">
                     <div class="status-dot"></div>
-                    <span>Masulo SDK Status: <span id="sdk-status">Loading...</span></span>
+                    <span>mesulo SDK Status: <span id="sdk-status">Loading...</span></span>
                 </div>
             </div>
         </div>
@@ -1072,11 +1358,9 @@
                 <ul class="popup-list">
                     <li>Hot-swap game images and videos without rebuild</li>
                     <li>Generate new assets on the fly with custom Ai model</li>
-                   
                     <li>Create custom themes, campaigns and promotions</li>
                     <li>A/B test assets and anlytics</li>
-                     <li>Auto optimizes videos and images for web and mobile</li>
-                    
+                    <li>Auto optimizes videos and images for web and mobile</li>
                 </ul>
             </div>
             <div class="popup-footer">
@@ -1187,21 +1471,21 @@
 
         // Add click handlers to all "Play Now" buttons
         document.addEventListener('DOMContentLoaded', function() {
-            const withMesuloButtons = document.querySelectorAll('#with-mesulo .mesulo-button');
-            const withoutMesuloButtons = document.querySelectorAll('#no-mesulo .mesulo-button');
+            const withMesuloButtons = document.querySelectorAll('#with-mesulo .play-now-link');
+            const withoutMesuloButtons = document.querySelectorAll('#no-mesulo .play-now-link');
 
             // Add event listeners to "With Mesulo" tab buttons
             withMesuloButtons.forEach(button => {
                 button.addEventListener('click', function(e) {
                     e.preventDefault();
-                    e.stopPropagation(); // Prevent event from reaching container
+                    e.stopPropagation();
                     openPopup('popup-with-mesulo');
                 });
                 
                 // Handle touch events separately for mobile
                 button.addEventListener('touchend', function(e) {
                     e.preventDefault();
-                    e.stopPropagation(); // Prevent event from reaching container
+                    e.stopPropagation();
                     openPopup('popup-with-mesulo');
                 });
             });

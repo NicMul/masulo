@@ -46,7 +46,7 @@ exports.create = async function({ data, user }){
 
   const newGame = Game({
 
-    id: uuidv4(),
+    id: data.cmsId,
     cmsId: data.cmsId,
     defaultImage: data.defaultImage,
     defaultVideo: data.defaultVideo || null,

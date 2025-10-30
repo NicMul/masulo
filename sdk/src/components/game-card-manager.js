@@ -75,7 +75,7 @@ export class GameCardManager {
     
     // Position at bottom right
     spinner.style.position = 'absolute';
-    spinner.style.bottom = '12px';
+    spinner.style.bottom = '40px';
     spinner.style.right = '12px';
     spinner.style.width = '16px';
     spinner.style.height = '16px';

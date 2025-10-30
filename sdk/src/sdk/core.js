@@ -20,7 +20,7 @@ export class MesuloSDK {
     
     // Video management
     this.activeVideoContainer = null;
-    this.registeredComponents = new Map(); // gameId -> component
+    this.registeredComponents = new Map(); // gameId -> Set<component>
     
     // Scroll detection
     this.isScrolling = false;
@@ -127,7 +127,9 @@ export class MesuloSDK {
   // ========== Game Management ==========
   
   registerGameCard(component, gameId) {
-    this.registeredComponents.set(gameId, component);
+    const set = this.registeredComponents.get(gameId) || new Set();
+    set.add(component);
+    this.registeredComponents.set(gameId, set);
     
     // If already connected, request game data immediately
     if (this.isConnected) {
@@ -135,8 +137,15 @@ export class MesuloSDK {
     }
   }
   
-  unregisterGameCard(gameId) {
-    this.registeredComponents.delete(gameId);
+  unregisterGameCard(gameId, component) {
+    const set = this.registeredComponents.get(gameId);
+    if (!set) return;
+    if (component) {
+      set.delete(component);
+      if (set.size === 0) this.registeredComponents.delete(gameId);
+    } else {
+      this.registeredComponents.delete(gameId);
+    }
   }
   
   requestGames() {
@@ -166,51 +175,33 @@ export class MesuloSDK {
   
   updateSpecificGames(gamesData) {
     gamesData.forEach(game => {
-      const component = this.registeredComponents.get(game.id);
-      
-      if (!component) {
+      const components = this.registeredComponents.get(game.id);
+      if (!components || components.size === 0) {
         return;
       }
-      
-      // Get container element from component
-      const container = component.getContainer ? component.getContainer() : component.container;
-      
-      if (!container) {
-        return;
-      }
-      
-      // Read current version from DOM
-      const currentVersionStr = container.getAttribute('data-mesulo-version');
-      const currentVersion = currentVersionStr ? parseInt(currentVersionStr, 10) : undefined;
-      const newVersion = game.version;
-      
-      // If version exists in DOM and hasn't changed, skip the update
-      if (currentVersion !== undefined && currentVersion === newVersion) {
-        console.log(`[Mesulo SDK] : Skipping update for game ${game.id} - version unchanged (${newVersion})`);
-        return;
-      }
-      
-      // Store version in DOM for persistence
-      container.setAttribute('data-mesulo-version', String(newVersion));
-      
-      // Store analytics flag in DOM for persistence
-      container.setAttribute('data-mesulo-analytics', String(game.analytics));
-      
-      // Determine which assets to use based on publishedType
+
+      // Determine which assets to use based on publishedType (once per game)
       let imageUrl = game.defaultImage;
       let videoUrl = game.defaultVideo;
-      
+
       if (!game.published) {
-        // Game unpublished, use defaults only
         console.log('[Mesulo SDK] : Game unpublished', game);
         imageUrl = game.defaultImage;
         videoUrl = null;
-        
-        // Track game unpublish event
-        this.trackAssetEvent('game_unpublished', game.id, 'defaultImage', imageUrl, {
-          reason: 'game_unpublished',
-          reverted_to: 'defaultImage'
-        });
+
+        // Emit analytics once per game, include game_group
+        this.trackAssetEvent(
+          'game_unpublished',
+          game.id,
+          'defaultImage',
+          imageUrl,
+          {
+            reason: 'game_unpublished',
+            reverted_to: 'defaultImage',
+            game_group: game.group ?? game.groupId ?? null
+          },
+          true
+        );
       } else if (game.publishedType === 'current' && game.currentImage) {
         imageUrl = game.currentImage;
         videoUrl = game.currentVideo;
@@ -221,11 +212,35 @@ export class MesuloSDK {
         imageUrl = game.promoImage;
         videoUrl = game.promoVideo;
       }
-      
-      // Update component
-      if (component.updateContent) {
-        component.updateContent(imageUrl, videoUrl, game.published);
-      }
+
+      // Update all registered components for this game id
+      components.forEach(component => {
+        const container = component.getContainer ? component.getContainer() : component.container;
+        if (!container) {
+          return;
+        }
+
+        // Read current version from DOM
+        const currentVersionStr = container.getAttribute('data-mesulo-version');
+        const currentVersion = currentVersionStr ? parseInt(currentVersionStr, 10) : undefined;
+        const newVersion = game.version;
+
+        // If version exists in DOM and hasn't changed, skip the update for this element
+        if (currentVersion !== undefined && currentVersion === newVersion) {
+          return;
+        }
+
+        // Store version in DOM for persistence
+        container.setAttribute('data-mesulo-version', String(newVersion));
+
+        // Store analytics flag in DOM for persistence
+        container.setAttribute('data-mesulo-analytics', String(game.analytics));
+
+        // Apply update to this component
+        if (typeof component.updateContent === 'function') {
+          component.updateContent(imageUrl, videoUrl, game.published);
+        }
+      });
     });
   }
   
@@ -233,12 +248,15 @@ export class MesuloSDK {
   
   deactivateAllVideos(resetToStart = true) {
     // Deactivate all registered components, not just the active one
-    this.registeredComponents.forEach(component => {
-      if (typeof component.deactivate === 'function') {
-        component.deactivate(resetToStart);
-      }
+    this.registeredComponents.forEach(componentsSet => {
+      if (!componentsSet) return;
+      componentsSet.forEach(component => {
+        if (typeof component?.deactivate === 'function') {
+          component.deactivate(resetToStart);
+        }
+      });
     });
-    
+
     this.activeVideoContainer = null;
   }
   
@@ -358,19 +376,26 @@ export class MesuloSDK {
     };
   }
   
-  trackAssetEvent(eventType, gameId, assetType, assetUrl, metadata = {}) {
+  trackAssetEvent(eventType, gameId, assetType, assetUrl, metadata = {}, ignorePerGameSetting = false) {
     // Check global analytics setting
     if (!this.analyticsEnabled || !this.isConnected || !this.socket) {
       return;
     }
     
-    // Check per-game analytics setting from container data attribute
-    const component = this.registeredComponents.get(gameId);
-    const container = component?.getContainer ? component.getContainer() : component?.container;
-    const gameAnalyticsEnabled = container?.getAttribute('data-mesulo-analytics') !== 'false';
-    
-    if (!gameAnalyticsEnabled) {
-      return;
+    // Check per-game analytics setting from one of the containers unless ignored
+    if (!ignorePerGameSetting) {
+      const components = this.registeredComponents.get(gameId);
+      let container = null;
+      if (components && components.size > 0) {
+        for (const comp of components.values()) {
+          container = comp?.getContainer ? comp.getContainer() : comp?.container;
+          if (container) break;
+        }
+      }
+      const gameAnalyticsEnabled = container?.getAttribute('data-mesulo-analytics') !== 'false';
+      if (!gameAnalyticsEnabled) {
+        return;
+      }
     }
     
     const eventData = {
@@ -379,6 +404,7 @@ export class MesuloSDK {
       asset_type: assetType,
       asset_url: assetUrl,
       session_id: this.sessionId,
+      game_group: metadata?.game_group ?? null,
       metadata: {
         ...this.getViewportInfo(),
         ...metadata
