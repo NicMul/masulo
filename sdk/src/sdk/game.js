@@ -8,8 +8,8 @@ export class GameManager {
     this.connectionManager = connectionManager;
     this.analyticsManager = analyticsManager;
     this.registeredComponents = new Map(); // gameId -> Set<component>
+
     
-    // Set up game update callback in connection manager
     connectionManager.setOnGamesUpdate((games) => {
       this.updateSpecificGames(games);
     });
@@ -66,6 +66,7 @@ export class GameManager {
   updateSpecificGames(gamesData) {
     gamesData.forEach(game => {
       const components = this.registeredComponents.get(game.id);
+
       if (!components || components.size === 0) {
         return;
       }
@@ -75,23 +76,9 @@ export class GameManager {
       let videoUrl = game.defaultVideo;
 
       if (!game.published) {
-        console.log('[Mesulo SDK] : Game unpublished', game);
         imageUrl = game.defaultImage;
         videoUrl = null;
 
-        // Emit analytics once per game, include game_group
-        this.analyticsManager.trackAssetEvent(
-          'game_unpublished',
-          game.id,
-          'defaultImage',
-          imageUrl,
-          {
-            reason: 'game_unpublished',
-            reverted_to: 'defaultImage',
-            game_group: game.group ?? game.groupId ?? null
-          },
-          true
-        );
       } else if (game.publishedType === 'current' && game.currentImage) {
         imageUrl = game.currentImage;
         videoUrl = game.currentVideo;
@@ -103,26 +90,36 @@ export class GameManager {
         videoUrl = game.promoVideo;
       }
 
-      // Update all registered components for this game id
       components.forEach(component => {
-        const container = component.getContainer ? component.getContainer() : component.container;
-        if (!container) {
-          return;
-        }
-
-        const newVersion = game.version;
-
-        // Store version in DOM for persistence
-        container.setAttribute('data-mesulo-version', String(newVersion));
-
-        // Store analytics flag in DOM for persistence
-        container.setAttribute('data-mesulo-analytics', String(game.analytics));
-
-        // Apply update to this component
-        if (typeof component.updateContent === 'function') {
-          component.updateContent(imageUrl, videoUrl, game.published);
-        }
+        // Use the video element if it exists, otherwise use the original element
+        const elementToUpdate = component.videoElement || component.element;
+        component.replaceImage(elementToUpdate, game.id, videoUrl, imageUrl);
       });
+
+      // Update all registered components for this game id
+
+      // console.log('[Mesulo SDK] : Components:', components);
+      // components.forEach(component => {
+      //   const container = component.getContainer ? component.getContainer() : component.container;
+      //   if (!container) {
+      //     return;
+      //   }
+
+      //   console.log('[Mesulo SDK] : Container:', container);
+
+      //   const newVersion = game.version;
+
+      //   // Store version in DOM for persistence
+      //   container.setAttribute('data-mesulo-version', String(newVersion));
+
+      //   // Store analytics flag in DOM for persistence
+      //   container.setAttribute('data-mesulo-analytics', String(game.analytics));
+
+      //   // Apply update to this component
+      //   if (typeof component.updateContent === 'function') {
+      //     component.updateContent(imageUrl, videoUrl, game.published);
+      //   }
+      // });
     });
   }
   

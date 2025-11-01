@@ -148,7 +148,7 @@ export class MesuloSDK {
       try {
         callback(data);
       } catch (error) {
-        console.error('[Mesulo SDK] Error in event listener:', error);
+        // Silently handle callback errors
       }
     });
   }

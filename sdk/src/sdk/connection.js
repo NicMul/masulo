@@ -37,7 +37,6 @@ export class ConnectionManager {
       this.setupSocketListeners();
       
     } catch (error) {
-      console.error('[Mesulo SDK] Socket initialization error:', error);
       this.updateStatus('disconnected');
     }
   }
@@ -45,12 +44,11 @@ export class ConnectionManager {
   setupSocketListeners() {
     // Connection established
     this.socket.on('connect', () => {
-      console.log('[Mesulo SDK] : Connected 🚀');
       this.isConnected = true;
       this.updateStatus('connected');
       this.emitCallback('connected');
       
-      // Notify that connection is ready (will trigger requestGames)
+      // Notify that connection is ready (will trigger requestGames and rejoin rooms)
       if (this.onConnectedCallback) {
         this.onConnectedCallback();
       }
@@ -58,7 +56,6 @@ export class ConnectionManager {
     
     // Connection lost
     this.socket.on('disconnect', (reason) => {
-      console.log('[Mesulo SDK] : Disconnected 😢');
       this.isConnected = false;
       this.updateStatus('disconnected');
       this.emitCallback('disconnected', { reason });
@@ -66,7 +63,6 @@ export class ConnectionManager {
     
     // Connection error
     this.socket.on('connect_error', (error) => {
-      console.error('[Mesulo SDK] Connection error:', error);
       this.updateStatus('disconnected');
       this.emitCallback('error', { type: 'connection', error });
     });
@@ -100,7 +96,7 @@ export class ConnectionManager {
       try {
         callback(status);
       } catch (error) {
-        console.error('[Mesulo SDK] Error in status callback:', error);
+        // Silently handle callback errors
       }
     });
   }
