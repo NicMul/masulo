@@ -135,11 +135,11 @@ const VideoTrimmer = ({ videoUrl, onTrimApplied }) => {
                 {/* Time Display */}
                 <div className='flex justify-between gap-2'>
                     <div className='px-3 flex flex-row items-center justify-between w-2/5 py-2 bg-blue-100 dark:bg-blue-900 rounded-md'>
-                        <span className='text-xs font-medium text-slate-600 dark:text-slate-400 '>Original:&nbsp; </span>
+                        <span className='text-xs font-medium text-slate-600 dark:text-slate-400 '>Original: </span>
                         <TimeDisplay time={duration} />
                     </div>
                     <div className='px-3 flex flex-row items-center justify-between w-2/5 py-2 bg-green-100 dark:bg-green-900 rounded-md'>
-                        <span className='text-xs font-medium text-slate-600 dark:text-slate-400 block'>Trimmed:&nbsp; </span>
+                        <span className='text-xs font-medium text-slate-600 dark:text-slate-400 block'>Trimmed</span>
                         <TimeDisplay time={endTime - startTime} />
                     </div>
                 </div>

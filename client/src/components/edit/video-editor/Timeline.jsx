@@ -90,7 +90,7 @@ const Timeline = ({
             
             <div 
                 ref={timelineRef}
-                className='relative h-12 bg-slate-200 dark:bg-slate-700 rounded-lg cursor-pointer'
+                className='relative h-12 bg-slate-200 dark:bg-slate-700 cursor-pointer'
                 onClick={handleTimelineClick}
             >
                 {/* Full timeline background */}
@@ -110,14 +110,14 @@ const Timeline = ({
                 
                 {/* Start handle */}
                 <div
-                    className='absolute top-0 bottom-0 w-2 bg-blue-500 cursor-ew-resize hover:bg-blue-600 transition-colors rounded-l-md'
+                    className='absolute top-0 bottom-0 w-2 bg-blue-500 cursor-ew-resize hover:bg-blue-600 transition-colors rounded-l-sm'
                     style={{ left: `${startPos}%` }}
                     onMouseDown={handleMouseDown(true)}
                 />
                 
                 {/* End handle */}
                 <div
-                    className='absolute top-0 bottom-0 w-2 bg-blue-500 cursor-ew-resize hover:bg-blue-600 transition-colors rounded-r-md'
+                    className='absolute top-0 bottom-0 w-2 bg-blue-500 cursor-ew-resize hover:bg-blue-600 transition-colors rounded-r-sm'
                     style={{ left: `${endPos}%` }}
                     onMouseDown={handleMouseDown(false)}
                 />

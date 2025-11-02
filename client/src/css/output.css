@@ -1059,6 +1059,12 @@ table tbody tr:last-child td {
 .h-\[24px\] {
   height: 24px;
 }
+.\!h-\[200px\] {
+  height: 200px !important;
+}
+.h-\[200px\] {
+  height: 200px;
+}
 .max-h-32 {
   max-height: 8rem;
 }
@@ -1385,6 +1391,9 @@ table tbody tr:last-child td {
 }
 .max-w-5xl {
   max-width: 64rem;
+}
+.\!max-w-4xl {
+  max-width: 56rem !important;
 }
 .flex-1 {
   flex: 1 1 0%;
@@ -1768,6 +1777,14 @@ table tbody tr:last-child td {
 .rounded-r-md {
   border-top-right-radius: 0.375rem;
   border-bottom-right-radius: 0.375rem;
+}
+.rounded-l-sm {
+  border-top-left-radius: 0.125rem;
+  border-bottom-left-radius: 0.125rem;
+}
+.rounded-r-sm {
+  border-top-right-radius: 0.125rem;
+  border-bottom-right-radius: 0.125rem;
 }
 .rounded-tl-md {
   border-top-left-radius: 0.375rem;

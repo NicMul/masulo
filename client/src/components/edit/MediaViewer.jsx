@@ -16,7 +16,7 @@ export function MediaViewer({ mediaUrl, mediaType, title, alt, className, contro
     const dialogElement = document.createElement('div');
     dialogElement.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
     dialogElement.innerHTML = `
-      <div class="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-4xl max-h-4xl mx-4 relative">
+      <div class="bg-white dark:bg-slate-800 rounded-lg p-6 !w-4xl !h-4xl mx-4 relative">
         <div class="flex justify-between items-center mb-4">
           <h3 class="text-lg font-semibold text-slate-900 dark:text-slate-100">${title}</h3>
           <button class="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200" onclick="this.closest('.fixed').remove()">
