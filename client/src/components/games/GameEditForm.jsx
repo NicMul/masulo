@@ -114,23 +114,23 @@ export function GameEditForm({ game, onSuccess, onCancel, t }) {
       <div className="flex-shrink-0 px-6 pt-6 pb-5 bg-white border-b-2 border-blue-100 shadow-sm">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-md">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-              </svg>
+            <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-md w-24 h-24">
+              
+              <img src={game.defaultImage} alt="Game Logo" className="w-full h-full rounded-xl object-cover" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-900 tracking-tight">Edit Game</h2>
-              <p className="text-sm text-gray-500 mt-0.5">Update game configuration and settings</p>
+              <h2 className="text-xl font-bold text-gray-900 tracking-tight">{t('games.edit.header.title', { cmsId: game.cmsId })}</h2>
+              <p className="text-sm text-gray-500 mt-0.5">{t('games.edit.header.description')}</p>
             </div>
           </div>
           <div className="flex items-center space-x-3">
-            <div className="px-4 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
+            <div className={cn('px-4 py-2 rounded-lg border border-blue-200', watchedValues.published ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200')}>
               <Switch
                 name="published"
                 value={watchedValues.published}
-                label={t('games.form.published.label')}
+                label={watchedValues.published ? t('games.form.published.label') : t('games.form.unpublished.label')}
                 onChange={(e) => setValue('published', e.target.value)}
+                className="data-[state=checked]:!bg-green-500 dark:data-[state=checked]:!bg-green-600"
               />
             </div>
           </div>
@@ -147,13 +147,13 @@ export function GameEditForm({ game, onSuccess, onCancel, t }) {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 pb-8">
       
             {/* Basic Information Section - Enhanced Card */}
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
-              <div className="bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-4">
+            <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-md transition-all duration-300">
+              <div className="bg-[#6363ac] px-6 py-4">
                 <div className="flex items-center space-x-3">
                   <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <h3 className="text-lg font-bold text-white">Basic Information</h3>
+                  <h3 className="text-lg font-bold text-white">{t('games.form.sections.basicInformation')}</h3>
                 </div>
               </div>
               <div className="p-6">
@@ -175,7 +175,7 @@ export function GameEditForm({ game, onSuccess, onCancel, t }) {
                         "w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200",
                         errors.cmsId ? "border-red-300 bg-red-50" : "border-gray-200 bg-gray-50 hover:bg-white hover:border-blue-300"
                       )}
-                      placeholder="Enter CMS ID"
+                      placeholder={t('games.form.placeholders.cmsId')}
                     />
                     {errors.cmsId && (
                       <p className="text-red-500 text-xs mt-1 flex items-center">
@@ -248,15 +248,14 @@ export function GameEditForm({ game, onSuccess, onCancel, t }) {
             </div>
 
             {/* Media Assets Section - Enhanced Card */}
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
-              <div className="bg-gradient-to-r from-purple-500 to-pink-600 px-6 py-4">
+            <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
+              <div className="bg-[#6363ac] px-6 py-4">
                 <div className="flex items-center space-x-3">
                   <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
-                  <h3 className="text-lg font-bold text-white">Media Assets</h3>
+                  <h3 className="text-lg font-bold text-white">{t('games.form.sections.mediaAssets')}</h3>
                 </div>
-                <p className="text-purple-100 text-sm mt-1">Configure images and videos for your game</p>
               </div>
               <div className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -369,15 +368,14 @@ export function GameEditForm({ game, onSuccess, onCancel, t }) {
             </div>
 
             {/* Features & Settings Section - Enhanced Card */}
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
-              <div className="bg-gradient-to-r from-emerald-500 to-teal-600 px-6 py-4">
+            <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
+              <div className="bg-[#6363ac] px-6 py-4">
                 <div className="flex items-center space-x-3">
                   <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
                   </svg>
-                  <h3 className="text-lg font-bold text-white">Features & Settings</h3>
+                  <h3 className="text-lg font-bold text-white">{t('games.form.sections.featuresSettings')}</h3>
                 </div>
-                <p className="text-emerald-100 text-sm mt-1">Toggle game behavior and interactions</p>
               </div>
               <div className="p-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -450,15 +448,14 @@ export function GameEditForm({ game, onSuccess, onCancel, t }) {
             </div>
 
             {/* Publishing Settings Section - Enhanced Card */}
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
-              <div className="bg-gradient-to-r from-orange-500 to-red-600 px-6 py-4">
+            <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
+              <div className="bg-[#6363ac] px-6 py-4">
                 <div className="flex items-center space-x-3">
                   <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <h3 className="text-lg font-bold text-white">Publishing Settings</h3>
+                  <h3 className="text-lg font-bold text-white">{t('games.form.sections.publishingSettings')}</h3>
                 </div>
-                <p className="text-orange-100 text-sm mt-1">Control game visibility and publishing options</p>
               </div>
               <div className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -469,13 +466,14 @@ export function GameEditForm({ game, onSuccess, onCancel, t }) {
                       </svg>
                       {t('games.form.publishedLive.label')}
                     </label>
-                    <div className="p-4 rounded-xl border-2 border-gray-200 bg-gradient-to-br from-orange-50 to-red-50 hover:border-orange-300 transition-all duration-200">
+                    <div className={cn('p-4 rounded-xl border-2 border-gray-200', watchedValues.published ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200')}>
                       
                       <Switch
                         name="published"
                         value={watchedValues.published}
-                        label={t('games.form.published.label')}
+                        label={watchedValues.published ? t('games.form.published.label') : t('games.form.unpublished.label')}
                         onChange={(e) => setValue('published', e.target.value)}
+                        className="data-[state=checked]:!bg-green-500 dark:data-[state=checked]:!bg-green-600"
                       />
                     </div>
                   </div>
@@ -502,15 +500,14 @@ export function GameEditForm({ game, onSuccess, onCancel, t }) {
             </div>
 
             {/* Additional Settings Section - Enhanced Card */}
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
-              <div className="bg-gradient-to-r from-violet-500 to-purple-600 px-6 py-4">
+            <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300">
+              <div className="bg-[#6363ac] px-6 py-4">
                 <div className="flex items-center space-x-3">
                   <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
                   </svg>
-                  <h3 className="text-lg font-bold text-white">Additional Settings</h3>
+                  <h3 className="text-lg font-bold text-white">{t('games.form.sections.additionalSettings')}</h3>
                 </div>
-                <p className="text-violet-100 text-sm mt-1">Custom CSS and advanced configurations</p>
               </div>
               <div className="p-6">
                 <div className="space-y-2">
@@ -530,7 +527,7 @@ export function GameEditForm({ game, onSuccess, onCancel, t }) {
                     <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    Add custom CSS to style the game player
+                    {t('games.form.placeholders.playerCssHint')}
                   </p>
                 </div>
               </div>
@@ -545,7 +542,7 @@ export function GameEditForm({ game, onSuccess, onCancel, t }) {
               <svg className="w-5 h-5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
               </svg>
-              <span>Scroll for more</span>
+              <span>{t('games.form.footer.scrollForMore')}</span>
             </div>
           </div>
         )}
@@ -560,33 +557,33 @@ export function GameEditForm({ game, onSuccess, onCancel, t }) {
                 <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
-                Form is valid
+                {t('games.form.footer.formValid')}
               </span>
             ) : (
               <span className="flex items-center text-amber-600 font-medium">
                 <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                 </svg>
-                Please fill required fields
+                {t('games.form.footer.fillRequiredFields')}
               </span>
             )}
           </div>
           <div className="flex space-x-3">
             <Button
               type="button"
-              variant="outline"
               text="Cancel"
               onClick={onCancel}
               disabled={loading}
-              className="px-6 py-2.5 border-2 border-gray-300 hover:border-gray-400 rounded-xl font-semibold transition-all duration-200"
+              color="red"
             />
             <Button
               type="submit"
+              color="green"
               text={t('games.edit.button')}
               loading={loading}
               disabled={loading || !isFormValid}
               onClick={handleSubmit(onSubmit)}
-              className="px-6 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              
             />
           </div>
         </div>

@@ -15,7 +15,7 @@ export const formatTime = (seconds) => {
 export const TimeDisplay = ({ label, time, className = '' }) => {
     return (
         <div className={`flex  items-center ${label ? 'gap-2' : ''} ${className}`}>
-            {label && <span className='text-sm font-medium text-slate-600 dark:text-slate-400'>{label}:</span>}
+            {label && <span className='text-sm font-medium text-slate-600 dark:text-slate-400'>{label}</span>}
             <span className='text-sm font-mono font-semibold text-slate-800 dark:text-slate-200'>{formatTime(time)}</span>
         </div>
     );

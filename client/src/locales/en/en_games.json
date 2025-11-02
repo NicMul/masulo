@@ -6,10 +6,21 @@
   "create": {
     "title": "Create Game",
     "action": "New Game",
-    "button": "Create Game"
+    "button": "Create Game",
+    "header": {
+      "title": "Create New Game",
+      "description": "Fill in the details to add a new game"
+    }
   },
   "edit_game": {
     "action": "Edit Game"
+  },
+  "edit": {
+    "button": "Save Changes",
+    "header": {
+      "title": "Edit Game: {{cmsId}}",
+      "description": "Update game configuration and settings"
+    }
   },
   "view": {
     "action": "View Assets",
@@ -116,6 +127,12 @@
       "label": "Published",
       "description": "Toggle to publish this game"
     },
+    "unpublished": {
+      "label": "Unpublished"
+    },
+    "publishedLive": {
+      "label": "Published Live"
+    },
     "publishedType": {
       "label": "Published Type",
       "description": "Select the type of published content",
@@ -125,6 +142,22 @@
         "theme": "Theme",
         "promo": "Promo"
       }
+    },
+    "sections": {
+      "basicInformation": "Basic Information",
+      "mediaAssets": "Media Assets",
+      "featuresSettings": "Features & Settings",
+      "publishingSettings": "Publishing Settings",
+      "additionalSettings": "Additional Settings"
+    },
+    "placeholders": {
+      "cmsId": "Enter CMS ID",
+      "playerCssHint": "Add custom CSS to style the game player"
+    },
+    "footer": {
+      "scrollForMore": "Scroll for more",
+      "formValid": "Form is valid",
+      "fillRequiredFields": "Please fill required fields"
     }
   },
   "imageEdit": {

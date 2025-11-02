@@ -117,7 +117,7 @@ const VideoTrimmer = ({ videoUrl, onTrimApplied }) => {
     }
     
     return (
-        <div className='w-full flex gap-4'>
+        <div className='w-full flex gap-4 h-full'>
             {/* Left Side: Video Player */}
             <div className='flex-1 flex flex-col items-center'>
                 <div className='relative w-full' style={{ aspectRatio: '220 / 280' }}>
@@ -131,15 +131,15 @@ const VideoTrimmer = ({ videoUrl, onTrimApplied }) => {
             </div>
             
             {/* Right Side: Controls */}
-            <div className='w-[53%] flex flex-col gap-4 h-full justify-between'>
+            <div className='w-[53%] flex flex-col gap-4 flex-1'>
                 {/* Time Display */}
                 <div className='flex justify-between gap-2'>
                     <div className='px-3 flex flex-row items-center justify-between w-2/5 py-2 bg-blue-100 dark:bg-blue-900 rounded-md'>
-                        <span className='text-xs font-medium text-slate-600 dark:text-slate-400 '>Original</span>
+                        <span className='text-xs font-medium text-slate-600 dark:text-slate-400 '>Original:&nbsp; </span>
                         <TimeDisplay time={duration} />
                     </div>
                     <div className='px-3 flex flex-row items-center justify-between w-2/5 py-2 bg-green-100 dark:bg-green-900 rounded-md'>
-                        <span className='text-xs font-medium text-slate-600 dark:text-slate-400 block'>Trimmed</span>
+                        <span className='text-xs font-medium text-slate-600 dark:text-slate-400 block'>Trimmed:&nbsp; </span>
                         <TimeDisplay time={endTime - startTime} />
                     </div>
                 </div>
@@ -156,15 +156,18 @@ const VideoTrimmer = ({ videoUrl, onTrimApplied }) => {
                 />
                 
                 {/* Controls */}
-                <Controls
-                    isPlaying={isPlaying}
-                    onPlay={handlePlay}
-                    onPause={handlePause}
-                    onReset={handleReset}
-                    onApply={handleApply}
-                    onPlaySelection={handlePlaySelection}
-                    canApply={duration > 0 && startTime >= 0 && endTime > startTime}
-                />
+                <div className='w-full h-full'>
+                    <Controls
+                        isPlaying={isPlaying}
+                        onPlay={handlePlay}
+                        onPause={handlePause}
+                        onReset={handleReset}
+                        onApply={handleApply}
+                        onPlaySelection={handlePlaySelection}
+                        canApply={duration > 0 && startTime >= 0 && endTime > startTime}
+                    />
+                </div>
+                
             </div>
         </div>
     );
