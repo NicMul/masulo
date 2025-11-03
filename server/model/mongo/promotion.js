@@ -82,6 +82,13 @@ exports.update = async function({ id, user, data }){
     date_updated: new Date()
   };
 
+  // Explicitly ensure published field is set correctly when provided
+  // This handles the case where published: false needs to be explicitly set
+  if ('published' in data) {
+    // Convert to boolean explicitly to handle string 'true'/'false' cases
+    updateData.published = data.published === true || data.published === 'true';
+  }
+
   const result = await Promotion.findOneAndUpdate(
     { id: id, user_id: user },
     { $set: updateData },

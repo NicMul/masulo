@@ -39,9 +39,12 @@ const getPromotions = async (userId, socket) => {
       // Fetch promotions from your database/service
       const promotions = await promotion.get({ user: userId });
       
+      // Filter out unpublished promotions
+      const publishedPromotions = promotions.filter(promo => promo.published === true);
+      
       // Emit response back to client
       socket.emit('promotions-response', {
-        promotions: promotions,
+        promotions: publishedPromotions,
         success: true,
         timestamp: new Date().toISOString()
       });
@@ -85,14 +88,17 @@ const emitPromotionUpdates = async (userId, emitPromotionUpdateFn) => {
         // Fetch all promotions for the user
         const promotions = await promotion.get({ user: userId });
         
-        console.log('Found promotions for update:', promotions?.length || 0);
+        // Filter out unpublished promotions
+        const publishedPromotions = promotions.filter(promo => promo.published === true);
+        
+        console.log('Found promotions for update:', publishedPromotions?.length || 0);
         
         // Emit updates to user-specific room
         if (emitPromotionUpdateFn) {
-            emitPromotionUpdateFn(userId, promotions);
+            emitPromotionUpdateFn(userId, publishedPromotions);
         }
         
-        return promotions;
+        return publishedPromotions;
     } catch (error) {
         console.error('Error emitting promotion updates:', error);
         return [];

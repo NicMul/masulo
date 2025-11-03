@@ -6,6 +6,7 @@
 import { getCurrentConfig } from './config.js';
 import { ConnectionManager } from './connection.js';
 import { GameManager } from './game.js';
+import { PromotionManager } from './promotions.js';
 import { VideoManager } from './video.js';
 import { ScrollDetector } from './scroll-detect.js';
 import { AnalyticsManager } from './analytics.js';
@@ -61,6 +62,25 @@ export class MesuloSDK {
     
     // Update analyticsManager with gameManager reference
     this.analyticsManager.gameManager = this.gameManager;
+    
+    this.promotionManager = new PromotionManager(
+      this.connectionManager,
+      this.gameManager
+    );
+    
+    // Link PromotionManager to GameManager so it can check for active promotions
+    this.gameManager.setPromotionManager(this.promotionManager);
+    
+    // Set up promotions callback
+    this.connectionManager.setOnPromotionsUpdate((promotions) => {
+      this.promotionManager.updatePromotions(promotions);
+    });
+    
+    // Set up promotions refresh callback (for updates)
+    this.connectionManager.setOnPromotionsRefresh(() => {
+      this.gameManager.requestGames();
+      this.requestPromotions();
+    });
     
     this.videoManager = new VideoManager(this.gameManager);
     
