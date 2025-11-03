@@ -271,6 +271,7 @@ const PromotionGameSelector = ({
               'border border-slate-200 dark:border-slate-700 rounded-md shadow-lg',
               'max-h-60 overflow-y-auto',
               'transition-all duration-200 ease-in-out',
+              'w-2/3',
               'opacity-100 scale-100'
             )}
           >
@@ -292,17 +293,10 @@ const PromotionGameSelector = ({
                     highlightedIndex === index && !isAlreadySelected && 'bg-slate-100 dark:bg-slate-700'
                   )}
                 >
-                  <Icon
-                    name="gamepad-2"
-                    size={16}
-                    className="text-slate-500 dark:text-slate-400 flex-shrink-0"
-                  />
+                  <img src={game?.defaultImage || ''} alt={game.cmsId} width={48} height={56} className="text-slate-500 dark:text-slate-400 flex-shrink-0" />
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">
                       {game.cmsId}
-                    </div>
-                    <div className="text-xs text-slate-500 dark:text-slate-400">
-                      ID: {game.id}
                     </div>
                   </div>
                   {isAlreadySelected && (
@@ -350,48 +344,47 @@ const PromotionGameSelector = ({
                   key={game.id}
                   className="relative group"
                 >
-                  {/* Action Button - Edit if missing assets, Delete otherwise */}
-                  {gameHasMissingAssets ? (
+                  {/* Action Buttons - Always visible */}
+                  <div className="absolute -top-2 -right-2 z-20 flex gap-1">
                     <button
                       onClick={() => handleEditGame(game.id)}
                       className={cn(
-                        'absolute -top-2 -right-2 z-20',
-                        'w-6 h-6 rounded-full',
-                        'bg-blue-500 hover:bg-blue-600',
+                        'w-7 h-7 rounded-md',
+                        'bg-blue-500 hover:bg-blue-600 active:bg-blue-700',
                         'flex items-center justify-center',
                         'transition-all duration-200',
-                        'shadow-lg hover:shadow-xl',
-                        'opacity-0 group-hover:opacity-100'
+                        'shadow-md hover:shadow-lg',
+                        'border border-blue-400/30',
+                        'hover:scale-105 active:scale-95'
                       )}
                       aria-label={`Edit ${game.cmsId}`}
                     >
                       <Icon
                         name="pencil"
-                        size={12}
+                        size={14}
                         className="text-white"
                       />
                     </button>
-                  ) : (
                     <button
                       onClick={() => handleDeleteGame(game.id)}
                       className={cn(
-                        'absolute -top-2 -right-2 z-20',
-                        'w-6 h-6 rounded-full',
-                        'bg-red-500 hover:bg-red-600',
+                        'w-7 h-7 rounded-md',
+                        'bg-red-500 hover:bg-red-600 active:bg-red-700',
                         'flex items-center justify-center',
                         'transition-all duration-200',
-                        'shadow-lg hover:shadow-xl',
-                        'opacity-0 group-hover:opacity-100'
+                        'shadow-md hover:shadow-lg',
+                        'border border-red-400/30',
+                        'hover:scale-105 active:scale-95'
                       )}
                       aria-label={`Remove ${game.cmsId}`}
                     >
                       <Icon
                         name="x"
-                        size={12}
+                        size={14}
                         className="text-white"
                       />
                     </button>
-                  )}
+                  </div>
 
                   {/* Game Title */}
                   
@@ -408,9 +401,6 @@ const PromotionGameSelector = ({
                       showPlayIcon={true}
                     />
                     <div className="mt-2 text-center">
-                    <div className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate max-w-[220px]">
-                      {game.cmsId}
-                    </div>
                   </div>
                   </div>
                 </div>

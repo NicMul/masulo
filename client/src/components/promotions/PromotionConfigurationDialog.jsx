@@ -221,7 +221,20 @@ export function PromotionConfigurationDialog({
       onClose={handleCancel}
       title={promotion ? t('promotions.edit_promotion') : t('promotions.create_promotion')}
       className="max-w-[90vw] w-full max-h-[90vh] overflow-hidden"
+    
     >
+          {hasMissingAssets && (
+                  <Alert
+                    className="absolute top-[30px] right-[40px] z-10 w-1/3 shadow-lg"
+                    variant="warning"
+                    closeable={true}
+                    title={t('promotions.missing_assets.title')}
+                    description={t('promotions.missing_assets.description', {
+                      count: gamesWithMissingAssets.length,
+                      games: gamesWithMissingAssets.map(g => g.cmsId).join(', ')
+                    })}
+                  />
+                )}
       <div className="flex flex-col h-[80vh]">
         <div className="flex gap-6 flex-1 min-h-0">
           {/* Left side - Form */}
@@ -245,16 +258,7 @@ export function PromotionConfigurationDialog({
                 <TabsTrigger disabled value="assets">Edit Promotion Assets</TabsTrigger>
               </TabsList>
               <TabsContent value="games" className="pt-4 space-y-4 flex-1 overflow-y-auto min-h-0">
-                {hasMissingAssets && (
-                  <Alert
-                    variant="warning"
-                    title={t('promotions.missing_assets.title')}
-                    description={t('promotions.missing_assets.description', {
-                      count: gamesWithMissingAssets.length,
-                      games: gamesWithMissingAssets.map(g => g.cmsId).join(', ')
-                    })}
-                  />
-                )}
+                
                 <PromotionGameSelector 
                   games={games}
                   selectedGames={selectedGames}
@@ -275,6 +279,7 @@ export function PromotionConfigurationDialog({
           </div>
         {/* Footer with action buttons */}
         <div className="flex justify-end gap-2 mt-6 pt-4 border-t">
+      
           <Button
             text={t('promotions.cancel')}
             onClick={handleCancel}
