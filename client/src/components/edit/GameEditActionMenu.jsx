@@ -64,6 +64,9 @@ export function GameEditActionMenu({ selectedGame, locked, onRegenerate, onLock,
       case 'theme':
         imageUrl = selectedGame.themeImage;
         break;
+      case 'promo':
+        imageUrl = selectedGame.promoImage;
+        break;
       default:
         return;
     }
@@ -87,6 +90,9 @@ export function GameEditActionMenu({ selectedGame, locked, onRegenerate, onLock,
         break;
       case 'theme':
         videoUrl = selectedGame.themeVideo;
+        break;
+      case 'promo':
+        videoUrl = selectedGame.promoVideo;
         break;
       default:
         return;

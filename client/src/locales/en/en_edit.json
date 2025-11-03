@@ -24,11 +24,12 @@
     "source": {
       "original": "REFERENCE ASSET",
       "current": "Current AI Content",
-      "theme": "Theme AI Asset"
+      "theme": "Theme AI Asset",
+      "promo": "Promotional AI Asset"
     }
   },
   "original": {
-    "title": "1. Reference Image Asset (Default)",
+    "title": "Reference Image Asset (Default)",
     "image": "REFERENCE IMAGE",
     "video": "AI VIDEO",
     "defaultImage": "Default Image",
@@ -40,7 +41,7 @@
     "lock": "Lock Video"
   },
   "current": {
-    "title": "2. Saved Assets (AI Generated)",
+    "title": "Alternate Assets",
     "image": "AI IMAGE",
     "video": "AI VIDEO",
     "aiImage": "Current Image",
@@ -50,7 +51,7 @@
     "lock": "Lock Current Assets"
   },
   "theme": {
-    "title": "3. Themed {{theme}} Assets (AI Generated)",
+    "title": "Themed {{theme}} Assets",
     "subtitle": "Generated via active seasonal/promo prompt.",
     "image": "AI IMAGE",
     "video": "AI VIDEO",
@@ -59,6 +60,14 @@
     "regenerate": "Regenerate Themed Assets",
     "lock": "Lock Themed Assets",
     "clear": "Delete Themed Assets"
+  },
+  "promo": {
+    "title": "Promotional Assets",
+    "image": "PROMO IMAGE",
+    "video": "PROMO VIDEO",
+    "regenerate": "Regenerate Promo Assets",
+    "lock": "Lock Promo Assets",
+    "clear": "Delete Promo Assets"
   },
   "regenerate": {
     "noGame": "Please select a game first",
@@ -97,7 +106,7 @@
       },
       "tabs": {
         "original": "Used for Reference",
-        "selectedForEdit": "Currently Saved",
+        "selectedForEdit": "Saved Assets",
         "generations": "Generations",
         "videoEditor": "Video Editor"
       },
@@ -126,11 +135,16 @@
       },
       "cards": {
         "originalImage": "Reference Image",
-        "aiGeneratedImage": "AI Generated Image",
-        "aiGeneratedVideo": "AI Generated Video",
+        "originalVideo": "Reference Video",
+        "aiGeneratedImage": "Alternate Image",
+        "aiGeneratedVideo": "Alaternate Video",
+        "themeImage": "Theme Image",
+        "themeVideo": "Theme Video",
         "latestAssets": "Last Generated",
         "generateAssets": "Nothing New Yet",
-        "generatingAssets": "Generating Assets ..."
+        "generatingAssets": "Generating Assets ...",
+        "promoImage": "Promo Image",
+        "promoVideo": "Promo Video"
       },
       "placeholders": {
         "imagePrompt": "Enter image prompt",
@@ -163,6 +177,9 @@
     "noGame": "Please select a game first",
     "theme": {
       "success": "Theme content cleared successfully"
+    },
+    "promo": {
+      "success": "Promo content cleared successfully"
     }
   },
   "save": {

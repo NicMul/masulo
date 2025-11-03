@@ -762,6 +762,9 @@ table tbody tr:last-child td {
 .col-span-3 {
   grid-column: span 3 / span 3;
 }
+.col-span-1 {
+  grid-column: span 1 / span 1;
+}
 .float-left {
   float: left;
 }

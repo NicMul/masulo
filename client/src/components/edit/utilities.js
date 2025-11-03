@@ -29,7 +29,7 @@ export const getMediaPlayerType = (selectedGame, testImage, testVideoUrl) => {
 
 /**
  * Gets image URL based on asset type
- * @param {string} assetType - Type of asset ('original', 'current', 'theme')
+ * @param {string} assetType - Type of asset ('original', 'current', 'theme', 'promo')
  * @param {Object} selectedGame - The selected game object
  * @returns {string|null} Image URL
  */
@@ -37,12 +37,13 @@ export const getImageUrl = (assetType, selectedGame) => {
     if (assetType === 'original') return selectedGame?.defaultImage;
     if (assetType === 'current') return selectedGame?.currentImage;
     if (assetType === 'theme') return selectedGame?.themeImage;
+    if (assetType === 'promo') return selectedGame?.promoImage;
     return null;
 };
 
 /**
  * Gets video URL based on asset type
- * @param {string} assetType - Type of asset ('original', 'current', 'theme')
+ * @param {string} assetType - Type of asset ('original', 'current', 'theme', 'promo')
  * @param {Object} selectedGame - The selected game object
  * @returns {string|null} Video URL
  */
@@ -50,6 +51,7 @@ export const getVideoUrl = (assetType, selectedGame) => {
     if (assetType === 'original') return selectedGame?.defaultVideo;
     if (assetType === 'current') return selectedGame?.currentVideo;
     if (assetType === 'theme') return selectedGame?.themeVideo;
+    if (assetType === 'promo') return selectedGame?.promoVideo;
     return null;
 };
 

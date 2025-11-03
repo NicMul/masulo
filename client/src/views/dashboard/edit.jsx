@@ -6,21 +6,22 @@
 **********/
 
 import { useState, useCallback, useContext, useEffect } from 'react';
-import { ViewContext, Animate, useAPI, useParams } from 'components/lib';
+import { ViewContext, Animate, useAPI, useParams, Tabs, TabsList, TabsTrigger, TabsContent } from 'components/lib';
 import { GameSelector } from 'components/edit/GameSelector';
 import { EditHeader } from 'components/edit/EditHeader';
 import { OriginalAssets } from 'components/edit/OriginalAssets';
 import { CurrentAssets } from 'components/edit/CurrentAssets';
 import { ThemeAssets } from 'components/edit/ThemeAssets';
+import { PromoAssets } from 'components/edit/PromoAssets';
 import Axios from 'axios';
 
-export function Edit({ t }){
+export function Edit({ t }) {
 
   const viewContext = useContext(ViewContext);
   const { gameId } = useParams();
   const [selectedGame, setSelectedGame] = useState(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
-  
+
 
   const gamesRes = useAPI('/api/game', 'get', refreshTrigger);
 
@@ -90,44 +91,78 @@ export function Edit({ t }){
 
   return (
     <Animate type='pop'>
-      <div className='space-y-6'>
+      <div className='space-y-6 w-full'>
 
         <GameSelector t={t} onGameSelect={handleGameSelect} games={gamesRes.data || []} selectedGame={selectedGame} />
 
-    
-        <EditHeader 
-          t={t} 
-          selectedGame={selectedGame} 
-          onSaveAndPublish={handlePublish} 
+
+        <EditHeader
+          t={t}
+          selectedGame={selectedGame}
+          onSaveAndPublish={handlePublish}
         />
 
-    
-        <div className='grid grid-cols-1 lg:grid-cols-3 gap-6 justify-center items-center'>
-      
-          <OriginalAssets 
-            t={t} 
-            selectedGame={selectedGame} 
-            onGameUpdate={handleGameUpdate}
-            onPublish={handlePublish}
-          />
 
-       
-          <CurrentAssets 
-            t={t} 
-            selectedGame={selectedGame} 
-            onGameUpdate={handleGameUpdate}
-            onPublish={handlePublish}
-          />
+        <Tabs defaultValue="alternate">
+          <TabsList>
+            <TabsTrigger value="original">Original</TabsTrigger>
+            <TabsTrigger value="alternate">Alternate Assets</TabsTrigger>
+          </TabsList>
+          <TabsContent value="original" className='grid grid-cols-3 gap-3'>
+            <Animate type='pop'>
+              <div className='col-span-1'>
+                <OriginalAssets
+                  t={t}
+                  selectedGame={selectedGame}
+                  onGameUpdate={handleGameUpdate}
+                  onPublish={handlePublish}
+                />
+              </div>
+            </Animate>
+          </TabsContent>
+          <TabsContent value="alternate" className='w-full'>
 
-         
-          <ThemeAssets 
-            t={t} 
-            selectedGame={selectedGame} 
-            onGameUpdate={handleGameUpdate}
-            onPublish={handlePublish}
-          />
-        </div>
+            <div className='grid grid-cols-3 gap-3'>
+              <Animate type='pop'>
+                <div className='col-span-1'>
+                  <CurrentAssets
+                    t={t}
+                    selectedGame={selectedGame}
+                    onGameUpdate={handleGameUpdate}
+                    onPublish={handlePublish}
+                  />
+                </div>
+
+              </Animate>
+
+              <Animate type='pop'>
+                <div className='col-span-1'>
+                  <ThemeAssets
+                    t={t}
+                    selectedGame={selectedGame}
+                    onGameUpdate={handleGameUpdate}
+                    onPublish={handlePublish}
+                  />
+                </div>
+              </Animate>
+
+              <Animate type='pop'>
+                <div className='col-span-1'>
+                  <PromoAssets
+                    t={t}
+                    selectedGame={selectedGame}
+                    onGameUpdate={handleGameUpdate}
+                    onPublish={handlePublish}
+                  />
+                </div>
+              </Animate>
+            </div>
+
+
+          </TabsContent>
+        </Tabs>
       </div>
+
     </Animate>
   );
 }

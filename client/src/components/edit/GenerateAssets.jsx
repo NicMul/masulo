@@ -85,8 +85,8 @@ const GenerateAssets = ({
             if (result) {
                 console.log('Result:', result.data);
 
-                // Handle 'original', 'current', and 'theme' asset types
-                if (result.data.assetType === 'original' || result.data.assetType === 'current' || result.data.assetType === 'theme') {
+                // Handle 'original', 'current', 'theme', and 'promo' asset types
+                if (result.data.assetType === 'original' || result.data.assetType === 'current' || result.data.assetType === 'theme' || result.data.assetType === 'promo') {
                     setTestImage(result.data.imageUrl);
                     setTestVideoUrl(result.data.videoUrl);
 
@@ -277,7 +277,37 @@ const GenerateAssets = ({
         return t('edit.regenerate.dialog.cards.generateAssets');
     }
 
-
+    const getGenerateTitle = (assetType, t) => {
+        if (assetType === 'original') {
+            return {
+                image: t('edit.regenerate.dialog.cards.originalImage'),
+                video: t('edit.regenerate.dialog.cards.originalVideo')
+            }
+        }
+        if (assetType === 'current') {
+            return {
+                image: t('edit.regenerate.dialog.cards.aiGeneratedImage'),
+                video: t('edit.regenerate.dialog.cards.aiGeneratedVideo')
+            }
+        }
+        if (assetType === 'theme') {
+            return {
+                image: t('edit.regenerate.dialog.cards.themeImage'),
+                video: t('edit.regenerate.dialog.cards.themeVideo')
+            }
+        }
+        if (assetType === 'promo') {
+            return {
+                image: t('edit.regenerate.dialog.cards.promoImage'),
+                video: t('edit.regenerate.dialog.cards.promoVideo')
+            }
+        }
+        // Default fallback
+        return {
+            image: t('edit.regenerate.dialog.cards.aiGeneratedImage'),
+            video: t('edit.regenerate.dialog.cards.aiGeneratedVideo')
+        }
+    }
 
     return (
         <div>
@@ -298,7 +328,7 @@ const GenerateAssets = ({
                                 <Animate type='pop'>
                                     <div className='flex justify-center items-center flex-row gap-3 bg-slate-200 dark:bg-slate-700 rounded-lg p-3 text-center'>
 
-                                        <Card title={t('edit.regenerate.dialog.cards.originalImage')} className='w-1/2 flex-col gap-3'>
+                                        <Card title={getGenerateTitle(assetType, t).image} className='w-1/2 flex-col gap-3'>
                                             <MediaPlayer
                                                 gameId={selectedGame?.id}
                                                 imageUrl={selectedGame?.defaultImage}
@@ -323,7 +353,7 @@ const GenerateAssets = ({
 
 
                                         <Card
-                                            title={assetType === 'original' ? t('edit.regenerate.dialog.cards.originalImage') : t('edit.regenerate.dialog.cards.aiGeneratedImage')}
+                                            title={getGenerateTitle(assetType, t).image}
                                             className='w-1/2 flex-col gap-3'
                                         >
                                             <MediaPlayer
@@ -340,7 +370,7 @@ const GenerateAssets = ({
                                                 isGenerating={false}
                                             />
                                         </Card>
-                                        <Card title={t('edit.regenerate.dialog.cards.aiGeneratedVideo')} className='w-1/2 flex-col gap-3'>
+                                        <Card title={getGenerateTitle(assetType, t).video} className='w-1/2 flex-col gap-3'>
                                             <MediaPlayer
                                                 key={reloadTrigger}
                                                 gameId={selectedGame?.id}
@@ -365,7 +395,7 @@ const GenerateAssets = ({
                                 <TabsTrigger value="generations" className="flex-1">{t('edit.regenerate.dialog.tabs.generations')}</TabsTrigger>
                                 <TabsTrigger value="videoEditor" className="flex-1">{t('edit.regenerate.dialog.tabs.videoEditor')}</TabsTrigger>
                             </TabsList>
-                            <TabsContent value="generations" className="m-0">
+                            <TabsContent  value="generations" className="m-0">
                                 <Animate type='pop'>
                                     <div className='flex justify-center items-center flex-row gap-3 bg-slate-200 dark:bg-slate-700 rounded-lg p-3 text-center'>
                                         <Card
