@@ -12,6 +12,7 @@
 *   onChange: change handler (function, optional)
 *   name: input name (string, optional)
 *   placeholder: placeholder text (string, optional)
+*   valueType: 'friendlyName' | 'cmsGroupId' - determines which field to use as value (default: 'friendlyName')
 *
 **********/
 
@@ -22,6 +23,7 @@ export const GroupSelect = forwardRef(({
   className, 
   error, 
   placeholder = "Select a group",
+  valueType = 'friendlyName',
   ...props 
 }, ref) => {
   
@@ -49,7 +51,7 @@ export const GroupSelect = forwardRef(({
       <option value="">{placeholder}</option>
       {groups.length > 0 ? (
         groups.map(group => (
-          <option key={group.id} value={group.friendlyName}>
+          <option key={group.id} value={valueType === 'cmsGroupId' ? group.cmsGroupId : group.friendlyName}>
             {group.friendlyName}
           </option>
         ))

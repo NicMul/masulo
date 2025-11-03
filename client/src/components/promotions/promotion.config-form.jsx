@@ -158,6 +158,7 @@ export function PromotionConfigForm({
                       value={formData.group || ''}
                       onChange={(e) => onChange('group', e.target.value)}
                       error={hasError('group')}
+                      valueType="cmsGroupId"
                       className={cn(
                         "w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200",
                         hasError('group') ? "border-red-300 bg-red-50" : "border-gray-200 bg-gray-50 hover:bg-white hover:border-blue-300"

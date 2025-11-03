@@ -6,7 +6,7 @@
 **********/
 
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { Table, Dialog, Button, Tabs, TabsList, TabsTrigger, TabsContent, Card, Alert } from 'components/lib';
+import { Table, Dialog, Button, Tabs, TabsList, TabsTrigger, TabsContent, Card, Alert, useAPI } from 'components/lib';
 import { PromotionConfigForm } from './promotion.config-form';
 import PromotionGameSelector from './promotion.game-selector';
 
@@ -62,16 +62,31 @@ export function PromotionConfigurationDialog({
   const [gamesWithMissingAssets, setGamesWithMissingAssets] = useState([]);
   const formRef = useRef(null);
 
+  // Fetch groups for backward compatibility conversion
+  const groupsRes = useAPI('/api/group');
+
   // Initialize form data when promotion changes
   useEffect(() => {
     if (promotion) {
       const formattedStartDate = formatDateForInput(promotion.startDate);
       const formattedEndDate = formatDateForInput(promotion.endDate);
       
+      // Handle backward compatibility: convert friendlyName to cmsGroupId if needed
+      let groupValue = promotion.group || '';
+      if (groupValue && groupsRes.data && groupsRes.data.length > 0) {
+        // Check if the stored value is a friendlyName (backward compatibility)
+        const groupByFriendlyName = groupsRes.data.find(g => g.friendlyName === groupValue);
+        if (groupByFriendlyName) {
+          // Convert friendlyName to cmsGroupId
+          groupValue = groupByFriendlyName.cmsGroupId;
+        }
+        // If it's already a cmsGroupId, it will remain unchanged
+      }
+      
       setFormData({
         name: promotion.name || '',
         description: promotion.description || '',
-        group: promotion.group || '',
+        group: groupValue,
         startDate: formattedStartDate,
         endDate: formattedEndDate,
         approvedBy: promotion.approvedBy || '',
@@ -91,7 +106,7 @@ export function PromotionConfigurationDialog({
     // Reset missing assets state when promotion changes
     setHasMissingAssets(false);
     setGamesWithMissingAssets([]);
-  }, [promotion]);
+  }, [promotion, groupsRes.data]);
 
   // Initialize table selection when selectedGames changes
   useEffect(() => {
@@ -159,6 +174,24 @@ export function PromotionConfigurationDialog({
     // Ensure selectedGames is always an array
     const gamesArray = Array.isArray(selectedGames) ? selectedGames : [];
     
+    // Transform selected game IDs to the new format with gameCmsId, promoImage, promoVideo
+    const gamesData = gamesArray.map(gameId => {
+      const game = games.find(g => g.id === gameId);
+      if (!game) {
+        // Fallback only if game not found (shouldn't happen in normal flow)
+        return {
+          gameCmsId: gameId,
+          promoImage: '',
+          promoVideo: ''
+        };
+      }
+      return {
+        gameCmsId: game.cmsId,
+        promoImage: game.promoImage,
+        promoVideo: game.promoVideo
+      };
+    });
+    
     // Force published=false if there are missing assets
     const published = hasMissingAssets ? false : formData.published;
     
@@ -168,13 +201,13 @@ export function PromotionConfigurationDialog({
       group: formData.group.trim(),
       startDate: formData.startDate,
       endDate: formData.endDate,
-      games: gamesArray,
+      games: gamesData,
       approvedBy: formData.approvedBy.trim(),
       published: published
     };
     
     onSubmit(data);
-  }, [formData, selectedGames, hasMissingAssets, isFormValid, onSubmit]);
+  }, [formData, selectedGames, games, hasMissingAssets, isFormValid, onSubmit]);
 
   // Handle cancel
   const handleCancel = useCallback(() => {

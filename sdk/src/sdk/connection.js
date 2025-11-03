@@ -81,6 +81,28 @@ export class ConnectionManager {
         this.onGamesUpdateCallback(data.games);
       }
     });
+    
+    // Promotions response
+    this.socket.on('promotions-response', (data) => {
+      console.log('[Mesulo SDK] Promotions response received:', data);
+      if (data && data.promotions) {
+        console.log('[Mesulo SDK] Promotions array:', data.promotions);
+      } else {
+        console.log('[Mesulo SDK] Promotions response received but no promotions array found in data');
+      }
+    });
+    
+    // Debug: Listen for any socket events (temporary debugging)
+    this.socket.onAny((eventName, ...args) => {
+      if (eventName.includes('promotion') || eventName.includes('Promotion')) {
+        console.log('[Mesulo SDK] DEBUG - Received promotion-related event:', eventName, args);
+      }
+    });
+    
+    // Listen for socket errors
+    this.socket.on('error', (error) => {
+      console.error('[Mesulo SDK] Socket error:', error);
+    });
   }
   
   disconnect() {

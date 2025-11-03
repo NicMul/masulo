@@ -40,10 +40,11 @@ export class MesuloSDK {
       this.statusCallbacks,
       (event, data) => this.emit(event, data),
       () => {
-        // Callback when connected - request games
+        // Callback when connected - request games and promotions
         if (this.gameManager) {
           this.gameManager.requestGames();
         }
+        this.requestPromotions();
       }
     );
     
@@ -80,6 +81,26 @@ export class MesuloSDK {
   
   disconnect() {
     this.connectionManager.disconnect();
+  }
+  
+  // ========== Promotion Management ==========
+  
+  requestPromotions() {
+    const socket = this.connectionManager.getSocket();
+    if (!socket || !this.connectionManager.isConnected) {
+      console.log('[Mesulo SDK] Cannot request promotions: socket not connected');
+      return;
+    }
+    
+    const requestData = {
+      event: 'get-promotions',
+      data: {},
+      timestamp: new Date().toISOString()
+    };
+    
+    console.log('[Mesulo SDK] Requesting promotions with:', requestData);
+    // Request promotions
+    socket.emit('sdk-event', requestData);
   }
   
   // ========== Game Management ==========

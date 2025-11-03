@@ -11,7 +11,11 @@ const PromotionSchema = new Schema({
   group: { type: String, required: true },
   startDate: { type: Date, required: true },
   endDate: { type: Date, required: true },
-  games: [{ type: String }], // Array of game IDs
+  games: [{
+    gameCmsId: { type: String, required: true },
+    promoImage: { type: String, required: true },
+    promoVideo: { type: String, required: true }
+  }],
   approvedBy: { type: String }, // User ID who approved the promotion
   published: { type: Boolean, default: false },
   user_id: { type: String, required: true },
