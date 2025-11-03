@@ -15,6 +15,7 @@ export class ConnectionManager {
     
     this.isConnected = false;
     this.socket = null;
+    this.onPromotionsRefreshCallback = null;
   }
   
   connect() {
@@ -81,6 +82,29 @@ export class ConnectionManager {
         this.onGamesUpdateCallback(data.games);
       }
     });
+    
+    // Promotions response
+    this.socket.on('promotions-response', (data) => {
+      console.log('[Mesulo SDK] Promotions response received:', data);
+      if (data && data.promotions && this.onPromotionsUpdateCallback) {
+        this.onPromotionsUpdateCallback(data.promotions);
+      } else if (!data || !data.promotions) {
+        console.log('[Mesulo SDK] Promotions response received but no promotions array found in data');
+      }
+    });
+    
+    // Real-time promotion updates - trigger refresh
+    this.socket.on('promotions-updated', (data) => {
+      console.log('[Mesulo SDK] Promotions updated - refreshing games and promotions');
+      if (this.onPromotionsRefreshCallback) {
+        this.onPromotionsRefreshCallback();
+      }
+    });
+    
+    // Listen for socket errors
+    this.socket.on('error', (error) => {
+      console.error('[Mesulo SDK] Socket error:', error);
+    });
   }
   
   disconnect() {
@@ -108,6 +132,16 @@ export class ConnectionManager {
   // Set callback for game updates
   setOnGamesUpdate(callback) {
     this.onGamesUpdateCallback = callback;
+  }
+  
+  // Set callback for promotion updates
+  setOnPromotionsUpdate(callback) {
+    this.onPromotionsUpdateCallback = callback;
+  }
+  
+  // Set callback for promotion refresh (re-fetch data)
+  setOnPromotionsRefresh(callback) {
+    this.onPromotionsRefreshCallback = callback;
   }
   
   // Get socket instance for other managers

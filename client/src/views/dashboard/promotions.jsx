@@ -63,15 +63,27 @@ export function Promotions({ t }){
   }, []);
 
   const editPromotion = useCallback((promotion) => {
-    // Handle games field - it might be a string or array
+    // Handle games field - support both old format (array of IDs/strings) and new format (array of objects)
     let gamesArray = [];
     if (Array.isArray(promotion.games)) {
-      gamesArray = promotion.games;
+      if (promotion.games.length === 0) {
+        gamesArray = [];
+      } else if (typeof promotion.games[0] === 'object' && promotion.games[0].gameCmsId) {
+        // New format: array of objects with gameCmsId, promoImage, promoVideo
+        // Convert to game IDs for the selector component
+        if (gamesRes.data) {
+          gamesArray = promotion.games.map(gameObj => {
+            const game = gamesRes.data.find(g => g.cmsId === gameObj.gameCmsId);
+            return game ? game.id : null;
+          }).filter(id => id !== null);
+        }
+      } else {
+        // Old format: array of strings (game IDs)
+        gamesArray = promotion.games;
+      }
     } else if (typeof promotion.games === 'string' && promotion.games.trim() !== '') {
-      // Convert comma-separated string to array of game names
+      // Legacy format: comma-separated string
       const gameNames = promotion.games.split(',').map(game => game.trim()).filter(game => game);
-      
-      // Find corresponding game IDs from game names
       if (gamesRes.data) {
         gamesArray = gameNames.map(gameName => {
           const game = gamesRes.data.find(g => g.cmsId === gameName);
@@ -146,9 +158,16 @@ export function Promotions({ t }){
 
   // format promotions data for table
   const tableData = promotions.map(promotion => {
-    const gameNames = promotion.games?.map(gameId => {
-      const game = games?.find(g => g.id === gameId);
-      return game ? game.cmsId : gameId;
+    // Handle both old format (array of IDs) and new format (array of objects)
+    const gameNames = promotion.games?.map(game => {
+      if (typeof game === 'object' && game.gameCmsId) {
+        // New format: object with gameCmsId
+        return game.gameCmsId;
+      } else {
+        // Old format: string ID, try to find game
+        const gameObj = games?.find(g => g.id === game);
+        return gameObj ? gameObj.cmsId : game;
+      }
     }) || [];
     
     // Create a custom component for games column with badges
@@ -166,9 +185,10 @@ export function Promotions({ t }){
     
     return {
       ...promotion,
+      published: promotion.published || false,
       name: promotion.name || '',
       description: promotion.description || '',
-      theme: promotion.theme || '',
+      group: promotion.group || '',
       startDate: new Date(promotion.startDate).toLocaleDateString(),
       endDate: new Date(promotion.endDate).toLocaleDateString(),
       games: gamesComponent
@@ -180,7 +200,13 @@ export function Promotions({ t }){
       label: t('promotions.edit'),
       icon: 'pencil',
       globalOnly: false,
-      action: ({ row }) => editPromotion(row)
+      action: ({ row }) => {
+        // Use original promotion from promotions array instead of transformed row
+        const originalPromotion = promotions.find(p => p.id === row.id);
+        if (originalPromotion) {
+          editPromotion(originalPromotion);
+        }
+      }
     },
     {
       label: t('promotions.delete'),
@@ -196,6 +222,7 @@ export function Promotions({ t }){
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">{t('promotions.promotions')}</h1>
           <Button 
+            color="green"
             text={t('promotions.create_promotion')}
             onClick={createPromotion}
             icon="plus"
@@ -210,10 +237,20 @@ export function Promotions({ t }){
           <Table
             data={tableData}
             actions={actions}
-            show={['name', 'description', 'theme', 'startDate', 'endDate', 'games', 'approvedBy']}
-            badge={[]}
+            show={['published', 'name', 'description', 'group', 'startDate', 'endDate', 'games', 'approvedBy']}
+            badge={[
+              { 
+                col: 'published', 
+                color: 'green',
+                condition: [
+                  { value: true, color: 'green' },
+                  { value: false, color: 'red' }
+                ]
+              }
+            ]}
           />
         )}
+      
       </Card>
 
       {/* Promotion Configuration Dialog */}

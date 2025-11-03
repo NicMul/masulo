@@ -6,7 +6,9 @@
 **********/
 
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { Table, Dialog, Button, ThemeSelect } from 'components/lib';
+import { Table, Dialog, Button, Tabs, TabsList, TabsTrigger, TabsContent, Card, Alert, useAPI } from 'components/lib';
+import { PromotionConfigForm } from './promotion.config-form';
+import PromotionGameSelector from './promotion.game-selector';
 
 // UTILITY: Function to format dates for HTML input type="date" (YYYY-MM-DD format)
 const formatDateForInput = (dateString) => {
@@ -49,13 +51,19 @@ export function PromotionConfigurationDialog({
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    theme: '',
+    group: '',
     startDate: '',
     endDate: '',
-    approvedBy: ''
+    approvedBy: '',
+    published: false
   });
   const [isFormValid, setIsFormValid] = useState(false);
+  const [hasMissingAssets, setHasMissingAssets] = useState(false);
+  const [gamesWithMissingAssets, setGamesWithMissingAssets] = useState([]);
   const formRef = useRef(null);
+
+  // Fetch groups for backward compatibility conversion
+  const groupsRes = useAPI('/api/group');
 
   // Initialize form data when promotion changes
   useEffect(() => {
@@ -63,25 +71,42 @@ export function PromotionConfigurationDialog({
       const formattedStartDate = formatDateForInput(promotion.startDate);
       const formattedEndDate = formatDateForInput(promotion.endDate);
       
+      // Handle backward compatibility: convert friendlyName to cmsGroupId if needed
+      let groupValue = promotion.group || '';
+      if (groupValue && groupsRes.data && groupsRes.data.length > 0) {
+        // Check if the stored value is a friendlyName (backward compatibility)
+        const groupByFriendlyName = groupsRes.data.find(g => g.friendlyName === groupValue);
+        if (groupByFriendlyName) {
+          // Convert friendlyName to cmsGroupId
+          groupValue = groupByFriendlyName.cmsGroupId;
+        }
+        // If it's already a cmsGroupId, it will remain unchanged
+      }
+      
       setFormData({
         name: promotion.name || '',
         description: promotion.description || '',
-        theme: promotion.theme || '',
+        group: groupValue,
         startDate: formattedStartDate,
         endDate: formattedEndDate,
-        approvedBy: promotion.approvedBy || ''
+        approvedBy: promotion.approvedBy || '',
+        published: promotion.published || false
       });
     } else {
       setFormData({
         name: '',
         description: '',
-        theme: '',
+        group: '',
         startDate: '',
         endDate: '',
-        approvedBy: ''
+        approvedBy: '',
+        published: false
       });
     }
-  }, [promotion]);
+    // Reset missing assets state when promotion changes
+    setHasMissingAssets(false);
+    setGamesWithMissingAssets([]);
+  }, [promotion, groupsRes.data]);
 
   // Initialize table selection when selectedGames changes
   useEffect(() => {
@@ -99,10 +124,10 @@ export function PromotionConfigurationDialog({
   // Validate form whenever form data changes
   useEffect(() => {
     const validateForm = () => {
-      const { name, description, theme, startDate, endDate, approvedBy } = formData;
+      const { name, description, group, startDate, endDate } = formData;
       
       // Check if required fields are filled
-      if (!name || !description || !theme || !startDate || !endDate) {
+      if (!name || !description || !group || !startDate || !endDate) {
         return false;
       }
       
@@ -116,11 +141,6 @@ export function PromotionConfigurationDialog({
       // Check if at least one game is selected - ensure selectedGames is an array
       const gamesArray = Array.isArray(selectedGames) ? selectedGames : [];
       if (gamesArray.length === 0) {
-        return false;
-      }
-      
-      // Check if approvedBy is provided
-      if (!approvedBy || approvedBy.trim() === '') {
         return false;
       }
       
@@ -154,34 +174,46 @@ export function PromotionConfigurationDialog({
     // Ensure selectedGames is always an array
     const gamesArray = Array.isArray(selectedGames) ? selectedGames : [];
     
+    // Transform selected game IDs to the new format with gameCmsId, promoImage, promoVideo
+    const gamesData = gamesArray.map(gameId => {
+      const game = games.find(g => g.id === gameId);
+      if (!game) {
+        // Fallback only if game not found (shouldn't happen in normal flow)
+        return {
+          gameCmsId: gameId,
+          promoImage: '',
+          promoVideo: ''
+        };
+      }
+      return {
+        gameCmsId: game.cmsId,
+        promoImage: game.promoImage,
+        promoVideo: game.promoVideo
+      };
+    });
+    
+    // Force published=false if there are missing assets
+    const published = hasMissingAssets ? false : formData.published;
+    
     const data = {
       name: formData.name.trim(),
       description: formData.description.trim(),
-      theme: formData.theme.trim(),
+      group: formData.group.trim(),
       startDate: formData.startDate,
       endDate: formData.endDate,
-      games: gamesArray,
-      approvedBy: formData.approvedBy.trim()
+      games: gamesData,
+      approvedBy: formData.approvedBy.trim(),
+      published: published
     };
     
     onSubmit(data);
-  }, [formData, selectedGames, isFormValid, onSubmit]);
+  }, [formData, selectedGames, games, hasMissingAssets, isFormValid, onSubmit]);
 
   // Handle cancel
   const handleCancel = useCallback(() => {
     onClose();
   }, [onClose]);
 
-  // Format games data for table
-  const tableData = games.map(game => ({
-    id: game.id,
-    cmsId: game.cmsId,
-    defaultImage: game.defaultImage,
-    currentImage: game.currentImage,
-    themeImage: game.themeImage,
-    hover: game.hover,
-    animated: game.animate
-  }));
 
   return (
     <Dialog
@@ -189,199 +221,65 @@ export function PromotionConfigurationDialog({
       onClose={handleCancel}
       title={promotion ? t('promotions.edit_promotion') : t('promotions.create_promotion')}
       className="max-w-[90vw] w-full max-h-[90vh] overflow-hidden"
+    
     >
+          {hasMissingAssets && (
+                  <Alert
+                    className="absolute top-[30px] right-[40px] z-10 w-1/3 shadow-lg"
+                    variant="warning"
+                    closeable={true}
+                    title={t('promotions.missing_assets.title')}
+                    description={t('promotions.missing_assets.description', {
+                      count: gamesWithMissingAssets.length,
+                      games: gamesWithMissingAssets.map(g => g.cmsId).join(', ')
+                    })}
+                  />
+                )}
       <div className="flex flex-col h-[80vh]">
         <div className="flex gap-6 flex-1 min-h-0">
           {/* Left side - Form */}
-          <div className="w-[30%] min-w-0">
-            <form ref={formRef} className="space-y-4 h-full overflow-y-auto p-2">
-              {/* Name */}
-              <div>
-                <label className="block text-sm font-medium mb-2">{t('promotions.name')} *</label>
-                <input
-                  name="name"
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => handleFormChange('name', e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    !formData.name ? 'border-red-300' : 'border-gray-300'
-                  }`}
-                  placeholder={t('promotions.name')}
-                  required
-                />
-                {!formData.name && (
-                  <p className="text-red-500 text-xs mt-1">{t('promotions.name_required')}</p>
-                )}
-              </div>
-              
-              {/* Description */}
-              <div>
-                <label className="block text-sm font-medium mb-2">{t('promotions.description')} *</label>
-                <textarea
-                  name="description"
-                  value={formData.description}
-                  onChange={(e) => handleFormChange('description', e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    !formData.description ? 'border-red-300' : 'border-gray-300'
-                  }`}
-                  placeholder={t('promotions.description')}
-                  rows={3}
-                  required
-                />
-                {!formData.description && (
-                  <p className="text-red-500 text-xs mt-1">{t('promotions.description_required')}</p>
-                )}
-              </div>
-              
-              {/* Theme */}
-              <div>
-                <label className="block text-sm font-medium mb-2">{t('promotions.theme')} *</label>
-                <ThemeSelect
-                  name="theme"
-                  value={formData.theme}
-                  onChange={(e) => handleFormChange('theme', e.target.value)}
-                  error={!formData.theme}
-                />
-                {!formData.theme && (
-                  <p className="text-red-500 text-xs mt-1">{t('promotions.theme_required')}</p>
-                )}
-              </div>
-              
-              {/* Date Fields Row */}
-              <div className="grid grid-cols-2 gap-4">
-                {/* Start Date */}
-                <div>
-                  <label className="block text-sm font-medium mb-2">{t('promotions.start_date')} *</label>
-                  <input
-                    name="startDate"
-                    type="date"
-                    value={formData.startDate}
-                    onChange={(e) => handleFormChange('startDate', e.target.value)}
-                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                      !formData.startDate ? 'border-red-300' : 'border-gray-300'
-                    }`}
-                    required
-                  />
-                  {!formData.startDate && (
-                    <p className="text-red-500 text-xs mt-1">{t('promotions.start_date_required')}</p>
-                  )}
-                </div>
-                
-                {/* End Date */}
-                <div>
-                  <label className="block text-sm font-medium mb-2">{t('promotions.end_date')} *</label>
-                  <input
-                    name="endDate"
-                    type="date"
-                    value={formData.endDate}
-                    onChange={(e) => handleFormChange('endDate', e.target.value)}
-                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                      !formData.endDate || (formData.startDate && formData.endDate && new Date(formData.endDate) <= new Date(formData.startDate)) 
-                        ? 'border-red-300' 
-                        : 'border-gray-300'
-                    }`}
-                    required
-                  />
-                  {!formData.endDate && (
-                    <p className="text-red-500 text-xs mt-1">{t('promotions.end_date_required')}</p>
-                  )}
-                  {formData.startDate && formData.endDate && new Date(formData.endDate) <= new Date(formData.startDate) && (
-                    <p className="text-red-500 text-xs mt-1">{t('promotions.end_date_after_start')}</p>
-                  )}
-                </div>
-              </div>
-              
-              {/* Selected Games Summary */}
-              <div>
-                <label className="block text-sm font-medium mb-2">{t('promotions.games')} *</label>
-                <div className={`p-3 border rounded-md min-h-[60px] ${
-                  !selectedGames || !Array.isArray(selectedGames) || selectedGames.length === 0 
-                    ? 'border-red-300 bg-red-50' 
-                    : 'border-gray-300 bg-gray-50'
-                }`}>
-                  {Array.isArray(selectedGames) && selectedGames.length > 0 ? (
-                    <div>
-                      <div className="text-sm font-medium mb-2">
-                        {selectedGames.length} games selected
-                      </div>
-                      <div className="text-xs text-gray-600">
-                        {selectedGames.map(gameId => {
-                          const game = games.find(g => g.id === gameId);
-                          return game ? game.cmsId : gameId;
-                        }).join(', ')}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="text-sm text-red-500">No games selected</div>
-                  )}
-                </div>
-                {(!selectedGames || !Array.isArray(selectedGames) || selectedGames.length === 0) && (
-                  <p className="text-red-500 text-xs mt-1">{t('promotions.games_required')}</p>
-                )}
-              </div>
-              
-              {/* Approved By */}
-              <div>
-                <label className="block text-sm font-medium mb-2">{t('promotions.approved_by')} *</label>
-                <input
-                  name="approvedBy"
-                  type="text"
-                  value={formData.approvedBy}
-                  onChange={(e) => handleFormChange('approvedBy', e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    !formData.approvedBy || formData.approvedBy.trim() === '' ? 'border-red-300' : 'border-gray-300'
-                  }`}
-                  required
-                />
-                {(!formData.approvedBy || formData.approvedBy.trim() === '') && (
-                  <p className="text-red-500 text-xs mt-1">{t('promotions.approved_by_required')}</p>
-                )}
-              </div>
-            </form>
+          <div className="w-[40%] min-w-0 flex flex-col">
+            <PromotionConfigForm
+              formData={formData}
+              onChange={handleFormChange}
+              selectedGames={selectedGames}
+              games={games}
+              t={t}
+              formRef={formRef}
+              hasMissingAssets={hasMissingAssets}
+            />
           </div>
 
           {/* Right side - Games Selection Table */}
-          <div className="w-[70%] min-w-0 flex flex-col">
-            <div className="flex justify-between items-center mb-4 pb-4 border-b">
-              <h3 className="text-lg font-medium">{t('promotions.select_games')}</h3>
-              <div className="text-sm text-muted-foreground">
-                {tableSelected.length} of {games.length} games selected
-              </div>
-            </div>
-
-            <div className="flex-1 overflow-hidden">
-              <Table
-                data={tableData}
-                show={['cmsId', 'defaultImage', 'currentImage', 'themeImage', 'hover', 'animated']}
-                selectable={true}
-                searchable={true}
-                onSelectionChange={handleSelectionChange}
-                badge={[
-                  {
-                    col: 'hover',
-                    color: 'default',
-                    condition: [
-                      { value: true, color: 'green' },
-                      { value: false, color: 'destructive' }
-                    ]
-                  },
-                  {
-                    col: 'animated',
-                    color: 'default',
-                    condition: [
-                      { value: true, color: 'green' },
-                      { value: false, color: 'destructive' }
-                    ]
-                  }
-                ]}
-                className="h-full"
-              />
-            </div>
+          <div className="w-[60%] flex flex-col min-h-0 overflow-hidden">
+            <Tabs defaultValue="games" className="flex flex-col h-full">
+              <TabsList className="self-start w-auto">
+                <TabsTrigger value="games">Select Games</TabsTrigger>
+                <TabsTrigger disabled value="assets">Edit Promotion Assets</TabsTrigger>
+              </TabsList>
+              <TabsContent value="games" className="pt-4 space-y-4 flex-1 overflow-y-auto min-h-0">
+                
+                <PromotionGameSelector 
+                  games={games}
+                  selectedGames={selectedGames}
+                  onSelectionChange={setSelectedGames}
+                  onMissingAssetsChange={(hasMissing, gamesWithMissing) => {
+                    setHasMissingAssets(hasMissing);
+                    setGamesWithMissingAssets(gamesWithMissing);
+                  }}
+                  onClose={handleCancel}
+                />
+              </TabsContent>
+              <TabsContent value="assets">
+                Coming Soon
+              </TabsContent>
+            </Tabs>
           </div>
-        </div>
-
+      
+          </div>
         {/* Footer with action buttons */}
         <div className="flex justify-end gap-2 mt-6 pt-4 border-t">
+      
           <Button
             text={t('promotions.cancel')}
             onClick={handleCancel}
@@ -395,6 +293,7 @@ export function PromotionConfigurationDialog({
           />
         </div>
       </div>
+      
     </Dialog>
   );
 }

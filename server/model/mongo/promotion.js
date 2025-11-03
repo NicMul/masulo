@@ -8,11 +8,16 @@ const PromotionSchema = new Schema({
   id: { type: String, required: true, unique: true },
   name: { type: String, required: true },
   description: { type: String, required: true },
-  theme: { type: String, required: true },
+  group: { type: String, required: true },
   startDate: { type: Date, required: true },
   endDate: { type: Date, required: true },
-  games: [{ type: String }], // Array of game IDs
+  games: [{
+    gameCmsId: { type: String, required: true },
+    promoImage: { type: String, required: true },
+    promoVideo: { type: String, required: true }
+  }],
   approvedBy: { type: String }, // User ID who approved the promotion
+  published: { type: Boolean, default: false },
   user_id: { type: String, required: true },
   date_created: Date,
   date_updated: Date
@@ -33,11 +38,12 @@ exports.create = async function({ data, user }){
     id: uuidv4(),
     name: data.name,
     description: data.description,
-    theme: data.theme,
+    group: data.group,
     startDate: data.startDate,
     endDate: data.endDate,
     games: data.games || [],
     approvedBy: data.approvedBy || null,
+    published: data.published || false,
     user_id: user,
     date_created: new Date(),
     date_updated: new Date()
@@ -75,6 +81,13 @@ exports.update = async function({ id, user, data }){
     ...data,
     date_updated: new Date()
   };
+
+  // Explicitly ensure published field is set correctly when provided
+  // This handles the case where published: false needs to be explicitly set
+  if ('published' in data) {
+    // Convert to boolean explicitly to handle string 'true'/'false' cases
+    updateData.published = data.published === true || data.published === 'true';
+  }
 
   const result = await Promotion.findOneAndUpdate(
     { id: id, user_id: user },

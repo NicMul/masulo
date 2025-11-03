@@ -1,7 +1,7 @@
 const { Server } = require('socket.io');
 const user = require('../model/user');
 const analytics = require('../model/analytics');
-const { getGamesById } = require('../services/realtime');
+const { getGamesById, getPromotions } = require('../services/realtime');
 
 let io = null;
 
@@ -150,11 +150,18 @@ function initializeSocketIO(server) {
     
     console.log(`User ${applicationKey} (${userData.name}) connected from ${socket.handshake.headers.origin}`);
     
+    // Automatically join user-specific room for promotion updates
+    const userRoom = `user:${userData.id}`;
+    socket.join(userRoom);
+    console.log(`Socket ${socket.id} joined user room: ${userRoom}`);
+    
     // Handle SDK events
     socket.on('sdk-event', async (data) => {
       try {
         if (data.event === 'get-games') {
           await getGamesById(data.data.gameIds, userData.id, socket);
+        } else if (data.event === 'get-promotions') {
+          await getPromotions(userData.id, socket);
         }
       } catch (error) {
         console.error('Error processing SDK event:', error);
@@ -286,8 +293,40 @@ const emitGameUpdate = (gameIds, gamesData) => {
   console.log('=== emitGameUpdate complete ===');
 };
 
+// Function to emit promotion updates to user-specific room
+const emitPromotionUpdate = (userId, promotionsData) => {
+  if (!io) {
+    console.error('Socket.IO not initialized');
+    return;
+  }
+
+  console.log('=== emitPromotionUpdate called ===');
+  console.log('User ID:', userId);
+  console.log('Promotion data received:', promotionsData?.length || 0, 'promotion(s)');
+
+  const payload = {
+    success: true,
+    promotions: promotionsData || [],
+    count: promotionsData?.length || 0,
+    timestamp: new Date().toISOString()
+  };
+
+  // Emit to user-specific room instead of broadcasting to all
+  const userRoom = `user:${userId}`;
+  const socketsInRoom = io.sockets.adapter.rooms.get(userRoom);
+  console.log(`  - Sockets in room ${userRoom}:`, socketsInRoom?.size || 0);
+  if (socketsInRoom) {
+    console.log(`  - Socket IDs in room:`, Array.from(socketsInRoom));
+  }
+  
+  io.to(userRoom).emit('promotions-updated', payload);
+  console.log(`✅ Emitted promotion update to user room ${userRoom}`);
+  console.log('=== emitPromotionUpdate complete ===');
+};
+
 module.exports = {
   initializeSocketIO,
   emitGameUpdate,
+  emitPromotionUpdate,
   getIO: () => io
 };

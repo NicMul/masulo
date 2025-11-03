@@ -180,7 +180,7 @@ export function Games({ t }){
     setShowDeleteDialog(true);
   }, []);
 
-  // Execute bulk changes (publish, group, theme)
+  // Execute bulk changes (publish, publishedType, group)
   const executeBulkChanges = useCallback(async (changes) => {
     try {
       const gameIds = selectedGames.map(g => g.id);
@@ -199,11 +199,11 @@ export function Games({ t }){
           if (changes.published !== undefined) {
             updatedGame.published = changes.published;
           }
+          if (changes.publishedType !== undefined) {
+            updatedGame.publishedType = changes.publishedType;
+          }
           if (changes.group !== undefined) {
             updatedGame.group = changes.group;
-          }
-          if (changes.theme !== undefined) {
-            updatedGame.theme = changes.theme;
           }
           return updatedGame;
         }));
@@ -216,11 +216,11 @@ export function Games({ t }){
         if (changes.published !== undefined) {
           changeTypes.push(changes.published ? 'published' : 'unpublished');
         }
+        if (changes.publishedType !== undefined) {
+          changeTypes.push('published type updated');
+        }
         if (changes.group !== undefined) {
           changeTypes.push('group updated');
-        }
-        if (changes.theme !== undefined) {
-          changeTypes.push('theme updated');
         }
 
         setSelectedGames([]);

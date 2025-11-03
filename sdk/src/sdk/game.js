@@ -4,15 +4,23 @@
  */
 
 export class GameManager {
-  constructor(connectionManager, analyticsManager) {
+  constructor(connectionManager, analyticsManager, promotionManager = null) {
     this.connectionManager = connectionManager;
     this.analyticsManager = analyticsManager;
+    this.promotionManager = promotionManager;
     this.registeredComponents = new Map(); // gameId -> Set<component>
 
     
     connectionManager.setOnGamesUpdate((games) => {
       this.updateSpecificGames(games);
     });
+  }
+  
+  /**
+   * Set the promotion manager reference (called after PromotionManager is created)
+   */
+  setPromotionManager(promotionManager) {
+    this.promotionManager = promotionManager;
   }
   
   registerGameCard(component, gameId) {
@@ -64,6 +72,11 @@ export class GameManager {
   }
   
   updateSpecificGames(gamesData) {
+    // Update promotion manager's game mapping if available
+    if (this.promotionManager && typeof this.promotionManager.updateGamesMap === 'function') {
+      this.promotionManager.updateGamesMap(gamesData);
+    }
+    
     gamesData.forEach(game => {
       const components = this.registeredComponents.get(game.id);
 
@@ -71,55 +84,49 @@ export class GameManager {
         return;
       }
 
-      // Determine which assets to use based on publishedType (once per game)
-      let imageUrl = game.defaultImage;
-      let videoUrl = game.defaultVideo;
-
-      if (!game.published) {
-        imageUrl = game.defaultImage;
-        videoUrl = null;
-
-      } else if (game.publishedType === 'current' && game.currentImage) {
-        imageUrl = game.currentImage;
-        videoUrl = game.currentVideo;
-      } else if (game.publishedType === 'theme' && game.themeImage) {
-        imageUrl = game.themeImage;
-        videoUrl = game.themeVideo;
-      } else if (game.publishedType === 'promo' && game.promoImage) {
-        imageUrl = game.promoImage;
-        videoUrl = game.promoVideo;
-      }
-
+      // Check for active promotions first - promotions take precedence
       components.forEach(component => {
-        // Use the video element if it exists, otherwise use the original element
         const elementToUpdate = component.videoElement || component.element;
+        
+        // Check if there's an active promotion for this game/component
+        let imageUrl = null;
+        let videoUrl = null;
+        let usePromotionAssets = false;
+        
+        if (this.promotionManager) {
+          const promotionAssets = this.promotionManager.getPromotionAssets(game.id, elementToUpdate);
+          if (promotionAssets) {
+            // Use promotion assets - they take precedence over all game asset types
+            usePromotionAssets = true;
+            imageUrl = promotionAssets.imageUrl;
+            videoUrl = promotionAssets.videoUrl;
+          }
+        }
+        
+        // If no promotion assets, use game's own assets based on publishedType
+        if (!usePromotionAssets) {
+          imageUrl = game.defaultImage;
+          videoUrl = game.defaultVideo;
+
+          if (!game.published) {
+            imageUrl = game.defaultImage;
+            videoUrl = null;
+
+          } else if (game.publishedType === 'current' && game.currentImage) {
+            imageUrl = game.currentImage;
+            videoUrl = game.currentVideo;
+          } else if (game.publishedType === 'theme' && game.themeImage) {
+            imageUrl = game.themeImage;
+            videoUrl = game.themeVideo;
+          } else if (game.publishedType === 'promo' && game.promoImage) {
+            imageUrl = game.promoImage;
+            videoUrl = game.promoVideo;
+          }
+        }
+
+        // Update the component
         component.replaceImage(elementToUpdate, game.id, videoUrl, imageUrl);
       });
-
-      // Update all registered components for this game id
-
-      // console.log('[Mesulo SDK] : Components:', components);
-      // components.forEach(component => {
-      //   const container = component.getContainer ? component.getContainer() : component.container;
-      //   if (!container) {
-      //     return;
-      //   }
-
-      //   console.log('[Mesulo SDK] : Container:', container);
-
-      //   const newVersion = game.version;
-
-      //   // Store version in DOM for persistence
-      //   container.setAttribute('data-mesulo-version', String(newVersion));
-
-      //   // Store analytics flag in DOM for persistence
-      //   container.setAttribute('data-mesulo-analytics', String(game.analytics));
-
-      //   // Apply update to this component
-      //   if (typeof component.updateContent === 'function') {
-      //     component.updateContent(imageUrl, videoUrl, game.published);
-      //   }
-      // });
     });
   }
   
