@@ -7,15 +7,15 @@
 **********/
 
 import { useState, useContext } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, Button, Icon, ViewContext, Switch, GroupSelect, ThemeSelect, cn } from 'components/lib';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, Button, Icon, ViewContext, Switch, GroupSelect, cn } from 'components/lib';
 
 export function BulkActionsDialog({ isOpen, onClose, selectedGames, onApplyChanges, t }) {
   const viewContext = useContext(ViewContext);
   
   // Form state
   const [published, setPublished] = useState(null); // null = no change, true/false = set value
+  const [publishedType, setPublishedType] = useState(''); // empty = no change
   const [group, setGroup] = useState('');
-  const [theme, setTheme] = useState('');
   const [isApplying, setIsApplying] = useState(false);
   
   // Calculate warnings
@@ -27,11 +27,11 @@ export function BulkActionsDialog({ isOpen, onClose, selectedGames, onApplyChang
   if (published !== null) {
     changes.push(`${published ? 'Publish' : 'Unpublish'}: ${selectedGames.length} games`);
   }
+  if (publishedType) {
+    changes.push(`Published Type: ${selectedGames.length} games`);
+  }
   if (group) {
     changes.push(`Group: ${selectedGames.length} games`);
-  }
-  if (theme) {
-    changes.push(`Theme: ${selectedGames.length} games`);
   }
   
   const hasChanges = changes.length > 0;
@@ -43,8 +43,8 @@ export function BulkActionsDialog({ isOpen, onClose, selectedGames, onApplyChang
     try {
       const changes = {};
       if (published !== null) changes.published = published;
+      if (publishedType) changes.publishedType = publishedType;
       if (group) changes.group = group;
-      if (theme) changes.theme = theme;
       
       await onApplyChanges(changes);
       onClose();
@@ -55,8 +55,8 @@ export function BulkActionsDialog({ isOpen, onClose, selectedGames, onApplyChang
   
   const resetForm = () => {
     setPublished(null);
+    setPublishedType('');
     setGroup('');
-    setTheme('');
   };
   
   const handleClose = () => {
@@ -116,6 +116,31 @@ export function BulkActionsDialog({ isOpen, onClose, selectedGames, onApplyChang
             )}
           </div>
           
+          {/* Published Type Selection */}
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold text-gray-700">
+              {t('games.form.publishedType.label')}
+            </label>
+            <select
+              value={publishedType}
+              onChange={(e) => setPublishedType(e.target.value)}
+              className="w-full px-4 py-3 border-2 border-gray-200 bg-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent hover:bg-white hover:border-orange-300 transition-all duration-200 font-medium text-gray-700"
+            >
+              <option value="">Keep current published type</option>
+              <option value="default">{t('games.form.publishedType.options.default')}</option>
+              <option value="current">{t('games.form.publishedType.options.current')}</option>
+              <option value="theme">{t('games.form.publishedType.options.theme')}</option>
+              <option value="promo">{t('games.form.publishedType.options.promo')}</option>
+            </select>
+            {publishedType && publishedCount > 0 && (
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
+                <p className="text-sm text-orange-800">
+                  Changing published type will affect {publishedCount} published games on your live application.
+                </p>
+              </div>
+            )}
+          </div>
+          
           {/* Group Selection */}
           <div className="space-y-2">
             <label className="block text-sm font-semibold text-gray-700">
@@ -131,25 +156,6 @@ export function BulkActionsDialog({ isOpen, onClose, selectedGames, onApplyChang
               <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
                 <p className="text-sm text-orange-800">
                   Changing group will affect {publishedCount} published games on your live application.
-                </p>
-              </div>
-            )}
-          </div>
-          
-          {/* Theme Selection */}
-          <div className="space-y-2">
-            <label className="block text-sm font-semibold text-gray-700">
-              {t('games.bulk.theme.action')}
-            </label>
-            <ThemeSelect
-              name="theme"
-              value={theme}
-              onChange={(e) => setTheme(e.target.value)}
-            />
-            {theme && publishedCount > 0 && (
-              <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
-                <p className="text-sm text-orange-800">
-                  Changing theme will affect {publishedCount} published games on your live application.
                 </p>
               </div>
             )}

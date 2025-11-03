@@ -70,7 +70,6 @@ export function Promotions({ t }){
     } else if (typeof promotion.games === 'string' && promotion.games.trim() !== '') {
       // Convert comma-separated string to array of game names
       const gameNames = promotion.games.split(',').map(game => game.trim()).filter(game => game);
-      
       // Find corresponding game IDs from game names
       if (gamesRes.data) {
         gamesArray = gameNames.map(gameName => {
@@ -166,9 +165,10 @@ export function Promotions({ t }){
     
     return {
       ...promotion,
+      published: promotion.published || false,
       name: promotion.name || '',
       description: promotion.description || '',
-      theme: promotion.theme || '',
+      group: promotion.group || '',
       startDate: new Date(promotion.startDate).toLocaleDateString(),
       endDate: new Date(promotion.endDate).toLocaleDateString(),
       games: gamesComponent
@@ -180,7 +180,13 @@ export function Promotions({ t }){
       label: t('promotions.edit'),
       icon: 'pencil',
       globalOnly: false,
-      action: ({ row }) => editPromotion(row)
+      action: ({ row }) => {
+        // Use original promotion from promotions array instead of transformed row
+        const originalPromotion = promotions.find(p => p.id === row.id);
+        if (originalPromotion) {
+          editPromotion(originalPromotion);
+        }
+      }
     },
     {
       label: t('promotions.delete'),
@@ -196,6 +202,7 @@ export function Promotions({ t }){
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">{t('promotions.promotions')}</h1>
           <Button 
+            color="green"
             text={t('promotions.create_promotion')}
             onClick={createPromotion}
             icon="plus"
@@ -210,10 +217,20 @@ export function Promotions({ t }){
           <Table
             data={tableData}
             actions={actions}
-            show={['name', 'description', 'theme', 'startDate', 'endDate', 'games', 'approvedBy']}
-            badge={[]}
+            show={['published', 'name', 'description', 'group', 'startDate', 'endDate', 'games', 'approvedBy']}
+            badge={[
+              { 
+                col: 'published', 
+                color: 'green',
+                condition: [
+                  { value: true, color: 'green' },
+                  { value: false, color: 'red' }
+                ]
+              }
+            ]}
           />
         )}
+      
       </Card>
 
       {/* Promotion Configuration Dialog */}

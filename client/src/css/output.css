@@ -741,6 +741,12 @@ table tbody tr:last-child td {
 .bottom-full {
   bottom: 100%;
 }
+.-right-2 {
+  right: -0.5rem;
+}
+.-top-2 {
+  top: -0.5rem;
+}
 .z-10 {
   z-index: 10;
 }
@@ -764,6 +770,9 @@ table tbody tr:last-child td {
 }
 .col-span-1 {
   grid-column: span 1 / span 1;
+}
+.float-right {
+  float: right;
 }
 .float-left {
   float: left;
@@ -920,6 +929,9 @@ table tbody tr:last-child td {
 }
 .mt-10 {
   margin-top: 2.5rem;
+}
+.\!ml-auto {
+  margin-left: auto !important;
 }
 .block {
   display: block;
@@ -1316,6 +1328,24 @@ table tbody tr:last-child td {
 }
 .w-\[24px\] {
   width: 24px;
+}
+.w-\[220px\] {
+  width: 220px;
+}
+.w-\[90\%\] {
+  width: 90%;
+}
+.w-\[98\%\] {
+  width: 98%;
+}
+.w-\[99\%\] {
+  width: 99%;
+}
+.w-2\/3 {
+  width: 66.666667%;
+}
+.w-2\/4 {
+  width: 50%;
 }
 .min-w-\[8rem\] {
   min-width: 8rem;
@@ -3618,6 +3648,10 @@ html, #root, body {
 .group:hover .group-hover\:text-emerald-700 {
   --tw-text-opacity: 1;
   color: rgb(4 120 87 / var(--tw-text-opacity, 1));
+}
+
+.group:hover .group-hover\:opacity-100 {
+  opacity: 1;
 }
 
 .group.error .group-\[\.error\]\:border-slate-100\/40 {

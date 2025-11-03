@@ -9,11 +9,12 @@ exports.create = async function(req, res){
     
     name: joi.string().required(),
     description: joi.string().required(),
-    theme: joi.string().required(),
+    group: joi.string().required(),
     startDate: joi.date().required(),
     endDate: joi.date().required(),
     games: joi.array().items(joi.string()).required(),
-    approvedBy: joi.string().required()
+    approvedBy: joi.string().allow(''),
+    published: joi.boolean()
 
   }), req, res); 
 
@@ -43,11 +44,12 @@ exports.update = async function(req, res){
     
     name: joi.string(),
     description: joi.string(),
-    theme: joi.string(),
+    group: joi.string(),
     startDate: joi.date(),
     endDate: joi.date(),
     games: joi.array().items(joi.string()),
-    approvedBy: joi.string()
+    approvedBy: joi.string().allow(''),
+    published: joi.boolean()
 
   }), req, res); 
 

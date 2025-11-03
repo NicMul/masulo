@@ -79,24 +79,24 @@
         }
 
         /* Custom Scrollbar */
-        .games-grid::-webkit-scrollbar,
+        .tab-content::-webkit-scrollbar,
         .sidebar::-webkit-scrollbar {
             width: 8px;
         }
 
-        .games-grid::-webkit-scrollbar-track,
+        .tab-content::-webkit-scrollbar-track,
         .sidebar::-webkit-scrollbar-track {
             background: rgba(10, 10, 20, 0.5);
             border-radius: 4px;
         }
 
-        .games-grid::-webkit-scrollbar-thumb,
+        .tab-content::-webkit-scrollbar-thumb,
         .sidebar::-webkit-scrollbar-thumb {
             background: linear-gradient(180deg, rgba(218, 165, 32, 0.6), rgba(255, 215, 0, 0.4));
             border-radius: 4px;
         }
 
-        .games-grid::-webkit-scrollbar-thumb:hover,
+        .tab-content::-webkit-scrollbar-thumb:hover,
         .sidebar::-webkit-scrollbar-thumb:hover {
             background: linear-gradient(180deg, rgba(218, 165, 32, 0.8), rgba(255, 215, 0, 0.6));
         }
@@ -166,6 +166,20 @@
             font-size: 1.5rem;
             font-weight: 700;
             letter-spacing: 1px;
+        }
+
+        .group-title {
+            font-family: 'Cinzel', serif;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 30;
+            margin-top: 10px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            padding: 0 40px;
         }
 
         .nav-menu {
@@ -314,7 +328,8 @@
         .tab-content {
             display: none;
             flex: 1;
-            overflow: hidden;
+            overflow-y: auto;
+            overflow-x: hidden;
             animation: fadeIn 0.4s ease;
         }
 
@@ -340,7 +355,6 @@
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 35px;
             padding: 40px;
-            overflow-y: auto;
             list-style: none;
         }
 
@@ -549,6 +563,11 @@
                 font-size: 1.3rem;
             }
 
+            .group-title {
+                font-size: 1.3rem;
+                padding: 0 30px;
+            }
+
             .lobby-header {
                 padding: 25px 30px 0;
             }
@@ -608,6 +627,11 @@
                 font-size: 1rem;
             }
             
+            .group-title {
+                font-size: 1.2rem;
+                padding: 0 20px;
+            }
+
             .games-grid {
                 grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
                 gap: 20px;
@@ -667,6 +691,12 @@
             .tab-button {
                 padding: 12px 20px;
                 font-size: 0.9rem;
+            }
+
+            .group-title {
+                font-size: 1.1rem;
+                padding: 0 15px;
+                margin-bottom: 0 !important;
             }
 
             .games-grid {
@@ -992,6 +1022,8 @@
 
             <!-- With Mesulo Tab -->
             <div class="tab-content active" id="with-mesulo">
+
+                <p style="margin-top: 30px;" class="group-title" data-mesulo-group="b7854">Popular</p>
                 <ul class="games-grid">
                     <li class="game-item" data-cy="slider-item" aria-hidden="false">
                         <article aria-label="Cleocatra" class="game-article">
@@ -1161,6 +1193,144 @@
                                    href="/game/gates"></a>
                             </div>
                             <h3 class="game-title">Gates of Olympus</h3>
+                        </article>
+                    </li>
+                </ul>
+                <p class="group-title" data-mesulo-group="b6647">Hot Right Now</p>
+                <ul class="games-grid">
+                    <li class="game-item" data-cy="slider-item" aria-hidden="false">
+                        <article aria-label="Frank's Fortune" class="game-article">
+                            <div class="game-body">
+                                <div class="img-wrapper">
+                                    <img
+                                         data-mesulo-game-id="a1b2c3dd"  
+                                         src="./images/franks.jpg" 
+                                         alt="Frank's Fortune" 
+                                         class="game-image">
+                                </div>
+                                <div class="overlaying-content">
+                                    <a class="play-now-link" 
+                                       itemprop="url" 
+                                       aria-label="Frank's Fortune" 
+                                       href="/#">
+                                        <span>Join Now</span>
+                                    </a>
+                                    <div class="overlaying-content-footer">
+                                        <a class="play-free-link" 
+                                           itemprop="url" 
+                                           aria-label="Frank's Fortune Demo" 
+                                           href="/game/franks?isDemo=true">DEMO PLAY</a>
+                                    </div>
+                                </div>
+                                <a aria-label="Frank's Fortune" 
+                                   aria-hidden="true" 
+                                   class="dummy-link" 
+                                   tabindex="-1" 
+                                   href="/game/franks"></a>
+                            </div>
+                            <h3 class="game-title">Frank's Fortune</h3>
+                        </article>
+                    </li>
+
+                    <li class="game-item" data-cy="slider-item" aria-hidden="false">
+                        <article aria-label="Money Tree" class="game-article">
+                            <div class="game-body">
+                                <div class="img-wrapper">
+                                    <img 
+                                         data-mesulo-game-id="b2c3d4e5" 
+                                         src="./images/money.jpg" 
+                                         alt="Money Tree" 
+                                         class="game-image">
+                                </div>
+                                <div class="overlaying-content">
+                                    <a class="play-now-link" 
+                                       itemprop="url" 
+                                       aria-label="Money Tree" 
+                                       href="/#">
+                                        <span>Join Now</span>
+                                    </a>
+                                    <div class="overlaying-content-footer">
+                                        <a class="play-free-link" 
+                                           itemprop="url" 
+                                           aria-label="Money Tree Demo" 
+                                           href="/game/money?isDemo=true">DEMO PLAY</a>
+                                    </div>
+                                </div>
+                                <a aria-label="Money Tree" 
+                                   aria-hidden="true" 
+                                   class="dummy-link" 
+                                   tabindex="-1" 
+                                   href="/game/money"></a>
+                            </div>
+                            <h3 class="game-title">Money Tree</h3>
+                        </article>
+                    </li>
+
+                    <li class="game-item" data-cy="slider-item" aria-hidden="false">
+                        <article aria-label="Smugglers Cove" class="game-article">
+                            <div class="game-body">
+                                <div class="img-wrapper">
+                                    <img 
+                                         data-mesulo-game-id="c3d4e5f6" 
+                                         src="./images/smugglers.jpg" 
+                                         alt="Smugglers Cove" 
+                                         class="game-image">
+                                </div>
+                                <div class="overlaying-content">
+                                    <a class="play-now-link" 
+                                       itemprop="url" 
+                                       aria-label="Smugglers Cove" 
+                                       href="/#">
+                                        <span>Join Now</span>
+                                    </a>
+                                    <div class="overlaying-content-footer">
+                                        <a class="play-free-link" 
+                                           itemprop="url" 
+                                           aria-label="Smugglers Cove Demo" 
+                                           href="/game/smugglers?isDemo=true">DEMO PLAY</a>
+                                    </div>
+                                </div>
+                                <a aria-label="Smugglers Cove" 
+                                   aria-hidden="true" 
+                                   class="dummy-link" 
+                                   tabindex="-1" 
+                                   href="/game/smugglers"></a>
+                            </div>
+                            <h3 class="game-title">Smugglers Cove</h3>
+                        </article>
+                    </li>
+
+                    <li class="game-item" data-cy="slider-item" aria-hidden="false">
+                        <article aria-label="Tiki Treasure" class="game-article">
+                            <div class="game-body">
+                                <div class="img-wrapper">
+                                    <img 
+                                         data-mesulo-game-id="d4e5f6a7" 
+                                         src="./images/tiki.jpg" 
+                                         alt="Tiki Treasure" 
+                                         class="game-image">
+                                </div>
+                                <div class="overlaying-content">
+                                    <a class="play-now-link" 
+                                       itemprop="url" 
+                                       aria-label="Tiki Treasure" 
+                                       href="/#">
+                                        <span>Join Now</span>
+                                    </a>
+                                    <div class="overlaying-content-footer">
+                                        <a class="play-free-link" 
+                                           itemprop="url" 
+                                           aria-label="Tiki Treasure Demo" 
+                                           href="/game/tiki?isDemo=true">DEMO PLAY</a>
+                                    </div>
+                                </div>
+                                <a aria-label="Tiki Treasure" 
+                                   aria-hidden="true" 
+                                   class="dummy-link" 
+                                   tabindex="-1" 
+                                   href="/game/tiki"></a>
+                            </div>
+                            <h3 class="game-title">Tiki Treasure</h3>
                         </article>
                     </li>
                 </ul>

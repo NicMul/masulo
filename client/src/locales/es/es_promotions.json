@@ -6,11 +6,14 @@
   "edit_promotion": "Editar Promoción",
   "name": "Nombre",
   "description": "Descripción",
-  "theme": "Tema",
+  "group": "Grupo",
   "start_date": "Fecha de Inicio",
   "end_date": "Fecha de Fin",
   "games": "Juegos",
   "approved_by": "Aprobado Por",
+  "published": "Publicado",
+  "published_label": "Publicar esta promoción",
+  "unpublished_label": "Despublicar esta promoción",
   "actions": "Acciones",
   "edit": "Editar",
   "delete": "Eliminar",
@@ -33,6 +36,10 @@
   "approved_by_required": "Aprobado por es requerido",
   "name_required": "El nombre es requerido",
   "description_required": "La descripción es requerida",
-  "theme_required": "El tema es requerido",
-  "error_saving": "Error al guardar la promoción"
+  "group_required": "El grupo es requerido",
+  "error_saving": "Error al guardar la promoción",
+  "missing_assets": {
+    "title": "Recursos de Promoción Faltantes",
+    "description": "{{count}} juego(s) tienen recursos de promoción faltantes (promoImage o promoVideo): {{games}}. Por favor, sube los recursos antes de guardar."
+  }
 }
