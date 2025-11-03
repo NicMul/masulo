@@ -187,18 +187,35 @@ function initializeSocketIO(server) {
     });
 
     // Handle game room management
-    socket.on('join-game-rooms', (data) => {
+    socket.on('join-game-rooms', (data, callback) => {
+
+      console.log('[Socket] : Joining game rooms:', data);
       try {
         const { gameIds } = data;
+        const joinedRooms = [];
+        
         if (Array.isArray(gameIds)) {
           gameIds.forEach(gameId => {
             const roomName = `game:${gameId}`;
             socket.join(roomName);
+            joinedRooms.push(roomName);
             console.log(`Socket ${socket.id} joined room: ${roomName}`);
+          });
+        }
+        
+        // Send acknowledgment back to client
+        if (callback && typeof callback === 'function') {
+          callback({ 
+            success: true, 
+            rooms: joinedRooms,
+            socketId: socket.id 
           });
         }
       } catch (error) {
         console.error('Error joining game rooms:', error);
+        if (callback && typeof callback === 'function') {
+          callback({ success: false, error: error.message });
+        }
       }
     });
 
@@ -232,20 +249,41 @@ const emitGameUpdate = (gameIds, gamesData) => {
     return;
   }
 
+  console.log('=== emitGameUpdate called ===');
+  console.log('Game IDs to update:', gameIds);
+  console.log('Game data received:', gamesData?.length, 'game(s)');
+
   gameIds.forEach(gameId => {
     const roomName = `game:${gameId}`;
     const gameData = gamesData.find(game => game.id === gameId);
     
+    console.log(`Processing game ${gameId}:`);
+    console.log(`  - Room name: ${roomName}`);
+    console.log(`  - Game data found:`, !!gameData);
+    
     if (gameData) {
-      io.to(roomName).emit('games-updated', {
+      const payload = {
         success: true,
         games: [gameData],
         count: 1,
         timestamp: new Date().toISOString()
-      });
-      console.log(`Emitted game update for ${gameId} to room ${roomName}`);
+      };
+      
+      // Check how many sockets are in this room
+      const socketsInRoom = io.sockets.adapter.rooms.get(roomName);
+      console.log(`  - Sockets in room ${roomName}:`, socketsInRoom?.size || 0);
+      if (socketsInRoom) {
+        console.log(`  - Socket IDs in room:`, Array.from(socketsInRoom));
+      }
+      
+      io.to(roomName).emit('games-updated', payload);
+      console.log(`  ✅ Emitted game update for ${gameId} to room ${roomName}`);
+    } else {
+      console.log(`  ❌ No game data found for ${gameId}`);
     }
   });
+  
+  console.log('=== emitGameUpdate complete ===');
 };
 
 module.exports = {

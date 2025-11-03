@@ -346,6 +346,7 @@
 
         .game-item {
             display: block;
+            padding-top: 10px;
         }
 
         .game-article {
@@ -415,6 +416,7 @@
             opacity: 0;
             transition: opacity 0.3s ease;
             z-index: 2;
+            touch-action: manipulation;
         }
 
         .game-body:hover .overlaying-content {
@@ -991,12 +993,12 @@
             <!-- With Mesulo Tab -->
             <div class="tab-content active" id="with-mesulo">
                 <ul class="games-grid">
-                    <li  data-mesulo-game-id="d5352f25-9718-44a6-a95d-1ddd47ea63ce" 
-                    data-mesulo-tag="true" class="game-item" data-cy="slider-item" aria-hidden="false">
+                    <li class="game-item" data-cy="slider-item" aria-hidden="false">
                         <article aria-label="Cleocatra" class="game-article">
                             <div class="game-body">
                                 <div class="img-wrapper">
                                     <img
+                                         data-mesulo-game-id="d5352f25-9718-44a6-a95d-1ddd47ea63ce"  
                                          src="./images/cleo.jpg" 
                                          alt="Cleocatra" 
                                          class="game-image">
@@ -1025,12 +1027,12 @@
                         </article>
                     </li>
 
-                    <li data-mesulo-game-id="b4a40dc5-e950-4e6b-bca9-1ae51589b2b5" 
-                    data-mesulo-tag="true"  class="game-item" data-cy="slider-item" aria-hidden="false">
+                    <li class="game-item" data-cy="slider-item" aria-hidden="false">
                         <article aria-label="Hot as Hades" class="game-article">
                             <div class="game-body">
                                 <div class="img-wrapper">
                                     <img 
+                                         data-mesulo-game-id="b4a40dc5-e950-4e6b-bca9-1ae51589b2b5" 
                                          data-mesulo-theme="halloween" 
                                          src="./images/hades.jpg" 
                                          alt="Hot as Hades" 
@@ -1060,12 +1062,12 @@
                         </article>
                     </li>
 
-                    <li data-mesulo-game-id="b37b4b9a-4f2f-4a3c-8a58-f4a76d19d88f" 
-                    data-mesulo-tag="true" class="game-item" data-cy="slider-item" aria-hidden="false">
+                    <li class="game-item" data-cy="slider-item" aria-hidden="false">
                         <article aria-label="Tome of Insanity" class="game-article">
                             <div class="game-body">
                                 <div class="img-wrapper">
                                     <img 
+                                         data-mesulo-game-id="b37b4b9a-4f2f-4a3c-8a58-f4a76d19d88f" 
                                          src="./images/tome.webp" 
                                          alt="Tome of Insanity" 
                                          class="game-image">
@@ -1094,12 +1096,12 @@
                         </article>
                     </li>
 
-                    <li data-mesulo-game-id="8d0b5e73-13fa-42c4-901d-829406c8e207" 
-                    data-mesulo-tag="true"  class="game-item" data-cy="slider-item" aria-hidden="false">
+                    <li class="game-item" data-cy="slider-item" aria-hidden="false">
                         <article aria-label="Gargantoonz" class="game-article">
                             <div class="game-body">
                                 <div class="img-wrapper">
                                     <img 
+                                         data-mesulo-game-id="8d0b5e73-13fa-42c4-901d-829406c8e207" 
                                          src="./images/toonz.webp" 
                                          alt="Gargantoonz" 
                                          class="game-image">
@@ -1128,12 +1130,12 @@
                         </article>
                     </li>
 
-                    <li data-mesulo-game-id="7c371c7d-6ec2-494c-a553-1645a70007d3" 
-                    data-mesulo-tag="true"  class="game-item" data-cy="slider-item" aria-hidden="false">
+                    <li class="game-item" data-cy="slider-item" aria-hidden="false">
                         <article  aria-label="Gates of Olympus" class="game-article">
                             <div class="game-body">
                                 <div class="img-wrapper">
                                     <img 
+                                         data-mesulo-game-id="7c371c7d-6ec2-494c-a553-1645a70007d3" 
                                          src="./images/gates.webp" 
                                          alt="Gates of Olympus" 
                                          class="game-image">
@@ -1171,7 +1173,9 @@
                         <article aria-label="Cleocatra" class="game-article">
                             <div class="game-body">
                                 <div class="img-wrapper">
-                                    <img loading="lazy" 
+                                    <img 
+                                        data-replace-with-video="true"
+                                        loading="lazy" 
                                          src="./images/cleo.jpg" 
                                          alt="Cleocatra" 
                                          class="game-image">
@@ -1205,6 +1209,7 @@
                             <div class="game-body">
                                 <div class="img-wrapper">
                                     <img loading="lazy" 
+                                        data-replace-with-video="true"
                                          src="./images/gates.webp" 
                                          alt="Gates of Olympus" 
                                          class="game-image">
@@ -1238,6 +1243,7 @@
                             <div class="game-body">
                                 <div class="img-wrapper">
                                     <img loading="lazy" 
+                                        data-replace-with-video="true"
                                          src="./images/hades.jpg" 
                                          alt="Hot as Hades" 
                                          class="game-image">
@@ -1271,6 +1277,7 @@
                             <div class="game-body">
                                 <div class="img-wrapper">
                                     <img loading="lazy" 
+                                        data-replace-with-video="true"
                                          src="./images/tome.webp" 
                                          alt="Tome of Insanity" 
                                          class="game-image">
@@ -1304,6 +1311,7 @@
                             <div class="game-body">
                                 <div class="img-wrapper">
                                     <img loading="lazy" 
+                                        data-replace-with-video="true"
                                          src="./images/toonz.webp" 
                                          alt="Gargantoonz" 
                                          class="game-image">
@@ -1341,7 +1349,7 @@
             <div class="status-info">
                 <div class="status-item">
                     <div class="status-dot"></div>
-                    <span>mesulo SDK Status: <span id="sdk-status">Loading...</span></span>
+                    <span>Mesulo SDK Status: <span id="sdk-status">Loading...</span></span>
                 </div>
             </div>
         </div>
@@ -1390,8 +1398,8 @@
         </div>
     </div>
 
+    <!-- <script type="module" src="https://mesulo.b-cdn.net/mesulo-ai-sdk-canary-v3.js" data-application-key="5f61931c-187c-4341-8874-360d29907b00"></script> -->
     <script type="module" src="./src/index.js" data-application-key="5f61931c-187c-4341-8874-360d29907b00"></script>
-    
     <script>
         // Tab switching functionality
         document.addEventListener('DOMContentLoaded', function() {

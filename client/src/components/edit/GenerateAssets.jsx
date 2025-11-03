@@ -84,17 +84,17 @@ const GenerateAssets = ({
 
             if (result) {
                 console.log('Result:', result.data);
-                
-                // Handle 'original', 'current', and 'theme' asset types
-                if (result.data.assetType === 'original' || result.data.assetType === 'current' || result.data.assetType === 'theme') {
+
+                // Handle 'original', 'current', 'theme', and 'promo' asset types
+                if (result.data.assetType === 'original' || result.data.assetType === 'current' || result.data.assetType === 'theme' || result.data.assetType === 'promo') {
                     setTestImage(result.data.imageUrl);
                     setTestVideoUrl(result.data.videoUrl);
-                    
+
                     // Trigger parent refresh to get updated game data
                     if (onGameUpdate) {
                         onGameUpdate();
                     }
-                    
+
                     setReloadTrigger(reloadTrigger + 1);
                 }
 
@@ -109,13 +109,13 @@ const GenerateAssets = ({
             console.error('Error generating assets:', err);
             setImagePrompt('');
             setVideoPrompt('');
-            
+
             // Handle different error types with user-friendly messages
             let errorMessage = t('edit.regenerate.dialog.error');
-            
+
             if (err?.response?.data?.error) {
                 const backendError = err.response.data.error;
-                
+
                 if (backendError.includes('temporarily unavailable')) {
                     errorMessage = t('edit.regenerate.dialog.serviceUnavailable', 'AI service is temporarily unavailable. Please try again in a few minutes.');
                 } else if (backendError.includes('Rate limit exceeded')) {
@@ -128,7 +128,7 @@ const GenerateAssets = ({
             } else if (err?.message) {
                 errorMessage = err.message;
             }
-            
+
             viewContext.notification({
                 description: errorMessage,
                 variant: 'error'
@@ -277,12 +277,42 @@ const GenerateAssets = ({
         return t('edit.regenerate.dialog.cards.generateAssets');
     }
 
-
+    const getGenerateTitle = (assetType, t) => {
+        if (assetType === 'original') {
+            return {
+                image: t('edit.regenerate.dialog.cards.originalImage'),
+                video: t('edit.regenerate.dialog.cards.originalVideo')
+            }
+        }
+        if (assetType === 'current') {
+            return {
+                image: t('edit.regenerate.dialog.cards.aiGeneratedImage'),
+                video: t('edit.regenerate.dialog.cards.aiGeneratedVideo')
+            }
+        }
+        if (assetType === 'theme') {
+            return {
+                image: t('edit.regenerate.dialog.cards.themeImage'),
+                video: t('edit.regenerate.dialog.cards.themeVideo')
+            }
+        }
+        if (assetType === 'promo') {
+            return {
+                image: t('edit.regenerate.dialog.cards.promoImage'),
+                video: t('edit.regenerate.dialog.cards.promoVideo')
+            }
+        }
+        // Default fallback
+        return {
+            image: t('edit.regenerate.dialog.cards.aiGeneratedImage'),
+            video: t('edit.regenerate.dialog.cards.aiGeneratedVideo')
+        }
+    }
 
     return (
         <div>
             <Dialog open={isOpen} onClose={onClose}>
-                <DialogContent className="!w-[80vw] !max-w-none">
+                <DialogContent className="!w-[80vw] h-[80dvh] !max-w-none">
                     <DialogHeader>
                         <div className="flex items-center justify-between">
                             <h1>Generate Assets</h1>
@@ -295,59 +325,69 @@ const GenerateAssets = ({
                                 <TabsTrigger value="saved">{t('edit.regenerate.dialog.tabs.selectedForEdit')}</TabsTrigger>
                             </TabsList>
                             <TabsContent value="reference">
-                                <div className='flex justify-center items-center flex-row gap-3 bg-slate-200 dark:bg-slate-700 rounded-lg p-3 text-center'>
-                                    <Card title={t('edit.regenerate.dialog.cards.originalImage')} className='w-1/2 flex-col gap-3'>
-                                        <MediaPlayer
-                                            gameId={selectedGame?.id}
-                                            imageUrl={selectedGame?.defaultImage}
-                                            videoUrl={selectedGame?.defaultVideo}
-                                            onSelect={handleSelect}
-                                            type="image"
-                                            canSelect={false}
-                                            showPlayIcon={false}
-                                            readOnly={true}
-                                            isSelected={false}
-                                            isGenerating={false}
-                                        />
-                                    </Card>
-                                </div>
+                                <Animate type='pop'>
+                                    <div className='flex justify-center items-center flex-row gap-3 bg-slate-200 dark:bg-slate-700 rounded-lg p-3 text-center'>
+
+                                        <Card title={getGenerateTitle(assetType, t).image} className='w-1/2 flex-col gap-3'>
+                                            <MediaPlayer
+                                                gameId={selectedGame?.id}
+                                                imageUrl={selectedGame?.defaultImage}
+                                                videoUrl={selectedGame?.defaultVideo}
+                                                onSelect={handleSelect}
+                                                type="image"
+                                                canSelect={false}
+                                                showPlayIcon={false}
+                                                readOnly={true}
+                                                isSelected={false}
+                                                isGenerating={false}
+                                            />
+                                        </Card>
+
+
+                                    </div>
+                                </Animate>
                             </TabsContent>
                             <TabsContent value="saved">
-                                <div className='flex flex-row gap-3 bg-slate-200 dark:bg-slate-700 rounded-lg p-3 text-center'>
-                                    <Card
-                                        title={assetType === 'original' ? t('edit.regenerate.dialog.cards.originalImage') : t('edit.regenerate.dialog.cards.aiGeneratedImage')}
-                                        className='w-1/2 flex-col gap-3'
-                                    >
-                                        <MediaPlayer
-                                            key={reloadTrigger}
-                                            gameId={selectedGame?.id}
-                                            imageUrl={imageUrl}
-                                            videoUrl={videoUrl}
-                                            onSelect={handleSelect}
-                                            type="image"
-                                            canSelect={false}
-                                            showPlayIcon={false}
-                                            readOnly={assetType === 'original' && selectedGame?.defaultImage }
-                                            isSelected={false}
-                                            isGenerating={false}
-                                        />
-                                    </Card>
-                                    <Card title={t('edit.regenerate.dialog.cards.aiGeneratedVideo')} className='w-1/2 flex-col gap-3'>
-                                        <MediaPlayer
-                                            key={reloadTrigger}
-                                            gameId={selectedGame?.id}
-                                            imageUrl={imageUrl}
-                                            videoUrl={videoUrl}
-                                            onSelect={handleSelect}
-                                            type="video"
-                                            canSelect={false}
-                                            showPlayIcon={true}
-                                            readOnly={false}
-                                            isSelected={false}
-                                            isGenerating={false}
-                                        />
-                                    </Card>
-                                </div>
+                                <Animate type='pop'>
+                                    <div className='flex flex-row gap-3 bg-slate-200 dark:bg-slate-700 rounded-lg p-3 text-center'>
+
+
+                                        <Card
+                                            title={getGenerateTitle(assetType, t).image}
+                                            className='w-1/2 flex-col gap-3'
+                                        >
+                                            <MediaPlayer
+                                                key={reloadTrigger}
+                                                gameId={selectedGame?.id}
+                                                imageUrl={imageUrl}
+                                                videoUrl={videoUrl}
+                                                onSelect={handleSelect}
+                                                type="image"
+                                                canSelect={false}
+                                                showPlayIcon={false}
+                                                readOnly={assetType === 'original' && selectedGame?.defaultImage}
+                                                isSelected={false}
+                                                isGenerating={false}
+                                            />
+                                        </Card>
+                                        <Card title={getGenerateTitle(assetType, t).video} className='w-1/2 flex-col gap-3'>
+                                            <MediaPlayer
+                                                key={reloadTrigger}
+                                                gameId={selectedGame?.id}
+                                                imageUrl={imageUrl}
+                                                videoUrl={videoUrl}
+                                                onSelect={handleSelect}
+                                                type="video"
+                                                canSelect={false}
+                                                showPlayIcon={true}
+                                                readOnly={false}
+                                                isSelected={false}
+                                                isGenerating={false}
+                                            />
+                                        </Card>
+
+                                    </div>
+                                </Animate>
                             </TabsContent>
                         </Tabs>
                         <Tabs defaultValue="generations">
@@ -355,49 +395,49 @@ const GenerateAssets = ({
                                 <TabsTrigger value="generations" className="flex-1">{t('edit.regenerate.dialog.tabs.generations')}</TabsTrigger>
                                 <TabsTrigger value="videoEditor" className="flex-1">{t('edit.regenerate.dialog.tabs.videoEditor')}</TabsTrigger>
                             </TabsList>
-                            <TabsContent value="generations" className="m-0">
-                                <div className='relative flex justify-center items-center bg-slate-200 dark:bg-slate-700 rounded-lg p-3 text-center'>
-                                    <Card
-                                        title={createTitle()}
-                                        className='relative w-1/2 justify-center flex-col gap-3'
-                                    >
-                                    
-                                        <MediaPlayer
-                                            key={`${reloadTrigger}-${selectedGame?.testImage}-${selectedGame?.testVideo}`}
-                                            gameId={selectedGame?.id}
-                                            imageUrl={testImage || selectedGame?.testImage}
-                                            videoUrl={testVideoUrlValue}
-                                            onSelect={handleSelect}
-                                            type={mediaPlayerType}
-                                            canSelect={false}
-                                            showPlayIcon={!testImage && !selectedGame?.testImage}
-                                            readOnly={false}
-                                            isSelected={false}
-                                            isGenerating={isGenerating}
-                                        />
-                                        {(selectedGame?.testImage || selectedGame?.testVideo || testImage || testVideoUrl) && (
-                                            <div className="mt-4 flex justify-between gap-2">
-                                                <Button disabled={isGenerating} color="red" className="w-1/3" onClick={handleDeleteClick}>{t('Delete Last')}</Button>
-                                                <Button disabled={isGenerating} color="green" className="w-1/3" onClick={handleAcceptTestAssets}>
-                                                    {t('Accept Last')}
-                                                </Button>
-                                                <Button disabled={isGenerating} onClick={handleArchiveAssets} color="green" className="w-1/3">
-                                                    {t('Archive')}
-                                                </Button>
-                                            </div>
-                                        )}
-                                    </Card>
-                                </div>
+                            <TabsContent  value="generations" className="m-0">
+                                <Animate type='pop'>
+                                    <div className='flex justify-center items-center flex-row gap-3 bg-slate-200 dark:bg-slate-700 rounded-lg p-3 text-center'>
+                                        <Card
+                                            title={createTitle()}
+                                            className='relative w-1/2 justify-center flex-col gap-3'
+                                        >
+                                            <MediaPlayer
+                                                key={`${reloadTrigger}-${selectedGame?.testImage}-${selectedGame?.testVideo}`}
+                                                gameId={selectedGame?.id}
+                                                imageUrl={testImage || selectedGame?.testImage}
+                                                videoUrl={testVideoUrlValue}
+                                                onSelect={handleSelect}
+                                                type={mediaPlayerType}
+                                                canSelect={false}
+                                                showPlayIcon={!testImage && !selectedGame?.testImage}
+                                                readOnly={false}
+                                                isSelected={false}
+                                                isGenerating={isGenerating}
+                                            />
+                                            {(selectedGame?.testImage || selectedGame?.testVideo || testImage || testVideoUrl) && (
+                                                <div className="mt-4 flex justify-between gap-2">
+                                                    <Button disabled={isGenerating} color="red" className="w-1/3" onClick={handleDeleteClick}>{t('Delete Last')}</Button>
+                                                    <Button disabled={isGenerating} color="green" className="w-1/3" onClick={handleAcceptTestAssets}>
+                                                        {t('Accept Last')}
+                                                    </Button>
+                                                    <Button disabled={isGenerating} onClick={handleArchiveAssets} color="green" className="w-1/3">
+                                                        {t('Archive')}
+                                                    </Button>
+                                                </div>
+                                            )}
+                                        </Card>
+                                    </div>
+                                </Animate>
                             </TabsContent>
                             <TabsContent value="videoEditor" className="m-0">
-                                
-                                <div className='relative flex justify-center items-center bg-slate-200 dark:bg-slate-700 rounded-lg p-3 text-center min-h-[300px]'>
-                                  <Animate type='pop'>
-                                    <Card title={t('edit.regenerate.dialog.tabs.videoEditor')}>
-                                    <VideoEditor selectedGame={selectedGame} testVideoUrl={testVideoUrlValue} />
-                                    
-                                </Card>
-                                </Animate>
+                                <div className='relative flex justify-center items-center bg-slate-200 dark:bg-slate-700 rounded-lg p-3 text-center'>
+                                    <Animate type='pop'>
+                                        <Card title={t('edit.regenerate.dialog.tabs.videoEditor')} className='relative w-full justify-center flex-col gap-3' >
+                                            <VideoEditor selectedGame={selectedGame} testVideoUrl={testVideoUrlValue} />
+
+                                        </Card>
+                                    </Animate>
                                 </div>
                             </TabsContent>
                         </Tabs>
@@ -408,9 +448,7 @@ const GenerateAssets = ({
                             color={madeSelection ? 'green' : 'gray'}
                             onClick={handleRegenerate}
                             disabled={isGenerating || !madeSelection}
-                            
                         >
-                            
                             {isGenerating && (
                                 <Icon name="loader-2" size={16} className="mr-2 animate-spin" />
                             )}

@@ -6,10 +6,21 @@
   "create": {
     "title": "Crear Juego",
     "action": "Nuevo Juego",
-    "button": "Crear Juego"
+    "button": "Crear Juego",
+    "header": {
+      "title": "Crear Nuevo Juego",
+      "description": "Completa los detalles para agregar un nuevo juego"
+    }
   },
   "edit_game": {
     "action": "Editar Juego"
+  },
+  "edit": {
+    "button": "Guardar Cambios",
+    "header": {
+      "title": "Editar Juego: {{cmsId}}",
+      "description": "Actualizar configuración y ajustes del juego"
+    }
   },
   "new_ai_assets": {
     "action": "Nuevos Assets IA"
@@ -97,6 +108,45 @@
     },
     "touch": {
       "label": "Habilitar Soporte Táctil"
+    },
+    "analytics": {
+      "label": "Habilitar Analíticas"
+    },
+    "published": {
+      "label": "Publicado",
+      "description": "Activar para publicar este juego"
+    },
+    "unpublished": {
+      "label": "No Publicado"
+    },
+    "publishedLive": {
+      "label": "Publicado en Vivo"
+    },
+    "publishedType": {
+      "label": "Tipo de Publicación",
+      "description": "Selecciona el tipo de contenido publicado",
+      "options": {
+        "default": "Predeterminado",
+        "current": "Actual",
+        "theme": "Tema",
+        "promo": "Promoción"
+      }
+    },
+    "sections": {
+      "basicInformation": "Información Básica",
+      "mediaAssets": "Recursos Multimedia",
+      "featuresSettings": "Características y Configuración",
+      "publishingSettings": "Configuración de Publicación",
+      "additionalSettings": "Configuración Adicional"
+    },
+    "placeholders": {
+      "cmsId": "Ingresa el ID de CMS",
+      "playerCssHint": "Agrega CSS personalizado para estilizar el reproductor del juego"
+    },
+    "footer": {
+      "scrollForMore": "Desplázate para más",
+      "formValid": "El formulario es válido",
+      "fillRequiredFields": "Por favor completa los campos requeridos"
     }
   },
   "game_created": "Juego creado exitosamente",

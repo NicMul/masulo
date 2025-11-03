@@ -339,6 +339,9 @@ exports.acceptTestAssets = async function(req, res){
     } else if (assetType === 'theme') {
       newVideoFilename = `theme-${randomString}.mp4`;
       newImageFilename = `theme-${randomString}.jpg`;
+    } else if (assetType === 'promo') {
+      newVideoFilename = `promo-${randomString}.mp4`;
+      newImageFilename = `promo-${randomString}.jpg`;
     } else {
       // Default fallback
       newVideoFilename = `default-${randomString}.mp4`;
@@ -347,9 +350,9 @@ exports.acceptTestAssets = async function(req, res){
     // Step 3: Upload video to /videos/ directory with new filename
     const newVideoUrl = await uploadToBunnyStorage(tempVideoPath, cdnConfig, 'videos', newVideoFilename);
 
-    // Step 4: Handle test image if it exists (for current/theme types)
+    // Step 4: Handle test image if it exists (for current/theme/promo types)
     let newImageUrl = null;
-    if ((assetType === 'current' || assetType === 'theme') && currentGame.testImage && currentGame.testImage.trim() !== '') {
+    if ((assetType === 'current' || assetType === 'theme' || assetType === 'promo') && currentGame.testImage && currentGame.testImage.trim() !== '') {
       console.log('📷 Processing test image:', currentGame.testImage);
       
       // Download test image
@@ -388,6 +391,9 @@ exports.acceptTestAssets = async function(req, res){
     } else if (assetType === 'theme') {
       updateData.themeVideo = newVideoUrl;
       if (newImageUrl) updateData.themeImage = newImageUrl;
+    } else if (assetType === 'promo') {
+      updateData.promoVideo = newVideoUrl;
+      if (newImageUrl) updateData.promoImage = newImageUrl;
     } else {
       // Default fallback
       updateData.defaultVideo = newVideoUrl;

@@ -1,6 +1,7 @@
 const { generateOriginalAsset } = require('./generate-original-asset');
 const { generateCurrentAsset } = require('./generate-current-asset');
 const { generateThemeAsset } = require('./generate-theme-asset');
+const { generatePromoAsset } = require('./generate-promo-asset');
 
 
 
@@ -58,8 +59,18 @@ async function generateImageAndVideoWithPrompt(imageUrl, imagePrompt = '', video
         generateImage,
         generateVideo
       });
+    } else if (assetType === 'promo') {
+      return await generatePromoAsset({
+        imageUrl,
+        imagePrompt,
+        videoPrompt,
+        userId,
+        accountId,
+        gameId,
+        generateImage,
+        generateVideo
+      });
     } else {
-      // TODO: Implement theme asset generator
       throw new Error(`Asset type '${assetType}' not yet implemented`);
     }
 }

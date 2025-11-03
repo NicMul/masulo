@@ -53,8 +53,8 @@ const VideoEditor = ({ selectedGame, testVideoUrl }) => {
     const displayUrl = objectUrl || videoSource;
 
     return (
-        <div className='w-full h-full flex flex-col items-center p-4'>
-            <div className='w-full max-w-4xl flex flex-col gap-4'>
+        <div className='w-full h-full flex flex-col items-center'>
+            <div className='w-full max-w-4xl flex flex-col'>
                 {displayUrl ? (
                     <>
                         {/* Video Trimmer Component */}
