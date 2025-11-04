@@ -33,6 +33,19 @@ export function PromotionConfigForm({
       }
       return false;
     }
+    if (field === 'startTime') return !formData.startTime;
+    if (field === 'endTime') {
+      if (!formData.endTime) return true;
+      // Check if endDateTime is after startDateTime
+      if (formData.startDate && formData.endDate && formData.startTime && formData.endTime) {
+        const startDateTime = new Date(`${formData.startDate}T${formData.startTime}`);
+        const endDateTime = new Date(`${formData.endDate}T${formData.endTime}`);
+        if (endDateTime <= startDateTime) {
+          return true;
+        }
+      }
+      return false;
+    }
     return false;
   };
 
@@ -251,6 +264,72 @@ export function PromotionConfigForm({
                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                         </svg>
                         {t('promotions.end_date_required')}
+                      </p>
+                    )}
+                  </div>
+                  
+                  {/* Start Time */}
+                  <div className="space-y-2">
+                    <label className="flex items-center text-sm font-semibold text-gray-700">
+                      <span className="flex items-center">
+                        {t('promotions.start_time')}
+                        <span className="ml-1 text-red-500">*</span>
+                      </span>
+                    </label>
+                    <input
+                      name="startTime"
+                      type="time"
+                      value={formData.startTime || ''}
+                      onChange={(e) => onChange('startTime', e.target.value)}
+                      className={cn(
+                        "w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200",
+                        hasError('startTime') ? "border-red-300 bg-red-50" : "border-gray-200 bg-gray-50 hover:bg-white hover:border-blue-300"
+                      )}
+                      required
+                    />
+                    {hasError('startTime') && (
+                      <p className="text-red-500 text-xs mt-1 flex items-center">
+                        <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                        </svg>
+                        {t('promotions.start_time_required')}
+                      </p>
+                    )}
+                  </div>
+                  
+                  {/* End Time */}
+                  <div className="space-y-2">
+                    <label className="flex items-center text-sm font-semibold text-gray-700">
+                      <span className="flex items-center">
+                        {t('promotions.end_time')}
+                        <span className="ml-1 text-red-500">*</span>
+                      </span>
+                    </label>
+                    <input
+                      name="endTime"
+                      type="time"
+                      value={formData.endTime || ''}
+                      onChange={(e) => onChange('endTime', e.target.value)}
+                      className={cn(
+                        "w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200",
+                        hasError('endTime') ? "border-red-300 bg-red-50" : "border-gray-200 bg-gray-50 hover:bg-white hover:border-blue-300"
+                      )}
+                      required
+                    />
+                    {hasError('endTime') && formData.startDate && formData.endDate && formData.startTime && formData.endTime && (
+                      <p className="text-red-500 text-xs mt-1 flex items-center">
+                        <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                        </svg>
+                        {t('promotions.end_time_after_start')}
+                      </p>
+                    )}
+                    {!formData.endTime && (
+                      <p className="text-red-500 text-xs mt-1 flex items-center">
+                        <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                        </svg>
+                        {t('promotions.end_time_required')}
                       </p>
                     )}
                   </div>

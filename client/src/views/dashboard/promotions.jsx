@@ -20,6 +20,30 @@ const formatDateForInput = (dateString) => {
   }
 };
 
+// UTILITY: Function to format time as "6h30 AM" format
+const formatTime = (dateString) => {
+  if (!dateString) return '';
+  try {
+    const date = new Date(dateString);
+    let hours = date.getHours();
+    const minutes = date.getMinutes();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    
+    // Convert to 12-hour format
+    hours = hours % 12;
+    hours = hours ? hours : 12; // 0 should be 12
+    
+    // Format minutes with zero padding
+    const minutesStr = String(minutes).padStart(2, '0');
+    
+    // Return format like "6h30 AM" (no leading zero for hours)
+    return `${hours}h${minutesStr} ${ampm}`;
+  } catch (e) {
+    console.error("Invalid time string provided:", dateString);
+    return '';
+  }
+};
+
 
 export function Promotions({ t }){
 
@@ -183,14 +207,24 @@ export function Promotions({ t }){
       <span className="text-muted-foreground text-sm">{t('promotions.no_games_selected')}</span>
     );
     
+    // Format dates with times
+    const startDateStr = new Date(promotion.startDate).toLocaleDateString();
+    const endDateStr = new Date(promotion.endDate).toLocaleDateString();
+    const startTimeStr = promotion.startTime ? formatTime(promotion.startTime) : '';
+    const endTimeStr = promotion.endTime ? formatTime(promotion.endTime) : '';
+    
+    // Combine date and time for display (e.g., "Jan 15, 2024 6h30 AM")
+    const startDateTime = startTimeStr ? `${startDateStr} at ${startTimeStr}` : startDateStr;
+    const endDateTime = endTimeStr ? `${endDateStr} at ${endTimeStr}` : endDateStr;
+    
     return {
       ...promotion,
       published: promotion.published || false,
       name: promotion.name || '',
       description: promotion.description || '',
       group: promotion.group || '',
-      startDate: new Date(promotion.startDate).toLocaleDateString(),
-      endDate: new Date(promotion.endDate).toLocaleDateString(),
+      startDate: startDateTime,
+      endDate: endDateTime,
       games: gamesComponent
     };
   });

@@ -14,6 +14,8 @@ exports.create = async function(req, res){
     group: joi.string().required(),
     startDate: joi.date().required(),
     endDate: joi.date().required(),
+    startTime: joi.date().required(),
+    endTime: joi.date().required(),
     games: joi.array().items(joi.object({
       gameCmsId: joi.string().required(),
       friendlyName: joi.string().required(),
@@ -25,8 +27,8 @@ exports.create = async function(req, res){
 
   }), req, res); 
 
-  // validate that endDate is after startDate
-  if (data.endDate <= data.startDate) {
+  // validate that endDateTime is after startDateTime
+  if (data.endTime <= data.startTime) {
     return res.status(400).send({ message: res.__('promotion.create.end_date_after_start') });
   }
 
@@ -63,6 +65,8 @@ exports.update = async function(req, res){
     group: joi.string(),
     startDate: joi.date(),
     endDate: joi.date(),
+    startTime: joi.date(),
+    endTime: joi.date(),
     games: joi.array().items(joi.object({
       gameCmsId: joi.string().required(),
       friendlyName: joi.string().required(),
@@ -74,8 +78,14 @@ exports.update = async function(req, res){
 
   }), req, res); 
 
-  // validate that endDate is after startDate if both are provided
-  if (data.endDate && data.startDate && data.endDate <= data.startDate) {
+  // validate that endDateTime is after startDateTime if both are provided
+  // Check if we have both startTime and endTime, or if we need to combine with dates
+  if (data.endTime && data.startTime && data.endTime <= data.startTime) {
+    return res.status(400).send({ message: res.__('promotion.update.end_date_after_start') });
+  }
+  
+  // Also validate date if only dates are provided (backward compatibility)
+  if (data.endDate && data.startDate && !data.endTime && !data.startTime && data.endDate <= data.startDate) {
     return res.status(400).send({ message: res.__('promotion.update.end_date_after_start') });
   }
 

@@ -37,6 +37,20 @@ const formatDateForInput = (dateString) => {
   }
 };
 
+// UTILITY: Function to format time for HTML input type="time" (HH:mm format)
+const formatTimeForInput = (dateString) => {
+  if (!dateString) return '';
+  try {
+    const date = new Date(dateString);
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
+  } catch (e) {
+    console.error("Invalid time string provided:", dateString);
+    return '';
+  }
+};
+
 export function PromotionConfigurationDialog({ 
   open,
   onClose,
@@ -54,6 +68,8 @@ export function PromotionConfigurationDialog({
     group: '',
     startDate: '',
     endDate: '',
+    startTime: '',
+    endTime: '',
     approvedBy: '',
     published: false
   });
@@ -70,6 +86,9 @@ export function PromotionConfigurationDialog({
     if (promotion) {
       const formattedStartDate = formatDateForInput(promotion.startDate);
       const formattedEndDate = formatDateForInput(promotion.endDate);
+      // Format times from Date objects, default to '00:00' if not present (backward compatibility)
+      const formattedStartTime = promotion.startTime ? formatTimeForInput(promotion.startTime) : '00:00';
+      const formattedEndTime = promotion.endTime ? formatTimeForInput(promotion.endTime) : '00:00';
       
       // Handle backward compatibility: convert friendlyName to cmsGroupId if needed
       let groupValue = promotion.group || '';
@@ -89,6 +108,8 @@ export function PromotionConfigurationDialog({
         group: groupValue,
         startDate: formattedStartDate,
         endDate: formattedEndDate,
+        startTime: formattedStartTime,
+        endTime: formattedEndTime,
         approvedBy: promotion.approvedBy || '',
         published: promotion.published || false
       });
@@ -99,6 +120,8 @@ export function PromotionConfigurationDialog({
         group: '',
         startDate: '',
         endDate: '',
+        startTime: '',
+        endTime: '',
         approvedBy: '',
         published: false
       });
@@ -124,17 +147,17 @@ export function PromotionConfigurationDialog({
   // Validate form whenever form data changes
   useEffect(() => {
     const validateForm = () => {
-      const { name, description, group, startDate, endDate } = formData;
+      const { name, description, group, startDate, endDate, startTime, endTime } = formData;
       
       // Check if required fields are filled
-      if (!name || !description || !group || !startDate || !endDate) {
+      if (!name || !description || !group || !startDate || !endDate || !startTime || !endTime) {
         return false;
       }
       
-      // Check if end date is after start date
-      const start = new Date(startDate);
-      const end = new Date(endDate);
-      if (end <= start) {
+      // Check if endDateTime is after startDateTime
+      const startDateTime = new Date(`${startDate}T${startTime}`);
+      const endDateTime = new Date(`${endDate}T${endTime}`);
+      if (endDateTime <= startDateTime) {
         return false;
       }
       
@@ -197,12 +220,18 @@ export function PromotionConfigurationDialog({
     // Force published=false if there are missing assets
     const published = hasMissingAssets ? false : formData.published;
     
+    // Combine date and time into DateTime objects
+    const startDateTime = new Date(`${formData.startDate}T${formData.startTime}`);
+    const endDateTime = new Date(`${formData.endDate}T${formData.endTime}`);
+    
     const data = {
       name: formData.name.trim(),
       description: formData.description.trim(),
       group: formData.group.trim(),
       startDate: formData.startDate,
       endDate: formData.endDate,
+      startTime: startDateTime.toISOString(),
+      endTime: endDateTime.toISOString(),
       games: gamesData,
       approvedBy: formData.approvedBy.trim(),
       published: published

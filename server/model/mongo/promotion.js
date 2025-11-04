@@ -11,6 +11,8 @@ const PromotionSchema = new Schema({
   group: { type: String, required: true },
   startDate: { type: Date, required: true },
   endDate: { type: Date, required: true },
+  startTime: { type: Date, required: true },
+  endTime: { type: Date, required: true },
   games: [{
     gameCmsId: { type: String, required: true },
     friendlyName: { type: String, required: true },
@@ -42,6 +44,8 @@ exports.create = async function({ data, user }){
     group: data.group,
     startDate: data.startDate,
     endDate: data.endDate,
+    startTime: data.startTime,
+    endTime: data.endTime,
     games: data.games || [],
     approvedBy: data.approvedBy || null,
     published: data.published || false,
