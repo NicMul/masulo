@@ -52,7 +52,7 @@ export function GameMediaViewDialog({ isOpen, onClose, game, t }) {
       <DialogContent className="max-w-6xl">
         <DialogHeader>
           <div className="flex items-center justify-between">
-            <DialogTitle>{t('games.view.dialog.title')}</DialogTitle>
+            <DialogTitle>{t('games.view.dialog.title')} : {game.friendlyName}</DialogTitle>
             <Button onClick={handleEditGame} className="mr-6" color="primary" icon="edit" text={t('Edit Assets')} />
           </div>
           

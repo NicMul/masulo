@@ -174,19 +174,21 @@ export function PromotionConfigurationDialog({
     // Ensure selectedGames is always an array
     const gamesArray = Array.isArray(selectedGames) ? selectedGames : [];
     
-    // Transform selected game IDs to the new format with gameCmsId, promoImage, promoVideo
+    // Transform selected game IDs to the new format with gameCmsId, friendlyName, promoImage, promoVideo
     const gamesData = gamesArray.map(gameId => {
       const game = games.find(g => g.id === gameId);
       if (!game) {
         // Fallback only if game not found (shouldn't happen in normal flow)
         return {
           gameCmsId: gameId,
+          friendlyName: '',
           promoImage: '',
           promoVideo: ''
         };
       }
       return {
         gameCmsId: game.cmsId,
+        friendlyName: game.friendlyName,
         promoImage: game.promoImage,
         promoVideo: game.promoVideo
       };

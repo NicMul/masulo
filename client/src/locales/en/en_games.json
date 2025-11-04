@@ -68,6 +68,10 @@
       "label": "CMS ID",
       "error": "CMS ID is required"
     },
+    "friendlyName": {
+      "label": "Friendly Name",
+      "error": "Friendly name is required"
+    },
     "defaultImage": {
       "label": "Default Image URL",
       "error": "Default image URL is required"
@@ -152,6 +156,7 @@
     },
     "placeholders": {
       "cmsId": "Enter CMS ID",
+      "friendlyName": "Enter friendly name",
       "playerCssHint": "Add custom CSS to style the game player"
     },
     "footer": {

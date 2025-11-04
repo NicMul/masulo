@@ -17,12 +17,19 @@ export function GameSelector({ t, onGameSelect, games = [], selectedGame: propSe
   
   const inputRef = useRef(null);
   const dropdownRef = useRef(null);
+  const isInternalUpdate = useRef(false);
 
   // Update internal state when prop changes
   useEffect(() => {
+    // Don't override user input during internal updates
+    if (isInternalUpdate.current) {
+      isInternalUpdate.current = false;
+      return;
+    }
+    
     if (propSelectedGame) {
       setSelectedGame(propSelectedGame);
-      setSearchQuery(propSelectedGame.cmsId || '');
+      setSearchQuery(propSelectedGame.friendlyName || '');
     } else {
       setSelectedGame(null);
       setSearchQuery('');
@@ -40,8 +47,9 @@ export function GameSelector({ t, onGameSelect, games = [], selectedGame: propSe
       const query = searchQuery.toLowerCase();
       const cmsId = game.cmsId?.toLowerCase() || '';
       const gameId = game.id?.toString().toLowerCase() || '';
+      const friendlyName = game.friendlyName?.toLowerCase() || '';
       
-      return cmsId.includes(query) || gameId.includes(query);
+      return cmsId.includes(query) || gameId.includes(query) || friendlyName.includes(query);
     });
 
     setFilteredGames(filtered);
@@ -51,7 +59,7 @@ export function GameSelector({ t, onGameSelect, games = [], selectedGame: propSe
   // Handle game selection
   const handleGameSelect = (game) => {
     setSelectedGame(game);
-    setSearchQuery(game.cmsId || '');
+    setSearchQuery(game.friendlyName || '');
     setIsDropdownOpen(false);
     setHighlightedIndex(-1);
     onGameSelect(game);
@@ -64,7 +72,8 @@ export function GameSelector({ t, onGameSelect, games = [], selectedGame: propSe
     setIsDropdownOpen(value.length > 0);
     
     // Clear selection if input doesn't match selected game
-    if (selectedGame && value !== selectedGame.cmsId) {
+    if (selectedGame && value !== selectedGame.friendlyName) {
+      isInternalUpdate.current = true;
       setSelectedGame(null);
       onGameSelect(null);
     }
@@ -176,14 +185,10 @@ export function GameSelector({ t, onGameSelect, games = [], selectedGame: propSe
                       selectedGame?.id === game.id && 'bg-blue-50 dark:bg-blue-900/20'
                     )}
                   >
-                    <Icon
-                      name='gamepad-2'
-                      size={16}
-                      className='text-slate-500 dark:text-slate-400 flex-shrink-0'
-                    />
+                   <img src={game?.defaultImage || ''} alt={game.cmsId} width={48} height={56} className="text-slate-500 dark:text-slate-400 flex-shrink-0" />
                     <div className='flex-1 min-w-0'>
                       <div className='text-sm font-medium text-slate-900 dark:text-slate-100 truncate'>
-                        {game.cmsId}
+                        {game.friendlyName}
                       </div>
                       <div className='text-xs text-slate-500 dark:text-slate-400'>
                         ID: {game.id}

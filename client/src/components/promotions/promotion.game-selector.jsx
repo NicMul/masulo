@@ -117,8 +117,9 @@ const PromotionGameSelector = ({
       const query = searchQuery.toLowerCase();
       const cmsId = game.cmsId?.toLowerCase() || '';
       const gameId = game.id?.toString().toLowerCase() || '';
+      const friendlyName = game.friendlyName?.toLowerCase() || '';
       
-      return cmsId.includes(query) || gameId.includes(query);
+      return cmsId.includes(query) || gameId.includes(query) || friendlyName.includes(query);
     });
 
     setFilteredGames(filtered);
@@ -252,7 +253,7 @@ const PromotionGameSelector = ({
             onChange={handleInputChange}
             onFocus={handleInputFocus}
             onKeyDown={handleKeyDown}
-            placeholder="Search games by ID or CMS ID..."
+            placeholder="Search games by ID, CMS ID, or Name..."
             className="w-[99%] pl-10 pr-4"
           />
           <Icon
@@ -271,7 +272,7 @@ const PromotionGameSelector = ({
               'border border-slate-200 dark:border-slate-700 rounded-md shadow-lg',
               'max-h-60 overflow-y-auto',
               'transition-all duration-200 ease-in-out',
-              'w-2/3',
+              'w-1/3',
               'opacity-100 scale-100'
             )}
           >
@@ -296,7 +297,10 @@ const PromotionGameSelector = ({
                   <img src={game?.defaultImage || ''} alt={game.cmsId} width={48} height={56} className="text-slate-500 dark:text-slate-400 flex-shrink-0" />
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">
-                      {game.cmsId}
+                      {game.friendlyName}
+                    </div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400">
+                      ID: {game.id}
                     </div>
                   </div>
                   {isAlreadySelected && (
@@ -401,7 +405,13 @@ const PromotionGameSelector = ({
                       showPlayIcon={true}
                     />
                     <div className="mt-2 text-center">
-                  </div>
+                      <div className="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">
+                        {game.friendlyName}
+                      </div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400">
+                        ID: {game.id}
+                      </div>
+                    </div>
                   </div>
                 </div>
               )})}

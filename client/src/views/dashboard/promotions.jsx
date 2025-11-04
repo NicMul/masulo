@@ -159,23 +159,23 @@ export function Promotions({ t }){
   // format promotions data for table
   const tableData = promotions.map(promotion => {
     // Handle both old format (array of IDs) and new format (array of objects)
-    const gameNames = promotion.games?.map(game => {
+    const gamesObjects = promotion.games?.map(game => {
       if (typeof game === 'object' && game.gameCmsId) {
         // New format: object with gameCmsId
-        return game.gameCmsId;
+        return games?.find(g => g.cmsId === game.gameCmsId);
       } else {
         // Old format: string ID, try to find game
         const gameObj = games?.find(g => g.id === game);
-        return gameObj ? gameObj.cmsId : game;
+        return gameObj;
       }
     }) || [];
     
     // Create a custom component for games column with badges
-    const gamesComponent = gameNames.length > 0 ? (
+    const gamesComponent = gamesObjects.length > 0 ? (
       <div className="flex flex-wrap gap-1">
-        {gameNames.map((gameName, index) => (
+        {gamesObjects.map((gameObject, index) => (
           <Badge key={index} variant="blue" className="text-xs">
-            {gameName}
+            {gameObject.friendlyName}
           </Badge>
         ))}
       </div>

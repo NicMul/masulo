@@ -7,6 +7,7 @@ const GameSchema = new Schema({
 
   id: { type: String, required: true, unique: true },
   cmsId: { type: String, required: true },
+  friendlyName: { type: String, required: true },
   defaultImage: { type: String, required: true },
   defaultVideo: { type: String },
   currentImage: { type: String },
@@ -48,6 +49,7 @@ exports.create = async function({ data, user }){
 
     id: data.cmsId,
     cmsId: data.cmsId,
+    friendlyName: data.friendlyName,
     defaultImage: data.defaultImage,
     defaultVideo: data.defaultVideo || null,
     currentImage: data.currentImage || null,

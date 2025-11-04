@@ -24,6 +24,12 @@ const MediaPlayer = ({
         setIsSelected(externalIsSelected || false);
     }, [externalIsSelected]);
 
+    // Reset video state when game changes
+    useEffect(() => {
+        setVideoReady(false);
+        setIsHovering(false);
+    }, [gameId, videoUrl]);
+
     // Default placeholder image (data URI for a simple gray placeholder)
     const defaultImage = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='280'%3E%3Crect width='180' height='280' fill='%23374151'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='16' fill='%23d1d5db' text-anchor='middle' dy='.3em'%3E%3C/text%3E%3C/svg%3E`;
     
@@ -76,6 +82,7 @@ const MediaPlayer = ({
         if (type === 'image') {
             return (
                 <img
+                    key={`img-${gameId}-${finalImageUrl}`}
                     src={finalImageUrl}
                     alt={`Game ${gameId}`}
                     className="absolute inset-0 w-full h-full object-cover"
@@ -86,6 +93,7 @@ const MediaPlayer = ({
         if (type === 'video') {
             return (
                 <video
+                    key={`video-${gameId}-${finalVideoUrl}`}
                     ref={videoRef}
                     src={finalVideoUrl || undefined}
                     poster={finalImageUrl}
@@ -102,6 +110,7 @@ const MediaPlayer = ({
             return (
                 <>
                     <img
+                        key={`img-${gameId}-${finalImageUrl}`}
                         src={finalImageUrl}
                         alt={`Game ${gameId}`}
                         className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${
@@ -109,6 +118,7 @@ const MediaPlayer = ({
                         }`}
                     />
                     <video
+                        key={`video-${gameId}-${finalVideoUrl}`}
                         ref={videoRef}
                         src={finalVideoUrl || undefined}
                         poster={finalImageUrl}

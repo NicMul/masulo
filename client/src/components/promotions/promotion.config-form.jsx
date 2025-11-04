@@ -291,7 +291,7 @@ export function PromotionConfigForm({
                             const game = games.find(g => g.id === gameId);
                             return game ? (
                               <span key={gameId} className="px-2 py-1 bg-blue-100 text-blue-800 rounded-md font-medium">
-                                {game.cmsId}
+                                {game.friendlyName}
                               </span>
                             ) : null;
                           })}

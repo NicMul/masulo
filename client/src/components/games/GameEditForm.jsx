@@ -24,6 +24,7 @@ export function GameEditForm({ game, onSuccess, onCancel, t }) {
     mode: 'onChange',
     defaultValues: {
       cmsId: game.cmsId || '',
+      friendlyName: game.friendlyName || '',
       theme: game.theme || 'default',
       defaultImage: game.defaultImage || '',
       defaultVideo: game.defaultVideo || '',
@@ -48,6 +49,8 @@ export function GameEditForm({ game, onSuccess, onCancel, t }) {
   const watchedValues = watch();
   const isFormValid = watchedValues.cmsId && 
                      watchedValues.cmsId.trim() !== '' && 
+                     watchedValues.friendlyName && 
+                     watchedValues.friendlyName.trim() !== '' && 
                      watchedValues.version > 0 && 
                      watchedValues.defaultImage && 
                      watchedValues.defaultImage.trim() !== '';
@@ -183,6 +186,35 @@ export function GameEditForm({ game, onSuccess, onCancel, t }) {
                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                         </svg>
                         {errors.cmsId.message}
+                      </p>
+                    )}
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <label className="flex items-center text-sm font-semibold text-gray-700">
+                      <span className="flex items-center">
+                        {t('games.form.friendlyName.label')}
+                        <span className="ml-1 text-red-500">*</span>
+                      </span>
+                    </label>
+                    <input
+                      {...register('friendlyName', { 
+                        required: t('games.form.friendlyName.error'),
+                        minLength: { value: 1, message: t('games.form.friendlyName.error') }
+                      })}
+                      type="text"
+                      className={cn(
+                        "w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200",
+                        errors.friendlyName ? "border-red-300 bg-red-50" : "border-gray-200 bg-gray-50 hover:bg-white hover:border-blue-300"
+                      )}
+                      placeholder={t('games.form.placeholders.friendlyName')}
+                    />
+                    {errors.friendlyName && (
+                      <p className="text-red-500 text-xs mt-1 flex items-center">
+                        <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                        </svg>
+                        {errors.friendlyName.message}
                       </p>
                     )}
                   </div>

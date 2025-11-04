@@ -31,8 +31,8 @@ export function EditHeader({ t, selectedGame, onSaveAndPublish }) {
       <div className='flex items-center justify-between'>
         <div>
           <h1 className='text-2xl font-bold text-slate-900 dark:text-slate-100'>
-            { selectedGame ? t('edit.header.title', { gameName: selectedGame.cmsId.toUpperCase() }) : t('edit.header.titleDefault') }
-            <span className='text-ml text-slate-600 dark:text-slate-400'> - { ( selectedGame ? 'v' + (selectedGame.version) : t('edit.header.cmsIdDefault')) }</span>
+            { selectedGame ? t('edit.header.title', { gameName: selectedGame.friendlyName }) : t('edit.header.titleDefault') }
+            <span className='text-md text-slate-600 dark:text-slate-400'> - { ( selectedGame ? 'v' + (selectedGame.version) : t('edit.header.cmsIdDefault')) }</span>
           </h1>
           <p className='text-sm text-slate-600 dark:text-slate-400'>
           { selectedGame ? t('edit.header.cmsId', { cmsId: selectedGame.cmsId }) : t('edit.header.cmsIdDefault') }

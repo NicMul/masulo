@@ -13,6 +13,7 @@ const PromotionSchema = new Schema({
   endDate: { type: Date, required: true },
   games: [{
     gameCmsId: { type: String, required: true },
+    friendlyName: { type: String, required: true },
     promoImage: { type: String, required: true },
     promoVideo: { type: String, required: true }
   }],

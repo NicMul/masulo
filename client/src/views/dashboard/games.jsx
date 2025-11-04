@@ -359,7 +359,7 @@ export function Games({ t }){
             const selected = selection.map(s => games.find(g => g.id === s.id)).filter(Boolean);
             setSelectedGames(selected);
           }}
-          show={ ['published', 'version','cmsId', 'group', 'theme', 'defaultImage', 'currentImage', 'themeImage', 'animate', 'hover', 'touch'] }
+          show={ ['published', 'version', 'friendlyName','cmsId', 'group', 'theme', 'defaultImage', 'currentImage', 'themeImage', 'animate', 'hover', 'touch'] }
           badge={ [
             { 
               col: 'published', 

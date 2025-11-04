@@ -16,6 +16,7 @@ exports.create = async function(req, res){
     endDate: joi.date().required(),
     games: joi.array().items(joi.object({
       gameCmsId: joi.string().required(),
+      friendlyName: joi.string().required(),
       promoImage: joi.string().required(),
       promoVideo: joi.string().required()
     })).required(),
@@ -64,6 +65,7 @@ exports.update = async function(req, res){
     endDate: joi.date(),
     games: joi.array().items(joi.object({
       gameCmsId: joi.string().required(),
+      friendlyName: joi.string().required(),
       promoImage: joi.string().required(),
       promoVideo: joi.string().required()
     })),

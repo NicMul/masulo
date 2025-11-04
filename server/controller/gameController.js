@@ -12,6 +12,7 @@ exports.create = async function(req, res){
   const data = utility.validate(joi.object({
     
     cmsId: joi.string().required(),
+    friendlyName: joi.string().required(),
     defaultImage: joi.string().required(),
     defaultVideo: joi.string().allow('', null),
     currentImage: joi.string().allow('', null),
@@ -61,7 +62,7 @@ exports.bulkCreate = async function(req, res){
 
     const games = [];
     const errors = [];
-    const requiredColumns = ['cmsId', 'defaultImage', 'animate', 'hover', 'version'];
+    const requiredColumns = ['cmsId', 'friendlyName', 'defaultImage', 'animate', 'hover', 'version'];
     const optionalColumns = ['defaultVideo', 'currentImage', 'currentVideo', 'themeImage', 'themeVideo', 'testImage', 'testVideo'];
     const allColumns = [...requiredColumns, ...optionalColumns];
     let rowNumber = 0;
@@ -84,6 +85,7 @@ exports.bulkCreate = async function(req, res){
           try {
             const gameData = {
               cmsId: row.cmsId?.trim(),
+              friendlyName: row.friendlyName?.trim(),
               defaultImage: row.defaultImage?.trim(),
               defaultVideo: row.defaultVideo?.trim() || '',
               currentImage: row.currentImage?.trim() || '',
@@ -100,6 +102,10 @@ exports.bulkCreate = async function(req, res){
             // validate each field
             if (!gameData.cmsId) {
               errors.push(`Row ${rowNumber}: cmsId is required`);
+              return;
+            }
+            if (!gameData.friendlyName) {
+              errors.push(`Row ${rowNumber}: friendlyName is required`);
               return;
             }
             if (!gameData.defaultImage) {
@@ -177,10 +183,10 @@ exports.downloadTemplate = async function(req, res){
 
   // CSV template with ALL headers and example data
   const csvContent = [
-    'cmsId,defaultImage,defaultVideo,currentImage,currentVideo,themeImage,themeVideo,testImage,testVideo,scrape,theme,animate,hover,version,group',
-    'game-001,https://example.com/image1.jpg,https://example.com/video1.mp4,https://example.com/current1.jpg,https://example.com/current1.mp4,https://example.com/theme1.jpg,https://example.com/theme1.mp4,https://example.com/test1.jpg,https://example.com/test1.mp4,true,default,true,false,1,group-1',
-    'game-002,https://example.com/image2.jpg,,https://example.com/current2.jpg,,https://example.com/theme2.jpg,,https://example.com/test2.jpg,,false,xmas,false,true,2,group-2',
-    'game-003,https://example.com/image3.jpg,https://example.com/video3.mp4,,,https://example.com/theme3.jpg,https://example.com/theme3.mp4,,,true,valentines,true,true,1,'
+    'cmsId,friendlyName,defaultImage,defaultVideo,currentImage,currentVideo,themeImage,themeVideo,testImage,testVideo,scrape,theme,animate,hover,version,group',
+    'game-001,Game One,https://example.com/image1.jpg,https://example.com/video1.mp4,https://example.com/current1.jpg,https://example.com/current1.mp4,https://example.com/theme1.jpg,https://example.com/theme1.mp4,https://example.com/test1.jpg,https://example.com/test1.mp4,true,default,true,false,1,group-1',
+    'game-002,Game Two,https://example.com/image2.jpg,,https://example.com/current2.jpg,,https://example.com/theme2.jpg,,https://example.com/test2.jpg,,false,xmas,false,true,2,group-2',
+    'game-003,Game Three,https://example.com/image3.jpg,https://example.com/video3.mp4,,,https://example.com/theme3.jpg,https://example.com/theme3.mp4,,,true,valentines,true,true,1,'
   ].join('\n');
 
   // Set headers for CSV download
@@ -207,6 +213,7 @@ exports.update = async function(req, res){
   const data = utility.validate(joi.object({
     
     cmsId: joi.string(),
+    friendlyName: joi.string().required(),
     defaultImage: joi.string(),
     defaultVideo: joi.string().allow('', null),
     currentImage: joi.string().allow('', null),
