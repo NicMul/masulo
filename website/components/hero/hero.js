@@ -13,10 +13,38 @@
 *
 **********/
 
+import { useState, useEffect, useRef } from 'react';
 import { Row, ButtonGroup, Image, Rating, Video } from 'components/lib';
 import Style from './hero.tailwind.js';
 
 export function Hero(props){
+
+  const visualRef = useRef(null);
+  const [transform, setTransform] = useState('translateY(0px)');
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!visualRef.current) return;
+      
+      const scrollY = window.scrollY || window.pageYOffset;
+      const elementTop = visualRef.current.getBoundingClientRect().top + scrollY;
+      const windowHeight = window.innerHeight;
+      
+      // Calculate parallax effect - moves slower than scroll
+      // Only animate when element is visible in viewport
+      if (scrollY < elementTop + windowHeight && scrollY > elementTop - windowHeight) {
+        const offset = (scrollY - elementTop) * 0.1; // 0.3 is the parallax speed
+        setTransform(`translateY(${offset}px)`);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll(); // Initial call
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   return (
     <Row color='dark' className={ Style.hero } >
@@ -40,7 +68,15 @@ export function Hero(props){
                 
       </section>
 
-      <div className={ Style.visual }>
+      <div 
+        ref={visualRef}
+        className={ Style.visual }
+        style={{ 
+          transform: transform,
+          transition: 'transform 0.1s ease-out',
+          willChange: 'transform'
+        }}
+      >
 
         { props.image && 
           <Image className={ Style.visual } {...props.image } /> }

@@ -199,7 +199,7 @@ export function Promotions({ t }){
       <div className="flex flex-wrap gap-1">
         {gamesObjects.map((gameObject, index) => (
           <Badge key={index} variant="blue" className="text-xs">
-            {gameObject.friendlyName}
+            {gameObject?.friendlyName || ''}
           </Badge>
         ))}
       </div>

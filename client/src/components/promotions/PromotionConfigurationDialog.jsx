@@ -312,11 +312,13 @@ export function PromotionConfigurationDialog({
         <div className="flex justify-end gap-2 mt-6 pt-4 border-t">
       
           <Button
+            color="red"
             text={t('promotions.cancel')}
             onClick={handleCancel}
-            variant="outline"
+           
           />
           <Button
+            color="green"
             text={promotion ? t('promotions.save') : t('promotions.create_promotion')}
             onClick={handleSubmit}
             icon="check"

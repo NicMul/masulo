@@ -3,9 +3,9 @@ const content = {
     title: 'AI iGaming Asset Management to Boost Player Engagement',
     subtitle: 'Instantly hot swap casino game thumbnails and A/B test for higher conversion, all without touching your CMS or rebuilding your sites or apps.',
     image: {
-      width: 1024,
-      height: 567,
-      src: '/images/placeholder.jpg',
+      width: 800,
+      height: 400,
+      src: '/images/hades_4.png',
       alt: 'Mesulo dashboard showing casino game thumbnail performance and live A/B testing',
       priority: true,
       placeholder: 'blur'

@@ -6,7 +6,7 @@ const Style = {
   subtitle: 'block text-md mt-4 sm:text-xl',
   rating: 'mt-8 mb-8 sm:mb-10',
   actions: 'mt-6',
-  visual: 'mb-[-4.7em] shadow-[6px_6px_0px_rgba(0,0,0,0.1)]'
+  visual: 'mb-[-7.7em] mx-auto z-[100] relative'
 
 }
 
