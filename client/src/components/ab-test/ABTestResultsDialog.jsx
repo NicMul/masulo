@@ -8,7 +8,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogFooter, Button, Badge } from 'components/lib';
 import MediaPlayer from 'components/edit/MediaPlayer';
 import { PromoteVariantDropdown } from './PromoteVariantDropdown';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 
 // --- Utility Components ---
 
@@ -26,10 +26,10 @@ const VariantData = ({
         {/* Winner Crown Badge */}
         {isWinner && (
             <div className="absolute -top-1 -right-1 bg-gradient-to-br from-yellow-400 to-amber-500 text-white px-3 py-1 rounded-bl-lg rounded-tr-lg shadow-lg flex items-center gap-1.5">
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                 </svg>
-                <span className="text-xs font-bold">{t('Winner')}</span>
+                <span className="text-lg font-bold">{t('Winner')}</span>
             </div>
         )}
         
@@ -83,115 +83,35 @@ const ABTestResultsDialog = ({
 }) => {
     if (!abTest) return null;
 
-    console.log(abTest);
 
-    // Format date for display
-    const formatDate = (dateString) => {
-        if (!dateString) return 'N/A';
-        try {
-            if (dateString.includes('/')) {
-                return dateString;
-            }
-            const date = new Date(dateString);
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const year = date.getFullYear();
-            return `${day}/${month}/${year}`;
-        } catch (e) {
-            return dateString;
-        }
-    };
+    const startDate =  new Date(abTest.startDate);
+    const endDate = new Date(abTest.endDate);
+    const now = new Date();
+    const progressPercent = ((now - startDate) / (endDate - startDate)) * 100;
 
-    // Parse date - handles ISO datetime strings or combines date + time
-    const parseDate = (dateString, timeString = null) => {
-        try {
-            let date;
-            
-            // If timeString is a full ISO datetime string, use it directly
-            if (timeString && (timeString.includes('T') || timeString.includes('Z'))) {
-                date = new Date(timeString);
-            } else if (dateString) {
-                // Otherwise, combine dateString with timeString
-                if (dateString.includes('/')) {
-                    // Handle DD/MM/YYYY format
-                    const [day, month, year] = dateString.split('/');
-                    const time = timeString || '00:00';
-                    date = new Date(`${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${time}`);
-                } else {
-                    // Handle YYYY-MM-DD format
-                    const time = timeString || '00:00';
-                    date = new Date(`${dateString}T${time}`);
-                }
-            } else {
-                return null;
-            }
-            
-            if (isNaN(date.getTime())) {
-                return null;
-            }
-            return date;
-        } catch (e) {
-            console.error('Error parsing date:', e);
-            return null;
-        }
-    };
+    console.log('progressPercent', now, startDate, endDate, progressPercent);
 
-    // Calculate test status and progress
-    const getTestStatus = () => {
-        const now = new Date();
-        // Use startTime/endTime if they exist (they're full ISO datetime strings), otherwise use dates with default times
-        const startDate = abTest.startTime 
-            ? parseDate(null, abTest.startTime) 
-            : parseDate(abTest.startDate, '00:00');
-        const endDate = abTest.endTime 
-            ? parseDate(null, abTest.endTime) 
-            : parseDate(abTest.endDate, '23:59');
-
-        if (!startDate || !endDate || isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
-            return { status: 'invalid-dates', progress: 0, label: t('Invalid Dates'), color: 'red' };
-        }
-
-        if (now < startDate) {
-            return { 
-                status: 'not-started', 
-                progress: 0, 
-                label: t('Not Started'),
-                color: 'slate'
-            };
-        }
-
-        if (now > endDate) {
-            return { 
-                status: 'completed', 
-                progress: 100, 
-                label: t('Completed'),
+    const testStatus = useMemo(() => {
+        if (progressPercent >= 100) {
+            return {
+                status: 'Completed',
+                progress: Math.round(progressPercent),
                 color: 'green'
             };
-        }
-
-        const totalDuration = endDate.getTime() - startDate.getTime();
-        const elapsed = now.getTime() - startDate.getTime();
-        
-        if (totalDuration <= 0) {
-            return { 
-                status: 'in-progress', 
-                progress: 0, 
-                label: t('In Progress'),
+        } else if (progressPercent >= 0) {
+            return {
+                status: 'In Progress',
+                progress: Math.round(progressPercent),
                 color: 'blue'
             };
+        } else {
+            return {
+                status: 'Not Started',
+                progress: 0,
+                color: 'red'
+            };
         }
-        
-        const progress = Math.min(Math.max((elapsed / totalDuration) * 100, 0), 100);
-
-        return { 
-            status: 'in-progress', 
-            progress: Math.round(progress), 
-            label: t('In Progress'),
-            color: 'blue'
-        };
-    };
-
-    const testStatus = getTestStatus();
+    }, [progressPercent, startDate, endDate]);
 
     // State for promotion type selection
     const [variantAPromotion, setVariantAPromotion] = useState('current');
@@ -233,14 +153,14 @@ const ABTestResultsDialog = ({
                         <h1 className="text-3xl font-black text-slate-900 dark:text-slate-100 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                             {t('AB Test Results')}
                         </h1>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 mr-5">
                             {!!abTest.published ? (
-                                <Badge color="green">Published</Badge>
+                                <Badge variant="green">Published</Badge>
                             ) : (
-                                <Badge color="red">Not Published</Badge>
+                                <Badge variant="red">Not Published</Badge>
                             )}
-                            <Badge color={testStatus.color}>
-                                {testStatus.label}
+                            <Badge variant={testStatus.color}>
+                                {testStatus.status}
                             </Badge>
                         </div>
                     </div>
@@ -400,9 +320,10 @@ const ABTestResultsDialog = ({
                                             {t('Test Progress')}
                                         </span>
                                         <span className={`text-lg font-black ${
-                                            testStatus.status === 'completed' ? 'text-green-600 dark:text-green-400' :
-                                            testStatus.status === 'in-progress' ? 'text-blue-600 dark:text-blue-400' :
-                                            'text-slate-600 dark:text-slate-400'
+                                            testStatus.status === 'Completed' ? 'text-green-600 dark:text-green-400' :
+                                            testStatus.status === 'In Progress' ? 'text-blue-600 dark:text-blue-400' :
+                                            testStatus.status === 'Not Started' ? 'text-slate-600 dark:text-slate-400' :
+                                            'text-red-600 dark:text-red-400'
                                         }`}>
                                             {testStatus.progress}%
                                         </span>
@@ -410,9 +331,10 @@ const ABTestResultsDialog = ({
                                     <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3 overflow-hidden">
                                         <div 
                                             className={`h-3 rounded-full transition-all duration-500 shadow-sm ${
-                                                testStatus.status === 'completed' ? 'bg-gradient-to-r from-green-500 to-emerald-600' :
-                                                testStatus.status === 'in-progress' ? 'bg-gradient-to-r from-blue-500 to-indigo-600' :
-                                                'bg-slate-400 dark:bg-slate-500'
+                                                testStatus.status === 'Completed' ? 'bg-gradient-to-r from-green-500 to-emerald-600' :
+                                                testStatus.status === 'In Progress' ? 'bg-gradient-to-r from-blue-500 to-indigo-600' :
+                                                testStatus.status === 'Not Started' ? 'bg-gradient-to-r from-slate-400 to-slate-500' :
+                                                'bg-red-500 dark:bg-red-500'
                                             }`}
                                             style={{ width: `${testStatus.progress}%` }}
                                         ></div>
@@ -444,7 +366,7 @@ const ABTestResultsDialog = ({
                                             {t('Start Date')}
                                         </p>
                                         <p className="text-base font-bold text-slate-900 dark:text-slate-100">
-                                            {formatDate(abTest.startDate)}
+                                            {abTest.startDate}
                                         </p>
                                     </div>
 
@@ -453,7 +375,7 @@ const ABTestResultsDialog = ({
                                             {t('End Date')}
                                         </p>
                                         <p className="text-base font-bold text-slate-900 dark:text-slate-100">
-                                            {formatDate(abTest.endDate)}
+                                            {abTest.endDate}
                                         </p>
                                     </div>
                                 </div>
