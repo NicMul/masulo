@@ -10,6 +10,7 @@ import { ViewContext, Animate, Card, Button, Table, useAPI } from 'components/li
 import { useMutation } from 'components/hooks/mutation';
 import { ABTestConfigurationDialog } from 'components/ab-test/ABTestConfigurationDialog';
 import { DeleteABTestDialog } from 'components/ab-test/DeleteABTestDialog';
+import { ABTestResultsDialog } from 'components/ab-test/ABTestResultsDialog';
 
 export function ABTesting({ t }) {
   // context
@@ -28,6 +29,8 @@ export function ABTesting({ t }) {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [abTestToDelete, setAbTestToDelete] = useState(null);
+  const [showResultsDialog, setShowResultsDialog] = useState(false);
+  const [abTestForResults, setAbTestForResults] = useState(null);
 
   // fetch AB tests data
   const res = useAPI('/api/ab-test', 'get', refreshTrigger);
@@ -175,8 +178,19 @@ export function ABTesting({ t }) {
     }
   }, [abTestToDelete, viewContext, deleteABTestMutation]);
 
+  // Handle view results AB test
+  const handleViewResults = useCallback((abTest) => {
+    setAbTestForResults(abTest);
+    setShowResultsDialog(true);
+  }, []);
+
   // Table actions
   const actions = [
+    {
+      label: 'View Results',
+      icon: 'chart-line',
+      action: ({ row }) => handleViewResults(row)
+    },
     {
       label: 'Edit',
       icon: 'pencil',
@@ -252,6 +266,17 @@ export function ABTesting({ t }) {
         }}
         onConfirm={confirmDeleteABTest}
         abTestName={abTestToDelete?.name || ''}
+        t={t}
+      />
+
+      {/* AB Test Results Dialog */}
+      <ABTestResultsDialog
+        isOpen={showResultsDialog}
+        onClose={() => {
+          setShowResultsDialog(false);
+          setAbTestForResults(null);
+        }}
+        abTest={abTestForResults}
         t={t}
       />
     </Animate>
