@@ -204,6 +204,7 @@ export function ABTesting({ t }) {
           </div>
           <Button
             icon='plus'
+            color='green'
             text={t('ab_testing.create_test')}
             onClick={handleCreateABTest}
             disabled={isLoading}
