@@ -61,7 +61,28 @@ export function ABTestConfigurationDialog({
   const [isFormValid, setIsFormValid] = useState(false);
   const [selectedGame, setSelectedGame] = useState(null);
   const [initialData, setInitialData] = useState(null);
+  const [variantAssets, setVariantAssets] = useState({
+    imageVariantA: '',
+    videoVariantA: '',
+    imageVariantB: '',
+    videoVariantB: ''
+  });
+  const [isGenerating, setIsGenerating] = useState(false);
   const formRef = useRef(null);
+
+  // Reset variant assets when dialog closes
+  useEffect(() => {
+    if (!open) {
+      setVariantAssets({
+        imageVariantA: '',
+        videoVariantA: '',
+        imageVariantB: '',
+        videoVariantB: ''
+      });
+      setSelectedGame(null);
+      setInitialData(null);
+    }
+  }, [open]);
 
   // Fetch groups for backward compatibility conversion
   const groupsRes = useAPI('/api/group');
@@ -86,6 +107,19 @@ export function ABTestConfigurationDialog({
         }
         // If it's already a cmsGroupId, it will remain unchanged
       }
+      
+      // Set the selected game for the asset creator
+      if (abTest.selectedGame) {
+        setSelectedGame(abTest.selectedGame);
+      }
+
+      // Pre-populate variant assets if editing
+      setVariantAssets({
+        imageVariantA: abTest.imageVariantA || '',
+        videoVariantA: abTest.videoVariantA || '',
+        imageVariantB: abTest.imageVariantB || '',
+        videoVariantB: abTest.videoVariantB || ''
+      });
       
       setInitialData({
         name: abTest.name || '',
@@ -116,14 +150,20 @@ export function ABTestConfigurationDialog({
 
   // Handle validated form submission
   const handleValidatedSubmit = useCallback((data) => {
+    // Merge form data with variant assets
+    const completeData = {
+      ...data,
+      ...variantAssets
+    };
+    
     // Log to console
-    console.log('AB Test Form Data:', data);
+    console.log('AB Test Form Data:', completeData);
     
     // Call onSubmit if provided
     if (onSubmit) {
-      onSubmit(data);
+      onSubmit(completeData);
     }
-  }, [onSubmit]);
+  }, [onSubmit, variantAssets]);
 
   // Handle submit button click
   const handleSubmit = useCallback(() => {
@@ -137,10 +177,18 @@ export function ABTestConfigurationDialog({
     onClose();
   }, [onClose]);
 
+  // Handle dialog close with confirmation
+  const handleDialogClose = useCallback(() => {
+    const confirmClose = window.confirm('Are you sure you want to close? Any unsaved data will be lost.');
+    if (confirmClose) {
+      onClose();
+    }
+  }, [onClose]);
+
   return (
     <Dialog
       open={open}
-      onClose={handleCancel}
+      onClose={handleDialogClose}
       title={abTest ? 'Edit AB Test' : 'Create AB Test'}
       className="max-w-[90vw] w-full max-h-[90vh] overflow-hidden"
     >
@@ -154,6 +202,8 @@ export function ABTestConfigurationDialog({
               onValidatedSubmit={handleValidatedSubmit}
               onValidationChange={handleValidationChange}
               onGameChange={handleGameChange}
+              isGenerating={isGenerating}
+              variantAssets={variantAssets}
             />
           </div>
 
@@ -161,7 +211,18 @@ export function ABTestConfigurationDialog({
           <div className="w-[60%] flex flex-col min-h-0 overflow-hidden">
             {/* Asset Creator - Always Show Tabs */}
             <div className="flex-1 min-h-0 overflow-hidden">
-              <ABTestAssetCreator selectedGame={selectedGame} />
+              <ABTestAssetCreator 
+                selectedGame={selectedGame} 
+                onVariantsChange={setVariantAssets}
+                existingVariants={abTest ? {
+                  imageVariantA: abTest.imageVariantA,
+                  videoVariantA: abTest.videoVariantA,
+                  imageVariantB: abTest.imageVariantB,
+                  videoVariantB: abTest.videoVariantB
+                } : null}
+                onGenerating={setIsGenerating}
+                isGenerating={isGenerating}
+              />
             </div>
           </div>
         </div>
@@ -175,10 +236,12 @@ export function ABTestConfigurationDialog({
           />
           <Button
             color="green"
-            text={abTest ? 'Save AB Test' : 'Create AB Test'}
+            text={isGenerating ? 'Generating Assets' : (abTest ? 'Save AB Test' : 'Create AB Test')}
             onClick={handleSubmit}
-            icon="check"
-            disabled={!isFormValid}
+            icon={isGenerating ? undefined : "check"}
+            loading={isGenerating}
+            disabled={!isFormValid || isGenerating}
+            className="whitespace-nowrap"
           />
         </div>
       </div>

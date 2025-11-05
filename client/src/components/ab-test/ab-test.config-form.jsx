@@ -15,8 +15,13 @@ export const ABTestConfigForm = forwardRef(({
   initialData = null,
   onValidatedSubmit,
   onValidationChange,
-  onGameChange
+  onGameChange,
+  isGenerating = false,
+  variantAssets = null
 }, ref) => {
+  // Determine if we're editing based on initialData
+  const isEditing = initialData !== null;
+
   // Internal state management
   const [formData, setFormData] = useState({
     name: '',
@@ -133,6 +138,15 @@ export const ABTestConfigForm = forwardRef(({
         return false;
       }
       
+      // Check if all variant assets are present (both image and video for variants A and B)
+      if (!variantAssets || 
+          !variantAssets.imageVariantA || 
+          !variantAssets.videoVariantA || 
+          !variantAssets.imageVariantB || 
+          !variantAssets.videoVariantB) {
+        return false;
+      }
+      
       return true;
     };
     
@@ -140,7 +154,7 @@ export const ABTestConfigForm = forwardRef(({
     if (onValidationChange) {
       onValidationChange(isValid);
     }
-  }, [formData, onValidationChange]);
+  }, [formData, variantAssets, onValidationChange]);
 
   // Expose submit method via ref
   useImperativeHandle(ref, () => ({
@@ -188,7 +202,7 @@ export const ABTestConfigForm = forwardRef(({
   }, [hasMissingAssets, formData.published, handleChange]);
 
   return (
-    <div className="flex flex-col h-full bg-gradient-to-br from-slate-200 to-blue-50 rounded-md">
+    <div className="flex flex-col h-full bg-gradient-to-br from-slate-50 to-blue-10 rounded-md">
       {/* Scrollable Content */}
       <div className="relative flex-1 overflow-hidden px-6 py-6">
         <div 
@@ -480,19 +494,21 @@ export const ABTestConfigForm = forwardRef(({
                 <div className="space-y-2">
                   <label className="flex items-center text-sm font-semibold text-gray-700">
                     <span className="flex items-center">
-                      Select Game
+                      {isEditing ? 'Selected Game (Cannot be changed)' : 'Select Game'}
                       <span className="ml-1 text-red-500">*</span>
                     </span>
                   </label>
                   <div className={cn(
                     "rounded-xl border-2 min-h-[300px] transition-all duration-200",
-                    hasGamesError ? "border-red-300 bg-red-50" : "border-gray-200 bg-gray-50"
+                    hasGamesError ? "border-red-300 bg-red-50" : "border-gray-200 bg-gray-50",
+                    (isEditing || isGenerating) && "opacity-75"
                   )}>
                     <div className="p-4 h-full">
                       <ABTestGameSelector
                         games={games}
                         selectedGame={formData.selectedGame}
                         onSelectionChange={handleGameSelectionChange}
+                        disabled={isEditing || isGenerating}
                       />
                     </div>
                   </div>

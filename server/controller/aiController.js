@@ -68,7 +68,8 @@ exports.process = async function(req, res){
     assetType: joi.string().allow(''),
     gameId: joi.string().required(),
     generateImage: joi.boolean().required(),
-    generateVideo: joi.boolean().required()
+    generateVideo: joi.boolean().required(),
+    variant: joi.string().allow('').optional()
 
   }), req, res); 
 
@@ -88,7 +89,8 @@ exports.process = async function(req, res){
           req.account, 
           data.gameId,
           data.generateImage,
-          data.generateVideo
+          data.generateVideo,
+          data.variant
       );
       return res.status(200).send({ data: imageAndVideoData });
   } catch (error) {

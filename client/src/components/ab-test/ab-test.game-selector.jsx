@@ -4,7 +4,8 @@ import { Input, Icon, cn } from 'components/lib';
 const ABTestGameSelector = ({ 
   games = [], 
   selectedGame = null,
-  onSelectionChange
+  onSelectionChange,
+  disabled = false
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -49,6 +50,7 @@ const ABTestGameSelector = ({
 
   // Handle input change
   const handleInputChange = (event) => {
+    if (disabled) return;
     const value = event.target.value;
     setSearchQuery(value);
     setIsDropdownOpen(value.length > 0);
@@ -56,6 +58,7 @@ const ABTestGameSelector = ({
 
   // Handle input focus
   const handleInputFocus = () => {
+    if (disabled) return;
     if (searchQuery.length > 0) {
       setIsDropdownOpen(true);
     }
@@ -121,8 +124,9 @@ const ABTestGameSelector = ({
             onChange={handleInputChange}
             onFocus={handleInputFocus}
             onKeyDown={handleKeyDown}
-            placeholder="Search games by ID, CMS ID, or Name..."
+            placeholder={disabled ? "Game selection locked for editing" : "Search games by ID, CMS ID, or Name..."}
             className="w-full pl-10 pr-4"
+            disabled={disabled}
           />
           <Icon
             name="search"
@@ -211,7 +215,7 @@ const ABTestGameSelector = ({
             <div 
               className={cn(
                 "flex items-center gap-3 p-3 rounded-lg",
-                "bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700"
+                "bg-slate-200 dark:bg-slate-800 border border-slate-200 dark:border-slate-700"
               )}
             >
               <img 
@@ -232,17 +236,19 @@ const ABTestGameSelector = ({
                   CMS ID: {selectedGame.cmsId}
                 </div>
               </div>
-              <button
-                onClick={() => onSelectionChange && onSelectionChange(null)}
-                className={cn(
-                  'p-2 rounded-md',
-                  'text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20',
-                  'transition-colors duration-150'
-                )}
-                aria-label="Clear selection"
-              >
-                <Icon name="x" size={18} />
-              </button>
+              {!disabled && (
+                <button
+                  onClick={() => onSelectionChange && onSelectionChange(null)}
+                  className={cn(
+                    'p-2 rounded-md',
+                    'text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20',
+                    'transition-colors duration-150'
+                  )}
+                  aria-label="Clear selection"
+                >
+                  <Icon name="x" size={18} />
+                </button>
+              )}
             </div>
           </div>
         ) : (

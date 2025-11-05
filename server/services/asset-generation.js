@@ -2,13 +2,14 @@ const { generateOriginalAsset } = require('./generate-original-asset');
 const { generateCurrentAsset } = require('./generate-current-asset');
 const { generateThemeAsset } = require('./generate-theme-asset');
 const { generatePromoAsset } = require('./generate-promo-asset');
+const { generateAbTestAsset } = require('./generate-ab-test-asset');
 
 
 
-async function generateImageAndVideoWithPrompt(imageUrl, imagePrompt = '', videoPrompt = '', theme = 'default', assetType = 'original', userId = null, accountId = null, gameId = null, generateImage = null, generateVideo = null) {
+async function generateImageAndVideoWithPrompt(imageUrl, imagePrompt = '', videoPrompt = '', theme = 'default', assetType = 'original', userId = null, accountId = null, gameId = null, generateImage = null, generateVideo = null, variant = null) {
 
     console.log('🎨 Generating AI image and video...');
-    console.log('📋 Parameters:', { imageUrl, imagePrompt, videoPrompt, theme, assetType, userId, accountId, gameId });
+    console.log('📋 Parameters:', { imageUrl, imagePrompt, videoPrompt, theme, assetType, userId, accountId, gameId, variant });
     
     // Validate required parameters
     if (!imageUrl || imageUrl.trim() === '') {
@@ -58,6 +59,18 @@ async function generateImageAndVideoWithPrompt(imageUrl, imagePrompt = '', video
         gameId,
         generateImage,
         generateVideo
+      });
+    } else if (assetType === 'ab-test') {
+      return await generateAbTestAsset({
+        imageUrl,
+        imagePrompt,
+        videoPrompt,
+        userId,
+        accountId,
+        gameId,
+        generateImage,
+        generateVideo,
+        variant
       });
     } else if (assetType === 'promo') {
       return await generatePromoAsset({
