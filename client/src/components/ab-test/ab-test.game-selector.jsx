@@ -1,57 +1,18 @@
 import { useState, useEffect, useRef } from 'react';
-import { Input, Icon, cn, useNavigate } from 'components/lib';
+import { Input, Icon, cn } from 'components/lib';
 
 const ABTestGameSelector = ({ 
   games = [], 
-  selectedGame: propSelectedGame = null,
-  onSelectionChange,
-  onClose
+  selectedGame = null,
+  onSelectionChange
 }) => {
-  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [filteredGames, setFilteredGames] = useState([]);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
-  const [selectedGame, setSelectedGame] = useState(null);
   
   const inputRef = useRef(null);
   const dropdownRef = useRef(null);
-  const isInternalUpdateRef = useRef(false);
-
-  // Initialize: Set selected game from prop
-  useEffect(() => {
-    if (isInternalUpdateRef.current) {
-      isInternalUpdateRef.current = false;
-      return;
-    }
-
-    if (propSelectedGame) {
-      // If propSelectedGame is an ID, find the game object
-      if (typeof propSelectedGame === 'number' || typeof propSelectedGame === 'string') {
-        const gameObj = games.find(g => g.id === propSelectedGame);
-        setSelectedGame(gameObj || null);
-      } else {
-        // If it's already a game object
-        setSelectedGame(propSelectedGame);
-      }
-    } else {
-      setSelectedGame(null);
-    }
-  }, [propSelectedGame, games]);
-
-  // Sync with parent: Call onSelectionChange when selection changes
-  useEffect(() => {
-    if (!onSelectionChange || isInternalUpdateRef.current) return;
-    
-    const currentId = selectedGame?.id || null;
-    const propId = typeof propSelectedGame === 'object' ? propSelectedGame?.id : propSelectedGame;
-    
-    // Only call onSelectionChange if ID actually differs from prop
-    if (currentId !== propId) {
-      isInternalUpdateRef.current = true;
-      onSelectionChange(currentId);
-    }
-  }, [selectedGame, onSelectionChange, propSelectedGame]);
 
   // Filter games based on search query
   useEffect(() => {
@@ -75,7 +36,9 @@ const ABTestGameSelector = ({
 
   // Handle game selection
   const handleGameSelect = (game) => {
-    setSelectedGame(game);
+    if (onSelectionChange) {
+      onSelectionChange(game.id);
+    }
     setSearchQuery('');
     setIsDropdownOpen(false);
     setHighlightedIndex(-1);
@@ -270,7 +233,7 @@ const ABTestGameSelector = ({
                 </div>
               </div>
               <button
-                onClick={() => setSelectedGame(null)}
+                onClick={() => onSelectionChange && onSelectionChange(null)}
                 className={cn(
                   'p-2 rounded-md',
                   'text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20',

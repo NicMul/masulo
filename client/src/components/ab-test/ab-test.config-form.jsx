@@ -3,23 +3,74 @@
 *   AB TEST CONFIGURATION FORM
 *   Custom form component for creating/editing AB tests with grouped sections
 *   Enhanced with beautiful styling and modern UI design matching GameCreateForm
+*   Self-contained with internal state management, validation, and game fetching
 *
 **********/
 
-import { useEffect } from 'react';
-import { cn, GroupSelect, Switch } from 'components/lib';
+import { useState, useEffect, useCallback, useImperativeHandle, forwardRef } from 'react';
+import { cn, GroupSelect, Switch, useAPI } from 'components/lib';
 import ABTestGameSelector from './ab-test.game-selector';
 
-export function ABTestConfigForm({ 
-  formData,
-  onChange,
-  selectedGames = [],
-  games = [],
-  formRef,
-  hasMissingAssets = false,
-  onGameSelectionChange
-}) {
+export const ABTestConfigForm = forwardRef(({ 
+  initialData = null,
+  onValidatedSubmit,
+  onValidationChange,
+  onGameChange
+}, ref) => {
+  // Internal state management
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+    group: '',
+    startDate: '',
+    endDate: '',
+    startTime: '',
+    endTime: '',
+    approvedBy: '',
+    published: false,
+    selectedGame: null
+  });
+  const [hasMissingAssets, setHasMissingAssets] = useState(false);
 
+  // Fetch games internally
+  const gamesRes = useAPI('/api/game');
+  const games = gamesRes.data || [];
+
+  // Initialize form data from initialData prop
+  useEffect(() => {
+    if (initialData) {
+      setFormData({
+        name: initialData.name || '',
+        description: initialData.description || '',
+        group: initialData.group || '',
+        startDate: initialData.startDate || '',
+        endDate: initialData.endDate || '',
+        startTime: initialData.startTime || '',
+        endTime: initialData.endTime || '',
+        approvedBy: initialData.approvedBy || '',
+        published: initialData.published || false,
+        selectedGame: initialData.selectedGame || null
+      });
+    }
+  }, [initialData]);
+
+  // Handle form field changes
+  const handleChange = useCallback((field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  }, []);
+
+  // Handle game selection change
+  const handleGameSelectionChange = useCallback((gameId) => {
+    if (gameId) {
+      const game = games.find(g => g.id === gameId);
+      handleChange('selectedGame', game || null);
+    } else {
+      handleChange('selectedGame', null);
+    }
+  }, [games, handleChange]);
 
   // Validation helpers
   const hasError = (field) => {
@@ -50,15 +101,91 @@ export function ABTestConfigForm({
     return false;
   };
 
-  const gamesArray = Array.isArray(selectedGames) ? selectedGames : [];
-  const hasGamesError = gamesArray.length === 0;
+  const hasGamesError = !formData.selectedGame;
+
+  // Watch for selectedGame changes and notify parent
+  useEffect(() => {
+    if (onGameChange) {
+        console.log('Game changed to:', formData.selectedGame);
+      onGameChange(formData.selectedGame);
+    }
+  }, [formData.selectedGame, onGameChange]);
+
+  // Validate form and notify parent
+  useEffect(() => {
+    const validateForm = () => {
+      const { name, description, group, startDate, endDate, startTime, endTime, selectedGame } = formData;
+      
+      // Check if required fields are filled
+      if (!name || !description || !group || !startDate || !endDate || !startTime || !endTime) {
+        return false;
+      }
+      
+      // Check if endDateTime is after startDateTime
+      const startDateTime = new Date(`${startDate}T${startTime}`);
+      const endDateTime = new Date(`${endDate}T${endTime}`);
+      if (endDateTime <= startDateTime) {
+        return false;
+      }
+      
+      // Check if a game is selected
+      if (!selectedGame) {
+        return false;
+      }
+      
+      return true;
+    };
+    
+    const isValid = validateForm();
+    if (onValidationChange) {
+      onValidationChange(isValid);
+    }
+  }, [formData, onValidationChange]);
+
+  // Expose submit method via ref
+  useImperativeHandle(ref, () => ({
+    submit: () => {
+      if (!onValidatedSubmit) return;
+
+      // Prepare game data
+      const gameData = formData.selectedGame ? {
+        gameCmsId: formData.selectedGame.cmsId,
+        friendlyName: formData.selectedGame.friendlyName,
+        promoImage: formData.selectedGame.promoImage,
+        promoVideo: formData.selectedGame.promoVideo
+      } : null;
+
+      // Force published=false if there are missing assets
+      const published = hasMissingAssets ? false : formData.published;
+
+      // Combine date and time into DateTime objects
+      const startDateTime = new Date(`${formData.startDate}T${formData.startTime}`);
+      const endDateTime = new Date(`${formData.endDate}T${formData.endTime}`);
+
+      const data = {
+        name: formData.name.trim(),
+        description: formData.description.trim(),
+        group: formData.group.trim(),
+        startDate: formData.startDate,
+        endDate: formData.endDate,
+        startTime: startDateTime.toISOString(),
+        endTime: endDateTime.toISOString(),
+        games: gameData ? [gameData] : [],
+        approvedBy: formData.approvedBy.trim(),
+        published: published,
+        selectedGame: formData.selectedGame
+      };
+
+      onValidatedSubmit(data);
+    }
+  }), [formData, hasMissingAssets, onValidatedSubmit]);
 
   // If hasMissingAssets is true and published is true, set published to false
   useEffect(() => {
     if (hasMissingAssets && formData.published) {
-      onChange('published', false);
+      handleChange('published', false);
     }
-  }, [hasMissingAssets, formData.published, onChange]);
+  }, [hasMissingAssets, formData.published, handleChange]);
 
   return (
     <div className="flex flex-col h-full bg-gradient-to-br from-slate-200 to-blue-50 rounded-md">
@@ -67,7 +194,7 @@ export function ABTestConfigForm({
         <div 
           className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-blue-300 scrollbar-track-blue-50 hover:scrollbar-thumb-blue-400 pr-2"
         >
-          <form ref={formRef} className="space-y-6 pb-8">
+          <form className="space-y-6 pb-8">
             
             {/* Basic Information Section - Enhanced Card */}
             <div className="bg-white rounded-md shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all duration-300">
@@ -89,7 +216,7 @@ export function ABTestConfigForm({
                         if (hasMissingAssets && e.target.value) {
                           return;
                         }
-                        onChange('published', e.target.value);
+                        handleChange('published', e.target.value);
                       }}
                       disabled={hasMissingAssets}
                       className="data-[state=checked]:!bg-green-500 dark:data-[state=checked]:!bg-green-600"
@@ -111,7 +238,7 @@ export function ABTestConfigForm({
                       name="name"
                       type="text"
                       value={formData.name || ''}
-                      onChange={(e) => onChange('name', e.target.value)}
+                      onChange={(e) => handleChange('name', e.target.value)}
                       className={cn(
                         "w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200",
                         hasError('name') ? "border-red-300 bg-red-50" : "border-gray-200 bg-gray-50 hover:bg-white hover:border-blue-300"
@@ -140,7 +267,7 @@ export function ABTestConfigForm({
                     <textarea
                       name="description"
                       value={formData.description || ''}
-                      onChange={(e) => onChange('description', e.target.value)}
+                      onChange={(e) => handleChange('description', e.target.value)}
                       rows={4}
                       className={cn(
                         "w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200",
@@ -170,7 +297,7 @@ export function ABTestConfigForm({
                     <GroupSelect
                       name="group"
                       value={formData.group || ''}
-                      onChange={(e) => onChange('group', e.target.value)}
+                      onChange={(e) => handleChange('group', e.target.value)}
                       error={hasError('group')}
                       valueType="cmsGroupId"
                       className={cn(
@@ -215,7 +342,7 @@ export function ABTestConfigForm({
                       name="startDate"
                       type="date"
                       value={formData.startDate || ''}
-                      onChange={(e) => onChange('startDate', e.target.value)}
+                      onChange={(e) => handleChange('startDate', e.target.value)}
                       className={cn(
                         "w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200",
                         hasError('startDate') ? "border-red-300 bg-red-50" : "border-gray-200 bg-gray-50 hover:bg-white hover:border-blue-300"
@@ -244,7 +371,7 @@ export function ABTestConfigForm({
                       name="endDate"
                       type="date"
                       value={formData.endDate || ''}
-                      onChange={(e) => onChange('endDate', e.target.value)}
+                      onChange={(e) => handleChange('endDate', e.target.value)}
                       className={cn(
                         "w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200",
                         hasError('endDate') ? "border-red-300 bg-red-50" : "border-gray-200 bg-gray-50 hover:bg-white hover:border-blue-300"
@@ -281,7 +408,7 @@ export function ABTestConfigForm({
                       name="startTime"
                       type="time"
                       value={formData.startTime || ''}
-                      onChange={(e) => onChange('startTime', e.target.value)}
+                      onChange={(e) => handleChange('startTime', e.target.value)}
                       className={cn(
                         "w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200",
                         hasError('startTime') ? "border-red-300 bg-red-50" : "border-gray-200 bg-gray-50 hover:bg-white hover:border-blue-300"
@@ -310,7 +437,7 @@ export function ABTestConfigForm({
                       name="endTime"
                       type="time"
                       value={formData.endTime || ''}
-                      onChange={(e) => onChange('endTime', e.target.value)}
+                      onChange={(e) => handleChange('endTime', e.target.value)}
                       className={cn(
                         "w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200",
                         hasError('endTime') ? "border-red-300 bg-red-50" : "border-gray-200 bg-gray-50 hover:bg-white hover:border-blue-300"
@@ -364,12 +491,8 @@ export function ABTestConfigForm({
                     <div className="p-4 h-full">
                       <ABTestGameSelector
                         games={games}
-                        selectedGame={gamesArray.length > 0 ? gamesArray[0] : null}
-                        onSelectionChange={(gameId) => {
-                          if (onGameSelectionChange) {
-                            onGameSelectionChange(gameId ? [gameId] : []);
-                          }
-                        }}
+                        selectedGame={formData.selectedGame}
+                        onSelectionChange={handleGameSelectionChange}
                       />
                     </div>
                   </div>
@@ -406,7 +529,7 @@ export function ABTestConfigForm({
                       name="approvedBy"
                       type="text"
                       value={formData.approvedBy || ''}
-                      onChange={(e) => onChange('approvedBy', e.target.value)}
+                      onChange={(e) => handleChange('approvedBy', e.target.value)}
                       className={cn(
                         "w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200",
                         "border-gray-200 bg-gray-50 hover:bg-white hover:border-blue-300"
@@ -426,7 +549,7 @@ export function ABTestConfigForm({
                           name="published"
                           value={formData.published}
                           label={formData.published ? 'Published' : 'Unpublished'}
-                          onChange={(e) => onChange('published', e.target.value)}
+                          onChange={(e) => handleChange('published', e.target.value)}
                           className="data-[state=checked]:!bg-green-500 dark:data-[state=checked]:!bg-green-600"
                         />
                       </div>
@@ -440,5 +563,6 @@ export function ABTestConfigForm({
       </div>
     </div>
   );
-}
+});
 
+ABTestConfigForm.displayName = 'ABTestConfigForm';

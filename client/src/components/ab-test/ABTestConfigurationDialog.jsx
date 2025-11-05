@@ -2,13 +2,13 @@
 *
 *   AB TEST CONFIGURATION DIALOG
 *   A combined dialog for creating/editing AB tests with form on left and games selection on right
+*   Simplified to delegate state management to the form component
 *
 **********/
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { Dialog, Button, useAPI } from 'components/lib';
 import { ABTestConfigForm } from './ab-test.config-form';
-import ABTestGameSelector from './ab-test.game-selector';
 import { ABTestAssetCreator } from './ab-test.asset-creator';
 
 // UTILITY: Function to format dates for HTML input type="date" (YYYY-MM-DD format)
@@ -55,34 +55,18 @@ const formatTimeForInput = (dateString) => {
 export function ABTestConfigurationDialog({ 
   open,
   onClose,
-  games = [], 
-  selectedGames = [], 
-  setSelectedGames,
   abTest = null, // null for create, object for edit
-  t,
   onSubmit
 }) {
-  const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    group: '',
-    startDate: '',
-    endDate: '',
-    startTime: '',
-    endTime: '',
-    approvedBy: '',
-    published: false
-  });
   const [isFormValid, setIsFormValid] = useState(false);
-  const [hasMissingAssets, setHasMissingAssets] = useState(false);
-  const [gamesWithMissingAssets, setGamesWithMissingAssets] = useState([]);
   const [selectedGame, setSelectedGame] = useState(null);
+  const [initialData, setInitialData] = useState(null);
   const formRef = useRef(null);
 
   // Fetch groups for backward compatibility conversion
   const groupsRes = useAPI('/api/group');
 
-  // Initialize form data when abTest changes
+  // Prepare initial data when abTest changes
   useEffect(() => {
     if (abTest) {
       const formattedStartDate = formatDateForInput(abTest.startDate);
@@ -103,7 +87,7 @@ export function ABTestConfigurationDialog({
         // If it's already a cmsGroupId, it will remain unchanged
       }
       
-      setFormData({
+      setInitialData({
         name: abTest.name || '',
         description: abTest.description || '',
         group: groupValue,
@@ -112,122 +96,41 @@ export function ABTestConfigurationDialog({
         startTime: formattedStartTime,
         endTime: formattedEndTime,
         approvedBy: abTest.approvedBy || '',
-        published: abTest.published || false
+        published: abTest.published || false,
+        selectedGame: abTest.selectedGame || null
       });
     } else {
-      setFormData({
-        name: '',
-        description: '',
-        group: '',
-        startDate: '',
-        endDate: '',
-        startTime: '',
-        endTime: '',
-        approvedBy: '',
-        published: false
-      });
+      setInitialData(null);
     }
-    // Reset missing assets state when abTest changes
-    setHasMissingAssets(false);
-    setGamesWithMissingAssets([]);
   }, [abTest, groupsRes.data]);
 
-  // Validate form whenever form data changes
-  useEffect(() => {
-    const validateForm = () => {
-      const { name, description, group, startDate, endDate, startTime, endTime } = formData;
-      
-      // Check if required fields are filled
-      if (!name || !description || !group || !startDate || !endDate || !startTime || !endTime) {
-        return false;
-      }
-      
-      // Check if endDateTime is after startDateTime
-      const startDateTime = new Date(`${startDate}T${startTime}`);
-      const endDateTime = new Date(`${endDate}T${endTime}`);
-      if (endDateTime <= startDateTime) {
-        return false;
-      }
-      
-      // Check if at least one game is selected - ensure selectedGames is an array
-      const gamesArray = Array.isArray(selectedGames) ? selectedGames : [];
-      if (gamesArray.length === 0) {
-        return false;
-      }
-      
-      return true;
-    };
-    
-    setIsFormValid(validateForm());
-  }, [formData, selectedGames]);
-
-  // Handle form field changes
-  const handleFormChange = useCallback((field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
+  // Handle validation change from form
+  const handleValidationChange = useCallback((isValid) => {
+    setIsFormValid(isValid);
   }, []);
 
-  // Handle form submission - log to console instead of API call
-  const handleSubmit = useCallback(() => {
-    if (!isFormValid) {
-      return;
-    }
+  // Handle game change from form
+  const handleGameChange = useCallback((game) => {
+    setSelectedGame(game);
+  }, []);
+
+  // Handle validated form submission
+  const handleValidatedSubmit = useCallback((data) => {
+    // Log to console
+    console.log('AB Test Form Data:', data);
     
-    // Ensure selectedGames is always an array
-    const gamesArray = Array.isArray(selectedGames) ? selectedGames : [];
-    
-    // Transform selected game IDs to the new format with gameCmsId, friendlyName, promoImage, promoVideo
-    const gamesData = gamesArray.map(gameId => {
-      const game = games.find(g => g.id === gameId);
-      if (!game) {
-        // Fallback only if game not found (shouldn't happen in normal flow)
-        return {
-          gameCmsId: gameId,
-          friendlyName: '',
-          promoImage: '',
-          promoVideo: ''
-        };
-      }
-      return {
-        gameCmsId: game.cmsId,
-        friendlyName: game.friendlyName,
-        promoImage: game.promoImage,
-        promoVideo: game.promoVideo
-      };
-    });
-    
-    // Force published=false if there are missing assets
-    const published = hasMissingAssets ? false : formData.published;
-    
-    // Combine date and time into DateTime objects
-    const startDateTime = new Date(`${formData.startDate}T${formData.startTime}`);
-    const endDateTime = new Date(`${formData.endDate}T${formData.endTime}`);
-    
-    const data = {
-      name: formData.name.trim(),
-      description: formData.description.trim(),
-      group: formData.group.trim(),
-      startDate: formData.startDate,
-      endDate: formData.endDate,
-      startTime: startDateTime.toISOString(),
-      endTime: endDateTime.toISOString(),
-      games: gamesData,
-      approvedBy: formData.approvedBy.trim(),
-      published: published
-    };
-    
-    // Log to console instead of API call
-    console.log('AB Test Form Data:', formData);
-    console.log('Selected Games:', gamesArray);
-    console.log('Combined AB Test Data:', data);
-    
-    // Call onSubmit if provided (for future use)
+    // Call onSubmit if provided
     if (onSubmit) {
       onSubmit(data);
     }
-  }, [formData, selectedGames, games, hasMissingAssets, isFormValid, onSubmit]);
+  }, [onSubmit]);
+
+  // Handle submit button click
+  const handleSubmit = useCallback(() => {
+    if (formRef.current && isFormValid) {
+      formRef.current.submit();
+    }
+  }, [isFormValid]);
 
   // Handle cancel
   const handleCancel = useCallback(() => {
@@ -246,14 +149,11 @@ export function ABTestConfigurationDialog({
           {/* Left side - Form */}
           <div className="w-[40%] min-w-0 flex flex-col">
             <ABTestConfigForm
-              formData={formData}
-              onChange={handleFormChange}
-              selectedGames={selectedGames}
-              games={games}
-              t={t}
-              formRef={formRef}
-              hasMissingAssets={hasMissingAssets}
-              onGameSelectionChange={setSelectedGames}
+              ref={formRef}
+              initialData={initialData}
+              onValidatedSubmit={handleValidatedSubmit}
+              onValidationChange={handleValidationChange}
+              onGameChange={handleGameChange}
             />
           </div>
 
@@ -261,7 +161,7 @@ export function ABTestConfigurationDialog({
           <div className="w-[60%] flex flex-col min-h-0 overflow-hidden">
             {/* Asset Creator - Always Show Tabs */}
             <div className="flex-1 min-h-0 overflow-hidden">
-              <ABTestAssetCreator selectedGame={{ id: 'test-game', friendlyName: 'Test Game' }} />
+              <ABTestAssetCreator selectedGame={selectedGame} />
             </div>
           </div>
         </div>

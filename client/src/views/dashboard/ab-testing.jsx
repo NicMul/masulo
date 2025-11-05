@@ -5,8 +5,8 @@
 *
 **********/
 
-import { useState, useContext, useEffect, useCallback } from 'react';
-import { ViewContext, Animate, Card, Button, useAPI } from 'components/lib';
+import { useState, useContext, useCallback } from 'react';
+import { ViewContext, Animate, Card, Button } from 'components/lib';
 import { ABTestConfigurationDialog } from 'components/ab-test/ABTestConfigurationDialog';
 
 export function ABTesting({ t }) {
@@ -15,25 +15,11 @@ export function ABTesting({ t }) {
 
   // state
   const [isLoading, setIsLoading] = useState(false);
-  const [games, setGames] = useState([]);
-  const [selectedGames, setSelectedGames] = useState([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [currentABTest, setCurrentABTest] = useState(null);
 
-  // fetch games data for form
-  const gamesRes = useAPI('/api/game');
-
-  // update state when data loads
-  useEffect(() => {
-    if (gamesRes.data) {
-      setGames(gamesRes.data);
-    }
-  }, [gamesRes.data]);
-
   // handle create A/B test
   const handleCreateABTest = () => {
-    // Reset selected games for new AB test
-    setSelectedGames([]);
     setCurrentABTest(null);
     setDialogOpen(true);
   };
@@ -124,11 +110,7 @@ export function ABTesting({ t }) {
       <ABTestConfigurationDialog
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
-        games={games}
-        selectedGames={selectedGames}
-        setSelectedGames={setSelectedGames}
         abTest={currentABTest}
-        t={t}
         onSubmit={handleFormSubmit}
       />
     </Animate>
