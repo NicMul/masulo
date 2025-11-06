@@ -6,25 +6,21 @@
 **********/
 
 import { useState, useContext, useCallback, useEffect } from 'react';
-import { ViewContext, Animate, Card, Button, Table, useAPI } from 'components/lib';
+import { ViewContext, Animate, Card, Button, Table, useAPI, useNavigate, useLocation } from 'components/lib';
 import { useMutation } from 'components/hooks/mutation';
-import { ABTestConfigurationDialog } from 'components/ab-test/ABTestConfigurationDialog';
 import { DeleteABTestDialog } from 'components/ab-test/DeleteABTestDialog';
 import { ABTestResultsDialog } from 'components/ab-test/ABTestResultsDialog';
 
 export function ABTesting({ t }) {
   // context
   const viewContext = useContext(ViewContext);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   // mutations
-  const createABTestMutation = useMutation('/api/ab-test', 'POST');
-  const updateABTestMutation = useMutation('/api/ab-test', 'PATCH');
   const deleteABTestMutation = useMutation('/api/ab-test', 'DELETE');
 
   // state
-  const [isLoading, setIsLoading] = useState(false);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [currentABTest, setCurrentABTest] = useState(null);
   const [abTests, setAbTests] = useState([]);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -37,6 +33,13 @@ export function ABTesting({ t }) {
   
   // fetch games data to map gameId to friendly name
   const gamesRes = useAPI('/api/game');
+
+  // Refresh data when navigating back from create/edit pages
+  useEffect(() => {
+    if (location.pathname === '/ab-testing') {
+      setRefreshTrigger(prev => prev + 1);
+    }
+  }, [location.pathname]);
 
   // update state when data loads and map game names
   useEffect(() => {
@@ -60,89 +63,15 @@ export function ABTesting({ t }) {
     }
   }, [res.data, gamesRes.data]);
 
-  // handle create A/B test
+  // handle create A/B test - navigate to create page
   const handleCreateABTest = () => {
-    setCurrentABTest(null);
-    setDialogOpen(true);
+    navigate('/ab-testing/create');
   };
 
-  // Handle form submission - create or update AB test via API
-  const handleFormSubmit = useCallback(async (formData) => {
-    try {
-      setIsLoading(true);
-
-      // Transform form data to match API expectations
-      const payload = {
-        name: formData.name,
-        description: formData.description,
-        group: formData.group,
-        startDate: formData.startDate,
-        endDate: formData.endDate,
-        startTime: formData.startTime,
-        endTime: formData.endTime,
-        gameId: formData.selectedGame?.id || '',
-        approvedBy: formData.approvedBy || '',
-        published: formData.published || false,
-        analyticsId: currentABTest?.analyticsId || '',  // preserve existing or empty string
-        imageVariantA: formData.imageVariantA || '',
-        videoVariantA: formData.videoVariantA || '',
-        imageVariantB: formData.imageVariantB || '',
-        videoVariantB: formData.videoVariantB || ''
-      };
-
-      const isEditing = currentABTest && currentABTest.id;
-
-      console.log(isEditing ? 'Updating AB Test with payload:' : 'Creating AB Test with payload:', payload);
-
-      // Make API call (create or update)
-      const result = isEditing 
-        ? await updateABTestMutation.execute(payload, `/api/ab-test/${currentABTest.id}`)
-        : await createABTestMutation.execute(payload);
-
-      if (result) {
-        // Close dialog
-        setDialogOpen(false);
-        
-        // Show success notification
-        viewContext.notification({
-          description: result.message || (isEditing ? 'AB Test updated successfully' : 'AB Test created successfully'),
-          variant: 'success'
-        });
-
-        // Refresh AB test list
-        setRefreshTrigger(prev => prev + 1);
-      } else {
-        // Show error notification
-        viewContext.notification({
-          description: isEditing ? 'Failed to update AB Test' : 'Failed to create AB Test',
-          variant: 'error'
-        });
-      }
-    } catch (error) {
-      console.error('Error saving AB test:', error);
-      viewContext.notification({
-        description: 'An error occurred while saving the AB Test',
-        variant: 'error'
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  }, [viewContext, createABTestMutation, updateABTestMutation, currentABTest]);
-
-  // Handle edit AB test
+  // Handle edit AB test - navigate to edit page
   const handleEditABTest = useCallback((abTest) => {
-    // Find the full game object from gamesRes
-    const gameObject = gamesRes.data?.find(game => game.id === abTest.gameId);
-    
-    // Prepare the AB test data with the full game object
-    const abTestWithGame = {
-      ...abTest,
-      selectedGame: gameObject || null
-    };
-    
-    setCurrentABTest(abTestWithGame);
-    setDialogOpen(true);
-  }, [gamesRes.data]);
+    navigate(`/ab-testing/edit/${abTest.id}`);
+  }, [navigate]);
 
   // Handle delete AB test - open confirmation dialog
   const handleDeleteABTest = useCallback((abTest) => {
@@ -208,20 +137,12 @@ export function ABTesting({ t }) {
       <div className='space-y-6'>
         {/* Header */}
         <div className='flex items-center justify-between'>
-          <div>
-            <h1 className='text-2xl font-bold text-slate-900 dark:text-slate-100'>
-              {t('ab_testing.title')}
-            </h1>
-            <p className='text-slate-600 dark:text-slate-400 mt-1'>
-              {t('ab_testing.description')}
-            </p>
-          </div>
+          <div/>
           <Button
             icon='plus'
             color='green'
             text={t('ab_testing.create_test')}
             onClick={handleCreateABTest}
-            disabled={isLoading}
           />
         </div>
 
@@ -248,14 +169,6 @@ export function ABTesting({ t }) {
           />
         </Card>
       </div>
-
-      {/* AB Test Configuration Dialog */}
-      <ABTestConfigurationDialog
-        open={dialogOpen}
-        onClose={() => setDialogOpen(false)}
-        abTest={currentABTest}
-        onSubmit={handleFormSubmit}
-      />
 
       {/* Delete Confirmation Dialog */}
       <DeleteABTestDialog

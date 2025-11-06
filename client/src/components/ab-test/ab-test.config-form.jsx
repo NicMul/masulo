@@ -202,9 +202,9 @@ export const ABTestConfigForm = forwardRef(({
   }, [hasMissingAssets, formData.published, handleChange]);
 
   return (
-    <div className="flex flex-col h-full bg-gradient-to-br from-slate-50 to-blue-10 rounded-md">
+    <div className="flex flex-col h-full bg-gradient-to-br from-slate-50 to-blue-10 rounded-md ">
       {/* Scrollable Content */}
-      <div className="relative flex-1 overflow-hidden px-6 py-6">
+      <div className="relative flex-1 overflow-hidden ">
         <div 
           className="h-full overflow-y-auto scrollbar-thin scrollbar-thumb-blue-300 scrollbar-track-blue-50 hover:scrollbar-thumb-blue-400 pr-2"
         >

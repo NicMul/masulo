@@ -16,14 +16,19 @@ import {
 
 export const PromoteVariantDropdown = ({ value, onChange, highlightColor = "blue" }) => {
     const promotionOptions = [
-        { value: 'Promote Variant', label: 'Promote Variant' },
+     
         { value: 'current', label: 'Current' },
         { value: 'theme', label: 'Theme' },
         { value: 'promotion', label: 'Promotion' }
     ];
 
     const handleOptionClick = (optionValue) => {
-        onChange(optionValue);
+        // If clicking the same option, deselect it
+        if (value === optionValue) {
+            onChange('');
+        } else {
+            onChange(optionValue);
+        }
     };
 
     const highlightClass = highlightColor === "blue" 
@@ -38,7 +43,7 @@ export const PromoteVariantDropdown = ({ value, onChange, highlightColor = "blue
                     size="sm"
                     className="h-8 px-3"
                 >
-                    Promote Variant
+                    Use Variant
                     <Icon name="chevron-down" className="ml-2 h-4 w-4" />
                 </Button>
             </DropdownMenuTrigger>

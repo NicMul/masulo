@@ -6,10 +6,10 @@
 *
 **********/
 
-import { Tabs, TabsList, TabsTrigger, TabsContent, Grid, Card, Textarea, Button } from 'components/lib';
+import { Tabs, TabsList, TabsTrigger, TabsContent, Grid, Card, Textarea, Button, Input, Icon, Badge } from 'components/lib';
 import MediaPlayer from '../edit/MediaPlayer';
 import { Animate } from 'components/lib';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useMutation } from 'components/hooks/mutation';
 
 // Reusable Asset Card Component for Original Assets
@@ -134,7 +134,7 @@ function VariantMediaCard({ variant, value, title, gameId, imageUrl, videoUrl, d
                 {/* Hide prompt input when there are pending assets */}
                 {!hasPendingAssets && (
                     <Animate type='pop'>
-                       <Textarea
+                       <Input
                        
                         name={descriptionName} 
                         placeholder={placeholder} 
@@ -157,6 +157,11 @@ export function ABTestAssetCreator({ selectedGame, onVariantsChange, existingVar
     const [variantAVideoPrompt, setVariantAVideoPrompt] = useState('');
     const [variantBImagePrompt, setVariantBImagePrompt] = useState('');
     const [variantBVideoPrompt, setVariantBVideoPrompt] = useState('');
+    const [showReferenceImage, setShowReferenceImage] = useState(false);
+    const [activeVariant, setActiveVariant] = useState(null); // Track which variant is showing the image
+    const [imagePosition, setImagePosition] = useState({ top: 0, left: 0 });
+    const badgeRefA = useRef(null);
+    const badgeRefB = useRef(null);
     const [selectedVariant, setSelectedVariant] = useState({
         variant: null,
         assetType: null
@@ -316,6 +321,7 @@ export function ABTestAssetCreator({ selectedGame, onVariantsChange, existingVar
             variant: null,
             assetType: null
         });
+        setShowReferenceImage(false);
     };
 
     // Get asset URL based on variant and asset type
@@ -414,14 +420,14 @@ export function ABTestAssetCreator({ selectedGame, onVariantsChange, existingVar
     return (
         <div className="flex flex-col h-full min-h-0 bg-white rounded-lg">
             <Tabs defaultValue="variantA" className="flex flex-col h-full ">
-                <TabsList className="self-end mr-6 w-auto mb-2">
+                <TabsList className="self-end mr-6 w-auto mb-1">
                     <TabsTrigger value="original" disabled={isGenerating}>Original</TabsTrigger>
                     <TabsTrigger value="variantA" disabled={isGenerating}>Variant A</TabsTrigger>
                     <TabsTrigger value="variantB" disabled={isGenerating}>Variant B</TabsTrigger>
                 </TabsList>
                 <TabsContent value="original" className="p-3 bg-gradient-to-br from-slate-200 to-blue-50 flex-grow">
                     <Tabs defaultValue="generate" className="flex flex-col h-full ">
-                        <TabsList  className="self-start ml-3 mt-4 mb-2">
+                        <TabsList  className="self-start ml-3 mb-2">
                             <TabsTrigger value="default" disabled={isGenerating}>Default</TabsTrigger>
                             <TabsTrigger value="generate" disabled={isGenerating}>Generated</TabsTrigger>
                         </TabsList>
@@ -480,11 +486,60 @@ export function ABTestAssetCreator({ selectedGame, onVariantsChange, existingVar
                     </Tabs>
                 </TabsContent>
 
-                <TabsContent value="variantA" className="p-3 bg-gradient-to-br from-slate-200 to-blue-50 flex-grow rounded-md">
-                    <div className="flex flex-row gap-2 mb-4 justify-end">
+                <TabsContent value="variantA" className="p-3 bg-gradient-to-br from-slate-200 to-blue-50 flex-grow rounded-md relative">
+                    {/* Reference Image - Rendered at TabsContent level to avoid stacking context issues */}
+                    {showReferenceImage && activeVariant === 'variantA' && selectedGame?.defaultImage && (
+                        <div 
+                            className="flex flex-row gap-2 fixed bg-white/25 backdrop-blur-sm rounded-lg p-2 shadow-xl border border-gray-300"
+                            style={{
+                                top: `${imagePosition.top}px`,
+                                left: `${imagePosition.left}px`,
+                                zIndex: 99999,
+                            }}
+                            onMouseEnter={() => {
+                                setShowReferenceImage(true);
+                                setActiveVariant('variantA');
+                            }}
+                            onMouseLeave={() => {
+                                setShowReferenceImage(false);
+                                setActiveVariant(null);
+                            }}
+                        >
+                            <img src={selectedGame.defaultImage} alt="Reference Image" className="w-[180px] h-[240px] object-cover rounded-lg shadow-lg border border-gray-200/50" />
+                        </div>
+                    )}
+                    
+                    <div className="flex flex-row gap-2 mb-4 justify-between items-center">
+                        <Animate type='pop'>
+                            {!selectedVariant.assetType && selectedGame?.id && (
+                                <div 
+                                    ref={badgeRefA}
+                                    className="relative cursor-pointer hover:opacity-80 transition-opacity duration-300"
+                                    onMouseEnter={(e) => {
+                                        if (selectedGame?.id && badgeRefA.current) {
+                                            const rect = badgeRefA.current.getBoundingClientRect();
+                                            setImagePosition({ top: rect.bottom + 8, left: rect.left });
+                                            setShowReferenceImage(true);
+                                            setActiveVariant('variantA');
+                                        }
+                                    }}
+                                    onMouseLeave={() => {
+                                        setShowReferenceImage(false);
+                                        setActiveVariant(null);
+                                    }}
+                                >
+                                    <Badge variant="blue" className={!selectedGame?.id ? 'opacity-50 cursor-not-allowed' : ''}>Show Reference</Badge>
+                                </div>
+                            )}
+                     
+                        </Animate>
+
+                        <Animate type='pop'>
+                        <div className="flex flex-row gap-2 w-full justify-end">
                         <Button 
                             disabled={!selectedGame?.id || isGenerating}
                             icon="trash"
+                            size="sm"
                             color="orange"
                             text="Clear"
                             onClick={handleClear}
@@ -494,19 +549,24 @@ export function ABTestAssetCreator({ selectedGame, onVariantsChange, existingVar
                         <Button 
                             disabled={!selectedGame?.id || (!variantAImagePrompt.length && !variantAVideoPrompt.length) || isGenerating}
                             icon="zap"
+                            size="sm"
                             color="primary" 
                             text={isGenerating ? "Generating Assets" : "Ai Generate"}
                             loading={isGenerating}
                             onClick={handleAiGenerateVariantA}
                             className="whitespace-nowrap"
                         />
+                        </div>
+                        </Animate>
+                        
+                        
                     </div>
-                    <Grid cols={2} >
+                    <Grid cols={3} >
                         <VariantMediaCard
                             variant="variantA"
                             type="image"
                             title="Variant A Image"
-                            pill={<div className="flex text-xs justify-center items-center bg-gray-200 text-green-700 px-2 py-1 rounded-full">{selectedVariant.assetType?.toUpperCase() || 'None'}</div>}
+                            pill={<div className="flex text-xs justify-center items-center bg-gray-200 text-green-700 px-2 py-1 rounded-full">{selectedVariant.assetType?.toUpperCase() || 'No Original Selected'}</div>}
                             gameId={selectedGame?.id}
                             imageUrl={getAssetUrl('variantA', 'image')}
                             videoUrl={getAssetUrl('variantA', 'video')}
@@ -523,7 +583,7 @@ export function ABTestAssetCreator({ selectedGame, onVariantsChange, existingVar
                             variant="variantA"
                             type="both"
                             title="Variant A Video"
-                            pill={<div className="flex text-xs justify-center items-center bg-gray-200 text-green-700 px-2 py-1 rounded-full">{selectedVariant.assetType?.toUpperCase() || 'None'}</div>}
+                            pill={<div className="flex text-xs justify-center items-center bg-gray-200 text-green-700 px-2 py-1 rounded-full">{selectedVariant.assetType?.toUpperCase() || 'No Original Selected'}</div>}
                             gameId={selectedGame?.id}
                             imageUrl={getAssetUrl('variantA', 'image')}
                             videoUrl={getAssetUrl('variantA', 'video')}
@@ -536,14 +596,64 @@ export function ABTestAssetCreator({ selectedGame, onVariantsChange, existingVar
                             onAccept={handleAcceptVariantA}
                             onReject={handleRejectVariantA}
                         />
+                        
                     </Grid>
                 </TabsContent>
 
-                <TabsContent value="variantB" className="p-3 bg-gradient-to-br from-slate-200 to-blue-50 flex-grow rounded-md">
-                    <div className="flex flex-row gap-2 mb-4 justify-end">
+                <TabsContent value="variantB" className="p-3 bg-gradient-to-br from-slate-200 to-blue-50 flex-grow rounded-md relative">
+                    {/* Reference Image - Rendered at TabsContent level to avoid stacking context issues */}
+                    {showReferenceImage && activeVariant === 'variantB' && selectedGame?.defaultImage && (
+                        <div 
+                            className="flex flex-row gap-2 fixed bg-white/25 backdrop-blur-sm rounded-lg p-2 shadow-xl border border-gray-300"
+                            style={{
+                                top: `${imagePosition.top}px`,
+                                left: `${imagePosition.left}px`,
+                                zIndex: 99999,
+                            }}
+                            onMouseEnter={() => {
+                                setShowReferenceImage(true);
+                                setActiveVariant('variantB');
+                            }}
+                            onMouseLeave={() => {
+                                setShowReferenceImage(false);
+                                setActiveVariant(null);
+                            }}
+                        >
+                            <img src={selectedGame.defaultImage} alt="Reference Image" className="w-[180px] h-[240px] object-cover rounded-lg shadow-lg border border-gray-50" />
+                        </div>
+                    )}
+                    
+                <div className="flex flex-row gap-2 mb-4 justify-between items-center">
+                        <Animate type='pop'>
+                            {!selectedVariant.assetType && selectedGame?.id && (
+                                <div 
+                                    ref={badgeRefB}
+                                    className="relative cursor-pointer hover:opacity-80 transition-opacity duration-300"
+                                    onMouseEnter={(e) => {
+                                        if (selectedGame?.id && badgeRefB.current) {
+                                            const rect = badgeRefB.current.getBoundingClientRect();
+                                            setImagePosition({ top: rect.bottom + 8, left: rect.left });
+                                            setShowReferenceImage(true);
+                                            setActiveVariant('variantB');
+                                        }
+                                    }}
+                                    onMouseLeave={() => {
+                                        setShowReferenceImage(false);
+                                        setActiveVariant(null);
+                                    }}
+                                >
+                                    <Badge variant="blue" className={!selectedGame?.id ? 'opacity-50 cursor-not-allowed px-2 py-1' : 'px-2 py-1'}>Show Reference</Badge>
+                                </div>
+                            )}
+                     
+                        </Animate>
+
+                        <Animate type='pop'>
+                        <div className="flex flex-row gap-2 w-full justify-end">
                         <Button 
-                            disabled={!selectedGame?.id || isGenerating}
+                            disabled={!selectedGame?.id || isGenerating || !selectedVariant.variant || !selectedVariant.assetType}
                             icon="trash"
+                            size="sm"
                             color="orange"
                             text="Clear"
                             onClick={handleClear}
@@ -553,19 +663,24 @@ export function ABTestAssetCreator({ selectedGame, onVariantsChange, existingVar
                         <Button 
                             disabled={!selectedGame?.id || (!variantBImagePrompt.length && !variantBVideoPrompt.length) || isGenerating}
                             icon="zap"
+                            size="sm"
                             color="primary" 
                             text={isGenerating ? "Generating Assets" : "Ai Generate"}
                             loading={isGenerating}
                             onClick={handleAiGenerateVariantB}
                             className="whitespace-nowrap"
                         />
+                        </div>
+                        </Animate>
+                        
+                        
                     </div>
                     <Grid cols={2} >
                         <VariantMediaCard
                             variant="variantB"
                             type="image"
                             title="Variant B Image"
-                            pill={<div className="flex text-xs justify-center items-center bg-gray-200 text-green-700 px-2 py-1 rounded-full">{selectedVariant.assetType?.toUpperCase() || 'None'}</div>}
+                            pill={<div className="flex text-xs justify-center items-center bg-gray-200 text-green-700 px-2 py-1 rounded-full">{selectedVariant.assetType?.toUpperCase() || 'No Original Selected'}</div>}
                             gameId={selectedGame?.id}
                             imageUrl={getAssetUrl('variantB', 'image')}
                             videoUrl={getAssetUrl('variantB', 'video')}
@@ -582,7 +697,7 @@ export function ABTestAssetCreator({ selectedGame, onVariantsChange, existingVar
                             variant="variantB"
                             type="both"
                             title="Variant B Video"
-                            pill={<div className="flex text-xs justify-center items-center bg-gray-200 text-green-700 px-2 py-1 rounded-full">{selectedVariant.assetType?.toUpperCase() || 'None'}</div>}
+                            pill={<div className="flex text-xs justify-center items-center bg-gray-200 text-green-700 px-2 py-1 rounded-full">{selectedVariant.assetType?.toUpperCase() || 'No Original Selected'}</div>}
                             gameId={selectedGame?.id}
                             imageUrl={getAssetUrl('variantB', 'image')}
                             videoUrl={getAssetUrl('variantB', 'video')}

@@ -114,8 +114,24 @@ const ABTestResultsDialog = ({
     }, [progressPercent, startDate, endDate]);
 
     // State for promotion type selection
-    const [variantAPromotion, setVariantAPromotion] = useState('current');
-    const [variantBPromotion, setVariantBPromotion] = useState('current');
+    const [variantAPromotion, setVariantAPromotion] = useState('');
+    const [variantBPromotion, setVariantBPromotion] = useState('');
+
+    // Handler for Variant A selection - clears Variant B when selected
+    const handleVariantAPromotionChange = (value) => {
+        setVariantAPromotion(value);
+        if (value) {
+            setVariantBPromotion('');
+        }
+    };
+
+    // Handler for Variant B selection - clears Variant A when selected
+    const handleVariantBPromotionChange = (value) => {
+        setVariantBPromotion(value);
+        if (value) {
+            setVariantAPromotion('');
+        }
+    };
 
     // Handle CSV export
     const handleExportCSV = () => {
@@ -139,18 +155,14 @@ const ABTestResultsDialog = ({
 
     return (
         <>
-            <style>{`
-                [data-radix-dialog-overlay] {
-                    background-color: rgba(0, 0, 0, 0.3) !important;
-                }
-            `}</style>
+    
             <Dialog open={isOpen} onClose={onClose}>
-                <DialogContent className="w-[70vw] max-w-none max-h-[90dvh] flex flex-col overflow-y-auto">
+                <DialogContent className="w-[70vw] max-w-none max-h-[90dvh] flex flex-col">
                 
                 {/* Dialog Header */}
                 <DialogHeader className="flex-shrink-0 border-b border-slate-200 dark:border-slate-700 pb-4">
                     <div className="flex items-center justify-between">
-                        <h1 className="text-3xl font-black text-slate-900 dark:text-slate-100 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                        <h1 className="text-3xl font-black text-slate-900 ">
                             {t('AB Test Results')}
                         </h1>
                         <div className="flex items-center gap-2 mr-5">
@@ -167,8 +179,8 @@ const ABTestResultsDialog = ({
                 </DialogHeader>
                 
                 {/* Scrollable Body */}
-                <div className="py-6 overflow-y-auto overflow-x-hidden flex-1 min-h-0">
-                    <div className="flex flex-col gap-8"> 
+                <div className="py-6 px-6 overflow-y-scroll flex-1 min-h-0">
+                    <div className="flex flex-col gap-8 pr-2"> 
                         
                         {/* Test Title Section */}
                         <div className="text-center">
@@ -205,7 +217,7 @@ const ABTestResultsDialog = ({
                                         <div className="flex items-center gap-2">
                                             <PromoteVariantDropdown
                                                 value={variantAPromotion}
-                                                onChange={setVariantAPromotion}
+                                                onChange={handleVariantAPromotionChange}
                                                 highlightColor="blue"
                                             />
                                         </div>
@@ -220,7 +232,7 @@ const ABTestResultsDialog = ({
                                                     imageUrl={abTest.imageVariantA}
                                                     videoUrl={abTest.videoVariantA}
                                                     type={abTest.videoVariantA ? 'both' : 'image'}
-                                                    readOnly={true}
+                                                    readOnly={false}
                                                     showPlayIcon={true}
                                                     canSelect={false}
                                                 />
@@ -256,7 +268,7 @@ const ABTestResultsDialog = ({
                                         <div className="flex items-center gap-2">
                                             <PromoteVariantDropdown
                                                 value={variantBPromotion}
-                                                onChange={setVariantBPromotion}
+                                                onChange={handleVariantBPromotionChange}
                                                 highlightColor="purple"
                                             />
                                         </div>
@@ -271,7 +283,7 @@ const ABTestResultsDialog = ({
                                                     imageUrl={abTest.imageVariantB}
                                                     videoUrl={abTest.videoVariantB}
                                                     type={abTest.videoVariantB ? 'both' : 'image'}
-                                                    readOnly={true}
+                                                    readOnly={false}
                                                     showPlayIcon={true}
                                                     canSelect={false}
                                                 />
@@ -436,6 +448,31 @@ const ABTestResultsDialog = ({
                                 </svg>
                                 {t('Export CSV')}
                             </Button>
+                            
+                            {/* Promote Variant Button */}
+                            {variantAPromotion && (
+                                <Button 
+                                    color="green"
+                                    onClick={() => console.log('Promoting Variant A to', variantAPromotion)}
+                                >
+                                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                                    </svg>
+                                    {t(`Set Variant A to ${variantAPromotion.charAt(0).toUpperCase() + variantAPromotion.slice(1)}`)}
+                                </Button>
+                            )}
+                            
+                            {variantBPromotion && (
+                                <Button 
+                                    color="green"
+                                    onClick={() => console.log('Promoting Variant B to', variantBPromotion)}
+                                >
+                                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                                    </svg>
+                                    {t(`Set Variant B to ${variantBPromotion.charAt(0).toUpperCase() + variantBPromotion.slice(1)}`)}
+                                </Button>
+                            )}
                         </div>
                     </div>
                 </DialogFooter>

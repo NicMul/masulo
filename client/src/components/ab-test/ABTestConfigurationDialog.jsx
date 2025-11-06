@@ -190,7 +190,7 @@ export function ABTestConfigurationDialog({
       open={open}
       onClose={handleDialogClose}
       title={abTest ? 'Edit AB Test' : 'Create AB Test'}
-      className="max-w-[90vw] w-full max-h-[90vh] overflow-hidden"
+      className="max-w-[95dvw] w-full max-h-[95dvh] overflow-hidden"
     >
       <div className="flex flex-col h-[80vh]">
         <div className="flex gap-6 flex-1 min-h-0">
