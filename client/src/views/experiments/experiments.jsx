@@ -36,7 +36,7 @@ export function ABTesting({ t }) {
 
   // Refresh data when navigating back from create/edit pages
   useEffect(() => {
-    if (location.pathname === '/ab-testing') {
+    if (location.pathname === '/experiments') {
       setRefreshTrigger(prev => prev + 1);
     }
   }, [location.pathname]);
@@ -65,12 +65,12 @@ export function ABTesting({ t }) {
 
   // handle create A/B test - navigate to create page
   const handleCreateABTest = () => {
-    navigate('/ab-testing/create');
+    navigate('/experiments/create');
   };
 
   // Handle edit AB test - navigate to edit page
   const handleEditABTest = useCallback((abTest) => {
-    navigate(`/ab-testing/edit/${abTest.id}`);
+    navigate(`/experiments/${abTest.id}`);
   }, [navigate]);
 
   // Handle delete AB test - open confirmation dialog

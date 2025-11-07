@@ -10,7 +10,6 @@ import { Elements } from '@stripe/react-stripe-js';
 import { initReactI18next } from 'react-i18next';
 
 // routes
-import SetupRoutes from 'routes/setup';
 import AccountRoutes from 'routes/account';
 import AppRoutes from 'routes/app';
 import AuthRoutes from 'routes/auth';
@@ -31,7 +30,6 @@ const StripePromise = loadStripe(Settings[process.env.NODE_ENV].stripe.publishab
 
 const routes = [
 
-  ...SetupRoutes,
   ...AccountRoutes, 
   ...AppRoutes,
   ...AuthRoutes,

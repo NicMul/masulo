@@ -84,6 +84,8 @@ function AssetCard({ title, assetType, imageUrl, videoUrl, gameId, selectedVaria
 // Reusable Variant Media Card Component for Variant A/B
 function VariantMediaCard({ variant, value, title, gameId, imageUrl, videoUrl, descriptionName, placeholder, type, pill, onChange, isGenerating, hasPendingAssets, onAccept, onReject }) {
 
+  
+
     return (
         <Animate type='pop'>
             <Card title={title} headerAction={pill}>
@@ -566,7 +568,7 @@ export function ABTestAssetCreator({ selectedGame, onVariantsChange, existingVar
                             variant="variantA"
                             type="image"
                             title="Variant A Image"
-                            pill={<div className="flex text-xs justify-center items-center bg-gray-200 text-green-700 px-2 py-1 rounded-full">{selectedVariant.assetType?.toUpperCase() || 'No Original Selected'}</div>}
+                            pill={<div className="flex text-xs justify-center items-center bg-gray-200 text-green-700 px-2 py-1 rounded-full">{selectedVariant.assetType?.toUpperCase() || 'No Control Selected'}</div>}
                             gameId={selectedGame?.id}
                             imageUrl={getAssetUrl('variantA', 'image')}
                             videoUrl={getAssetUrl('variantA', 'video')}
@@ -583,7 +585,7 @@ export function ABTestAssetCreator({ selectedGame, onVariantsChange, existingVar
                             variant="variantA"
                             type="both"
                             title="Variant A Video"
-                            pill={<div className="flex text-xs justify-center items-center bg-gray-200 text-green-700 px-2 py-1 rounded-full">{selectedVariant.assetType?.toUpperCase() || 'No Original Selected'}</div>}
+                            pill={<div className="flex text-xs justify-center items-center bg-gray-200 text-green-700 px-2 py-1 rounded-full">{selectedVariant.assetType?.toUpperCase() || 'No Control Selected'}</div>}
                             gameId={selectedGame?.id}
                             imageUrl={getAssetUrl('variantA', 'image')}
                             videoUrl={getAssetUrl('variantA', 'video')}
@@ -680,7 +682,7 @@ export function ABTestAssetCreator({ selectedGame, onVariantsChange, existingVar
                             variant="variantB"
                             type="image"
                             title="Variant B Image"
-                            pill={<div className="flex text-xs justify-center items-center bg-gray-200 text-green-700 px-2 py-1 rounded-full">{selectedVariant.assetType?.toUpperCase() || 'No Original Selected'}</div>}
+                            pill={<div className="flex text-xs justify-center items-center bg-gray-200 text-green-700 px-2 py-1 rounded-full">{selectedVariant.assetType?.toUpperCase() || 'No Control Selected'}</div>}
                             gameId={selectedGame?.id}
                             imageUrl={getAssetUrl('variantB', 'image')}
                             videoUrl={getAssetUrl('variantB', 'video')}
@@ -697,7 +699,7 @@ export function ABTestAssetCreator({ selectedGame, onVariantsChange, existingVar
                             variant="variantB"
                             type="both"
                             title="Variant B Video"
-                            pill={<div className="flex text-xs justify-center items-center bg-gray-200 text-green-700 px-2 py-1 rounded-full">{selectedVariant.assetType?.toUpperCase() || 'No Original Selected'}</div>}
+                            pill={<div className="flex text-xs justify-center items-center bg-gray-200 text-green-700 px-2 py-1 rounded-full">{selectedVariant.assetType?.toUpperCase() || 'No Control Selected'}</div>}
                             gameId={selectedGame?.id}
                             imageUrl={getAssetUrl('variantB', 'image')}
                             videoUrl={getAssetUrl('variantB', 'video')}

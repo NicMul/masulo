@@ -1,9 +1,9 @@
 import { Dashboard } from 'views/dashboard/dashboard';
 import { Games } from 'views/dashboard/games';
 import { Promotions } from 'views/dashboard/promotions';
-import { ABTesting } from 'views/dashboard/ab-testing';
-import { ABTestCreate } from 'views/dashboard/ab-test-create';
-import { ABTestEdit } from 'views/dashboard/ab-test-edit';
+import { ABTesting } from 'views/experiments/experiments';
+import { ABTestCreate } from 'views/experiments/create';
+import { ABTestEdit } from 'views/experiments/edit';
 import { Edit } from 'views/dashboard/edit';
 import { Scrape } from 'views/dashboard/scrape';
 import { Configure } from 'views/dashboard/configure';
@@ -40,26 +40,27 @@ const Routes = [
     title: 'promotions.title'
   },
   {
-    path: '/ab-testing',
+    path: '/experiments/:id',
+    view: ABTestEdit,
+    layout: 'app',
+    permission: 'user',
+    title: 'ab_testing.edit.title'
+  },
+  {
+    path: '/experiments',
     view: ABTesting,
     layout: 'app',
     permission: 'user',
     title: 'ab_testing.title'
   },
   {
-    path: '/ab-testing/create',
+    path: '/experiments/create',
     view: ABTestCreate,
     layout: 'app',
     permission: 'user',
     title: 'ab_testing.create.title'
   },
-  {
-    path: '/ab-testing/edit/:id',
-    view: ABTestEdit,
-    layout: 'app',
-    permission: 'user',
-    title: 'ab_testing.edit.title'
-  },
+  
   {
     path: '/edit/:gameId',
     view: Edit,

@@ -5,7 +5,7 @@
 *
 **********/
 
-import { useState, useCallback, useEffect, useRef, useContext } from 'react';
+import { useState, useCallback, useEffect, useRef, useContext, useMemo } from 'react';
 import { useNavigate, useParams, ViewContext, Animate, Button, useAPI, useMutation, Card } from 'components/lib';
 import { ABTestConfigForm } from 'components/ab-test/ab-test.config-form';
 import { ABTestAssetCreator } from 'components/ab-test/ab-test.asset-creator';
@@ -56,11 +56,31 @@ export function ABTestEdit({ t }) {
   const { id } = useParams();
   const viewContext = useContext(ViewContext);
   const updateABTestMutation = useMutation('/api/ab-test', 'PATCH');
+  const hasInitialized = useRef(false);
+  
+  // Reset initialization flag when id changes
+  useEffect(() => {
+    hasInitialized.current = false;
+  }, [id]);
 
   // Fetch AB test data
-  const abTestRes = useAPI(`/api/ab-test/${id}`);
+  const abTestRes = useAPI(id ? `/api/ab-test/${id}` : null);
   // The API returns an array even for single ID queries, so get the first element
-  const abTest = Array.isArray(abTestRes.data) ? abTestRes.data[0] : abTestRes.data;
+  // Memoize to prevent infinite re-renders
+  const abTest = useMemo(() => {
+    return Array.isArray(abTestRes.data) ? abTestRes.data[0] : abTestRes.data;
+  }, [abTestRes.data]);
+
+  // Memoize existing variants data to prevent unnecessary re-renders
+  const existingVariantsData = useMemo(() => {
+    if (!abTest) return null;
+    return {
+      imageVariantA: abTest.imageVariantA,
+      videoVariantA: abTest.videoVariantA,
+      imageVariantB: abTest.imageVariantB,
+      videoVariantB: abTest.videoVariantB
+    };
+  }, [abTest?.imageVariantA, abTest?.videoVariantA, abTest?.imageVariantB, abTest?.videoVariantB]);
 
   // Fetch games data to map gameId to game object
   const gamesRes = useAPI('/api/game');
@@ -81,9 +101,10 @@ export function ABTestEdit({ t }) {
   const [isLoading, setIsLoading] = useState(false);
   const formRef = useRef(null);
 
-  // Prepare initial data when abTest and games data load
+  // Prepare initial data when abTest and games data load (only once)
   useEffect(() => {
-    if (abTest && gamesRes.data && groupsRes.data) {
+    if (abTest && gamesRes.data && groupsRes.data && !hasInitialized.current) {
+      hasInitialized.current = true;
       const formattedStartDate = formatDateForInput(abTest.startDate);
       const formattedEndDate = formatDateForInput(abTest.endDate);
       // Format times from Date objects, default to '00:00' if not present (backward compatibility)
@@ -192,8 +213,8 @@ export function ABTestEdit({ t }) {
           variant: 'success'
         });
 
-        // Navigate back to AB testing list
-        navigate('/ab-testing');
+   
+        navigate('/experiments');
       } else {
         // Show error notification
         viewContext.notification({
@@ -220,9 +241,7 @@ export function ABTestEdit({ t }) {
   }, [isFormValid]);
 
   // Handle cancel - navigate back
-  const handleCancel = useCallback(() => {
-    navigate('/ab-testing');
-  }, [navigate]);
+
 
   // Show loading state while fetching AB test data
   if (abTestRes.loading || gamesRes.loading || groupsRes.loading) {
@@ -246,7 +265,7 @@ export function ABTestEdit({ t }) {
           <Button
             color="blue"
             text="Back to AB Tests"
-            onClick={() => navigate('/ab-testing')}
+            url="/experiments"
           />
         </div>
       </Animate>
@@ -263,7 +282,7 @@ export function ABTestEdit({ t }) {
             <Button
               color="red"
               text="Cancel"
-              onClick={handleCancel}
+              url="/experiments"
               disabled={isLoading || isGenerating}
             />
             <Button
@@ -305,18 +324,11 @@ export function ABTestEdit({ t }) {
               <ABTestAssetCreator 
                 selectedGame={selectedGame} 
                 onVariantsChange={setVariantAssets}
-                existingVariants={abTest ? {
-                  imageVariantA: abTest.imageVariantA,
-                  videoVariantA: abTest.videoVariantA,
-                  imageVariantB: abTest.imageVariantB,
-                  videoVariantB: abTest.videoVariantB
-                } : null}
+                existingVariants={existingVariantsData}
                 onGenerating={setIsGenerating}
                 isGenerating={isGenerating}
               />
               </Card>
-              
-            
           </div>
         </div>
       </div>

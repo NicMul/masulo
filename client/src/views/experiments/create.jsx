@@ -79,7 +79,7 @@ export function ABTestCreate({ t }) {
         });
 
         // Navigate back to AB testing list
-        navigate('/ab-testing');
+        navigate('/experiments');
       } else {
         // Show error notification
         viewContext.notification({
@@ -107,7 +107,7 @@ export function ABTestCreate({ t }) {
 
   // Handle cancel - navigate back
   const handleCancel = useCallback(() => {
-    navigate('/ab-testing');
+    navigate('/experiments');
   }, [navigate]);
 
   return (
