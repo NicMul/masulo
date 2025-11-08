@@ -121,6 +121,35 @@ async function optimizeVideoForWeb(videoPath) {
   }
 }
 
+// Helper function to trim video using FFmpeg
+async function trimVideo(videoPath, trimEnd) {
+  console.log(`✂️ Trimming video to ${trimEnd} seconds...`);
+  const tempDir = path.join(process.cwd(), 'temp');
+  const trimmedFileName = `video-trimmed-${Date.now()}.mp4`;
+  const trimmedPath = path.join(tempDir, trimmedFileName);
+
+  try {
+    // FFmpeg command to trim video from 0 to trimEnd seconds
+    // -t specifies duration (trimEnd seconds from start)
+    // -c copy uses stream copy for faster processing (no re-encoding)
+    // -avoid_negative_ts make_zero prevents timestamp issues
+    await execPromise(`ffmpeg -i "${videoPath}" -t ${trimEnd} -c copy -avoid_negative_ts make_zero "${trimmedPath}"`);
+    console.log('✅ Video trimmed successfully');
+    return trimmedPath;
+  } catch (ffmpegError) {
+    console.warn('⚠️ FFmpeg trimming with copy failed, trying with re-encoding:', ffmpegError);
+    // Try with re-encoding if copy fails
+    try {
+      await execPromise(`ffmpeg -i "${videoPath}" -t ${trimEnd} -c:v libx264 -crf 23 -preset fast -pix_fmt yuv420p -movflags +faststart -an "${trimmedPath}"`);
+      console.log('✅ Video trimmed successfully (with re-encoding)');
+      return trimmedPath;
+    } catch (reencodeError) {
+      console.error('❌ FFmpeg trimming with re-encoding also failed:', reencodeError);
+      throw reencodeError;
+    }
+  }
+}
+
 // Helper function to cleanup temporary files with error handling
 function cleanupTempFile(filePath) {
   try {
@@ -140,5 +169,6 @@ module.exports = {
   generateAIImage,
   generateAIVideo,
   optimizeVideoForWeb,
+  trimVideo,
   cleanupTempFile
 };

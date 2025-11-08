@@ -77,6 +77,7 @@ export function GameMediaViewDialog({ isOpen, onClose, game, t }) {
                   isGenerating={false}
                   canSelect={false}
                   showPlayIcon={true}
+                  canTrim={false}
                 />
               </div>
             </div>

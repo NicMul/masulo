@@ -151,15 +151,10 @@ async function createCdnConfiguration(userId, accountId) {
 }
 
 // Helper function to download file from Bunny storage
+// Downloads directly from CDN URL (no parsing needed)
 async function downloadFromBunnyStorage(cdnUrl, cdnConfig) {
   try {
-    console.log(`📥 Downloading file from Bunny storage: ${cdnUrl}`);
-    
-    // Extract storage zone name, folder, and filename from CDN URL
-    // URL format: https://cdn.example.com/folder/filename.mp4
-    const urlParts = cdnUrl.split('/');
-    const folder = urlParts[urlParts.length - 2]; // second to last part
-    const filename = urlParts[urlParts.length - 1]; // last part
+    console.log(`📥 Downloading file directly from CDN URL: ${cdnUrl}`);
     
     // Create temp directory if it doesn't exist
     const tempDir = path.join(process.cwd(), 'temp');
@@ -167,18 +162,21 @@ async function downloadFromBunnyStorage(cdnUrl, cdnConfig) {
       fs.mkdirSync(tempDir, { recursive: true });
     }
     
+    // Extract filename from URL for temp file naming
+    const urlObj = new URL(cdnUrl);
+    const pathname = urlObj.pathname;
+    const filename = pathname.split('/').pop() || `download-${Date.now()}.mp4`;
+    
     // Create unique filename for temp file
     const tempFilename = `download-${Date.now()}-${filename}`;
     const tempPath = path.join(tempDir, tempFilename);
     
-    // Download file from Bunny storage
-    const downloadUrl = `https://storage.bunnycdn.com/${cdnConfig.storageZoneName}/${folder}/${filename}`;
+    // Download directly from CDN URL (simple HTTP GET)
+    console.log(`🔗 Downloading from: ${cdnUrl}`);
     
-    const response = await axios.get(downloadUrl, {
-      headers: {
-        'AccessKey': cdnConfig.storageKey
-      },
-      responseType: 'stream'
+    const response = await axios.get(cdnUrl, {
+      responseType: 'stream',
+      timeout: 30000 // 30 second timeout
     });
     
     // Save to temp file
@@ -235,7 +233,12 @@ async function uploadToBunnyStorage(filePath, cdnConfig, folder, filename) {
     const fileBuffer = fs.readFileSync(filePath);
     
     // Upload to Bunny storage
-    const uploadUrl = `https://storage.bunnycdn.com/${cdnConfig.storageZoneName}/${folder}/${filename}`;
+    // Handle root folder case (empty folder string)
+    const uploadUrl = folder 
+      ? `https://storage.bunnycdn.com/${cdnConfig.storageZoneName}/${folder}/${filename}`
+      : `https://storage.bunnycdn.com/${cdnConfig.storageZoneName}/${filename}`;
+    
+    console.log(`🔗 Upload URL: ${uploadUrl}`);
     
     const response = await axios.put(uploadUrl, fileBuffer, {
       headers: {
@@ -245,7 +248,9 @@ async function uploadToBunnyStorage(filePath, cdnConfig, folder, filename) {
     });
     
     // Construct CDN URL
-    const cdnUrl = `https://${cdnConfig.cdnUrl}/${folder}/${filename}`;
+    const cdnUrl = folder 
+      ? `https://${cdnConfig.cdnUrl}/${folder}/${filename}`
+      : `https://${cdnConfig.cdnUrl}/${filename}`;
     console.log(`✅ Upload successful! CDN URL: ${cdnUrl}`);
     
     return cdnUrl;
@@ -327,6 +332,52 @@ async function moveFileBetweenFolders(cdnUrl, cdnConfig, targetFolder) {
   }
 }
 
+// Helper function to purge BunnyCDN pullzone cache for a specific file
+async function purgePullZoneCache(cdnUrl, cdnConfig) {
+  try {
+    console.log(`🔄 Purging BunnyCDN cache for file: ${cdnUrl}`);
+    
+    const bunnyApiKey = process.env.BUNNY_API_KEY;
+    if (!bunnyApiKey) {
+      throw new Error('BUNNY_API_KEY environment variable is not set');
+    }
+
+    // Extract path from full URL (remove domain, keep /folder/filename)
+    let pathToPurge;
+    try {
+      const urlObj = new URL(cdnUrl);
+      pathToPurge = urlObj.pathname; // e.g., "/videos/filename.mp4"
+    } catch (e) {
+      // If URL parsing fails, try to extract path manually
+      const urlParts = cdnUrl.split('/');
+      const folder = urlParts[urlParts.length - 2];
+      const filename = urlParts[urlParts.length - 1].split('?')[0]; // Remove query params
+      pathToPurge = `/${folder}/${filename}`;
+    }
+
+    // BunnyCDN API endpoint for purging cache - purges only the specified file
+    const purgeUrl = `https://api.bunny.net/pullzone/${cdnConfig.pullZoneId}/purgeCache`;
+    
+    const response = await axios.post(purgeUrl, {
+      Urls: [pathToPurge]
+    }, {
+      headers: {
+        'AccessKey': bunnyApiKey,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    console.log(`✅ Cache purged successfully for: ${pathToPurge}`);
+    return response.data;
+  } catch (error) {
+    console.error(`❌ Cache purge failed:`, error.message);
+    if (error.response) {
+      console.error('Bunny API Error:', error.response.data);
+    }
+    throw error;
+  }
+}
+
 // Export the functions for use in other modules
 module.exports = {
   findCdnConfigurationByUserId,
@@ -335,7 +386,8 @@ module.exports = {
   deleteFromBunnyStorage,
   uploadToBunnyStorage,
   listFilesInFolder,
-  moveFileBetweenFolders
+  moveFileBetweenFolders,
+  purgePullZoneCache
 };
 
 

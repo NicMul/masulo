@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Button } from 'components/lib';
+import { Button, useMutation } from 'components/lib';
 
-const Trimmer = ({ videoUrl, isOpen, onClose, onSave }) => {
+const Trimmer = ({ videoUrl, isOpen, onClose, onSave, gameId, assetType }) => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
@@ -10,11 +10,16 @@ const Trimmer = ({ videoUrl, isOpen, onClose, onSave }) => {
     
     const videoRef = useRef(null);
     const timelineRef = useRef(null);
+    
+    const trimVideoMutation = useMutation('/api/game/trim-video', 'POST');
+
+    // Clean video URL (remove optimizer query params)
+    const cleanVideoUrl = videoUrl ? videoUrl.split('?')[0] : '';
 
     // Load video metadata and initialize trim end
     useEffect(() => {
         const video = videoRef.current;
-        if (!video || !videoUrl || !isOpen) return;
+        if (!video || !cleanVideoUrl || !isOpen) return;
 
         const handleLoadedMetadata = () => {
             console.log('Video metadata loaded, duration:', video.duration);
@@ -41,7 +46,7 @@ const Trimmer = ({ videoUrl, isOpen, onClose, onSave }) => {
             video.removeEventListener('loadedmetadata', handleLoadedMetadata);
             video.removeEventListener('timeupdate', handleTimeUpdate);
         };
-    }, [videoUrl, isOpen]);
+    }, [cleanVideoUrl, isOpen]);
 
     // Handle trim boundaries during playback
     useEffect(() => {
@@ -145,11 +150,35 @@ const Trimmer = ({ videoUrl, isOpen, onClose, onSave }) => {
         return `${mins}:${secs.toString().padStart(2, '0')}`;
     };
 
-    const handleSave = () => {
-        if (onSave) {
-            onSave(trimEnd);
+    const handleSave = async () => {
+        if (!gameId || !cleanVideoUrl) {
+            console.error('Missing gameId or videoUrl');
+            alert('Error: Missing required information');
+            onClose();
+            return;
         }
-        onClose();
+
+        try {
+            // Call API to trim video using useMutation (cleanVideoUrl already has no query params)
+            const result = await trimVideoMutation.execute({
+                gameId,
+                videoUrl: cleanVideoUrl,
+                trimEnd,
+                assetType
+            });
+
+            if (result) {
+                console.log('Video trimmed successfully:', result);
+                if (onSave) {
+                    // Pass trimEnd, updated game data, AND the new video URL
+                    onSave(trimEnd, result.data, result.videoUrl);
+                }
+                onClose();
+            }
+        } catch (error) {
+            console.error('Error trimming video:', error);
+            // Error is already handled by useMutation hook via ViewContext
+        }
     };
 
     if (!isOpen) return null;
@@ -181,7 +210,7 @@ const Trimmer = ({ videoUrl, isOpen, onClose, onSave }) => {
                             <div className="relative w-full rounded-lg overflow-hidden shadow-lg" style={{ aspectRatio: '180 / 250' }}>
                                 <video
                                     ref={videoRef}
-                                    src={videoUrl}
+                                    src={cleanVideoUrl}
                                     className="w-full h-full object-cover"
                                     muted
                                     playsInline
@@ -294,6 +323,8 @@ const Trimmer = ({ videoUrl, isOpen, onClose, onSave }) => {
                             text="Save"
                             color="green"
                             icon="check"
+                            loading={trimVideoMutation.loading}
+                            disabled={trimVideoMutation.loading}
                         />
                     </div>
                 </div>

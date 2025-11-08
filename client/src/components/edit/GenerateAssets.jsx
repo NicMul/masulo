@@ -57,6 +57,7 @@ const GenerateAssets = ({
     }, [isGenerating, t]);
 
     const handleRegenerate = useCallback(async () => {
+        console.log('handleRegenerate', selectedGame, testImage, testVideoUrl, assetType, imagePrompt, videoPrompt, generateImage, generateVideo);
 
 
         setIsGenerating(true);
@@ -393,7 +394,7 @@ const GenerateAssets = ({
                         <Tabs defaultValue="generations">
                             <TabsList className="mb-2" >
                                 <TabsTrigger value="generations" className="flex-1">{t('edit.regenerate.dialog.tabs.generations')}</TabsTrigger>
-                                <TabsTrigger value="videoEditor" className="flex-1">{t('edit.regenerate.dialog.tabs.videoEditor')}</TabsTrigger>
+                                <TabsTrigger disabled={true} value="archived" className="flex-1">Archived Assets</TabsTrigger>
                             </TabsList>
                             <TabsContent  value="generations" className="m-0">
                                 <Animate type='pop'>
@@ -430,11 +431,11 @@ const GenerateAssets = ({
                                     </div>
                                 </Animate>
                             </TabsContent>
-                            <TabsContent value="videoEditor" className="m-0">
+                            <TabsContent value="archived" className="m-0">
                                 <div className='relative flex justify-center items-center bg-slate-200 dark:bg-slate-700 rounded-lg p-3 text-center'>
                                     <Animate type='pop'>
                                         <Card title={t('edit.regenerate.dialog.tabs.videoEditor')} className='relative w-full justify-center flex-col gap-3' >
-                                            <VideoEditor selectedGame={selectedGame} testVideoUrl={testVideoUrlValue} />
+                                            Archived Assets Here
 
                                         </Card>
                                     </Animate>

@@ -15,7 +15,8 @@ const MediaPlayer = ({
     canSelect = true,
     isSelected: externalIsSelected,
     isGenerating = false,
-    canTrim = type === 'video' || type === 'both' && !readOnly && !isGenerating && videoUrl
+    canTrim = (type === 'video' || type === 'both') && !readOnly && !isGenerating && videoUrl,
+    assetType
 }) => {
     const [isHovering, setIsHovering] = useState(false);
     const [videoReady, setVideoReady] = useState(false);
@@ -97,9 +98,13 @@ const MediaPlayer = ({
         setShowTrimEditor(false);
     };
 
-    const handleTrimSave = (trimEndValue) => {
+    const handleTrimSave = (trimEndValue, updatedGameData, newVideoUrl) => {
         console.log('Trim saved with end time:', trimEndValue);
-        // TODO: Handle the trimmed video - save to state or pass to parent
+        // Optionally update local state or notify parent component
+        if (onSelect) {
+            // You might want to refresh the game data here
+            onSelect(gameId, true, type);
+        }
     };
 
     const mediaContent = useMemo(() => {
@@ -120,7 +125,7 @@ const MediaPlayer = ({
                     key={`video-${gameId}-${finalVideoUrl}`}
                     ref={videoRef}
                     src={finalVideoUrl || undefined}
-                    poster={finalImageUrl}
+                    poster={(type = 'video' && !videoUrl) ? undefined : finalImageUrl}
                     className="absolute inset-0 w-full h-full object-cover"
                     loop
                     muted
@@ -145,7 +150,7 @@ const MediaPlayer = ({
                         key={`video-${gameId}-${finalVideoUrl}`}
                         ref={videoRef}
                         src={finalVideoUrl || undefined}
-                        poster={finalImageUrl}
+                        poster={(type === 'both' && !videoUrl) ? '' : finalImageUrl}
                         className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${
                             isHovering ? 'opacity-100' : 'opacity-0'
                         }`}
@@ -259,10 +264,12 @@ const MediaPlayer = ({
 
             {/* Trim Editor */}
             <Trimmer
-                videoUrl={finalVideoUrl}
+                videoUrl={videoUrl}
                 isOpen={showTrimEditor}
                 onClose={handleCloseTrimEditor}
                 onSave={handleTrimSave}
+                gameId={gameId}
+                assetType={assetType}
             />
 
             {/* Border Glow - Enhanced for generating state */}
