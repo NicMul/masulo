@@ -3,6 +3,8 @@
  * Handles AB test data updates and applies them to game cards
  */
 
+import { ABTestAnalytics } from './analytics/ab.analytics.js';
+
 export class ABTestManager {
   constructor(connectionManager, gameManager) {
     this.connectionManager = connectionManager;
@@ -11,6 +13,11 @@ export class ABTestManager {
     this.gamesMap = new Map();
     // Track active AB tests: gameId -> { imageUrl, videoUrl }
     this.activeABTestAssets = new Map();
+    // Initialize analytics tracker
+    this.analytics = new ABTestAnalytics(
+      (gameId) => this.activeABTestAssets.has(gameId),
+      this.connectionManager
+    );
   }
   
   /**
@@ -303,6 +310,11 @@ export class ABTestManager {
     });
     
     console.log('[Mesulo SDK] Final active AB test assets:', this.activeABTestAssets);
+    
+    // Setup analytics tracking if we have active AB tests
+    if (this.activeABTestAssets.size > 0) {
+      this.analytics.setup();
+    }
     
     // Trigger game updates for games that were previously using AB test assets
     // This ensures they revert to game assets if AB test is no longer active

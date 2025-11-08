@@ -1,6 +1,7 @@
 const { Server } = require('socket.io');
 const user = require('../model/user');
 const analytics = require('../model/analytics');
+const abtestData = require('../model/abtest-data');
 const { getGamesById, getPromotions, getABTests } = require('../services/realtime');
 
 let io = null;
@@ -192,6 +193,62 @@ function initializeSocketIO(server) {
 
       } catch (error) {
         console.error('Error processing analytics event:', error);
+      }
+    });
+
+    // Handle AB test analytics batch events
+    socket.on('abtest-analytics-batch', async (data) => {
+      try {
+        console.log('[Socket] Received AB test analytics batch:', {
+          eventCount: data.events?.length || 0,
+          hasEvents: !!data.events,
+          isArray: Array.isArray(data.events)
+        });
+        
+        if (!data.events || !Array.isArray(data.events) || data.events.length === 0) {
+          console.warn('Invalid AB test analytics batch data:', data);
+          return;
+        }
+        
+        // Validate all events have required fields
+        const validEvents = data.events.filter(event => 
+          event.gameId && event.eventType && event.variant && event.device
+        );
+        
+        console.log('[Socket] Valid events:', {
+          total: data.events.length,
+          valid: validEvents.length,
+          invalid: data.events.length - validEvents.length
+        });
+        
+        if (validEvents.length === 0) {
+          console.warn('No valid events in AB test analytics batch');
+          return;
+        }
+        
+        // Bulk insert (fire-and-forget for performance)
+        abtestData.createMany({ 
+          events: validEvents, 
+          user: userData.id, 
+          account: userData.id 
+        })
+          .then(result => {
+            console.log('[Socket] AB test analytics batch stored successfully:', {
+              insertedCount: result.insertedCount,
+              userId: userData.id
+            });
+          })
+          .catch(error => {
+            console.error('Error storing AB test analytics batch:', error);
+            console.error('Error details:', {
+              message: error.message,
+              name: error.name,
+              stack: error.stack
+            });
+          });
+          
+      } catch (error) {
+        console.error('Error processing AB test analytics batch:', error);
       }
     });
 
