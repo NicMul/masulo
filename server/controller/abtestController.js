@@ -1,6 +1,8 @@
 const joi = require('joi');
 const abtest = require('../model/abtest');
 const utility = require('../helper/utility');
+const { emitABTestUpdate } = require('../realtime/socket');
+const { emitABTestUpdates } = require('../services/realtime');
 
 exports.create = async function(req, res){
 
@@ -26,6 +28,15 @@ exports.create = async function(req, res){
   }), req, res); 
 
   const abtestData = await abtest.create({ data, user: req.user });
+  
+  // Emit socket update for the new AB test
+  try {
+    await emitABTestUpdates(req.user, emitABTestUpdate);
+  } catch (error) {
+    console.error('Error emitting AB test update:', error);
+    // Don't fail the request if socket emission fails
+  }
+  
   return res.status(200).send({ message: res.__('abtest.create.success'), data: abtestData });
 
 }
@@ -68,6 +79,14 @@ exports.update = async function(req, res){
     return res.status(404).send({ message: res.__('abtest.update.not_found') });
   }
 
+  // Emit socket update for the updated AB test
+  try {
+    await emitABTestUpdates(req.user, emitABTestUpdate);
+  } catch (error) {
+    console.error('Error emitting AB test update:', error);
+    // Don't fail the request if socket emission fails
+  }
+
   return res.status(200).send({ message: res.__('abtest.update.success'), data: abtestData });
 
 }
@@ -80,6 +99,14 @@ exports.delete = async function(req, res){
   
   if (result.deletedCount === 0) {
     return res.status(404).send({ message: res.__('abtest.delete.not_found') });
+  }
+
+  // Emit socket update after deletion
+  try {
+    await emitABTestUpdates(req.user, emitABTestUpdate);
+  } catch (error) {
+    console.error('Error emitting AB test update:', error);
+    // Don't fail the request if socket emission fails
   }
 
   res.status(200).send({ message: res.__('abtest.delete.success') });

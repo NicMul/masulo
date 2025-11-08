@@ -183,7 +183,7 @@ class VideoManager {
     }
   
     // Update existing video element with new sources (with delays and spinner)
-    updateVideo(videoElement, videoUrl, imageUrl) {
+    updateVideo(videoElement, videoUrl, imageUrl, variant = 'A') {
       if (!videoElement || videoElement.tagName !== 'VIDEO') {
         return;
       }
@@ -210,6 +210,7 @@ class VideoManager {
           setTimeout(() => {
             videoElement.src = videoUrl;
             videoElement.poster = imageUrl;
+            videoElement.setAttribute('data-mesulo-variant', 'A');
             
             // Fade back in
             videoElement.style.opacity = '1';
@@ -236,16 +237,16 @@ class VideoManager {
     }
   
     // Replace <img> with <video> or update existing <video>
-    replaceImage(element, gameId, videoUrl, imageUrl) {
+    replaceImage(element, gameId, videoUrl, imageUrl, variant = 'A', forceDelay = false) {
       // Check if element is already a video
       if (element && element.tagName === 'VIDEO') {
-        this.updateVideo(element, videoUrl, imageUrl);
+        this.updateVideo(element, videoUrl, imageUrl, variant);
         return;
       }
       
       // Check if we have a stored video element reference
       if (this.videoElement && this.videoElement.tagName === 'VIDEO') {
-        this.updateVideo(this.videoElement, videoUrl, imageUrl);
+        this.updateVideo(this.videoElement, videoUrl, imageUrl, variant);
         return;
       }
       
@@ -255,18 +256,18 @@ class VideoManager {
         return;
       }
       
-      // Handle initial load with delays and spinner
-      if (this.isInitialLoad) {
-        this._replaceImageWithDelay(img, gameId, videoUrl, imageUrl);
+      // Handle initial load with delays and spinner, or force delay for AB test assets
+      if (this.isInitialLoad || forceDelay) {
+        this._replaceImageWithDelay(img, gameId, videoUrl, imageUrl, variant);
         this.isInitialLoad = false; // Mark as loaded
       } else {
         // Immediate replacement for subsequent updates
-        this._performReplacement(img, gameId, videoUrl, imageUrl);
+        this._performReplacement(img, gameId, videoUrl, imageUrl, false, variant);
       }
     }
     
     // Perform the actual image to video replacement with timing and spinner
-    _replaceImageWithDelay(img, gameId, videoUrl, imageUrl) {
+    _replaceImageWithDelay(img, gameId, videoUrl, imageUrl, variant = 'A') {
       // Step 1: Wait 2 seconds
       setTimeout(() => {
         // Step 2: Show spinner
@@ -275,13 +276,13 @@ class VideoManager {
         // Step 3: Wait 1 second with spinner visible
         setTimeout(() => {
           // Step 4: Perform replacement with fade transition
-          this._performReplacement(img, gameId, videoUrl, imageUrl, true);
+          this._performReplacement(img, gameId, videoUrl, imageUrl, true, variant);
         }, 1000);
       }, 2000);
     }
     
     // Core replacement logic
-    _performReplacement(img, gameId, videoUrl, imageUrl, withFade = false) {
+    _performReplacement(img, gameId, videoUrl, imageUrl, withFade = false, variant = 'A') {
       const video = document.createElement('video');
       const computedStyles = window.getComputedStyle(img);
   
@@ -305,6 +306,7 @@ class VideoManager {
       video.setAttribute('width', img.getAttribute('width') || computedStyles.width);
       video.setAttribute('height', img.getAttribute('height') || computedStyles.height);
       video.setAttribute('data-mesulo-game-id', gameId);
+      video.setAttribute('data-mesulo-variant', variant);
       if (img.alt) video.setAttribute('title', img.alt);
   
       // Video source setup

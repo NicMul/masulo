@@ -1,7 +1,8 @@
 const { Server } = require('socket.io');
 const user = require('../model/user');
 const analytics = require('../model/analytics');
-const { getGamesById, getPromotions } = require('../services/realtime');
+const abtestData = require('../model/abtest-data');
+const { getGamesById, getPromotions, getABTests } = require('../services/realtime');
 
 let io = null;
 
@@ -162,6 +163,8 @@ function initializeSocketIO(server) {
           await getGamesById(data.data.gameIds, userData.id, socket);
         } else if (data.event === 'get-promotions') {
           await getPromotions(userData.id, socket);
+        } else if (data.event === 'get-ab-tests') {
+          await getABTests(userData.id, socket, io);
         }
       } catch (error) {
         console.error('Error processing SDK event:', error);
@@ -193,6 +196,62 @@ function initializeSocketIO(server) {
       }
     });
 
+    // Handle AB test analytics batch events
+    socket.on('abtest-analytics-batch', async (data) => {
+      try {
+        console.log('[Socket] Received AB test analytics batch:', {
+          eventCount: data.events?.length || 0,
+          hasEvents: !!data.events,
+          isArray: Array.isArray(data.events)
+        });
+        
+        if (!data.events || !Array.isArray(data.events) || data.events.length === 0) {
+          console.warn('Invalid AB test analytics batch data:', data);
+          return;
+        }
+        
+        // Validate all events have required fields
+        const validEvents = data.events.filter(event => 
+          event.gameId && event.eventType && event.variant && event.device
+        );
+        
+        console.log('[Socket] Valid events:', {
+          total: data.events.length,
+          valid: validEvents.length,
+          invalid: data.events.length - validEvents.length
+        });
+        
+        if (validEvents.length === 0) {
+          console.warn('No valid events in AB test analytics batch');
+          return;
+        }
+        
+        // Bulk insert (fire-and-forget for performance)
+        abtestData.createMany({ 
+          events: validEvents, 
+          user: userData.id, 
+          account: userData.id 
+        })
+          .then(result => {
+            console.log('[Socket] AB test analytics batch stored successfully:', {
+              insertedCount: result.insertedCount,
+              userId: userData.id
+            });
+          })
+          .catch(error => {
+            console.error('Error storing AB test analytics batch:', error);
+            console.error('Error details:', {
+              message: error.message,
+              name: error.name,
+              stack: error.stack
+            });
+          });
+          
+      } catch (error) {
+        console.error('Error processing AB test analytics batch:', error);
+      }
+    });
+
     // Handle game room management
     socket.on('join-game-rooms', (data, callback) => {
 
@@ -206,7 +265,8 @@ function initializeSocketIO(server) {
             const roomName = `game:${gameId}`;
             socket.join(roomName);
             joinedRooms.push(roomName);
-            console.log(`Socket ${socket.id} joined room: ${roomName}`);
+            const roomCount = io.sockets.adapter.rooms.get(roomName)?.size || 0;
+            console.log(`Socket ${socket.id} joined room: ${roomName} | Room count: ${roomCount}`);
           });
         }
         
@@ -324,9 +384,41 @@ const emitPromotionUpdate = (userId, promotionsData) => {
   console.log('=== emitPromotionUpdate complete ===');
 };
 
+// Function to emit AB test updates to user-specific room
+const emitABTestUpdate = (userId, abtestsData) => {
+  if (!io) {
+    console.error('Socket.IO not initialized');
+    return;
+  }
+
+  console.log('=== emitABTestUpdate called ===');
+  console.log('User ID:', userId);
+  console.log('AB Test data received:', abtestsData?.length || 0, 'test(s)');
+
+  const payload = {
+    success: true,
+    abtests: abtestsData || [],
+    count: abtestsData?.length || 0,
+    timestamp: new Date().toISOString()
+  };
+
+  // Emit to user-specific room instead of broadcasting to all
+  const userRoom = `user:${userId}`;
+  const socketsInRoom = io.sockets.adapter.rooms.get(userRoom);
+  console.log(`  - Sockets in room ${userRoom}:`, socketsInRoom?.size || 0);
+  if (socketsInRoom) {
+    console.log(`  - Socket IDs in room:`, Array.from(socketsInRoom));
+  }
+  
+  io.to(userRoom).emit('abtests-updated', payload);
+  console.log(`✅ Emitted AB test update to user room ${userRoom}`);
+  console.log('=== emitABTestUpdate complete ===');
+};
+
 module.exports = {
   initializeSocketIO,
   emitGameUpdate,
   emitPromotionUpdate,
+  emitABTestUpdate,
   getIO: () => io
 };

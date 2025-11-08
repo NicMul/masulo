@@ -16,6 +16,8 @@ export class ConnectionManager {
     this.isConnected = false;
     this.socket = null;
     this.onPromotionsRefreshCallback = null;
+    this.onABTestsRefreshCallback = null;
+    this.onABTestsUpdateCallback = null;
   }
   
   connect() {
@@ -101,6 +103,24 @@ export class ConnectionManager {
       }
     });
     
+    // AB Tests response
+    this.socket.on('abtests-response', (data) => {
+      console.log('[Mesulo SDK] AB Tests response received:', data);
+      if (data && data.abtests && this.onABTestsUpdateCallback) {
+        this.onABTestsUpdateCallback(data.abtests);
+      } else if (!data || !data.abtests) {
+        console.log('[Mesulo SDK] AB Tests response received but no abtests array found in data');
+      }
+    });
+    
+    // Real-time AB test updates - trigger refresh
+    this.socket.on('abtests-updated', (data) => {
+      console.log('[Mesulo SDK] AB Tests updated - refreshing AB tests');
+      if (this.onABTestsRefreshCallback) {
+        this.onABTestsRefreshCallback();
+      }
+    });
+    
     // Listen for socket errors
     this.socket.on('error', (error) => {
       console.error('[Mesulo SDK] Socket error:', error);
@@ -144,9 +164,24 @@ export class ConnectionManager {
     this.onPromotionsRefreshCallback = callback;
   }
   
+  // Set callback for AB test updates
+  setOnABTestsUpdate(callback) {
+    this.onABTestsUpdateCallback = callback;
+  }
+  
+  // Set callback for AB test refresh (re-fetch data)
+  setOnABTestsRefresh(callback) {
+    this.onABTestsRefreshCallback = callback;
+  }
+  
   // Get socket instance for other managers
   getSocket() {
     return this.socket;
+  }
+  
+  // Get application key for variant assignment
+  getApplicationKey() {
+    return this.applicationKey;
   }
 }
 
