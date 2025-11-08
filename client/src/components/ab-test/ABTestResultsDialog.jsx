@@ -5,10 +5,10 @@
 *
 **********/
 
-import { Dialog, DialogContent, DialogHeader, DialogFooter, Button, Badge } from 'components/lib';
+import { Dialog, DialogContent, DialogHeader, DialogFooter, Button, Badge, useMutation, Chart } from 'components/lib';
 import MediaPlayer from 'components/edit/MediaPlayer';
 import { PromoteVariantDropdown } from './PromoteVariantDropdown';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 
 // --- Utility Components ---
 
@@ -17,8 +17,8 @@ const VariantData = ({
     t,
     variantName,
     clicks,
-    conversions,
-    conversionRate,
+    impressions,
+    ctr,
     colorClass,
     isWinner
 }) => (
@@ -44,15 +44,15 @@ const VariantData = ({
             </div>
             
             <div className="flex items-baseline justify-between">
-                <span className="text-xs text-slate-500 dark:text-slate-400">{t('Conversions')}</span>
-                <span className="text-2xl font-bold text-slate-900 dark:text-slate-100">{conversions || 'N/A'}</span>
+                <span className="text-xs text-slate-500 dark:text-slate-400">{t('Impressions')}</span>
+                <span className="text-2xl font-bold text-slate-900 dark:text-slate-100">{impressions || 'N/A'}</span>
             </div>
             
             <div className="pt-3 border-t border-slate-200 dark:border-slate-700">
                 <div className="flex items-baseline justify-between">
-                    <span className="text-xs text-slate-500 dark:text-slate-400">{t('Conversion Rate')}</span>
+                    <span className="text-xs text-slate-500 dark:text-slate-400">{t('CTR')}</span>
                     <span className={`text-3xl font-black ${isWinner ? 'text-green-600 dark:text-green-400' : 'text-slate-900 dark:text-slate-100'}`}>
-                        {conversionRate || 'N/A'}
+                        {ctr || 'N/A'}
                     </span>
                 </div>
             </div>
@@ -117,6 +117,253 @@ const ABTestResultsDialog = ({
     const [variantAPromotion, setVariantAPromotion] = useState('');
     const [variantBPromotion, setVariantBPromotion] = useState('');
 
+    // State for stats data
+    const [variantAData, setVariantAData] = useState({
+        clicks: 0,
+        impressions: 0,
+        ctr: 0,
+        isWinner: false
+    });
+    const [variantBData, setVariantBData] = useState({
+        clicks: 0,
+        impressions: 0,
+        ctr: 0,
+        isWinner: false
+    });
+    const [timeSeriesData, setTimeSeriesData] = useState(null);
+    const [timeRange, setTimeRange] = useState('hour'); // 'hour', 'day', 'week'
+    const [isRefreshing, setIsRefreshing] = useState(false); // Artificial loading state for refresh
+
+    // Use mutation hook for fetching stats
+    const fetchStatsMutation = useMutation('/api/ab-test-data/stats', 'GET');
+    const fetchTimeSeriesMutation = useMutation('/api/ab-test-data/timeseries', 'GET');
+    
+    // Track if we've already fetched to prevent infinite loops
+    const hasFetchedRef = useRef(false);
+    const lastAbTestIdRef = useRef(null);
+    const lastTimeRangeRef = useRef(null);
+
+    // Fetch stats data
+    const fetchStats = useCallback(async (isRefresh = false) => {
+        if (!abTest || !abTest.gameId || !abTest.startDate || !abTest.endDate) {
+            return;
+        }
+
+        const url = `/api/ab-test-data/stats?gameId=${encodeURIComponent(abTest.gameId)}&startDate=${encodeURIComponent(abTest.startDate)}&endDate=${encodeURIComponent(abTest.endDate)}`;
+        const result = await fetchStatsMutation.execute(null, url);
+        
+        if (result && result.data) {
+            const stats = result.data;
+            
+            // Format data for Variant A
+            const variantA = {
+                clicks: stats.variantA?.clicks || 0,
+                impressions: stats.variantA?.impressions || 0,
+                ctr: stats.variantA?.ctr || 0,
+                isWinner: false
+            };
+            
+            // Format data for Variant B
+            const variantB = {
+                clicks: stats.variantB?.clicks || 0,
+                impressions: stats.variantB?.impressions || 0,
+                ctr: stats.variantB?.ctr || 0,
+                isWinner: false
+            };
+
+            // Determine winner based on CTR
+            if (variantA.ctr > variantB.ctr) {
+                variantA.isWinner = true;
+            } else if (variantB.ctr > variantA.ctr) {
+                variantB.isWinner = true;
+            }
+
+            setVariantAData(variantA);
+            setVariantBData(variantB);
+        }
+    }, [abTest?.gameId, abTest?.startDate, abTest?.endDate]);
+
+    // Fetch data when dialog opens - only fetch once per abTest
+    useEffect(() => {
+        // Reset if abTest changed
+        if (abTest?.id !== lastAbTestIdRef.current) {
+            hasFetchedRef.current = false;
+            lastAbTestIdRef.current = abTest?.id || null;
+        }
+        
+        // Fetch only once when dialog opens and we have an abTest
+        if (isOpen && abTest?.id && abTest?.gameId && abTest?.startDate && abTest?.endDate && !hasFetchedRef.current) {
+            hasFetchedRef.current = true;
+            
+            // Fetch stats
+            const url = `/api/ab-test-data/stats?gameId=${encodeURIComponent(abTest.gameId)}&startDate=${encodeURIComponent(abTest.startDate)}&endDate=${encodeURIComponent(abTest.endDate)}`;
+            fetchStatsMutation.execute(null, url).then(result => {
+                if (result && result.data) {
+                    const stats = result.data;
+                    
+                    // Format data for Variant A
+                    const variantA = {
+                        clicks: stats.variantA?.clicks || 0,
+                        impressions: stats.variantA?.impressions || 0,
+                        ctr: stats.variantA?.ctr || 0,
+                        isWinner: false
+                    };
+                    
+                    // Format data for Variant B
+                    const variantB = {
+                        clicks: stats.variantB?.clicks || 0,
+                        impressions: stats.variantB?.impressions || 0,
+                        ctr: stats.variantB?.ctr || 0,
+                        isWinner: false
+                    };
+
+                    // Determine winner based on CTR
+                    if (variantA.ctr > variantB.ctr) {
+                        variantA.isWinner = true;
+                    } else if (variantB.ctr > variantA.ctr) {
+                        variantB.isWinner = true;
+                    }
+
+                    setVariantAData(variantA);
+                    setVariantBData(variantB);
+                }
+            });
+
+        }
+        
+        // Reset fetch flag when dialog closes
+        if (!isOpen) {
+            hasFetchedRef.current = false;
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isOpen, abTest?.id]);
+
+    // Calculate date range based on time range selection
+    const getDateRange = useCallback((range) => {
+        const now = new Date();
+        const endDate = now.toISOString();
+        let startDate;
+
+        switch (range) {
+            case 'hour':
+                startDate = new Date(now.getTime() - 60 * 60 * 1000).toISOString(); // Last hour
+                break;
+            case 'day':
+                startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString(); // Last 24 hours
+                break;
+            case 'week':
+                startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString(); // Last 7 days
+                break;
+            default:
+                startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
+        }
+
+        return { startDate, endDate };
+    }, []);
+
+    // Fetch time series when time range changes or dialog opens
+    useEffect(() => {
+        if (!isOpen || !abTest?.gameId) {
+            return;
+        }
+
+        // Check if we need to fetch (timeRange changed or first time)
+        if (timeRange !== lastTimeRangeRef.current || lastAbTestIdRef.current !== abTest?.id) {
+            lastTimeRangeRef.current = timeRange;
+            
+            const { startDate, endDate } = getDateRange(timeRange);
+            const timeSeriesUrl = `/api/ab-test-data/timeseries?gameId=${encodeURIComponent(abTest.gameId)}&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`;
+            fetchTimeSeriesMutation.execute(null, timeSeriesUrl).then(result => {
+                if (result && result.data) {
+                    setTimeSeriesData(result.data);
+                }
+            });
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isOpen, abTest?.gameId, abTest?.id, timeRange]);
+
+    // Use loading state from mutation
+    const loading = fetchStatsMutation.loading;
+    const refreshing = isRefreshing || fetchStatsMutation.loading || fetchTimeSeriesMutation.loading;
+    const chartLoading = fetchTimeSeriesMutation.loading;
+
+    // Format time series data for chart
+    const chartData = useMemo(() => {
+        if (!timeSeriesData || !timeSeriesData.labels || timeSeriesData.labels.length === 0) {
+            return null;
+        }
+
+        // Format dates for display based on time range
+        const formattedLabels = timeSeriesData.labels.map(date => {
+            // Check if date includes hour (format: YYYY-MM-DDTHH or YYYY-MM-DDTHH:MM or YYYY-MM-DD)
+            if (date.includes('T')) {
+                const parts = date.split('T');
+                if (parts[1] && parts[1].includes(':')) {
+                    // Minute-level grouping format: YYYY-MM-DDTHH:MM
+                    const [datePart, timePart] = date.split('T');
+                    const [hour, minute] = timePart.split(':');
+                    return `${hour.padStart(2, '0')}:${minute || '00'}`;
+                } else {
+                    // Hourly grouping format: YYYY-MM-DDTHH
+                    const hour = parts[1] ? parseInt(parts[1], 10) : 0;
+                    return `${hour.toString().padStart(2, '0')}:00`;
+                }
+            } else {
+                // Daily grouping format: YYYY-MM-DD
+                const d = new Date(date);
+                return `${d.getMonth() + 1}/${d.getDate()}`;
+            }
+        });
+
+        return {
+            labels: formattedLabels,
+            datasets: [
+                {
+                    label: 'Variant A - Impressions',
+                    data: timeSeriesData.impressions?.variantA?.map(item => item.count) || [],
+                    borderColor: 'rgb(59, 130, 246)', // blue
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    tension: 0.4
+                },
+                {
+                    label: 'Variant B - Impressions',
+                    data: timeSeriesData.impressions?.variantB?.map(item => item.count) || [],
+                    borderColor: 'rgb(168, 85, 247)', // purple
+                    backgroundColor: 'rgba(168, 85, 247, 0.1)',
+                    tension: 0.4
+                },
+                {
+                    label: 'Variant A - Clicks',
+                    data: timeSeriesData.clicks?.variantA?.map(item => item.count) || [],
+                    borderColor: 'rgb(34, 197, 94)', // green
+                    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                    tension: 0.4
+                },
+                {
+                    label: 'Variant B - Clicks',
+                    data: timeSeriesData.clicks?.variantB?.map(item => item.count) || [],
+                    borderColor: 'rgb(236, 72, 153)', // pink
+                    backgroundColor: 'rgba(236, 72, 153, 0.1)',
+                    tension: 0.4
+                },
+                {
+                    label: 'Variant A - Avg Hover Time (s)',
+                    data: timeSeriesData.hoverTime?.variantA?.map(item => item.avgDuration) || [],
+                    borderColor: 'rgb(251, 146, 60)', // orange
+                    backgroundColor: 'rgba(251, 146, 60, 0.1)',
+                    tension: 0.4
+                },
+                {
+                    label: 'Variant B - Avg Hover Time (s)',
+                    data: timeSeriesData.hoverTime?.variantB?.map(item => item.avgDuration) || [],
+                    borderColor: 'rgb(249, 115, 22)', // dark orange
+                    backgroundColor: 'rgba(249, 115, 22, 0.1)',
+                    tension: 0.4
+                }
+            ]
+        };
+    }, [timeSeriesData]);
+
     // Handler for Variant A selection - clears Variant B when selected
     const handleVariantAPromotionChange = (value) => {
         setVariantAPromotion(value);
@@ -133,24 +380,81 @@ const ABTestResultsDialog = ({
         }
     };
 
+    // Handle refresh
+    const handleRefresh = () => {
+        if (!abTest || !abTest.gameId || !abTest.startDate || !abTest.endDate) {
+            return;
+        }
+
+        // Set artificial loading state
+        setIsRefreshing(true);
+
+        // Create promises for both API calls
+        const statsPromise = fetchStatsMutation.execute(null, `/api/ab-test-data/stats?gameId=${encodeURIComponent(abTest.gameId)}&startDate=${encodeURIComponent(abTest.startDate)}&endDate=${encodeURIComponent(abTest.endDate)}`);
+        
+        const { startDate, endDate } = getDateRange(timeRange);
+        const timeSeriesPromise = fetchTimeSeriesMutation.execute(null, `/api/ab-test-data/timeseries?gameId=${encodeURIComponent(abTest.gameId)}&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`);
+
+        // Create a minimum 2-second delay promise
+        const minDelayPromise = new Promise(resolve => setTimeout(resolve, 2000));
+
+        // Wait for all promises (API calls + minimum delay)
+        Promise.all([statsPromise, timeSeriesPromise, minDelayPromise]).then(([statsResult, timeSeriesResult]) => {
+            // Process stats result
+            if (statsResult && statsResult.data) {
+                const stats = statsResult.data;
+                
+                const variantA = {
+                    clicks: stats.variantA?.clicks || 0,
+                    impressions: stats.variantA?.impressions || 0,
+                    ctr: stats.variantA?.ctr || 0,
+                    isWinner: false
+                };
+                
+                const variantB = {
+                    clicks: stats.variantB?.clicks || 0,
+                    impressions: stats.variantB?.impressions || 0,
+                    ctr: stats.variantB?.ctr || 0,
+                    isWinner: false
+                };
+
+                if (variantA.ctr > variantB.ctr) {
+                    variantA.isWinner = true;
+                } else if (variantB.ctr > variantA.ctr) {
+                    variantB.isWinner = true;
+                }
+
+                setVariantAData(variantA);
+                setVariantBData(variantB);
+            }
+
+            // Process time series result
+            if (timeSeriesResult && timeSeriesResult.data) {
+                setTimeSeriesData(timeSeriesResult.data);
+            }
+
+            // Clear artificial loading state
+            setIsRefreshing(false);
+        }).catch(() => {
+            // Clear loading state even on error
+            setIsRefreshing(false);
+        });
+    };
+
     // Handle CSV export
     const handleExportCSV = () => {
         console.log('Export CSV for AB test:', abTest.id);
     };
 
-    // Placeholder data for variants
-    const variantAData = {
-        clicks: '1,250',
-        conversions: '320',
-        conversionRate: '25.6%',
-        isWinner: true 
+    // Format numbers for display
+    const formatNumber = (num) => {
+        if (num === null || num === undefined) return 'N/A';
+        return num.toLocaleString();
     };
 
-    const variantBData = {
-        clicks: '1,300',
-        conversions: '299',
-        conversionRate: '23.0%',
-        isWinner: false
+    const formatCTR = (ctr) => {
+        if (ctr === null || ctr === undefined) return 'N/A';
+        return `${ctr.toFixed(2)}%`;
     };
 
     return (
@@ -166,6 +470,7 @@ const ABTestResultsDialog = ({
                             {t('AB Test Results')}
                         </h1>
                         <div className="flex items-center gap-2 mr-5">
+                            
                             {!!abTest.published ? (
                                 <Badge variant="green">Published</Badge>
                             ) : (
@@ -183,13 +488,39 @@ const ABTestResultsDialog = ({
                     <div className="flex flex-col gap-8 pr-2"> 
                         
                         {/* Test Title Section */}
-                        <div className="text-center">
-                            <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+                        <div className="flex flex-row items-center justify-between">
+                            <div className="flex flex-col gap-2">
+                            <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
                                 {abTest.name}
                             </h2>
-                            <p className="text-slate-600 dark:text-slate-400 max-w-3xl mx-auto">
+                            <p className="text-slate-600 dark:text-slate-400 max-w-3xl ">
                                 {abTest.description}
                             </p>
+                            </div>
+                           
+                            <Button
+                                color="blue"
+                                onClick={handleRefresh}
+                                disabled={refreshing || loading || chartLoading}
+                                className="flex items-center gap-2"
+                            >
+                                {(refreshing || chartLoading) ? (
+                                    <>
+                                        <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        {t('Refreshing...')}
+                                    </>
+                                ) : (
+                                    <>
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                        </svg>
+                                        {t('Refresh')}
+                                    </>
+                                )}
+                            </Button>
                         </div>
 
                         {/* Variant Comparison Section */}
@@ -241,13 +572,25 @@ const ABTestResultsDialog = ({
 
                                         {/* Data Section */}
                                         <div className="w-3/5">
-                                            <VariantData 
-                                                t={t}
-                                                variantName="Variant A"
-                                                {...variantAData}
-                                                colorClass={variantAData.isWinner ? 'border-green-500' : 'border-blue-200 dark:border-blue-700'}
-                                                isWinner={variantAData.isWinner}
-                                            />
+                                            {loading ? (
+                                                <div className="bg-white dark:bg-slate-800 rounded-lg p-5 border-2 border-blue-200 dark:border-blue-700 shadow-sm h-full flex flex-col justify-center items-center">
+                                                    <svg className="animate-spin h-8 w-8 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                    </svg>
+                                                    <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">{t('Loading stats...')}</p>
+                                                </div>
+                                            ) : (
+                                                <VariantData 
+                                                    t={t}
+                                                    variantName="Variant A"
+                                                    clicks={formatNumber(variantAData.clicks)}
+                                                    impressions={formatNumber(variantAData.impressions)}
+                                                    ctr={formatCTR(variantAData.ctr)}
+                                                    colorClass={variantAData.isWinner ? 'border-green-500' : 'border-blue-200 dark:border-blue-700'}
+                                                    isWinner={variantAData.isWinner}
+                                                />
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -292,13 +635,25 @@ const ABTestResultsDialog = ({
 
                                         {/* Data Section */}
                                         <div className="w-3/5">
-                                            <VariantData 
-                                                t={t}
-                                                variantName="Variant B"
-                                                {...variantBData}
-                                                colorClass={variantBData.isWinner ? 'border-green-500' : 'border-purple-200 dark:border-purple-700'}
-                                                isWinner={variantBData.isWinner}
-                                            />
+                                            {loading ? (
+                                                <div className="bg-white dark:bg-slate-800 rounded-lg p-5 border-2 border-purple-200 dark:border-purple-700 shadow-sm h-full flex flex-col justify-center items-center">
+                                                    <svg className="animate-spin h-8 w-8 text-purple-600 dark:text-purple-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                    </svg>
+                                                    <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">{t('Loading stats...')}</p>
+                                                </div>
+                                            ) : (
+                                                <VariantData 
+                                                    t={t}
+                                                    variantName="Variant B"
+                                                    clicks={formatNumber(variantBData.clicks)}
+                                                    impressions={formatNumber(variantBData.impressions)}
+                                                    ctr={formatCTR(variantBData.ctr)}
+                                                    colorClass={variantBData.isWinner ? 'border-green-500' : 'border-purple-200 dark:border-purple-700'}
+                                                    isWinner={variantBData.isWinner}
+                                                />
+                                            )}
                                         </div>
                                         
                                     </div>
@@ -395,31 +750,81 @@ const ABTestResultsDialog = ({
 
                             {/* Performance Metrics / Analytics Section */}
                             <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 rounded-xl p-6 border border-slate-200 dark:border-slate-700 shadow-md flex flex-col">
-                                <div className="flex items-center gap-3 mb-6">
-                                    <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-                                        <svg className="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                        </svg>
+                                <div className="flex items-center justify-between mb-6">
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                                            <svg className="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                            </svg>
+                                        </div>
+                                        <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
+                                            {t('Detailed Analytics')}
+                                        </h2>
                                     </div>
-                                    <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-                                        {t('Detailed Analytics')}
-                                    </h2>
+                                    
+                                    {/* Time Range Selector */}
+                                    <div className="flex items-center gap-2">
+                                        <Button
+                                            color={timeRange === 'hour' ? 'blue' : 'gray'}
+                                            onClick={() => setTimeRange('hour')}
+                                            className="text-xs px-3 py-1"
+                                            disabled={chartLoading}
+                                        >
+                                            {t('1 Hour')}
+                                        </Button>
+                                        <Button
+                                            color={timeRange === 'day' ? 'blue' : 'gray'}
+                                            onClick={() => setTimeRange('day')}
+                                            className="text-xs px-3 py-1"
+                                            disabled={chartLoading}
+                                        >
+                                            {t('1 Day')}
+                                        </Button>
+                                        <Button
+                                            color={timeRange === 'week' ? 'blue' : 'gray'}
+                                            onClick={() => setTimeRange('week')}
+                                            className="text-xs px-3 py-1"
+                                            disabled={chartLoading}
+                                        >
+                                            {t('1 Week')}
+                                        </Button>
+                                    </div>
                                 </div>
                                 
-                                {/* Empty State */}
-                                <div className="flex-1 flex flex-col items-center justify-center py-8 bg-white dark:bg-slate-800 rounded-lg border-2 border-dashed border-slate-300 dark:border-slate-600">
-                                    <div className="p-4 bg-slate-100 dark:bg-slate-700 rounded-full mb-4">
-                                        <svg className="w-12 h-12 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+                                {/* Chart Display */}
+                                {chartLoading ? (
+                                    <div className="flex-1 flex flex-col items-center justify-center py-8 bg-white dark:bg-slate-800 rounded-lg border-2 border-dashed border-slate-300 dark:border-slate-600">
+                                        <svg className="animate-spin h-8 w-8 text-purple-600 dark:text-purple-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>
+                                        <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">{t('Loading chart data...')}</p>
                                     </div>
-                                    <p className="text-slate-500 dark:text-slate-400 text-center text-sm max-w-xs">
-                                        {t('Detailed performance metrics and event data will be displayed here')}
-                                    </p>
-                                    <p className="text-slate-400 dark:text-slate-500 text-center text-xs mt-2">
-                                        {t('Charts • Graphs • Statistical Analysis')}
-                                    </p>
-                                </div>
+                                ) : chartData ? (
+                                    <div className="flex-1 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                                        <Chart
+                                            type="line"
+                                            data={chartData}
+                                            color={['blue', 'purple', 'green', 'pink']}
+                                            showLegend={true}
+                                            loading={false}
+                                        />
+                                    </div>
+                                ) : (
+                                    <div className="flex-1 flex flex-col items-center justify-center py-8 bg-white dark:bg-slate-800 rounded-lg border-2 border-dashed border-slate-300 dark:border-slate-600">
+                                        <div className="p-4 bg-slate-100 dark:bg-slate-700 rounded-full mb-4">
+                                            <svg className="w-12 h-12 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+                                            </svg>
+                                        </div>
+                                        <p className="text-slate-500 dark:text-slate-400 text-center text-sm max-w-xs">
+                                            {t('No data available for the selected time period')}
+                                        </p>
+                                        <p className="text-slate-400 dark:text-slate-500 text-center text-xs mt-2">
+                                            {t('Charts will appear here once test data is collected')}
+                                        </p>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>

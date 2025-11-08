@@ -2337,6 +2337,9 @@ table tbody tr:last-child td {
 .text-center {
   text-align: center;
 }
+.text-start {
+  text-align: start;
+}
 .align-middle {
   vertical-align: middle;
 }
@@ -2612,6 +2615,9 @@ table tbody tr:last-child td {
 }
 .opacity-100 {
   opacity: 1;
+}
+.opacity-25 {
+  opacity: 0.25;
 }
 .opacity-30 {
   opacity: 0.3;
