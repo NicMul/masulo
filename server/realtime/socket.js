@@ -1,7 +1,7 @@
 const { Server } = require('socket.io');
 const user = require('../model/user');
 const analytics = require('../model/analytics');
-const { getGamesById, getPromotions } = require('../services/realtime');
+const { getGamesById, getPromotions, getABTests } = require('../services/realtime');
 
 let io = null;
 
@@ -162,6 +162,8 @@ function initializeSocketIO(server) {
           await getGamesById(data.data.gameIds, userData.id, socket);
         } else if (data.event === 'get-promotions') {
           await getPromotions(userData.id, socket);
+        } else if (data.event === 'get-ab-tests') {
+          await getABTests(userData.id, socket, io);
         }
       } catch (error) {
         console.error('Error processing SDK event:', error);
@@ -206,7 +208,8 @@ function initializeSocketIO(server) {
             const roomName = `game:${gameId}`;
             socket.join(roomName);
             joinedRooms.push(roomName);
-            console.log(`Socket ${socket.id} joined room: ${roomName}`);
+            const roomCount = io.sockets.adapter.rooms.get(roomName)?.size || 0;
+            console.log(`Socket ${socket.id} joined room: ${roomName} | Room count: ${roomCount}`);
           });
         }
         
@@ -324,9 +327,41 @@ const emitPromotionUpdate = (userId, promotionsData) => {
   console.log('=== emitPromotionUpdate complete ===');
 };
 
+// Function to emit AB test updates to user-specific room
+const emitABTestUpdate = (userId, abtestsData) => {
+  if (!io) {
+    console.error('Socket.IO not initialized');
+    return;
+  }
+
+  console.log('=== emitABTestUpdate called ===');
+  console.log('User ID:', userId);
+  console.log('AB Test data received:', abtestsData?.length || 0, 'test(s)');
+
+  const payload = {
+    success: true,
+    abtests: abtestsData || [],
+    count: abtestsData?.length || 0,
+    timestamp: new Date().toISOString()
+  };
+
+  // Emit to user-specific room instead of broadcasting to all
+  const userRoom = `user:${userId}`;
+  const socketsInRoom = io.sockets.adapter.rooms.get(userRoom);
+  console.log(`  - Sockets in room ${userRoom}:`, socketsInRoom?.size || 0);
+  if (socketsInRoom) {
+    console.log(`  - Socket IDs in room:`, Array.from(socketsInRoom));
+  }
+  
+  io.to(userRoom).emit('abtests-updated', payload);
+  console.log(`✅ Emitted AB test update to user room ${userRoom}`);
+  console.log('=== emitABTestUpdate complete ===');
+};
+
 module.exports = {
   initializeSocketIO,
   emitGameUpdate,
   emitPromotionUpdate,
+  emitABTestUpdate,
   getIO: () => io
 };

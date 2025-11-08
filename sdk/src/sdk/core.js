@@ -7,6 +7,7 @@ import { getCurrentConfig } from './config.js';
 import { ConnectionManager } from './connection.js';
 import { GameManager } from './game.js';
 import { PromotionManager } from './promotions.js';
+import { ABTestManager } from './abtest.js';
 import { VideoManager } from './video.js';
 import { ScrollDetector } from './scroll-detect.js';
 import { AnalyticsManager } from './analytics.js';
@@ -41,11 +42,12 @@ export class MesuloSDK {
       this.statusCallbacks,
       (event, data) => this.emit(event, data),
       () => {
-        // Callback when connected - request games and promotions
+        // Callback when connected - request games, promotions, and AB tests
         if (this.gameManager) {
           this.gameManager.requestGames();
         }
         this.requestPromotions();
+        this.requestABTests();
       }
     );
     
@@ -80,6 +82,25 @@ export class MesuloSDK {
     this.connectionManager.setOnPromotionsRefresh(() => {
       this.gameManager.requestGames();
       this.requestPromotions();
+    });
+    
+    this.abtestManager = new ABTestManager(
+      this.connectionManager,
+      this.gameManager
+    );
+    
+    // Link ABTestManager to GameManager so it can check for active AB tests
+    this.gameManager.setABTestManager(this.abtestManager);
+    
+    // Set up AB tests callback
+    this.connectionManager.setOnABTestsUpdate((abtests) => {
+      this.abtestManager.updateABTests(abtests);
+    });
+    
+    // Set up AB tests refresh callback (for updates)
+    this.connectionManager.setOnABTestsRefresh(() => {
+      this.gameManager.requestGames();
+      this.requestABTests();
     });
     
     this.videoManager = new VideoManager(this.gameManager);
@@ -120,6 +141,26 @@ export class MesuloSDK {
     
     console.log('[Mesulo SDK] Requesting promotions with:', requestData);
     // Request promotions
+    socket.emit('sdk-event', requestData);
+  }
+  
+  // ========== AB Test Management ==========
+  
+  requestABTests() {
+    const socket = this.connectionManager.getSocket();
+    if (!socket || !this.connectionManager.isConnected) {
+      console.log('[Mesulo SDK] Cannot request AB tests: socket not connected');
+      return;
+    }
+    
+    const requestData = {
+      event: 'get-ab-tests',
+      data: {},
+      timestamp: new Date().toISOString()
+    };
+    
+    console.log('[Mesulo SDK] Requesting AB tests with:', requestData);
+    // Request AB tests
     socket.emit('sdk-event', requestData);
   }
   

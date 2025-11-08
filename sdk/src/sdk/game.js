@@ -8,6 +8,7 @@ export class GameManager {
     this.connectionManager = connectionManager;
     this.analyticsManager = analyticsManager;
     this.promotionManager = promotionManager;
+    this.abtestManager = null;
     this.registeredComponents = new Map(); // gameId -> Set<component>
 
     
@@ -21,6 +22,13 @@ export class GameManager {
    */
   setPromotionManager(promotionManager) {
     this.promotionManager = promotionManager;
+  }
+  
+  /**
+   * Set the AB test manager reference (called after ABTestManager is created)
+   */
+  setABTestManager(abtestManager) {
+    this.abtestManager = abtestManager;
   }
   
   registerGameCard(component, gameId) {
@@ -77,6 +85,11 @@ export class GameManager {
       this.promotionManager.updateGamesMap(gamesData);
     }
     
+    // Update AB test manager's game mapping if available
+    if (this.abtestManager && typeof this.abtestManager.updateGamesMap === 'function') {
+      this.abtestManager.updateGamesMap(gamesData);
+    }
+    
     gamesData.forEach(game => {
       const components = this.registeredComponents.get(game.id);
 
@@ -103,8 +116,22 @@ export class GameManager {
           }
         }
         
-        // If no promotion assets, use game's own assets based on publishedType
-        if (!usePromotionAssets) {
+        // If no promotion assets, check for AB test assets
+        let useABTestAssets = false;
+        let abtestVariant = 'A';
+        if (!usePromotionAssets && this.abtestManager) {
+          const abtestAssets = this.abtestManager.getABTestAssets(game.id, elementToUpdate);
+          if (abtestAssets) {
+            // Use AB test assets - they take precedence over game assets
+            useABTestAssets = true;
+            imageUrl = abtestAssets.imageUrl;
+            videoUrl = abtestAssets.videoUrl;
+            abtestVariant = abtestAssets.variant || 'A';
+          }
+        }
+        
+        // If no promotion or AB test assets, use game's own assets based on publishedType
+        if (!usePromotionAssets && !useABTestAssets) {
           imageUrl = game.defaultImage;
           videoUrl = game.defaultVideo;
 
@@ -125,7 +152,8 @@ export class GameManager {
         }
 
         // Update the component
-        component.replaceImage(elementToUpdate, game.id, videoUrl, imageUrl);
+        const variant = useABTestAssets ? abtestVariant : 'A';
+        component.replaceImage(elementToUpdate, game.id, videoUrl, imageUrl, variant);
       });
     });
   }

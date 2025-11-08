@@ -1,5 +1,6 @@
 const game = require('../model/game');
 const promotion = require('../model/promotion');
+const abtest = require('../model/abtest');
 
 const getGamesById = async (gameIds, userId, socket) => {
     console.log('Processing games request for IDs:', gameIds);
@@ -105,10 +106,74 @@ const emitPromotionUpdates = async (userId, emitPromotionUpdateFn) => {
     }
 }
 
+const getABTests = async (userId, socket, io) => {
+    try {
+      // Fetch AB tests from your database/service
+      const abtests = await abtest.get({ user: userId });
+      
+      // Filter out unpublished AB tests
+      const publishedABTests = abtests.filter(test => test.published === true);
+      
+      // Enrich each AB test with room count for its gameId
+      const abtestsWithRoomCount = publishedABTests.map(test => {
+        if (io) {
+          const roomName = `game:${test.gameId}`;
+          const roomCount = io.sockets.adapter.rooms.get(roomName)?.size || 0;
+          return {
+            ...test.toObject ? test.toObject() : test,
+            roomCount: roomCount
+          };
+        }
+        return test.toObject ? test.toObject() : test;
+      });
+      
+      // Emit response back to client
+      socket.emit('abtests-response', {
+        abtests: abtestsWithRoomCount,
+        success: true,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Error fetching AB tests:', error);
+      socket.emit('abtests-response', {
+        abtests: [],
+        success: false,
+        error: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  };
+
+const emitABTestUpdates = async (userId, emitABTestUpdateFn) => {
+    console.log('Emitting AB test updates for user:', userId);
+    
+    try {
+        // Fetch all AB tests for the user
+        const abtests = await abtest.get({ user: userId });
+        
+        // Filter out unpublished AB tests
+        const publishedABTests = abtests.filter(test => test.published === true);
+        
+        console.log('Found AB tests for update:', publishedABTests?.length || 0);
+        
+        // Emit updates to user-specific room
+        if (emitABTestUpdateFn) {
+            emitABTestUpdateFn(userId, publishedABTests);
+        }
+        
+        return publishedABTests;
+    } catch (error) {
+        console.error('Error emitting AB test updates:', error);
+        return [];
+    }
+}
+
 module.exports = {
     getGamesById,
     emitGameUpdates,
     emitPromotionUpdates,
-    getPromotions
+    getPromotions,
+    getABTests,
+    emitABTestUpdates
 
 };
