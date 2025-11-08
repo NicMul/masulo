@@ -33,7 +33,7 @@ export function AppLayout({ title, children }){
     
     // Campaigns section
     { label: t('nav.promotions'), icon: 'megaphone', link: '/promotions', position: 'middle' },
-    { label: t('nav.ab_testing'), icon: 'test-tube', link: '/ab-testing', position: 'middle' },
+    { label: t('nav.ab_testing'), icon: 'test-tube', link: '/experiments', position: 'middle' },
     
     // Divider
     { type: 'divider', position: 'middle2' },

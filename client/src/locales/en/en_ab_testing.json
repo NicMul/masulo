@@ -10,6 +10,10 @@
   "completed_tests": "Completed Tests",
   "total_tests": "Total Tests",
   "create": {
+    "title": "Create A/B Test",
     "success": "A/B test created successfully"
+  },
+  "edit": {
+    "title": "Edit A/B Test"
   }
 }

@@ -519,6 +519,150 @@ exports.archiveTestAssets = async function(req, res){
 
 }
 
+exports.trimVideo = async function(req, res) {
+  try {
+    const { gameId, videoUrl, trimEnd, assetType } = req.body;
+    
+    if (!gameId || !videoUrl || trimEnd === undefined) {
+      return res.status(400).send({ 
+        message: 'Missing required fields: gameId, videoUrl, trimEnd' 
+      });
+    }
+
+    // Get current game
+    const gameData = await game.get({ id: gameId, user: req.user });
+    if (!gameData || gameData.length === 0) {
+      return res.status(404).send({ message: 'Game not found' });
+    }
+    const currentGame = gameData[0];
+
+    // Get CDN configuration
+    const { 
+      findCdnConfigurationByUserId, 
+      downloadFromBunnyStorage, 
+      uploadToBunnyStorage, 
+      purgePullZoneCache 
+    } = require('../services/bunny-cdn');
+    const { trimVideo, cleanupTempFile } = require('../services/asset-generation-utils');
+    
+    const cdnConfig = await findCdnConfigurationByUserId(req.user, req.account);
+    if (!cdnConfig) {
+      return res.status(500).send({ message: 'CDN configuration not found' });
+    }
+
+    // Step 1: Download video from BunnyCDN
+    console.log('📥 Downloading video for trimming...');
+    // Remove query parameters from videoUrl before downloading
+    const cleanVideoUrl = videoUrl.split('?')[0];
+    const tempVideoPath = await downloadFromBunnyStorage(cleanVideoUrl, cdnConfig);
+
+    // Step 2: Trim the video
+    console.log('✂️ Trimming video...');
+    const trimmedVideoPath = await trimVideo(tempVideoPath, trimEnd);
+
+    // Step 3: Extract folder and filename from original URL
+    // Use URL API for reliable parsing (now that URL is clean, no query params)
+    const urlObj = new URL(cleanVideoUrl);
+    const pathname = urlObj.pathname; // e.g., "/videos/filename.mp4" or "/filename.mp4"
+    const pathParts = pathname.split('/').filter(part => part.length > 0); // Remove empty strings
+    
+    let folder, originalFilename;
+    
+    if (pathParts.length >= 2) {
+      // Has folder: /folder/filename.mp4
+      folder = pathParts[pathParts.length - 2];
+      originalFilename = pathParts[pathParts.length - 1];
+    } else if (pathParts.length === 1) {
+      // No folder, just filename: /filename.mp4
+      originalFilename = pathParts[0];
+      // Default to 'videos' folder for video files
+      const isVideo = originalFilename.match(/\.(mp4|webm|mov|avi)$/i);
+      folder = isVideo ? 'videos' : '';
+      console.log(`⚠️ No folder detected in URL, defaulting to folder: "${folder}"`);
+    } else {
+      throw new Error('Invalid URL path');
+    }
+    
+    console.log(`📁 Extracted - Folder: "${folder}", Filename: "${originalFilename}"`);
+
+    // Step 4: Upload trimmed video back to BunnyCDN with same filename (replaces original)
+    console.log('📤 Uploading trimmed video...');
+    const newVideoUrl = await uploadToBunnyStorage(trimmedVideoPath, cdnConfig, folder, originalFilename);
+
+    // Step 5: Purge cache for the video URL
+    console.log('🔄 Purging CDN cache...');
+    await purgePullZoneCache(newVideoUrl, cdnConfig);
+
+    // Step 6: Determine which field to update based on assetType or video URL
+    let updateData = {};
+    if (assetType) {
+      // Explicit asset type provided
+      if (assetType === 'current') {
+        updateData.currentVideo = newVideoUrl;
+      } else if (assetType === 'theme') {
+        updateData.themeVideo = newVideoUrl;
+      } else if (assetType === 'promo') {
+        updateData.promoVideo = newVideoUrl;
+      } else if (assetType === 'original' || assetType === 'default') {
+        updateData.defaultVideo = newVideoUrl;
+      }
+    } else {
+      // Auto-detect based on which field matches the original URL
+      if (currentGame.currentVideo === cleanVideoUrl) {
+        updateData.currentVideo = newVideoUrl;
+      } else if (currentGame.themeVideo === cleanVideoUrl) {
+        updateData.themeVideo = newVideoUrl;
+      } else if (currentGame.promoVideo === cleanVideoUrl) {
+        updateData.promoVideo = newVideoUrl;
+      } else if (currentGame.defaultVideo === cleanVideoUrl) {
+        updateData.defaultVideo = newVideoUrl;
+      } else if (currentGame.testVideo === cleanVideoUrl) {
+        updateData.testVideo = newVideoUrl;
+      } else {
+        // Default to currentVideo if no match
+        updateData.currentVideo = newVideoUrl;
+      }
+    }
+
+    // Step 7: Update game in database
+    const updatedGame = await game.update({ 
+      id: gameId, 
+      user: req.user, 
+      data: updateData 
+    });
+
+    if (!updatedGame) {
+      return res.status(500).send({ message: 'Failed to update game' });
+    }
+
+    // Step 8: Send socket event to notify SDK
+    await emitGameUpdates([gameId], req.user.id, emitGameUpdate);
+
+    // Step 9: Clean up temp files
+    try {
+      cleanupTempFile(tempVideoPath);
+      cleanupTempFile(trimmedVideoPath);
+      console.log('✅ Cleaned up temp files');
+    } catch (cleanupError) {
+      console.warn('⚠️ Failed to cleanup temp files:', cleanupError);
+    }
+
+    console.log('✅ Video trimmed and updated successfully');
+    return res.status(200).send({ 
+      message: 'Video trimmed successfully', 
+      data: updatedGame,
+      videoUrl: newVideoUrl
+    });
+
+  } catch (error) {
+    console.error('❌ Error trimming video:', error);
+    return res.status(500).send({ 
+      message: 'Failed to trim video', 
+      error: error.message 
+    });
+  }
+}
+
 exports.bulkUpdate = async function(req, res){
 
   // validate

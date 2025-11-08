@@ -14,12 +14,13 @@
 
 import { useState } from 'react';
 import { ViewContext, AppLayout, AuthLayout, AccountLayout, OnboardingLayout, Dialog, 
-  Toaster, ToastAction, Loader, useNavigate, useTranslation, useToast } from '../lib';
+  Toaster, ToastAction, Loader, useNavigate, useTranslation, useToast, useLocation } from '../lib';
 
 export function View({ title, layout, view, data }){
 
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
 
   // state
@@ -164,7 +165,7 @@ export function View({ title, layout, view, data }){
       <Dialog {...dialog } onClose={ closeDialog } /> 
 
       <Layout title={ title } data={ data }>  
-        <View t={ t }/>
+        <View key={location.pathname} t={ t }/>
       </Layout> 
 
     </ViewContext.Provider>

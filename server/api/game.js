@@ -18,6 +18,8 @@ api.get('/api/game/template', auth.verify('user'), use(gameController.downloadTe
 
 api.get('/api/game', auth.verify('user'), use(gameController.get));
 
+api.post('/api/game/trim-video', auth.verify('user'), use(gameController.trimVideo));
+
 api.get('/api/game/:id', auth.verify('user'), use(gameController.get));
 
 api.patch('/api/game/:id', auth.verify('user'), use(gameController.update));

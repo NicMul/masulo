@@ -8,7 +8,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Card, Input, Icon, cn } from 'components/lib';
 
-export function GameSelector({ t, onGameSelect, games = [], selectedGame: propSelectedGame }) {
+export function GameSelector({ t, onGameSelect, games = [], selectedGame: propSelectedGame, disabled = false }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [filteredGames, setFilteredGames] = useState([]);
@@ -18,6 +18,14 @@ export function GameSelector({ t, onGameSelect, games = [], selectedGame: propSe
   const inputRef = useRef(null);
   const dropdownRef = useRef(null);
   const isInternalUpdate = useRef(false);
+
+  // Close dropdown when disabled
+  useEffect(() => {
+    if (disabled) {
+      setIsDropdownOpen(false);
+      setHighlightedIndex(-1);
+    }
+  }, [disabled]);
 
   // Update internal state when prop changes
   useEffect(() => {
@@ -58,6 +66,7 @@ export function GameSelector({ t, onGameSelect, games = [], selectedGame: propSe
 
   // Handle game selection
   const handleGameSelect = (game) => {
+    if (disabled) return;
     setSelectedGame(game);
     setSearchQuery(game.friendlyName || '');
     setIsDropdownOpen(false);
@@ -67,6 +76,7 @@ export function GameSelector({ t, onGameSelect, games = [], selectedGame: propSe
 
   // Handle input change
   const handleInputChange = (event) => {
+    if (disabled) return;
     const value = event.target.value;
     setSearchQuery(value);
     setIsDropdownOpen(value.length > 0);
@@ -81,6 +91,7 @@ export function GameSelector({ t, onGameSelect, games = [], selectedGame: propSe
 
   // Handle input focus
   const handleInputFocus = () => {
+    if (disabled) return;
     if (searchQuery.length > 0) {
       setIsDropdownOpen(true);
     }
@@ -88,6 +99,7 @@ export function GameSelector({ t, onGameSelect, games = [], selectedGame: propSe
 
   // Handle keyboard navigation
   const handleKeyDown = (event) => {
+    if (disabled) return;
     if (!isDropdownOpen || filteredGames.length === 0) return;
 
     switch (event.key) {
@@ -152,17 +164,18 @@ export function GameSelector({ t, onGameSelect, games = [], selectedGame: propSe
                 onFocus={handleInputFocus}
                 onKeyDown={handleKeyDown}
                 placeholder={ t('edit.game.select.placeholder') }
-                className='w-full pl-10 pr-4'
+                className={cn('w-full pl-10 pr-4', disabled && 'cursor-not-allowed opacity-60')}
+                disabled={disabled}
               />
               <Icon
                 name='search'
                 size={16}
-                className='absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400'
+                className={cn('absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400', disabled && 'opacity-60')}
               />
             </div>
 
             {/* Dropdown */}
-            {isDropdownOpen && filteredGames.length > 0 && (
+            {!disabled && isDropdownOpen && filteredGames.length > 0 && (
               <div
                 ref={dropdownRef}
                 className={cn(
@@ -207,7 +220,7 @@ export function GameSelector({ t, onGameSelect, games = [], selectedGame: propSe
             )}
 
             {/* No results message */}
-            {isDropdownOpen && searchQuery.length > 0 && filteredGames.length === 0 && (
+            {!disabled && isDropdownOpen && searchQuery.length > 0 && filteredGames.length === 0 && (
               <div
                 ref={dropdownRef}
                 className={cn(

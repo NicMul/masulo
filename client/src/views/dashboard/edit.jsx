@@ -6,7 +6,7 @@
 **********/
 
 import { useState, useCallback, useContext, useEffect } from 'react';
-import { ViewContext, Animate, useAPI, useParams, Tabs, TabsList, TabsTrigger, TabsContent } from 'components/lib';
+import { ViewContext, Animate, useAPI, useParams, Tabs, TabsList, TabsTrigger, TabsContent, Button } from 'components/lib';
 import { GameSelector } from 'components/edit/GameSelector';
 import { EditHeader } from 'components/edit/EditHeader';
 import { OriginalAssets } from 'components/edit/OriginalAssets';
@@ -93,7 +93,25 @@ export function Edit({ t }) {
     <Animate type='pop'>
       <div className='space-y-6 w-full'>
 
-        <GameSelector t={t} onGameSelect={handleGameSelect} games={gamesRes.data || []} selectedGame={selectedGame} />
+        <div className='flex items-center gap-4'>
+          <div className='flex-1'>
+            <GameSelector 
+              t={t} 
+              onGameSelect={handleGameSelect} 
+              games={gamesRes.data || []} 
+              selectedGame={selectedGame}
+              disabled={!!gameId}
+            />
+          </div>
+          {gameId && (
+            <Button
+              color="blue"
+              text="Show All Games"
+              url="/games"
+              icon="arrow-left"
+            />
+          )}
+        </div>
 
 
         <EditHeader

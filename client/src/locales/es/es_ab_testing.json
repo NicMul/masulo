@@ -10,6 +10,10 @@
   "completed_tests": "Pruebas Completadas",
   "total_tests": "Total de Pruebas",
   "create": {
+    "title": "Crear Prueba A/B",
     "success": "Prueba A/B creada exitosamente"
+  },
+  "edit": {
+    "title": "Editar Prueba A/B"
   }
 }

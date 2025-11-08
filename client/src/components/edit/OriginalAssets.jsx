@@ -83,11 +83,12 @@ export function OriginalAssets({ t, selectedGame, onGameUpdate, onPublish }) {
             <div className='text-xs font-bold text-slate-800 dark:text-slate-200 mb-2'>
               { t('edit.original.video') }
             </div>
+            {console.log('selectedGame', selectedGame)}
 
               <MediaPlayer
                 gameId={selectedGame?.id}
                 imageUrl={selectedGame?.defaultImage}
-                videoUrl={selectedGame?.defaultVideo}
+                videoUrl={selectedGame?.defaultVideo || null}
                 onSelect={handleSelect}
                 type="video"
                 canSelect={false}
