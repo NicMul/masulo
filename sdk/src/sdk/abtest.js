@@ -294,12 +294,14 @@ export class ABTestManager {
                 // Check if the component element matches this game element
                 if (elementToUpdate === gameElement || gameElement.contains(elementToUpdate)) {
                   console.log('[Mesulo SDK] ✓✓ Applying AB test assets (Variant', variant + ')!');
+                  // forceDelay=true ensures spinner always shows for AB test assets, even on page refresh
                   component.replaceImage(
                     elementToUpdate,
                     gameId,
                     isVariantA ? (abtest.videoVariantA || null) : (abtest.videoVariantB || null),
                     isVariantA ? (abtest.imageVariantA || null) : (abtest.imageVariantB || null),
-                    variant
+                    variant,
+                    true // forceDelay - always show spinner for AB test assets
                   );
                 }
               });

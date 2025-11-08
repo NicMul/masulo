@@ -237,7 +237,7 @@ class VideoManager {
     }
   
     // Replace <img> with <video> or update existing <video>
-    replaceImage(element, gameId, videoUrl, imageUrl, variant = 'A') {
+    replaceImage(element, gameId, videoUrl, imageUrl, variant = 'A', forceDelay = false) {
       // Check if element is already a video
       if (element && element.tagName === 'VIDEO') {
         this.updateVideo(element, videoUrl, imageUrl, variant);
@@ -256,8 +256,8 @@ class VideoManager {
         return;
       }
       
-      // Handle initial load with delays and spinner
-      if (this.isInitialLoad) {
+      // Handle initial load with delays and spinner, or force delay for AB test assets
+      if (this.isInitialLoad || forceDelay) {
         this._replaceImageWithDelay(img, gameId, videoUrl, imageUrl, variant);
         this.isInitialLoad = false; // Mark as loaded
       } else {

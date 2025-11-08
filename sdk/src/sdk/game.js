@@ -153,7 +153,8 @@ export class GameManager {
 
         // Update the component
         const variant = useABTestAssets ? abtestVariant : 'A';
-        component.replaceImage(elementToUpdate, game.id, videoUrl, imageUrl, variant);
+        const forceDelay = useABTestAssets; // Always use delay for AB test assets
+        component.replaceImage(elementToUpdate, game.id, videoUrl, imageUrl, variant, forceDelay);
       });
     });
   }
