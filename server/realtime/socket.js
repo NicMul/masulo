@@ -151,7 +151,8 @@ function initializeSocketIO(server) {
     
     console.log(`User ${applicationKey} (${userData.name}) connected from ${socket.handshake.headers.origin}`);
     
-    // Automatically join user-specific room for promotion updates
+    // Automatically join user-specific room (for other features)
+    // Note: Promotion updates are sent to game rooms, not user rooms
     const userRoom = `user:${userData.id}`;
     socket.join(userRoom);
     console.log(`Socket ${socket.id} joined user room: ${userRoom}`);
@@ -259,6 +260,7 @@ function initializeSocketIO(server) {
       try {
         const { gameIds } = data;
         const joinedRooms = [];
+        const roomCounts = {};
         
         if (Array.isArray(gameIds)) {
           gameIds.forEach(gameId => {
@@ -266,15 +268,17 @@ function initializeSocketIO(server) {
             socket.join(roomName);
             joinedRooms.push(roomName);
             const roomCount = io.sockets.adapter.rooms.get(roomName)?.size || 0;
+            roomCounts[roomName] = roomCount;
             console.log(`Socket ${socket.id} joined room: ${roomName} | Room count: ${roomCount}`);
           });
         }
         
-        // Send acknowledgment back to client
+        // Send acknowledgment back to client with room counts
         if (callback && typeof callback === 'function') {
           callback({ 
             success: true, 
             rooms: joinedRooms,
+            roomCounts: roomCounts,
             socketId: socket.id 
           });
         }
@@ -286,18 +290,62 @@ function initializeSocketIO(server) {
       }
     });
 
-    socket.on('leave-game-rooms', (data) => {
+    // Handle room count requests
+    socket.on('get-room-counts', (data, callback) => {
       try {
         const { gameIds } = data;
+        const roomCounts = {};
+        
+        if (Array.isArray(gameIds)) {
+          gameIds.forEach(gameId => {
+            const roomName = `game:${gameId}`;
+            const roomCount = io.sockets.adapter.rooms.get(roomName)?.size || 0;
+            roomCounts[roomName] = roomCount;
+          });
+        }
+        
+        if (callback && typeof callback === 'function') {
+          callback({
+            success: true,
+            roomCounts: roomCounts,
+            timestamp: new Date().toISOString()
+          });
+        }
+      } catch (error) {
+        console.error('Error getting room counts:', error);
+        if (callback && typeof callback === 'function') {
+          callback({ success: false, error: error.message });
+        }
+      }
+    });
+
+    socket.on('leave-game-rooms', (data, callback) => {
+      try {
+        const { gameIds } = data;
+        const roomCounts = {};
+        
         if (Array.isArray(gameIds)) {
           gameIds.forEach(gameId => {
             const roomName = `game:${gameId}`;
             socket.leave(roomName);
-            console.log(`Socket ${socket.id} left room: ${roomName}`);
+            const roomCount = io.sockets.adapter.rooms.get(roomName)?.size || 0;
+            roomCounts[roomName] = roomCount;
+            console.log(`Socket ${socket.id} left room: ${roomName} | Room count: ${roomCount}`);
+          });
+        }
+        
+        // Send updated room counts back to client
+        if (callback && typeof callback === 'function') {
+          callback({
+            success: true,
+            roomCounts: roomCounts
           });
         }
       } catch (error) {
         console.error('Error leaving game rooms:', error);
+        if (callback && typeof callback === 'function') {
+          callback({ success: false, error: error.message });
+        }
       }
     });
     
@@ -353,8 +401,11 @@ const emitGameUpdate = (gameIds, gamesData) => {
   console.log('=== emitGameUpdate complete ===');
 };
 
-// Function to emit promotion updates to user-specific room
-const emitPromotionUpdate = (userId, promotionsData) => {
+// Function to emit promotion updates to game-specific rooms
+// This allows all websites using a specific game to receive promotion updates
+// promotionsData: published promotions to send in payload
+// allPromotions: all promotions (including unpublished) to determine which game rooms to notify
+const emitPromotionUpdate = (userId, promotionsData, allPromotions = null) => {
   if (!io) {
     console.error('Socket.IO not initialized');
     return;
@@ -362,7 +413,8 @@ const emitPromotionUpdate = (userId, promotionsData) => {
 
   console.log('=== emitPromotionUpdate called ===');
   console.log('User ID:', userId);
-  console.log('Promotion data received:', promotionsData?.length || 0, 'promotion(s)');
+  console.log('Published promotions:', promotionsData?.length || 0);
+  console.log('All promotions (including unpublished):', allPromotions?.length || 0);
 
   const payload = {
     success: true,
@@ -371,16 +423,44 @@ const emitPromotionUpdate = (userId, promotionsData) => {
     timestamp: new Date().toISOString()
   };
 
-  // Emit to user-specific room instead of broadcasting to all
-  const userRoom = `user:${userId}`;
-  const socketsInRoom = io.sockets.adapter.rooms.get(userRoom);
-  console.log(`  - Sockets in room ${userRoom}:`, socketsInRoom?.size || 0);
-  if (socketsInRoom) {
-    console.log(`  - Socket IDs in room:`, Array.from(socketsInRoom));
-  }
+  // Extract all unique game IDs from ALL promotions (including unpublished)
+  // This ensures we notify all affected game rooms even when a promotion is unpublished
+  const gameIds = new Set();
+  const promotionsToScan = allPromotions || promotionsData;
   
-  io.to(userRoom).emit('promotions-updated', payload);
-  console.log(`✅ Emitted promotion update to user room ${userRoom}`);
+  if (promotionsToScan && Array.isArray(promotionsToScan)) {
+    promotionsToScan.forEach(promotion => {
+      if (promotion.games && Array.isArray(promotion.games)) {
+        promotion.games.forEach(game => {
+          if (game.gameCmsId) {
+            // gameCmsId maps to game.id, which is used for game rooms
+            gameIds.add(game.gameCmsId);
+          }
+        });
+      }
+    });
+  }
+
+  console.log(`  - Found ${gameIds.size} unique game(s) across all promotions (including unpublished)`);
+
+  // Emit to each game room (all websites using these games will receive the update)
+  // This includes rooms for games in unpublished promotions, so clients can remove them
+  let totalSocketsNotified = 0;
+  gameIds.forEach(gameId => {
+    const roomName = `game:${gameId}`;
+    const socketsInRoom = io.sockets.adapter.rooms.get(roomName);
+    const socketCount = socketsInRoom?.size || 0;
+    
+    console.log(`  - Emitting to room ${roomName}: ${socketCount} socket(s)`);
+    if (socketsInRoom) {
+      console.log(`    - Socket IDs in room:`, Array.from(socketsInRoom));
+    }
+    
+    io.to(roomName).emit('promotions-updated', payload);
+    totalSocketsNotified += socketCount;
+  });
+
+  console.log(`✅ Emitted promotion update to ${gameIds.size} game room(s), notifying ${totalSocketsNotified} total socket(s)`);
   console.log('=== emitPromotionUpdate complete ===');
 };
 

@@ -788,6 +788,14 @@ const ABTestResultsDialog = ({
                                         >
                                             {t('1 Week')}
                                         </Button>
+                                        <Button
+                                            color={timeRange === 'week' ? 'blue' : 'gray'}
+                                            onClick={() => setTimeRange('week')}
+                                            className="text-xs px-3 py-1"
+                                            disabled={chartLoading}
+                                        >
+                                            {t('All Data')}
+                                        </Button>
                                     </div>
                                 </div>
                                 

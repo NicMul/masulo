@@ -86,17 +86,25 @@ const emitPromotionUpdates = async (userId, emitPromotionUpdateFn) => {
     console.log('Emitting promotion updates for user:', userId);
     
     try {
-        // Fetch all promotions for the user
-        const promotions = await promotion.get({ user: userId });
+        // Fetch all promotions for the user (including unpublished)
+        const allPromotions = await promotion.get({ user: userId });
         
-        // Filter out unpublished promotions
-        const publishedPromotions = promotions.filter(promo => promo.published === true);
+        // Filter out unpublished promotions for the payload
+        const publishedPromotions = allPromotions.filter(promo => promo.published === true);
         
-        console.log('Found promotions for update:', publishedPromotions?.length || 0);
+        console.log('Found promotions for update:', {
+            total: allPromotions?.length || 0,
+            published: publishedPromotions?.length || 0,
+            unpublished: (allPromotions?.length || 0) - (publishedPromotions?.length || 0)
+        });
         
-        // Emit updates to user-specific room
+        // Emit updates to game rooms
+        // Note: We pass publishedPromotions for the payload, but emitPromotionUpdateFn
+        // will extract game IDs from ALL promotions (including unpublished) to ensure
+        // all affected game rooms are notified when a promotion is unpublished
         if (emitPromotionUpdateFn) {
-            emitPromotionUpdateFn(userId, publishedPromotions);
+            // Pass both all promotions (for game room detection) and published ones (for payload)
+            emitPromotionUpdateFn(userId, publishedPromotions, allPromotions);
         }
         
         return publishedPromotions;

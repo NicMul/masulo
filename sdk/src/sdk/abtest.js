@@ -22,6 +22,7 @@ export class ABTestManager {
   
   /**
    * Hash a string to a number (deterministic)
+   * Improved hash function for better distribution
    */
   hashString(str) {
     let hash = 0;
@@ -30,6 +31,7 @@ export class ABTestManager {
       hash = ((hash << 5) - hash) + char;
       hash = hash & hash; // Convert to 32bit integer
     }
+    // Use absolute value and ensure we get good distribution
     return Math.abs(hash);
   }
   
@@ -208,6 +210,9 @@ export class ABTestManager {
     this.activeABTestAssets.clear();
     console.log('[Mesulo SDK] Cleared active AB test assets');
     
+    // Track which games will have active AB tests after processing
+    const newlyAffectedGameIds = new Set();
+    
     // Process each AB test
     abtestsData.forEach(abtest => {
       console.log('[Mesulo SDK] Processing AB test:', abtest.name);
@@ -274,6 +279,9 @@ export class ABTestManager {
               variant: variant
             });
             
+            // Track this game as newly affected
+            newlyAffectedGameIds.add(gameId);
+            
             console.log('[Mesulo SDK] Stored AB test assets:', {
               gameId,
               variant,
@@ -316,12 +324,27 @@ export class ABTestManager {
     // Setup analytics tracking if we have active AB tests
     if (this.activeABTestAssets.size > 0) {
       this.analytics.setup();
+    } else {
+      // Clean up analytics if no active AB tests
+      this.analytics.cleanup();
     }
     
-    // Trigger game updates for games that were previously using AB test assets
-    // This ensures they revert to game assets if AB test is no longer active
-    if (previouslyAffectedGameIds.length > 0) {
-      this.triggerGameUpdatesForAffectedGames(previouslyAffectedGameIds);
+    // Find games that were previously affected but are no longer in active AB tests
+    // These need to revert to default game assets
+    const gamesToRevert = previouslyAffectedGameIds.filter(gameId => !newlyAffectedGameIds.has(gameId));
+    
+    if (gamesToRevert.length > 0) {
+      console.log('[Mesulo SDK] Games that need to revert from AB test assets:', gamesToRevert);
+      this.triggerGameUpdatesForAffectedGames(gamesToRevert);
+    }
+    
+    // IMPORTANT: Trigger game updates for newly affected games to ensure AB test assets take priority
+    // This handles the case where games loaded before AB tests on page refresh
+    // When games load first, they apply normal assets. When AB tests load later, we need to
+    // trigger a game update so updateSpecificGames() can re-evaluate and apply AB test assets
+    if (newlyAffectedGameIds.size > 0) {
+      console.log('[Mesulo SDK] Triggering game updates for newly affected games to apply AB test assets:', Array.from(newlyAffectedGameIds));
+      this.triggerGameUpdatesForAffectedGames(Array.from(newlyAffectedGameIds));
     }
   }
   

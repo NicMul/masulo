@@ -149,14 +149,23 @@ export class PromotionManager {
   updatePromotions(promotionsData) {
     console.log('[Mesulo SDK] updatePromotions called with:', promotionsData);
     
+    // Track which games were affected by promotions (before clearing)
+    const previouslyAffectedGameIds = Array.from(this.activePromotionAssets.keys());
+    
     if (!promotionsData || !Array.isArray(promotionsData)) {
       console.log('[Mesulo SDK] No promotions data or not array');
+      // Clear and trigger updates for previously affected games
+      this.activePromotionAssets.clear();
+      this.triggerGameUpdatesForAffectedGames(previouslyAffectedGameIds);
       return;
     }
     
     // Clear existing active promotions
     this.activePromotionAssets.clear();
     console.log('[Mesulo SDK] Cleared active promotion assets');
+    
+    // Track which games will have active promotions after processing
+    const newlyAffectedGameIds = new Set();
     
     // Process each promotion
     promotionsData.forEach(promotion => {
@@ -237,6 +246,9 @@ export class PromotionManager {
                 videoUrl: promoGame.promoVideo || null
               });
               
+              // Track this game as newly affected
+              newlyAffectedGameIds.add(gameId);
+              
               console.log('[Mesulo SDK] Stored promotion assets:', {
                 gameId,
                 imageUrl: promoGame.promoImage,
@@ -277,5 +289,43 @@ export class PromotionManager {
     });
     
     console.log('[Mesulo SDK] Final active promotion assets:', this.activePromotionAssets);
+    
+    // Find games that were previously affected but are no longer in active promotions
+    // These need to revert to default game assets (or AB test assets if applicable)
+    const gamesToRevert = previouslyAffectedGameIds.filter(gameId => !newlyAffectedGameIds.has(gameId));
+    
+    if (gamesToRevert.length > 0) {
+      console.log('[Mesulo SDK] Games that need to revert from promotion assets:', gamesToRevert);
+      this.triggerGameUpdatesForAffectedGames(gamesToRevert);
+    }
+    
+    // Trigger game updates for newly affected games to ensure promotion assets are applied
+    if (newlyAffectedGameIds.size > 0) {
+      console.log('[Mesulo SDK] Triggering game updates for newly affected games to apply promotion assets:', Array.from(newlyAffectedGameIds));
+      this.triggerGameUpdatesForAffectedGames(Array.from(newlyAffectedGameIds));
+    }
+  }
+  
+  /**
+   * Trigger game updates for games that were affected by promotion changes
+   */
+  triggerGameUpdatesForAffectedGames(gameIds) {
+    if (!this.gameManager || !gameIds || gameIds.length === 0) {
+      return;
+    }
+    
+    console.log('[Mesulo SDK] Triggering game updates for affected games:', gameIds);
+    
+    // Request game data to trigger updateSpecificGames which will re-evaluate assets
+    const socket = this.connectionManager.getSocket();
+    if (socket && this.connectionManager.isConnected) {
+      socket.emit('sdk-event', {
+        event: 'get-games',
+        data: { gameIds: gameIds },
+        timestamp: new Date().toISOString()
+      });
+    } else {
+      console.log('[Mesulo SDK] Cannot trigger game updates: socket not connected');
+    }
   }
 }
