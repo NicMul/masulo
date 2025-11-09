@@ -1,7 +1,4 @@
-/**
- * Video Manager
- * Handles video playback control and state
- */
+
 
 export class VideoManager {
   constructor(gameManager) {
@@ -10,7 +7,6 @@ export class VideoManager {
   }
   
   deactivateAllVideos(resetToStart = true) {
-    // Deactivate all registered components, not just the active one
     const registeredComponents = this.gameManager.getRegisteredComponents();
     
     registeredComponents.forEach(componentsSet => {

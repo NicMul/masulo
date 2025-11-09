@@ -16,21 +16,19 @@ function upgradeElement(element) {
 
   const manager = new VideoManager(element, gameId);
 
-  
   if (window.mesulo) {
     window.mesulo.registerGameCard(manager, gameId);
   }
 }
 
-
 function init() {
- 
   const script = document.currentScript ||
     document.querySelector('script[data-application-key]');
 
   if (script?.dataset.applicationKey) {
     const mesuloSDK = new MesuloSDK({
-      applicationKey: script.dataset.applicationKey
+      applicationKey: script.dataset.applicationKey,
+      debug: script.dataset.debug === 'true'
     });
     window.mesulo = mesuloSDK;
   }
@@ -38,7 +36,6 @@ function init() {
   upgradeAllElements();
 }
 
-// Wait for DOM ready
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', init);
 } else {

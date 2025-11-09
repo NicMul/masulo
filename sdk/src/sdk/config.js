@@ -1,7 +1,4 @@
-/**
- * Mesulo SDK Configuration
- * Environment detection and server configuration
- */
+
 
 export const CONFIG = {
   development: {
@@ -14,10 +11,7 @@ export const CONFIG = {
   }
 };
 
-/**
- * Detect if running in development environment
- * @returns {boolean} True if development, false if production
- */
+
 export function detectEnvironment() {
   return ['localhost', '127.0.0.1'].some(host => 
     window.location.hostname.includes(host)) || 
@@ -25,10 +19,7 @@ export function detectEnvironment() {
     !window.location.hostname;
 }
 
-/**
- * Get current configuration based on environment
- * @returns {Object} Configuration object with serverUrl and cdnUrl
- */
+
 export function getCurrentConfig() {
   const isDev = detectEnvironment();
   return isDev ? CONFIG.development : CONFIG.production;

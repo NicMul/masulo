@@ -211,9 +211,9 @@ function initializeSocketIO(server) {
           return;
         }
         
-        // Validate all events have required fields
+        // Validate all events have required fields including creatorId
         const validEvents = data.events.filter(event => 
-          event.gameId && event.eventType && event.variant && event.device
+          event.gameId && event.eventType && event.variant && event.device && event.creatorId
         );
         
         console.log('[Socket] Valid events:', {
@@ -222,31 +222,54 @@ function initializeSocketIO(server) {
           invalid: data.events.length - validEvents.length
         });
         
+        // Log invalid events for debugging
+        if (validEvents.length === 0 && data.events.length > 0) {
+          console.log('[Socket] Sample invalid event:', JSON.stringify(data.events[0], null, 2));
+          console.log('[Socket] Invalid event field check:', {
+            hasGameId: !!data.events[0]?.gameId,
+            hasEventType: !!data.events[0]?.eventType,
+            hasVariant: !!data.events[0]?.variant,
+            hasDevice: !!data.events[0]?.device,
+            hasCreatorId: !!data.events[0]?.creatorId,
+            gameId: data.events[0]?.gameId,
+            variant: data.events[0]?.variant,
+            device: data.events[0]?.device,
+            creatorId: data.events[0]?.creatorId
+          });
+        }
+        
         if (validEvents.length === 0) {
           console.warn('No valid events in AB test analytics batch');
           return;
         }
         
-        // Bulk insert (fire-and-forget for performance)
-        abtestData.createMany({ 
-          events: validEvents, 
-          user: userData.id, 
-          account: userData.id 
-        })
-          .then(result => {
-            console.log('[Socket] AB test analytics batch stored successfully:', {
-              insertedCount: result.insertedCount,
-              userId: userData.id
-            });
+        // Group events by creatorId and bulk insert per creator
+        const eventsByCreator = validEvents.reduce((acc, event) => {
+          const creatorId = event.creatorId;
+          if (!acc[creatorId]) {
+            acc[creatorId] = [];
+          }
+          acc[creatorId].push(event);
+          return acc;
+        }, {});
+        
+        // Insert analytics for each creator
+        for (const [creatorId, events] of Object.entries(eventsByCreator)) {
+          abtestData.createMany({ 
+            events: events, 
+            user: creatorId,  // Use AB test creator's ID
+            account: creatorId 
           })
-          .catch(error => {
-            console.error('Error storing AB test analytics batch:', error);
-            console.error('Error details:', {
-              message: error.message,
-              name: error.name,
-              stack: error.stack
+            .then(result => {
+              console.log('[Socket] AB test analytics batch stored successfully:', {
+                insertedCount: result.insertedCount,
+                creatorId: creatorId
+              });
+            })
+            .catch(error => {
+              console.error('Error storing AB test analytics batch:', error);
             });
-          });
+        }
           
       } catch (error) {
         console.error('Error processing AB test analytics batch:', error);
@@ -464,8 +487,10 @@ const emitPromotionUpdate = (userId, promotionsData, allPromotions = null) => {
   console.log('=== emitPromotionUpdate complete ===');
 };
 
-// Function to emit AB test updates to user-specific room
-const emitABTestUpdate = (userId, abtestsData) => {
+// Function to emit AB test updates to game-specific rooms
+// abtestsData: published AB tests to send in payload
+// allABTests: all AB tests (including unpublished) to determine which game rooms to notify
+const emitABTestUpdate = (userId, abtestsData, allABTests = null) => {
   if (!io) {
     console.error('Socket.IO not initialized');
     return;
@@ -473,7 +498,19 @@ const emitABTestUpdate = (userId, abtestsData) => {
 
   console.log('=== emitABTestUpdate called ===');
   console.log('User ID:', userId);
-  console.log('AB Test data received:', abtestsData?.length || 0, 'test(s)');
+  console.log('Published AB tests:', abtestsData?.length || 0);
+  console.log('All AB tests (including unpublished):', allABTests?.length || 0);
+  
+  // Debug: Check if user_id is in the abtestsData
+  if (abtestsData && abtestsData.length > 0) {
+    console.log('[Server] DEBUG - Sample AB test in payload:', {
+      id: abtestsData[0].id,
+      name: abtestsData[0].name,
+      hasUserId: !!abtestsData[0].user_id,
+      user_id: abtestsData[0].user_id,
+      keys: Object.keys(abtestsData[0])
+    });
+  }
 
   const payload = {
     success: true,
@@ -482,16 +519,39 @@ const emitABTestUpdate = (userId, abtestsData) => {
     timestamp: new Date().toISOString()
   };
 
-  // Emit to user-specific room instead of broadcasting to all
-  const userRoom = `user:${userId}`;
-  const socketsInRoom = io.sockets.adapter.rooms.get(userRoom);
-  console.log(`  - Sockets in room ${userRoom}:`, socketsInRoom?.size || 0);
-  if (socketsInRoom) {
-    console.log(`  - Socket IDs in room:`, Array.from(socketsInRoom));
-  }
+  // Extract all unique game IDs from ALL AB tests (including unpublished)
+  // This ensures we notify all affected game rooms even when an AB test is unpublished
+  const gameIds = new Set();
+  const abtestsToScan = allABTests || abtestsData;
   
-  io.to(userRoom).emit('abtests-updated', payload);
-  console.log(`✅ Emitted AB test update to user room ${userRoom}`);
+  if (abtestsToScan && Array.isArray(abtestsToScan)) {
+    abtestsToScan.forEach(abtest => {
+      if (abtest.gameId) {
+        gameIds.add(abtest.gameId);
+      }
+    });
+  }
+
+  console.log(`  - Found ${gameIds.size} unique game(s) across all AB tests (including unpublished)`);
+
+  // Emit to each game room (all websites using these games will receive the update)
+  // This includes rooms for games in unpublished AB tests, so clients can remove them
+  let totalSocketsNotified = 0;
+  gameIds.forEach(gameId => {
+    const roomName = `game:${gameId}`;
+    const socketsInRoom = io.sockets.adapter.rooms.get(roomName);
+    const socketCount = socketsInRoom?.size || 0;
+    
+    console.log(`  - Emitting to room ${roomName}: ${socketCount} socket(s)`);
+    if (socketsInRoom) {
+      console.log(`    - Socket IDs in room:`, Array.from(socketsInRoom));
+    }
+    
+    io.to(roomName).emit('abtests-updated', payload);
+    totalSocketsNotified += socketCount;
+  });
+
+  console.log(`✅ Emitted AB test update to ${gameIds.size} game room(s), notifying ${totalSocketsNotified} total socket(s)`);
   console.log('=== emitABTestUpdate complete ===');
 };
 

@@ -1,7 +1,4 @@
-/**
- * Analytics Utility
- * Handles all analytics tracking for game cards
- */
+
 
 export class GameCardAnalytics {
   constructor(gameId, containerElement) {

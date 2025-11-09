@@ -4,14 +4,13 @@ class VideoManager {
       this.gameId = gameId;
       this.videos = new Map();
       this.currentHovered = null;
-      this.videoElement = null; // Store reference to the video element
-      this.spinner = null; // Store reference to spinner element
-      this.isInitialLoad = true; // Track if this is the first load
+      this.videoElement = null;
+      this.spinner = null;
+      this.isInitialLoad = true;
       this._createListeners();
       this._injectSpinnerStyles();
     }
     
-    // Inject spinner styles into document head (only once)
     _injectSpinnerStyles() {
       if (document.getElementById('mesulo-spinner-styles')) return;
       
@@ -48,35 +47,28 @@ class VideoManager {
       document.head.appendChild(style);
     }
     
-    // Create spinner element
     _createSpinner() {
       const spinner = document.createElement('div');
       spinner.className = 'mesulo-spinner';
       return spinner;
     }
     
-    // Show spinner on element
     _showSpinner(element) {
-      // Remove any existing spinner first
       this._removeSpinner();
       
-      // Create and add spinner
       this.spinner = this._createSpinner();
       
-      // Ensure parent has relative positioning
       const parent = element.parentElement;
       if (parent && window.getComputedStyle(parent).position === 'static') {
         parent.style.position = 'relative';
       }
       
-      // Add spinner to parent or create wrapper
       if (element.parentElement) {
         element.parentElement.style.position = 'relative';
         element.parentElement.appendChild(this.spinner);
       }
     }
     
-    // Remove spinner
     _removeSpinner() {
       if (this.spinner && this.spinner.parentElement) {
         this.spinner.parentElement.removeChild(this.spinner);
@@ -84,7 +76,6 @@ class VideoManager {
       this.spinner = null;
     }
   
-    // Detect element underneath overlays safely
     _deepestElementFromPoint(x, y) {
       const seen = new Set();
       let el = document.elementFromPoint(x, y);
@@ -93,10 +84,7 @@ class VideoManager {
       while (el && !seen.has(el)) {
         seen.add(el);
   
-        // Skip interactive elements to avoid breaking clicks
         if (/^(BUTTON|A|INPUT|LABEL|SELECT|TEXTAREA)$/i.test(el.tagName)) {
-          
-          console.log('skipping interactive element', el.tagName);
           return el;
         }
   
@@ -105,7 +93,6 @@ class VideoManager {
         underneath = document.elementFromPoint(x, y);
         el.style.pointerEvents = prev;
   
-        // Stop once we reach a <video>
         if (underneath && underneath.tagName === 'VIDEO') {
           return underneath;
         }
@@ -116,7 +103,6 @@ class VideoManager {
       return underneath;
     }
   
-    // Handle hover logic globally (desktop)
     _handleHover(x, y) {
       const el = this._deepestElementFromPoint(x, y);
       if (!el) return;
@@ -136,23 +122,19 @@ class VideoManager {
       }
     }
   
-    // Setup pointer & touch listeners
     _createListeners() {
-      // Desktop hover
       document.addEventListener('pointermove', (e) => {
-        if (e.pointerType === 'touch') return; // skip for touch
+        if (e.pointerType === 'touch') return;
         this._handleHover(e.clientX, e.clientY);
       });
   
-      // Touch tap toggle
       document.addEventListener('pointerdown', (e) => {
         if (e.pointerType !== 'touch') return;
         const el = this._deepestElementFromPoint(e.clientX, e.clientY);
         if (!el) return;
 
-        // If the element is an interactive element, don't interfere with clicks
         if (/^(BUTTON|A|INPUT|LABEL|SELECT|TEXTAREA)$/i.test(el.tagName)) {
-          return; // Let the interactive element handle the click
+          return;
         }
         
         const video = el.closest('video');
@@ -173,7 +155,6 @@ class VideoManager {
         }
       });
   
-      // Optional: auto-pause when scrolling
       window.addEventListener('scroll', () => {
         if (this.currentHovered && !this.currentHovered.paused) {
           this.currentHovered.pause();
@@ -182,111 +163,86 @@ class VideoManager {
       }, { passive: true });
     }
   
-    // Update existing video element with new sources (with delays and spinner)
     updateVideo(videoElement, videoUrl, imageUrl, variant = 'A') {
       if (!videoElement || videoElement.tagName !== 'VIDEO') {
         return;
       }
       
-      // Ensure video has transition class
       if (!videoElement.classList.contains('mesulo-fade-transition')) {
         videoElement.classList.add('mesulo-fade-transition');
       }
       
-      // Store current playing state
       const wasPlaying = !videoElement.paused;
       
-      // Step 1: Wait 2 seconds
       setTimeout(() => {
-        // Step 2: Show spinner
         this._showSpinner(videoElement);
         
-        // Step 3: Wait 1 second with spinner visible
         setTimeout(() => {
-          // Step 4: Fade out current video
           videoElement.style.opacity = '0';
           
-          // Step 5: Update sources after brief fade
           setTimeout(() => {
             videoElement.src = videoUrl;
             videoElement.poster = imageUrl;
-            videoElement.setAttribute('data-mesulo-variant', 'A');
+            videoElement.setAttribute('data-mesulo-variant', variant);
             
-            // Fade back in
             videoElement.style.opacity = '1';
             
-            // Preserve playing state if it was playing
             if (wasPlaying) {
               videoElement.play().catch(() => {});
             }
             
-            // Remove spinner after fade completes
             setTimeout(() => {
               this._removeSpinner();
             }, 500);
             
-            // Update the videos Map
             if (this.videos.has(videoElement)) {
               const data = this.videos.get(videoElement);
               data.originalSrc = imageUrl;
               this.videos.set(videoElement, data);
             }
-          }, 300); // Brief fade out duration
-        }, 1000); // Spinner display duration
-      }, 2000); // Initial delay
+          }, 300);
+        }, 1000);
+      }, 2000);
     }
   
-    // Replace <img> with <video> or update existing <video>
     replaceImage(element, gameId, videoUrl, imageUrl, variant = 'A', forceDelay = false) {
-      // Check if element is already a video
       if (element && element.tagName === 'VIDEO') {
         this.updateVideo(element, videoUrl, imageUrl, variant);
         return;
       }
       
-      // Check if we have a stored video element reference
       if (this.videoElement && this.videoElement.tagName === 'VIDEO') {
         this.updateVideo(this.videoElement, videoUrl, imageUrl, variant);
         return;
       }
       
-      // Original image replacement logic
       const img = element;
       if (!img || img.tagName !== 'IMG') {
         return;
       }
       
-      // Handle initial load with delays and spinner, or force delay for AB test assets
       if (this.isInitialLoad || forceDelay) {
         this._replaceImageWithDelay(img, gameId, videoUrl, imageUrl, variant);
-        this.isInitialLoad = false; // Mark as loaded
+        this.isInitialLoad = false;
       } else {
-        // Immediate replacement for subsequent updates
         this._performReplacement(img, gameId, videoUrl, imageUrl, false, variant);
       }
     }
     
-    // Perform the actual image to video replacement with timing and spinner
     _replaceImageWithDelay(img, gameId, videoUrl, imageUrl, variant = 'A') {
-      // Step 1: Wait 2 seconds
       setTimeout(() => {
-        // Step 2: Show spinner
         this._showSpinner(img);
         
-        // Step 3: Wait 1 second with spinner visible
         setTimeout(() => {
-          // Step 4: Perform replacement with fade transition
           this._performReplacement(img, gameId, videoUrl, imageUrl, true, variant);
         }, 1000);
       }, 2000);
     }
     
-    // Core replacement logic
     _performReplacement(img, gameId, videoUrl, imageUrl, withFade = false, variant = 'A') {
       const video = document.createElement('video');
       const computedStyles = window.getComputedStyle(img);
   
-      // Copy style as safely as possible
       video.style.cssText = `
         ${img.getAttribute('style') || ''}
         object-fit: ${computedStyles.objectFit || 'cover'};
@@ -295,7 +251,6 @@ class VideoManager {
         display: inline-block;
       `;
       
-      // Add fade transition class
       if (withFade) {
         video.classList.add('mesulo-fade-transition');
         video.style.opacity = '0';
@@ -309,7 +264,6 @@ class VideoManager {
       video.setAttribute('data-mesulo-variant', variant);
       if (img.alt) video.setAttribute('title', img.alt);
   
-      // Video source setup
       video.src = videoUrl;
       video.poster = imageUrl;
       video.muted = true;
@@ -323,22 +277,17 @@ class VideoManager {
         gameId: gameId
       });
       
-      // Store reference to the video element
       this.videoElement = video;
   
-      // Replace image with video
       img.replaceWith(video);
       
-      // Fade in the video and remove spinner
       if (withFade) {
-        // Small delay to ensure DOM is updated
         requestAnimationFrame(() => {
           video.style.opacity = '1';
           
-          // Remove spinner after fade completes
           setTimeout(() => {
             this._removeSpinner();
-          }, 500); // Match CSS transition duration
+          }, 500);
         });
       } else {
         this._removeSpinner();

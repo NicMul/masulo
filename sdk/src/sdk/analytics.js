@@ -1,7 +1,4 @@
-/**
- * Analytics Manager
- * Handles analytics tracking and session management
- */
+
 
 export class AnalyticsManager {
   constructor(connectionManager, gameManager, analyticsEnabled) {
@@ -37,7 +34,6 @@ export class AnalyticsManager {
   }
   
   trackAssetEvent(eventType, gameId, assetType, assetUrl, metadata = {}, ignorePerGameSetting = false) {
-    // Check global analytics setting
     if (!this.analyticsEnabled || !this.connectionManager.isConnected) {
       return;
     }
@@ -47,7 +43,6 @@ export class AnalyticsManager {
       return;
     }
     
-    // Check per-game analytics setting from one of the containers unless ignored
     if (!ignorePerGameSetting) {
       const registeredComponents = this.gameManager.getRegisteredComponents();
       const components = registeredComponents.get(gameId);

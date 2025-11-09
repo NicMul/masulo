@@ -1,7 +1,4 @@
-/**
- * Device Detection Utility
- * Determines if the device is touch-enabled (mobile/tablet)
- */
+
 
 export function isTouchDevice() {
   return (

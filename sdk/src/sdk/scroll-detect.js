@@ -1,7 +1,4 @@
-/**
- * Scroll Detector
- * Handles touch scroll detection for video management
- */
+
 
 export class ScrollDetector {
   constructor(videoManager) {
@@ -26,7 +23,7 @@ export class ScrollDetector {
       
       if (deltaY > this.SCROLL_THRESHOLD && !this.isScrolling) {
         this.isScrolling = true;
-        this.videoManager.deactivateAllVideos(true); // Reset on scroll
+        this.videoManager.deactivateAllVideos(true);
       }
     };
     
