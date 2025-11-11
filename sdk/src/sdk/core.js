@@ -7,7 +7,7 @@ import { PromotionManager } from './promotions.js';
 import { ABTestManager } from './abtest.js';
 import { VideoManager } from './video.js';
 import { ScrollDetector } from './scroll-detect.js';
-import { AnalyticsManager } from './analytics.js';
+import { BatchAnalytics } from './analytics/batch.analytics.js';
 import { DebugWindow } from './debug-window.js';
 
 export class MesuloSDK {
@@ -33,7 +33,13 @@ export class MesuloSDK {
       this.config,
       this.applicationKey,
       this.statusCallbacks,
-      (event, data) => this.emit(event, data),
+      (event, data) => {
+        this.emit(event, data);
+        // Flush analytics when connection is established
+        if (event === 'connected' && this.analyticsManager) {
+          this.analyticsManager.onConnectionEstablished();
+        }
+      },
       () => {
         if (this.gameManager) {
           this.gameManager.requestGames();
@@ -43,9 +49,9 @@ export class MesuloSDK {
       }
     );
     
-    this.analyticsManager = new AnalyticsManager(
+    this.analyticsManager = new BatchAnalytics(
       this.connectionManager,
-      null,
+      null, // Will be set after gameManager is created
       analyticsEnabled
     );
     
@@ -95,11 +101,25 @@ export class MesuloSDK {
     // Initialize debug window if enabled
     if (config.debug === true) {
       this.debugWindow = new DebugWindow(this);
+      // Pass debug window reference to analytics manager
+      if (this.analyticsManager) {
+        this.analyticsManager.debugWindow = this.debugWindow;
+        console.log('[SDK] Debug window set on analytics manager', { hasDebugWindow: !!this.analyticsManager.debugWindow, hasLogAnalytics: typeof this.analyticsManager.debugWindow?.logAnalytics === 'function' });
+        // Test log to verify it's working
+        if (typeof this.debugWindow.logAnalytics === 'function') {
+          this.debugWindow.logAnalytics('info', 'Analytics debug logging initialized');
+        }
+      }
     }
     
     if (this.applicationKey) {
       this.connect();
       this.setupScrollDetection();
+      
+      // Set up global click tracking for analytics
+      if (this.analyticsManager && typeof this.analyticsManager.setupGlobalClickTracking === 'function') {
+        this.analyticsManager.setupGlobalClickTracking();
+      }
     }
   }
   
@@ -231,5 +251,9 @@ export class MesuloSDK {
   
   get sessionId() {
     return this.analyticsManager.sessionId;
+  }
+  
+  getViewportInfo() {
+    return this.analyticsManager.getViewportInfo();
   }
 }

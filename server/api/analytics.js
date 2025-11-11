@@ -4,14 +4,16 @@ const analyticsController = require('../controller/analyticsController');
 const api = express.Router();
 const use = require('../helper/utility').use;
 
-// Public analytics creation (for SDK events)
-api.post('/api/analytics', auth.verify('public'), use(analyticsController.create));
-
-
+// Standard CRUD (all authenticated)
+api.post('/api/analytics', auth.verify('user'), use(analyticsController.create));
+api.post('/api/analytics/batch', auth.verify('user'), use(analyticsController.createMany));
 api.get('/api/analytics', auth.verify('user'), use(analyticsController.get));
-api.get('/api/analytics/aggregate', auth.verify('user'), use(analyticsController.aggregate));
-api.get('/api/analytics/dashboard', auth.verify('user'), use(analyticsController.getDashboardData));
-api.get('/api/analytics/game/:game_id', auth.verify('user'), use(analyticsController.getByGame));
+api.get('/api/analytics/:id', auth.verify('user'), use(analyticsController.getById));
+api.patch('/api/analytics/:id', auth.verify('user'), use(analyticsController.update));
 api.delete('/api/analytics/:id', auth.verify('user'), use(analyticsController.delete));
+api.delete('/api/analytics', auth.verify('user'), use(analyticsController.deleteMany));
+
+// Aggregation endpoints
+api.post('/api/analytics/aggregate', auth.verify('user'), use(analyticsController.aggregate));
 
 module.exports = api;
