@@ -100,31 +100,9 @@ export class GameCardAnalytics {
       }
     }, true); // Use capture phase
     
-    // Track hover start/end
-    videoElement.addEventListener('mouseenter', () => {
-      if (!this.hoverStartTimes.has(videoElement)) {
-        this.hoverStartTimes.set(videoElement, Date.now());
-        if (window.mesulo?.analyticsEnabled) {
-          window.mesulo.trackAssetEvent('hover_start', this.gameId, 'video', videoUrl, {
-            viewport: window.mesulo.getViewportInfo()
-          });
-        }
-      }
-    });
-    
-    videoElement.addEventListener('mouseleave', () => {
-      const startTime = this.hoverStartTimes.get(videoElement);
-      if (startTime) {
-        const duration = Date.now() - startTime;
-        this.hoverStartTimes.delete(videoElement);
-        if (window.mesulo?.analyticsEnabled) {
-          window.mesulo.trackAssetEvent('hover_end', this.gameId, 'video', videoUrl, {
-            duration,
-            viewport: window.mesulo.getViewportInfo()
-          });
-        }
-      }
-    });
+    // Track hover start/end (using video_play and video_pause as hover indicators)
+    // Note: Hover duration is now calculated from video_play to video_pause timestamps
+    // No need for separate hover_start/hover_end events
   }
   
   trackVideoEvent(eventType, videoUrl, videoElement, extraMetadata = {}) {
