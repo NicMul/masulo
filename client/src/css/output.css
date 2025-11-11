@@ -886,6 +886,9 @@ table tbody tr:last-child td {
 .flex {
   display: flex;
 }
+.\!flex {
+  display: flex !important;
+}
 .inline-flex {
   display: inline-flex;
 }
@@ -996,6 +999,12 @@ table tbody tr:last-child td {
 }
 .h-px {
   height: 1px;
+}
+.h-\[400px\] {
+  height: 400px;
+}
+.h-\[90dvh\] {
+  height: 90dvh;
 }
 .max-h-32 {
   max-height: 8rem;
@@ -1398,6 +1407,9 @@ table tbody tr:last-child td {
 .flex-col {
   flex-direction: column;
 }
+.\!flex-col {
+  flex-direction: column !important;
+}
 .flex-col-reverse {
   flex-direction: column-reverse;
 }
@@ -1454,6 +1466,9 @@ table tbody tr:last-child td {
 }
 .gap-8 {
   gap: 2rem;
+}
+.\!gap-0 {
+  gap: 0px !important;
 }
 .gap-x-1 {
   column-gap: 0.25rem;

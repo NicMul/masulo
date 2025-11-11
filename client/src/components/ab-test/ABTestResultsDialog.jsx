@@ -461,10 +461,10 @@ const ABTestResultsDialog = ({
         <>
     
             <Dialog open={isOpen} onClose={onClose}>
-                <DialogContent className="w-[70vw] max-w-none max-h-[90dvh] flex flex-col">
+                <DialogContent className="!flex !flex-col w-[70vw] max-w-none h-[90dvh] !p-0 !gap-0 overflow-hidden">
                 
                 {/* Dialog Header */}
-                <DialogHeader className="flex-shrink-0 border-b border-slate-200 dark:border-slate-700 pb-4">
+                <DialogHeader className="flex-shrink-0 border-b border-slate-200 dark:border-slate-700 pb-4 px-6 pt-6">
                     <div className="flex items-center justify-between">
                         <h1 className="text-3xl font-black text-slate-900 ">
                             {t('AB Test Results')}
@@ -484,7 +484,8 @@ const ABTestResultsDialog = ({
                 </DialogHeader>
                 
                 {/* Scrollable Body */}
-                <div className="py-6 px-6 overflow-y-scroll flex-1 min-h-0">
+                <div className="flex-1 min-h-0 overflow-y-auto">
+                    <div className="py-6 px-6">
                     <div className="flex flex-col gap-8 pr-2"> 
                         
                         {/* Test Title Section */}
@@ -836,10 +837,11 @@ const ABTestResultsDialog = ({
                             </div>
                         </div>
                     </div>
+                    </div>
                 </div>
 
                 {/* Dialog Footer */}
-                <DialogFooter className="flex-shrink-0 border-t border-slate-200 dark:border-slate-700 pt-4">
+                <DialogFooter className="flex-shrink-0 border-t border-slate-200 dark:border-slate-700 pt-4 px-6 pb-6">
                     <div className="flex items-center justify-between w-full">
                         <div className="text-sm text-slate-500 dark:text-slate-400">
                             {t('Test ID')}: <span className="font-mono font-semibold">{abTest.id || 'N/A'}</span>
