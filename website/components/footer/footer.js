@@ -55,7 +55,7 @@ export function Footer(props){
         </Content>
 
         <small>
-          Built with <a href='https://usegravity.app'>Gravity</a>
+          Built with <a href='https://mesulo.com'>Mesulo</a>
         </small>
       </Row>
     </footer>

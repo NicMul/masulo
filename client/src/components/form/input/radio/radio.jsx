@@ -5,7 +5,7 @@
 *   no more than one button can be checked at a time.
 *   
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/form
+*   https://docs.mesulo.com/mesulo-web/components/form
 *   https://ui.shadcn.com/docs/components/radio
 *
 *   PROPS

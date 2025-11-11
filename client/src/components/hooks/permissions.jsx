@@ -4,7 +4,7 @@
 *   Fetch, format and return the user permissions.
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/hooks/usepermissions
+*   https://docs.mesulo.com/mesulo-web/hooks/usepermissions
 *
 **********/
 

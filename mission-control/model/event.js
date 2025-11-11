@@ -1,4 +1,20 @@
-const db = require('./knex')();
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const User = require('./user').schema;
+
+// define schema
+const EventSchema = new Schema({
+
+  id: { type: String, required: true, unique: true },
+  name: { type: String, required: true },
+  metadata: { type: Object },
+  time: { type: Date, required: true },
+  user_id: { type: String },
+  account_id: { type: String },
+
+});
+
+const Event = mongoose.model('Event', EventSchema, 'event');
 
 /*
 * event.get()
@@ -8,59 +24,108 @@ const db = require('./knex')();
 
 exports.get = async function({ id, filter }){
 
-  const data = await db('event')
-  .select('event.name')
-  .leftJoin('user', 'user.id', 'event.user_id')
-  .modify(q => {
+  let data, total = 0;
 
-    filter.name && q.where('event.name', filter.name);
+  // get one
+  if (id){
 
-    if (id){
+    const data = await Event.findOne({ id:  id }).lean();
 
-      // get individual event by id
-      q.where('event.id', id);
-      q.select('event.id', 'metadata', 'time', 'user.email as user_email');
+    if (data){
+
+      const userData = await User.findOne({ id: data.user_id }).select({ email: 1 });
+      data.email = userData?.email;
+      delete data._id;
+      delete data.__v;
+      delete data.user_id;
+      return [data];
 
     }
+  }
 
-    if (filter.group){
+  if (filter.group){
+
+    // group the events & search by event name
+    data = await Event.aggregate([
       
-      // group the events & search by event name
-      q.groupBy(`event.${filter.group}`);
-      q.count('event.id as total_triggers');
-      filter.search && q.where('event.name', 'like', `%${filter.search}%`);
-
-    }
-    else {
-
-      // list all events & search by user email
-      q.select('event.id', 'time', 'user.email as user_email');
-
-      filter.offset && q.offset(filter.offset);
-      filter.limit && q.limit(filter.limit);
-      filter.search && q.where('user.email', 'like', `%${filter.search}%`);
-      
-    }
-  });
+      { $match: { name: { $regex: filter.search, $options: 'i' }}},
+      { $group: {
   
-  // return single event
-  if (id)
-    return data;
+        _id: `$${filter.group}`,
+        total_triggers: { $sum: 1 }
+  
+      }}
+    ]);
 
-  // return  paginated results
-  const total = await db('event')
-  .leftJoin('user', 'user.id', 'event.user_id')
-  .modify(q => { 
+    if (data.length){
+      data = data.map(e => {
+        return {
+          
+          name: e._id,
+          total_triggers: e.total_triggers
+
+        }
+      });
+    }
+  }
+  else {
     
-    filter.name && q.where('event.name', filter.name); 
-    filter.search && q.where('user.email', 'like', `%${filter.search}%`);
+    data = await Event.aggregate([
 
-  }).count('event.id as total');
+      { $limit: parseInt(filter.limit) },
+      { $skip: parseInt(filter.offset) },
+      { $match: { name: filter.name }},
+      { $project: { 
+        
+        id: 1, name: 1, time: 1, email: 1, user: 1, user_id: 1,
+      
+      }},
+      { $lookup: {
+          from: 'user',
+          as: 'user',
+          let: { id: '$user_id' },
+          pipeline: [
+            { $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ['$id', '$$id'] },
+                    { $regexMatch: { input: "$email", regex: filter.search } }
+                  ]
+                }
+              }
+            },
+          ]
+        }
+      },
+    ]);
+
+    if (data.length){
+
+      // get the total
+      total = await Event.countDocuments({ name: filter.name });
+
+      // if searching and lookup didn't match
+      if (filter.search)
+        data = data.filter(e => e.user?.length);
+
+      // format results
+      data = data.map(e => {
+        return { 
+
+          id: e.id,
+          name: e.name,
+          time: e.time,
+          user_email: e.user?.[0]?.email || null
+
+        }
+      });
+    }
+  }
 
   return {
 
     results: data,
-    total: total?.[0]?.total
+    total: total,
 
   }  
 }
@@ -73,11 +138,31 @@ exports.get = async function({ id, filter }){
 
 exports.times = async function(name){
 
-  const data = await db('event').select(db.raw('date(time) as time')).count('id as total')
-  .where('name', name).groupByRaw('date(time)').orderByRaw('date(time) asc');
+  let data = await Event.aggregate([
 
-  // format dates
-  data?.forEach(e => e.time = e.time.toISOString().split('T')[0]);
+    { $match: { name: name }},
+    { $group: {
+  
+      _id: { $dateToString: { format: '%Y-%m-%d', date: '$time' }},
+      value: { $sum: 1 }
+
+    }}
+  ]);
+
+  if (data.length){
+
+    // sort the groups by date
+    data = data.sort((a,b) => new Date(a._id) - new Date(b._id))
+    .map(e => {
+      return {
+
+        time: e._id,
+        total: e.value
+
+      }
+    });
+  }
+
   return data;
 
 }
@@ -92,10 +177,13 @@ exports.delete = async function({ id, name }){
   if (!id && !name)
     throw { message: 'Please provide an event ID or name' };
 
-  return await db('event').del().modify(q => {
-
-    id && q.whereIn('id', Array.isArray(id) ? id : [id])
-    name && q.where('name', name);
-
+  await Event.deleteMany({ 
+    
+    ...id & { id: id },
+    ...name && { name: name }, 
+  
   });
+
+  return id;
+
 }

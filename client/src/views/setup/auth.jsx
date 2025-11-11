@@ -20,7 +20,7 @@ export function SetupAuth(){
           button={{
 
             text: 'Open Setup Guide',
-            url: 'https://docs.usegravity.app/gravity-server/authentication/social-sign-on'
+            url: 'https://docs.mesulo.com/mesulo-server/authentication/social-sign-on'
 
           }}
         />

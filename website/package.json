@@ -1,7 +1,7 @@
 {
-  "name": "gravity",
+  "name": "Mesulo",
   "plan": "website",
-  "description": "Website template for Gravity",
+  "description": "Website for Mesulo",
   "version": "2.0.11",
   "private": true,
   "scripts": {

@@ -4,7 +4,7 @@
 *   Responsive chart that supports multiple datasets and chart types.
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/chart
+*   https://docs.mesulo.com/mesulo-web/components/chart
 *   https://www.chartjs.org/
 *
 *   PROPS

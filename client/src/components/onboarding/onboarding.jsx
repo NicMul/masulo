@@ -5,7 +5,7 @@
 *   On finish/cancel the user will be marked as onboarded when save is true.
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/onboarding
+*   https://docs.mesulo.com/mesulo-web/components/onboarding
 *
 *   PROPS
 *   onFinish: url to navigate to when finished (string, optional, default: /dashboard)

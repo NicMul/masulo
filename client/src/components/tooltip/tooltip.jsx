@@ -5,7 +5,7 @@
 *   element receives keyboard focus or the mouse hovers over it.
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/tooltip
+*   https://docs.mesulo.com/mesulo-web/components/tooltip
 *   https://ui.shadcn.com/docs/components/tooltip
 *
 *   PROPS

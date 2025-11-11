@@ -1,4 +1,21 @@
-const db = require('./knex')();
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+
+// define schema
+const LogSchema = new Schema({
+
+  id: { type: String, required: true, unique: true },
+  time: { type: Date, required: true },
+  message: { type: String },
+  body: { type: String },
+  method: { type: String },
+  endpoint: { type: String },
+  account_id: { type: String },
+  user_id: { type: String }
+
+});
+
+const Log = mongoose.model('Log', LogSchema, 'log');
 
 /*
 * log.get()
@@ -7,54 +24,44 @@ const db = require('./knex')();
 
 exports.get = async function({ id, filter }){
 
-  const data = await db('log').select('log.id', 'time', 'message', 'body', 'method', 
-    'endpoint', 'user_id', 'user.email as email', 'log.account_id')
-  .leftJoin('user', 'user.id', 'log.user_id')
-  .modify(q => {
+  // get one
+  if (id){
 
-    id && q.where('log.id', id);
+    const data = await Log.findOne({ id: id }).lean();
+    delete data.__v;
+    return [data];
 
-    if (filter.search){
+  }
 
-      const s = filter.search;
-      q.whereRaw(`time like '%${s}%' or message like '%${s}%' or body like '%${s}%' 
-      or method like '%${s}%' or endpoint like '%${s}%' or email like '%${s}%'`);
-
-    }
-    else {
-
-      filter.offset && q.offset(filter.offset);
-      filter.limit && q.limit(filter.limit)
+  let selector = {};
   
-    }
-  });
+  if (filter?.search){
 
-  // results are paginated
-  if (filter.offset){
-
-    let total = 0;
-    if (filter.search){
-
-      total = data.length
-
-    }
-    else {
-
-      total = await db('log').count('id as total');
-      total = total[0].total;
-
-    }
-
-    return {
-
-      results: data,
-      total: total
-  
+    const s = { $regex: filter.search, $options: 'i' }
+    selector = {
+      $or: [
+        { message: s },
+        { body: s },
+        { method: s },
+        { endpoint: s },
+        { email: s }
+      ]
     }
   }
 
-  return data;
-  
+  // get list
+  const data = filter.search ? 
+    await Log.find(selector) :
+    await Log.find(selector).limit(parseInt(filter?.limit)).skip(parseInt(filter?.offset))
+
+  const total = await Log.countDocuments();
+
+  return {
+
+    results: data,
+    total: total,
+
+  }  
 }
 
 /*
@@ -64,7 +71,6 @@ exports.get = async function({ id, filter }){
 
 exports.delete = async function(id){
 
-  return await db('log').del()
-  .whereIn('id', Array.isArray(id) ? id : [id])
+  return await Log.deleteMany({ id: id });
 
 }

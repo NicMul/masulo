@@ -4,7 +4,7 @@
 *   Primary desktop navigation used inside the main app.
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/nav
+*   https://docs.mesulo.com/mesulo-web/components/nav
 *
 *   PROPS
 *   items:[{ label: string, link: string, icon: string }] (array, required)

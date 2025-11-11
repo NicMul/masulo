@@ -4,6 +4,8 @@ const api = require('./api');
 const path = require('path');
 const config = require('config');
 const cors = require('cors');
+const mongo = require('./model/mongo');
+const mongoSanitize = require('express-mongo-sanitize');
 const throttle = config.get('throttle');
 const limiter = require('express-rate-limit');
 
@@ -18,6 +20,9 @@ app.options('*', cors({ origin: process.env.CLIENT_URL }));
 app.use(express.json());
 app.set('trust proxy', 1); // rate limit proxy
 app.use(express.urlencoded({ extended: true }));
+
+// mongo sanitise 
+app.use(mongoSanitize());
 
 // api with rate limiter
 app.use('/api/', limiter(throttle.api));
@@ -65,7 +70,8 @@ app.use(function(err, req, res, next){
 // start server
 const server = app.listen(port, async () => {
 
-  const welcome = () => console.log('Welcome to Gravity Mission Control 🕹')
+  const welcome = () => console.log('Welcome to Mesulo Mission Control 🕹')
+  await mongo.connect();
   welcome('de529c70-eb80-4dfb-9540-5075db7545bf')
 
 

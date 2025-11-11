@@ -4,7 +4,7 @@
 *   Stripe CardElement input.
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/form
+*   https://docs.mesulo.com/mesulo-web/components/form
 *   https://docs.stripe.com/payments/elements
 *
 *   PROPS

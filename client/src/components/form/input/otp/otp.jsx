@@ -4,7 +4,7 @@
 *   Renders a one time password input with accessible label.
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/form
+*   https://docs.mesulo.com/mesulo-web/components/form
 *   https://ui.shadcn.com/docs/components/input-otp
 *
 *   PROPS

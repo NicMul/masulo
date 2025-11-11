@@ -4,7 +4,7 @@
 *   Image wrapper - import the image before passing it to the src prop.
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/image
+*   https://docs.mesulo.com/mesulo-web/components/image
 *
 *   PROPS
 *   alt: alt description (string, required)

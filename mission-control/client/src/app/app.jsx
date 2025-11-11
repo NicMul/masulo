@@ -12,12 +12,10 @@ import '../css/output.css';
 
 // routes 
 import AppRoutes from 'routes';
-import SetupRoutes from 'routes/setup'
 
 const routes = [
 
   ...AppRoutes,
-  ...SetupRoutes,
 
 ]
 

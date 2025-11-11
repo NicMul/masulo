@@ -4,7 +4,7 @@
 *   Displays a bar indictor.
 
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/progress
+*   https://docs.mesulo.com/mesulo-web/components/progress
 *   https://ui.shadcn.com/docs/components/progress  
 *
 *   PROPS

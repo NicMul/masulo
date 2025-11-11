@@ -4,7 +4,7 @@
 *   Responsive one-to-six-column grid layout.
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/grid
+*   https://docs.mesulo.com/mesulo-web/components/grid
 *
 *   PROPS
 *   children: the children to render (component(s), required)

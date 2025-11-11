@@ -4,7 +4,7 @@
 *   Switch control that allows the user to toggle between checked and not checked.
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/form
+*   https://docs.mesulo.com/mesulo-web/components/form
 *   https://ui.shadcn.com/docs/components/switch
 *
 *   PROPS

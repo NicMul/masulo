@@ -4,7 +4,7 @@
 *   Toaster component
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/toast
+*   https://docs.mesulo.com/mesulo-web/components/toast
 *   https://ui.shadcn.com/docs/components/toast
 *
 **********/

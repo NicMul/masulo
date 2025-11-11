@@ -4,7 +4,7 @@
 *   Displays the path to the current resource using a hierarchy of links.
 * 
 *   DOCS  
-*   https://docs.usegravity.app/gravity-web/components/nav
+*   https://docs.mesulo.com/mesulo-web/components/nav
 *   https://ui.shadcn.com/docs/components/breadcrumb
 *
 *   PROPS

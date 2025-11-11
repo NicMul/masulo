@@ -4,7 +4,7 @@
 *   Ordered or unordered list.
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/list
+*   https://docs.mesulo.com/mesulo-web/components/list
 *
 *   PROPS
 *   className: custom styling (SCSS or tailwind style, optional)

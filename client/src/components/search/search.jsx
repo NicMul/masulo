@@ -4,7 +4,7 @@
 *   Search input field.
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/search
+*   https://docs.mesulo.com/mesulo-web/components/search
 *
 *   PROPS
 *   callback: executed on change and submit (function, required)

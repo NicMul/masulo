@@ -4,7 +4,7 @@
 *   Widget for collecting user feedback.
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/feedback
+*   https://docs.mesulo.com/mesulo-web/components/feedback
 *
 **********/
 

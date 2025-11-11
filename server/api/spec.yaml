@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  title: Gravity API
+  title: Mesulo API
   description: Node.js SaaS Boilerplate API
   version: 1.0.0
 

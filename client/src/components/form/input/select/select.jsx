@@ -4,7 +4,7 @@
 *   Displays a list of options for the user to pick from—triggered by a button.
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/form
+*   https://docs.mesulo.com/mesulo-web/components/form
 *   https://ui.shadcn.com/docs/components/select
 *   
 *   PROPS

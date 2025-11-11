@@ -5,7 +5,7 @@
 *   Use this instead of <a> to avoid reloading the page.
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/link
+*   https://docs.mesulo.com/mesulo-web/components/link
 *
 *   PROPS
 *   children: children to render (component(s), required)

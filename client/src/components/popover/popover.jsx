@@ -4,7 +4,7 @@
 *   Displays rich content in a portal, triggered by a button.
 * 
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/popover
+*   https://docs.mesulo.com/mesulo-web/components/popover
 *   https://ui.shadcn.com/docs/components/popover
 *
 *   PROPS

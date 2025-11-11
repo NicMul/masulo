@@ -4,7 +4,7 @@
 *   Error message displayed below a form input.
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/form
+*   https://docs.mesulo.com/mesulo-web/components/form
 *
 *   PROPS
 *   id: unique id associated with the input (string, required)

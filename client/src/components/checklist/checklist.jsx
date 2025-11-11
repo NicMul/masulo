@@ -4,7 +4,7 @@
 *   List items with colored X or ✓.
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/checklist
+*   https://docs.mesulo.com/mesulo-web/components/checklist
 *
 *   PROPS
 *   className: custom styling (SCSS or tailwind style, optional)

@@ -4,7 +4,7 @@
 *   Displays a callout for user attention.
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/alert
+*   https://docs.mesulo.com/mesulo-web/components/alert
 *   https://ui.shadcn.com/docs/components/alert
 *
 *   PROPS

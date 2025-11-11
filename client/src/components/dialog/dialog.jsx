@@ -8,7 +8,7 @@
 with an object containing the following params
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/dialog
+*   https://docs.mesulo.com/mesulo-web/components/dialog
 *   https://ui.shadcn.com/docs/components/dialog
 *
 *   PARAMS

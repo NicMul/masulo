@@ -4,7 +4,7 @@
 *   Infinite spinning animation for loading states.
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/loader
+*   https://docs.mesulo.com/mesulo-web/components/loader
 *
 *   PROPS
 *   className: custom styling (SCSS or tailwind style, optional)

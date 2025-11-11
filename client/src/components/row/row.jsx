@@ -4,7 +4,7 @@
 *   Add space below a UI or group of UI elements.
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/row
+*   https://docs.mesulo.com/mesulo-web/components/row
 *
 *   PROPS
 *   children: the children to render (component(s), required)

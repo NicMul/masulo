@@ -4,7 +4,7 @@
 *   Statistic value with optional icon and -/+ change value.
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/stat
+*   https://docs.mesulo.com/mesulo-web/components/stat
 *
 *   PROPS
 *   change: positive/negative number indicating change amount (integer, optional)

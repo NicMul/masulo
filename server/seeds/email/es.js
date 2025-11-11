@@ -1,15 +1,15 @@
 const emails = [
   {
     name: 'new_account',
-    subject: 'Bienvenido a Gravity',
-    body: 'Gracias por registrarte en Gravity. Tu cuenta está ahora verificada.',
+    subject: 'Bienvenido a Mesulo',
+    body: 'Gracias por registrarte en Mesulo. Tu cuenta está ahora verificada.',
     button_label: 'Abrir Tablero',
     button_url: '{{domain}}/dashboard',
     locale: 'es',
   },
   {
     name: 'duplicate_user',
-    subject: '¡Importante! Tu cuenta en Gravity',
+    subject: '¡Importante! Tu cuenta en Mesulo',
     body: 'Hemos notado que ya has registrado una cuenta, así que hemos utilizado tu contraseña original para evitar confusiones en el futuro.',
     button_label: 'Iniciar Sesión',
     button_url: '{{domain}}/signin',
@@ -17,7 +17,7 @@ const emails = [
   },
   {
     name: 'new_plan',
-    subject: 'Tu plan en Gravity',
+    subject: 'Tu plan en Mesulo',
     body: 'Gracias por seleccionar el plan {{content.plan}}. Tu tarjeta ha sido cargada exitosamente con {{content.price}}.',
     button_label: 'Tu Tablero',
     button_url: '{{domain}}/dashboard',
@@ -25,8 +25,8 @@ const emails = [
   },
   {
     name: 'new_user',
-    subject: 'Bienvenido a Gravity',
-    body: 'Gracias por registrarte en Gravity.',
+    subject: 'Bienvenido a Mesulo',
+    body: 'Gracias por registrarte en Mesulo.',
     button_label: 'Abrir Tablero',
     button_url: '{{domain}}/dashboard',
     locale: 'es',
@@ -89,8 +89,8 @@ const emails = [
   },
   {
     name: 'invite',
-    subject: 'Tu amigo te ha invitado a usar Gravity',
-    body: 'Tu amigo {{content.friend}} te ha invitado a unirte a su equipo en Gravity. Regístrate ahora para comenzar a trabajar con {{content.friend}}.',
+    subject: 'Tu amigo te ha invitado a usar Mesulo',
+    body: 'Tu amigo {{content.friend}} te ha invitado a unirte a su equipo en Mesulo. Regístrate ahora para comenzar a trabajar con {{content.friend}}.',
     button_label: 'Registrarse Ahora',
     button_url: '{{domain}}?id={{content.id}}&email={{content.email}}',
     locale: 'es',
@@ -114,14 +114,14 @@ const emails = [
   {
     name: 'magic_signin',
     subject: 'Tu enlace mágico para iniciar sesión',
-    body: 'Has solicitado un enlace mágico para iniciar sesión en Gravity. Por favor, haz clic en el enlace a continuación para iniciar sesión sin tu contraseña.',
+    body: 'Has solicitado un enlace mágico para iniciar sesión en Mesulo. Por favor, haz clic en el enlace a continuación para iniciar sesión sin tu contraseña.',
     button_label: 'Iniciar Sesión',
     button_url: '{{domain}}?token={{content.token}}',
     locale: 'es',
   },
   {
     name: 'new_signin',
-    subject: 'Nuevo inicio de sesión en Gravity',
+    subject: 'Nuevo inicio de sesión en Mesulo',
     body: 'Hemos notado un nuevo inicio de sesión en tu cuenta desde un nuevo dispositivo o ubicación. <b>¿Fuiste tú?</b>\n\n{{content.browser}} en {{content.device}}\n\n<b>IP</b>: {{content.ip}}\n\n<b>Hora</b>: {{content.time}}\n\nSi fuiste tú, puedes ignorar este mensaje. Si no fuiste tú, por favor cambia tu contraseña.',
     button_label: 'Cambiar Contraseña',
     button_url: '{{domain}}/account/password',
@@ -145,8 +145,8 @@ const emails = [
   },
   {
     name: 'new_log',
-    subject: 'Nuevo registro en Gravity',
-    body: 'Se ha realizado un nuevo registro en tu aplicación Gravity, inicia sesión en Mission Control para ver qué ocurrió.',
+    subject: 'Nuevo registro en Mesulo',
+    body: 'Se ha realizado un nuevo registro en tu aplicación Mesulo, inicia sesión en Mission Control para ver qué ocurrió.',
     button_label: 'Ver Registro',
     button_url: '{{domain}}/logs/{{content.id}}',
     locale: 'es',

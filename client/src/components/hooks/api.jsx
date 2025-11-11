@@ -4,7 +4,7 @@
 *   Make API calls and handle errors. Returns loading state and data.
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/hooks/useapi
+*   https://docs.mesulo.com/mesulo-web/hooks/useapi
 *
 *   method: get, post, put (string, required, default: get)
 *   trigger: change the trigger to re-start the call (boolean, optional)

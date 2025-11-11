@@ -5,8 +5,8 @@
     "remote_client": "http://localhost:3000"
   },
   "production": {
-    "server_url": "http://localhost:5001",
-    "remote_server": "http://localhost:8080",
-    "remote_client": "http://localhost:3000"
+    "server_url": "https://nodejs-production-c264.up.railway.app",
+    "remote_server": "https://nodejs-production-9eae9.up.railway.app",
+    "remote_client": "https://nodejs-production-76b33.up.railway.app"
   }
 }

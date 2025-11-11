@@ -4,7 +4,7 @@
 *   Wrapper component to animate in children.
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/animate
+*   https://docs.mesulo.com/mesulo-web/components/animate
 *
 *   PROPS
 *   children: children to render (component, required)

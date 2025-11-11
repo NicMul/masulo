@@ -26,7 +26,7 @@ export function SetupMailgun(){
           button={{
 
             text: 'Open Mailgun Docs',
-            url: 'https://docs.usegravity.app/gravity-server/installation/mailgun-setup'
+            url: 'https://docs.mesulo.com/mesulo-server/installation/mailgun-setup'
 
           }}
         />

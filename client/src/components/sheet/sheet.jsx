@@ -4,7 +4,7 @@
 *   Overlays a modal on the top/left/bottom/right of the viewport.
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/sheet
+*   https://docs.mesulo.com/mesulo-web/components/sheet
 *   https://ui.shadcn.com/docs/components/sheet
 *
 *   PROPS

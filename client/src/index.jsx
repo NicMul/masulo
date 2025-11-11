@@ -5,5 +5,5 @@ const container = document.getElementById('root');
 const root = createRoot(container); 
 root.render(<App/>);
 
-const welcome = () => console.log('Welcome to Gravity 🚀')
+const welcome = () => console.log('Welcome to Mesulo 🚀')
 welcome('de529c70-eb80-4dfb-9540-5075db7545bf')

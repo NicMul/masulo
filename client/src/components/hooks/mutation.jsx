@@ -4,7 +4,7 @@
 *   Make API calls with data (POST, PATCH, PUT, DELETE) and handle errors. Returns loading state and execute function.
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/hooks/usemutation
+*   https://docs.mesulo.com/mesulo-web/hooks/usemutation
 *
 *   method: post, patch, put, delete (string, required)
 *   baseUrl: base endpoint url (string, required)

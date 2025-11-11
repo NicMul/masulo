@@ -5,7 +5,7 @@
 *   Pagination with page navigation, next and previous links.
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/pagination
+*   https://docs.mesulo.com/mesulo-web/components/pagination
 *   https://ui.shadcn.com/docs/components/pagination
 *
 *   PROPS

@@ -4,7 +4,7 @@
 *   Displays an organized summary of key/value data pairs.  
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/detail
+*   https://docs.mesulo.com/mesulo-web/components/detail
 *
 *   PROPS
 *   className: custom styling (SCSS or tailwind style, optional)

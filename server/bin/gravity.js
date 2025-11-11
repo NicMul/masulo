@@ -6,7 +6,7 @@ const master = require('./master');
 const Mocha = require('mocha');
 const mocha = new Mocha({});
 
-async function gravity(){
+async function Mesulo(){
 
   const args = process.argv.splice(2);
   const command = args[0];
@@ -36,7 +36,7 @@ async function gravity(){
 
 async function showHelp(){
 
-  clack.intro('Welcome to the Gravity Toolbelt 🔧');
+  clack.intro('Welcome to the Mesulo Toolbelt 🔧');
   const spinner = clack.spinner();
 
   const action = await clack.select({
@@ -152,4 +152,4 @@ async function runTests(){
 
 }
 
-gravity();
+Mesulo();

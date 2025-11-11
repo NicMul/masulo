@@ -4,7 +4,7 @@
 *   An image element with a fallback for representing the user.
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/avatar
+*   https://docs.mesulo.com/mesulo-web/components/avatar
 *   https://ui.shadcn.com/docs/components/avatar
 *
 *   PROPS

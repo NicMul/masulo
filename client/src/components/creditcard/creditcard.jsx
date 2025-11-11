@@ -4,7 +4,7 @@
 *   Displays a visual representation of a credit card.
 *   
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/credit-card
+*   https://docs.mesulo.com/mesulo-web/components/credit-card
 *
 *   PROPS
 *   brand: card provider name (string, required)

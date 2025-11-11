@@ -5,7 +5,7 @@
 *   Icons are lazy loaded to prevent increasing bundle size.
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/icon
+*   https://docs.mesulo.com/mesulo-web/components/icon
 *   https://lucide.dev
 *
 *   PROPS

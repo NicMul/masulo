@@ -4,7 +4,7 @@
 *   A sharing wiget for Facebook, Twitter, Linkedin and email.
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/social
+*   https://docs.mesulo.com/mesulo-web/components/social
 *
 *   PROPS
 *   className: custom styling (SCSS or tailwind style, optional)

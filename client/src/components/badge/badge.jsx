@@ -4,7 +4,7 @@
 *   Displays a badge or a component that looks like a badge.
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/badge
+*   https://docs.mesulo.com/mesulo-web/components/badge
 *   https://ui.shadcn.com/docs/components/badge
 *
 *   PROPS

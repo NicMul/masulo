@@ -7,7 +7,7 @@ const use = require('../helper/utility').use;
 // Public analytics creation (for SDK events)
 api.post('/api/analytics', auth.verify('public'), use(analyticsController.create));
 
-// Protected analytics retrieval (requires authentication)
+
 api.get('/api/analytics', auth.verify('user'), use(analyticsController.get));
 api.get('/api/analytics/aggregate', auth.verify('user'), use(analyticsController.aggregate));
 api.get('/api/analytics/dashboard', auth.verify('user'), use(analyticsController.getDashboardData));

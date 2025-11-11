@@ -4,7 +4,7 @@
 *   A set of layered sections displayed one at a time.
 *   
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/tabs
+*   https://docs.mesulo.com/mesulo-web/components/tabs
 *   https://ui.shadcn.com/docs/components/tabs
 *
 *   PROPS

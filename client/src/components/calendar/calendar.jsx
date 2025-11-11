@@ -4,7 +4,7 @@
 *   A date field component that allows users to enter and edit date.
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/calendar
+*   https://docs.mesulo.com/mesulo-web/components/calendar
 *   https://ui.shadcn.com/docs/components/calendar
 *
 *   PROPS

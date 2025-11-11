@@ -1,5 +1,5 @@
 const content = {
-  copyright: `Copyright © Gravity Zero Ltd. ${new Date().getFullYear()}`,
+  copyright: `Copyright © Mesulo Zero Ltd. ${new Date().getFullYear()}`,
   address: '19 Anytown Street, Anytown, United Kingdom.',
   nav: [
     {

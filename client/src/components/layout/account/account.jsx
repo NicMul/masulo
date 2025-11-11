@@ -4,7 +4,7 @@
 *   Two column layout with side sub nav.
 * 
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/layout
+*   https://docs.mesulo.com/mesulo-web/components/layout
 *
 *   PROPS
 *   children: will be passed from router > view > here (component(s), required)

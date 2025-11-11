@@ -4,7 +4,7 @@
 *   Sign up/in with Facebook, Google, Twitter or 500+ networks supported by passport.js.
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/social
+*   https://docs.mesulo.com/mesulo-web/components/social
 *     
 *   PROPS
 *   className: custom styling (SCSS or tailwind style, optional)

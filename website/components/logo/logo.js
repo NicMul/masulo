@@ -37,7 +37,7 @@ export function Logo(props){
 
   return (
     <Link href='/' className={ css }>
-      <Image src={ logo[props.image] || logo.light  } alt='Gravity | Node.js SaaS boilerplate' />
+      <Image src={ logo[props.image] || logo.light  } alt='Mesulo | Node.js SaaS boilerplate' />
     </Link>
   )
 }

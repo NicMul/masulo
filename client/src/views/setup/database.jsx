@@ -49,7 +49,7 @@ export function SetupDatabase() {
     filename: {
       type: 'text',
       label: 'Filename',
-      placeholder: './gravity.sqlite',
+      placeholder: './Mesulo.sqlite',
       required: true,
     }
   }
@@ -124,7 +124,7 @@ export function SetupDatabase() {
           button={{
 
             text: 'Open Docs',
-            url: 'https://docs.usegravity.app/gravity-server/installation/database-setup',
+            url: 'https://docs.mesulo.com/mesulo-server/installation/database-setup',
 
           }}
         />

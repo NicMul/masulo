@@ -1,8 +1,8 @@
 *********************
-Welcome to Gravity 🚀
+Welcome to Mesulo 🚀
 *********************
 
-Thank you for purchasing Gravity, this readme will help you get set up and
+Thank you for purchasing Mesulo, this readme will help you get set up and
 running in the next few minutes.
 
 
@@ -12,14 +12,14 @@ Before you can use the full application without errors, you will need to registe
 and set up a [Stripe](https://stripe.com) and [Mailgun](https://mailgun) account.
 
 Full instructions on how to do this are provided in the 
-[Gravity Documentation](https://docs.usegravity.app)
+[Mesulo Documentation](https://docs.mesulo.com)
 
 You will also need an empty database. For live deployments, you will
 need an SSL certificate installed on your domain. However; this isn't necessary
 for building and testing your application.
 
 
-# Installing Gravity
+# Installing Mesulo
 
 If you haven't already installed Node.js (15+) on your machine, please download
 and install the [latest node version](https://nodejs.org/en/download/)
@@ -36,11 +36,11 @@ of Node.js packages from the command line.
 Create a new folder for your project and clone all the repos you were 
 invited to into the project root, eg.
 
-git clone https://github.com/usegravityapp/server
-git clone https://github.com/usegravityapp/client-react-web
-git clone https://github.com/usegravityapp/client-react-native
-git clone https://github.com/usegravityapp/mission-control 
-git clone https://github.com/usegravityapp/website 
+git clone https://github.com/mesulo-app/server
+git clone https://github.com/mesulo-app/client-react-web
+git clone https://github.com/mesulo-app/client-react-native
+git clone https://github.com/mesulo-app/mission-control 
+git clone https://github.com/mesulo-app/website 
 
 You should now have a folder structure with a server subfolder, mission control
 and at least one client folder depending on which plan you purchased.
@@ -87,5 +87,5 @@ npm run cleanup
 
 ### Need Help?
 
-If you need help, please read the [documentation](https://docs.usegravity.app)
-or [contact support](mailto:support@usegravity.app)
+If you need help, please read the [documentation](https://docs.mesulo.com)
+or [contact support](mailto:support@mesulo.com)

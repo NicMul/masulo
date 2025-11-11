@@ -4,7 +4,7 @@
 *   Decorative separator with optional label
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/separator
+*   https://docs.mesulo.com/mesulo-web/components/separator
 *   https://ui.shadcn.com/docs/components/separator
 *
 *   PROPS

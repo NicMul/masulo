@@ -1,6 +1,6 @@
-const db = require('./knex')();
 const utility = require('../helper/utility');
 const chart = require('../helper/chart');
+const Account = require('./account').schema;
 
 /*
 * metrics.accounts()
@@ -9,11 +9,7 @@ const chart = require('../helper/chart');
 
 exports.accounts = async function(filter){
 
-  const data = await db('account').count('id as total')
-  .leftJoin('account_users', 'account_users.account_id', 'account.id')
-  .where(filter || {})
-  .whereNot('permission', 'master')
-  return data[0].total;
+  return await Account.countDocuments(filter);
 
 }
 
@@ -24,23 +20,28 @@ exports.accounts = async function(filter){
 
 exports.growth = async function(){
 
-  const data = await db('account')
-  .select(
-    db.raw('EXTRACT(month FROM account.date_created) as label'),
-    db.raw('EXTRACT(year FROM account.date_created) as year'))
-  .count('account.id as value')
-  .groupBy(db.raw('EXTRACT(month FROM account.date_created), EXTRACT(year FROM account.date_created)'))
-  .orderBy('year', 'asc')
-  .orderBy('label', 'asc')
+  let chartData = []
 
-  // get the months and count the totals
-  data.length && data.forEach(month => {
+  const data = await Account.aggregate([{
+    $group: {
 
-    month.label = utility.convertToMonthName(month.label);
+      _id: { $month: '$date_created' },
+      total: { $sum: 1 }
 
-  });
+    }
+  }]);
 
-  // create the chart
-  return chart.create(data, 'Signups');
+  if (data?.length){
+    data.forEach(month => {
+      chartData.push({
+
+        label: utility.convertToMonthName(month._id),
+        value: month.total
+
+      })
+    });
+  }
+
+  return chart.create(chartData, 'Signups');
 
 }

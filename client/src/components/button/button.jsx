@@ -4,7 +4,7 @@
 *   Displays a button or a component that looks like a button.
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/button
+*   https://docs.mesulo.com/mesulo-web/components/button
 *   https://ui.shadcn.com/docs/components/button
 *
 *   PROPS

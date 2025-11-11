@@ -4,7 +4,7 @@
 *   Header section with title and children.
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/header
+*   https://docs.mesulo.com/mesulo-web/components/header
 *
 *   PROPS
 *   children: children to render (component(s), optional)

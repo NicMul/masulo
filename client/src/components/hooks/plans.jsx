@@ -4,7 +4,7 @@
 *   Fetch, format and return the price plans.
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/hooks/useplans
+*   https://docs.mesulo.com/mesulo-web/hooks/useplans
 *
 **********/
 

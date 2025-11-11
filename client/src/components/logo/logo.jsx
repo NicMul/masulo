@@ -4,7 +4,7 @@
 *   Replace the images in /public/assets with your own logo.
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/logo
+*   https://docs.mesulo.com/mesulo-web/components/logo
 *
 *   PROPS
 *   className: custom styling (SCSS or tailwind style, optional)

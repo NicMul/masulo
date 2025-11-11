@@ -26,7 +26,7 @@ export function SetupStripe(){
           button={{
             
             text: 'Open Stripe Setup Guide',
-            url: 'https://docs.usegravity.app/gravity-server/installation/stripe-setup'
+            url: 'https://docs.mesulo.com/mesulo-server/installation/stripe-setup'
 
           }}
         />

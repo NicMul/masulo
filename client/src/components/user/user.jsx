@@ -5,7 +5,7 @@
 *   If user belongs to more than one account, they can switch accounts here.
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/user
+*   https://docs.mesulo.com/mesulo-web/components/user
 *
 **********/
 

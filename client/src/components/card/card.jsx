@@ -4,7 +4,7 @@
 *   Displays a card with header, content, and footer.
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/card
+*   https://docs.mesulo.com/mesulo-web/components/card
 *   https://ui.shadcn.com/docs/components/card
 *
 *   PROPS

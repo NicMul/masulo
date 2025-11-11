@@ -5,7 +5,7 @@
 *   Header rows are created dynamically from column names unless specified.
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/table
+*   https://docs.mesulo.com/mesulo-web/components/table
 *   https://ui.shadcn.com/docs/components/table
 *   https://ui.shadcn.com/docs/components/data-table
 *

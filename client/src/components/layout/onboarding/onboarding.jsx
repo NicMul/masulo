@@ -4,7 +4,7 @@
 *   Focused layout for a user to complete the onboarding flow.
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/layout
+*   https://docs.mesulo.com/mesulo-web/components/layout
 *
 *   PROPS
 *   children: will be passed from router > view > here (component(s), required)

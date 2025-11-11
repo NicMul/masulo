@@ -1,15 +1,15 @@
 const emails = [
   { 
     name: 'new_account',
-    subject: 'Welcome to Gravity',
-    body: 'Thank you for signing up to Gravity. Your account is now verified.',
+    subject: 'Welcome to Mesulo',
+    body: 'Thank you for signing up to Mesulo. Your account is now verified.',
     button_label: 'Open Dashboard',
     button_url: '{{domain}}/dashboard',
     locale: 'en',
   },
   { 
     name: 'duplicate_user',
-    subject: 'Important! Your Gravity account',
+    subject: 'Important! Your Mesulo account',
     body: 'We noticed you have already registered an account, so we used your original password to save you any confusion in the future.',
     button_label: 'Sign In',
     button_url: '{{domain}}/signin',
@@ -17,7 +17,7 @@ const emails = [
   },
   { 
     name: 'new_plan',
-    subject: 'Your Gravity plan',
+    subject: 'Your Mesulo plan',
     body: 'Thank you for selecting the {{content.plan}} plan. Your card has been successfully charged {{content.price}}.',
     button_label: 'Your Dashboard',
     button_url: '{{domain}}/dashboard',
@@ -25,8 +25,8 @@ const emails = [
   },
   { 
     name: 'new_user',
-    subject: 'Welcome to Gravity',
-    body: 'Thank you for signing up to Gravity.',
+    subject: 'Welcome to Mesulo',
+    body: 'Thank you for signing up to Mesulo.',
     button_label: 'Open Dashboard',
     button_url: '{{domain}}/dashboard',
     locale: 'en',
@@ -89,8 +89,8 @@ const emails = [
   },
   { 
     name: 'invite',
-    subject: 'Your friend has invited you to use Gravity',
-    body: 'Your friend {{content.friend}} has invited you to join their team on Gravity. Sign up now to start working with {{content.friend}}.',
+    subject: 'Your friend has invited you to use Mesulo',
+    body: 'Your friend {{content.friend}} has invited you to join their team on Mesulo. Sign up now to start working with {{content.friend}}.',
     button_label: 'Sign Up Now',
     button_url: '{{domain}}?id={{content.id}}&email={{content.email}}',
     locale: 'en',
@@ -114,14 +114,14 @@ const emails = [
   { 
     name: 'magic_signin',
     subject: 'Your magic sign in link',
-    body: 'You requested a magic signin link for Gravity. Please click the link below to sign in without your password.',
+    body: 'You requested a magic signin link for Mesulo. Please click the link below to sign in without your password.',
     button_label: 'Sign In',
     button_url: '{{domain}}?token={{content.token}}',
     locale: 'en',
   },
   { 
     name: 'new_signin',
-    subject: 'New sign in to Gravity',
+    subject: 'New sign in to Mesulo',
     body: 'We noticed a new sign in to your account from a new device or location. <b>Was this you?</b>\n\n{{content.browser}} on {{content.device}}\n\n<b>IP</b>: {{content.ip}}\n\n<b>Time</b>: {{content.time}}\n\nIf this was you, you can ignore this message. If this wasn\'t you, please change your password.',
     button_label: 'Change Password',
     button_url: '{{domain}}/account/password',
@@ -145,8 +145,8 @@ const emails = [
   },
   { 
     name: 'new_log',
-    subject: 'New log recorded in Gravity',
-    body: 'A new log was made in your Gravity app, log in to Mission Control to see what happened.',
+    subject: 'New log recorded in Mesulo',
+    body: 'A new log was made in your Mesulo app, log in to Mission Control to see what happened.',
     button_label: 'View Log',
     button_url: '{{domain}}/logs/{{content.id}}',
     locale: 'en',

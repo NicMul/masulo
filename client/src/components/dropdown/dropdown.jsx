@@ -5,7 +5,7 @@
 *   actions or functions — triggered by a button.
 *
 *   DOCS
-*   https://docs.usegravity.app/gravity-web/components/dropdown
+*   https://docs.mesulo.com/mesulo-web/components/dropdown
 *   https://ui.shadcn.com/docs/components/dropdown-menu
 *
 *   PARAMS
