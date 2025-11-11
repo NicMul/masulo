@@ -1,3 +1,5 @@
+import { GameCardAnalytics } from '../utils/analytics.js';
+
 class VideoManager {
     constructor(element, gameId) {
       this.element = element;
@@ -7,8 +9,41 @@ class VideoManager {
       this.videoElement = null;
       this.spinner = null;
       this.isInitialLoad = true;
+      this.analytics = null;
       this._createListeners();
       this._injectSpinnerStyles();
+      this._setupAnalytics();
+    }
+    
+    _setupAnalytics() {
+      console.log('[VideoManager] _setupAnalytics called', { gameId: this.gameId, hasMesulo: !!window.mesulo, elementTag: this.element.tagName });
+      if (!window.mesulo) {
+        console.log('[VideoManager] window.mesulo not available');
+        return;
+      }
+      
+      // Find container element (parent of the image/video)
+      const container = this.element.parentElement || this.element.closest('[data-mesulo-game-id]')?.parentElement || this.element;
+      console.log('[VideoManager] Creating GameCardAnalytics', { gameId: this.gameId, container: container.tagName });
+      this.analytics = new GameCardAnalytics(this.gameId, container);
+      
+      // Set up image tracking if element is an image
+      if (this.element.tagName === 'IMG') {
+        console.log('[VideoManager] Setting up image tracking for', this.element.src);
+        this.analytics.setupImageTracking(this.element, () => {
+          const url = this.element.src || this.element.getAttribute('src');
+          console.log('[VideoManager] getCurrentImageUrl called', { url });
+          return url;
+        });
+        
+        // Also check if image is already visible
+        const rect = this.element.getBoundingClientRect();
+        const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+        console.log('[VideoManager] Image visibility check', { isVisible, rect: { top: rect.top, bottom: rect.bottom, windowHeight: window.innerHeight } });
+      }
+      
+      // Set up button click tracking
+      this.analytics.setupButtonClickTracking();
     }
     
     _injectSpinnerStyles() {
@@ -145,9 +180,27 @@ class VideoManager {
           if (video.paused) {
             video.play().catch(() => {});
             this.currentHovered = video;
+            
+            // Track video play on touch
+            if (this.analytics && window.mesulo) {
+              const videoData = this.videos.get(video);
+              const videoUrl = video.src || videoData?.videoUrl || videoData?.originalSrc;
+              if (videoUrl) {
+                this.analytics.trackVideoEvent('video_play', videoUrl, video);
+              }
+            }
           } else {
             video.pause();
             this.currentHovered = null;
+            
+            // Track video pause on touch
+            if (this.analytics && window.mesulo) {
+              const videoData = this.videos.get(video);
+              const videoUrl = video.src || videoData?.videoUrl || videoData?.originalSrc;
+              if (videoUrl) {
+                this.analytics.trackVideoEvent('video_pause', videoUrl, video);
+              }
+            }
           }
         } else if (this.currentHovered) {
           this.currentHovered.pause();
@@ -274,10 +327,39 @@ class VideoManager {
       this.videos.set(video, {
         playing: false,
         originalSrc: img.src,
-        gameId: gameId
+        gameId: gameId,
+        videoUrl: videoUrl,
+        imageUrl: imageUrl
       });
       
       this.videoElement = video;
+      
+      // Set up analytics tracking for the video
+      if (this.analytics && window.mesulo) {
+        this.analytics.setupVideoTracking(video, videoUrl);
+        this.analytics.setupButtonClickTracking();
+      }
+      
+      // Also track image impression before replacement
+      if (this.analytics && window.mesulo && imageUrl) {
+        // Use IntersectionObserver to track image impression
+        const imageObserver = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting && window.mesulo?.analyticsEnabled) {
+              if (imageUrl && this.analytics.trackingData.lastImageUrl !== imageUrl) {
+                window.mesulo.trackAssetEvent('image_impression', gameId, 'image', imageUrl, {
+                  visibility_ratio: entry.intersectionRatio,
+                  viewport: window.mesulo.getViewportInfo()
+                });
+                this.analytics.trackingData.lastImageUrl = imageUrl;
+              }
+              imageObserver.disconnect();
+            }
+          });
+        }, { threshold: [0.5] });
+        
+        imageObserver.observe(img);
+      }
   
       img.replaceWith(video);
       

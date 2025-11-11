@@ -56,8 +56,14 @@ export function useAnalytics(dateRange = '7d') {
   const refresh = useCallback(() => {
     setIsRefreshing(true);
     setRefreshKey(prev => prev + 1);
-    setTimeout(() => setIsRefreshing(false), 300000); // Every 5 minutes
   }, []);
+  
+  // Reset isRefreshing when loading completes
+  useEffect(() => {
+    if (!loading && isRefreshing) {
+      setIsRefreshing(false);
+    }
+  }, [loading, isRefreshing]);
   
   useEffect(() => {
     const interval = setInterval(() => {
@@ -73,17 +79,15 @@ export function useAnalytics(dateRange = '7d') {
     const totalEvents = data.eventTypes?.reduce((sum, item) => sum + (item.count || 0), 0) || 0;
     
     const uniqueSessions = data.recentEvents && Array.isArray(data.recentEvents) ? 
-      [...new Set(data.recentEvents.map(e => e.session_id))].length : 0;
+      [...new Set(data.recentEvents.map(e => e.sessionId))].length : 0;
     
     const mostEngagedAsset = data.assetTypes && Array.isArray(data.assetTypes) && data.assetTypes.length > 0 ? 
-      data.assetTypes.reduce((max, item) => (item.count || 0) > max.count ? item : max, { count: 0, _id: { asset_type: 'N/A' } })
-      : { count: 0, _id: { asset_type: 'N/A' } };
+      data.assetTypes.reduce((max, item) => (item.count || 0) > max.count ? item : max, { count: 0, _id: { assetType: 'N/A' } })
+      : { count: 0, _id: { assetType: 'N/A' } };
     
-    const hoverEvents = data.recentEvents && Array.isArray(data.recentEvents) ? 
-      data.recentEvents.filter(e => e.event_type === 'hover' && e.metadata?.hover_duration)
-      : [];
-    const avgHoverDuration = hoverEvents.length > 0 ? 
-      Math.round(hoverEvents.reduce((sum, e) => sum + (e.metadata.hover_duration || 0), 0) / hoverEvents.length)
+    // Get average hover duration from conversionMetrics (calculated from all events)
+    const avgHoverDuration = data.conversionMetrics?.avg_hover_duration 
+      ? Math.round(data.conversionMetrics.avg_hover_duration)
       : 0;
 
     return [
@@ -101,7 +105,7 @@ export function useAnalytics(dateRange = '7d') {
       },
       {
         label: 'Most Engaged Asset',
-        value: mostEngagedAsset._id?.asset_type?.replace('Image', '').replace('Video', '') || 'N/A',
+        value: mostEngagedAsset._id?.assetType?.replace('Image', '').replace('Video', '') || 'N/A',
         icon: 'star',
         loading: loading || isRefreshing
       },
@@ -244,7 +248,7 @@ export function useAnalytics(dateRange = '7d') {
     const colors = ['blue', 'red', 'green', 'purple', 'orange', 'purple', 'pink'];
     
     const datasets = eventTypes.map((eventType, index) => {
-      const eventData = data.eventTypes.find(item => item._id?.event_type === eventType);
+      const eventData = data.eventTypes.find(item => item._id?.eventType === eventType);
       return {
         label: eventType.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()),
         data: [eventData ? (eventData.count || 0) : 0]
@@ -261,7 +265,7 @@ export function useAnalytics(dateRange = '7d') {
     if (!data?.assetTypes || !Array.isArray(data.assetTypes)) return { labels: [], datasets: [] };
     
     const labels = data.assetTypes.map(item => 
-      item._id?.asset_type?.replace('Image', '').replace('Video', '') || 'Unknown'
+      item._id?.assetType?.replace('Image', '').replace('Video', '') || 'Unknown'
     );
     const dataValues = data.assetTypes.map(item => item.count || 0);
 
@@ -285,6 +289,7 @@ export function useAnalytics(dateRange = '7d') {
       .slice(0, 10)
       .map(item => ({
         game_id: item._id || item._id?.gameId || 'Unknown',
+        game_name: item.friendlyName || 'Unknown',
         total_events: item.count || 0,
         unique_sessions: item.unique_session_count || 0,
         last_seen: item.last_seen ? new Date(item.last_seen).toLocaleDateString() : 'N/A'
@@ -295,9 +300,10 @@ export function useAnalytics(dateRange = '7d') {
     if (!data?.recentEvents || !Array.isArray(data.recentEvents)) return [];
     
     return data.recentEvents.map(event => ({
-      event_type: event.event_type?.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'Unknown',
-      asset_type: event.asset_type?.replace('Image', '').replace('Video', '') || 'Unknown',
-      game_id: event.game_id ? event.game_id.substring(0, 8) + '...' : 'Unknown',
+      event_type: event.eventType?.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'Unknown',
+      asset_type: event.assetType?.replace('Image', '').replace('Video', '') || 'Unknown',
+      game_id: event.gameId ? event.gameId.substring(0, 8) + '...' : 'Unknown',
+      game_name: event.friendlyName || 'Unknown',
       timestamp: event.timestamp ? new Date(event.timestamp).toLocaleString() : 'N/A'
     }));
   }, [data]);

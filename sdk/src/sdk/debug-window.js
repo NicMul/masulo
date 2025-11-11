@@ -8,6 +8,7 @@ export class DebugWindow {
     this.currentTab = 'connection';
     
     this.createFloatingWindow();
+    this.createReopenButton();
     this.setupEventListeners();
     this.waitForSocket();
   }
@@ -21,7 +22,8 @@ export class DebugWindow {
         <div class="mesulo-debug-tabs">
           <button class="mesulo-debug-tab active" data-tab="connection">Connection</button>
           <button class="mesulo-debug-tab" data-tab="rooms">Games & Rooms</button>
-          <button class="mesulo-debug-tab" data-tab="events">Event Logs</button>
+          <button class="mesulo-debug-tab" data-tab="events">Events</button>
+          <button class="mesulo-debug-tab" data-tab="analytics">Analytics</button>
         </div>
         <div class="mesulo-debug-controls">
           <button class="mesulo-debug-minimize" title="Minimize">−</button>
@@ -84,6 +86,23 @@ export class DebugWindow {
             </div>
           </div>
         </div>
+        
+        <!-- Tab 4: Analytics Logs -->
+        <div class="mesulo-debug-tab-content" data-tab="analytics">
+          <div class="mesulo-debug-section">
+            <div class="mesulo-events-header">
+              <h4>Analytics Events</h4>
+              <button class="mesulo-clear-log-btn" id="mesulo-clear-analytics-log">Clear Log</button>
+            </div>
+            <div class="mesulo-events-log" id="mesulo-analytics-log">
+              <div class="mesulo-log-entry mesulo-log-info">
+                <span class="mesulo-log-time">--:--:--</span>
+                <span class="mesulo-log-type">INFO</span>
+                <span class="mesulo-log-message">Analytics logging initialized</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       
       <div class="mesulo-debug-resize-handle"></div>
@@ -109,7 +128,7 @@ export class DebugWindow {
         position: fixed;
         bottom: 20px;
         right: 20px;
-        width: 500px;
+        width: 550px;
         max-width: 90vw;
         height: 600px;
         max-height: 80vh;
@@ -149,7 +168,7 @@ export class DebugWindow {
         background: transparent;
         border: 1px solid rgba(218, 165, 32, 0.3);
         color: rgba(255, 255, 255, 0.7);
-        padding: 6px 12px;
+        padding: 8px 6px;
         border-radius: 6px;
         cursor: pointer;
         font-size: 0.85rem;
@@ -537,6 +556,51 @@ export class DebugWindow {
     document.head.appendChild(style);
   }
   
+  createReopenButton() {
+    const reopenButton = document.createElement('div');
+    reopenButton.id = 'mesulo-debug-reopen';
+    reopenButton.innerHTML = '🔧';
+    reopenButton.title = 'Open Debug Window';
+    reopenButton.style.cssText = `
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(145deg, rgba(20, 20, 35, 0.98), rgba(15, 15, 25, 0.98));
+      border: 2px solid rgba(218, 165, 32, 0.3);
+      border-radius: 50%;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 999998;
+      font-size: 24px;
+      transition: all 0.2s ease;
+      user-select: none;
+    `;
+    
+    reopenButton.addEventListener('mouseenter', () => {
+      reopenButton.style.background = 'linear-gradient(145deg, rgba(30, 30, 45, 0.98), rgba(25, 25, 35, 0.98))';
+      reopenButton.style.borderColor = 'rgba(218, 165, 32, 0.6)';
+      reopenButton.style.transform = 'scale(1.1)';
+    });
+    
+    reopenButton.addEventListener('mouseleave', () => {
+      reopenButton.style.background = 'linear-gradient(145deg, rgba(20, 20, 35, 0.98), rgba(15, 15, 25, 0.98))';
+      reopenButton.style.borderColor = 'rgba(218, 165, 32, 0.3)';
+      reopenButton.style.transform = 'scale(1)';
+    });
+    
+    reopenButton.addEventListener('click', () => {
+      this.show();
+    });
+    
+    document.body.appendChild(reopenButton);
+    this.reopenButton = reopenButton;
+  }
+  
   setupEventListeners() {
     // Tab switching
     this.container.querySelectorAll('.mesulo-debug-tab').forEach(tab => {
@@ -562,6 +626,15 @@ export class DebugWindow {
       if (logContainer) {
         logContainer.innerHTML = '';
         this.logEvent('info', 'Log cleared');
+      }
+    });
+    
+    // Clear analytics log button
+    document.getElementById('mesulo-clear-analytics-log').addEventListener('click', () => {
+      const logContainer = document.getElementById('mesulo-analytics-log');
+      if (logContainer) {
+        logContainer.innerHTML = '';
+        this.logAnalytics('info', 'Analytics log cleared');
       }
     });
   }
@@ -968,14 +1041,86 @@ export class DebugWindow {
     }
   }
   
+  logAnalytics(type, message, data = null) {
+    const logContainer = document.getElementById('mesulo-analytics-log');
+    if (!logContainer) {
+      console.log('[DebugWindow] logAnalytics: Container not found', { type, message });
+      return;
+    }
+    
+    console.log('[DebugWindow] logAnalytics called', { type, message, hasContainer: !!logContainer, containerId: logContainer.id });
+    
+    const time = new Date().toLocaleTimeString();
+    const entry = document.createElement('div');
+    entry.className = `mesulo-log-entry mesulo-log-${type}`;
+    
+    let html = `
+      <div class="mesulo-log-entry-header">
+        <span class="mesulo-log-time">${time}</span>
+        <span class="mesulo-log-type">${type.toUpperCase()}</span>
+        <span class="mesulo-log-message">${message}</span>
+      </div>
+    `;
+    
+    let dataId = null;
+    let toggleId = null;
+    
+    if (data) {
+      dataId = `analytics-payload-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      toggleId = `analytics-toggle-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      
+      html += `
+        <div class="mesulo-log-payload-toggle collapsed" id="${toggleId}" data-target="${dataId}">
+          <span class="mesulo-log-payload-icon">▼</span>
+          <span>Show Payload</span>
+        </div>
+        <div class="mesulo-log-payload collapsed" id="${dataId}">${JSON.stringify(data, null, 2)}</div>
+      `;
+    }
+    
+    entry.innerHTML = html;
+    logContainer.appendChild(entry);
+    console.log('[DebugWindow] Entry appended to analytics log', { type, message, entryCount: logContainer.children.length });
+    
+    // Add toggle handler
+    if (data && toggleId && dataId) {
+      const toggle = entry.querySelector(`#${toggleId}`);
+      const payload = entry.querySelector(`#${dataId}`);
+      
+      if (toggle && payload) {
+        toggle.addEventListener('click', () => {
+          const isCollapsed = toggle.classList.contains('collapsed');
+          toggle.classList.toggle('collapsed');
+          payload.classList.toggle('collapsed');
+          toggle.querySelector('span:last-child').textContent = isCollapsed ? 'Hide Payload' : 'Show Payload';
+        });
+      }
+    }
+    
+    // Auto-scroll
+    logContainer.scrollTop = logContainer.scrollHeight;
+    
+    // Limit entries
+    const entries = logContainer.querySelectorAll('.mesulo-log-entry');
+    if (entries.length > 500) {
+      entries[0].remove();
+    }
+  }
+  
   show() {
     this.container.style.display = 'flex';
     this.isVisible = true;
+    if (this.reopenButton) {
+      this.reopenButton.style.display = 'none';
+    }
   }
   
   hide() {
     this.container.style.display = 'none';
     this.isVisible = false;
+    if (this.reopenButton) {
+      this.reopenButton.style.display = 'flex';
+    }
   }
   
   toggle() {

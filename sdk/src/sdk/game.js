@@ -67,12 +67,18 @@ export class GameManager {
   }
   
   updateSpecificGames(gamesData) {
+    console.log('[GameManager] updateSpecificGames called', { gamesCount: gamesData?.length, gamesData });
+    
     if (this.promotionManager && typeof this.promotionManager.updateGamesMap === 'function') {
       this.promotionManager.updateGamesMap(gamesData);
     }
     
     if (this.abtestManager && typeof this.abtestManager.updateGamesMap === 'function') {
       this.abtestManager.updateGamesMap(gamesData);
+    }
+    
+    if (this.analyticsManager && typeof this.analyticsManager.updateGamesMap === 'function') {
+      this.analyticsManager.updateGamesMap(gamesData);
     }
     
     gamesData.forEach(game => {

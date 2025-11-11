@@ -185,6 +185,7 @@ export function Dashboard({ t }){
             data={ topGames }
             loading={ loading }
             columns={[
+              { key: 'game_name', label: 'Game Name' },
               { key: 'game_id', label: 'Game ID' },
               { key: 'total_events', label: 'Total Events' },
               { key: 'unique_sessions', label: 'Sessions' },
@@ -203,6 +204,7 @@ export function Dashboard({ t }){
             columns={[
               { key: 'event_type', label: 'Event Type' },
               { key: 'asset_type', label: 'Asset Type' },
+              { key: 'game_name', label: 'Game Name' },
               { key: 'game_id', label: 'Game ID' },
               { key: 'timestamp', label: 'Timestamp' }
             ]}

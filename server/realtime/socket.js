@@ -172,28 +172,54 @@ function initializeSocketIO(server) {
       }
     });
 
-    // Handle analytics events
-    socket.on('analytics-event', async (data) => {
+    // Handle analytics batch events (matching A/B testing pattern)
+    socket.on('analytics-event-batch', async (data) => {
       try {
-        // Validate required fields
-        if (!data.event_type || !data.game_id || !data.asset_type || !data.asset_url || !data.session_id) {
-          console.warn('Invalid analytics event data:', data);
+        console.log('[Socket] Received analytics batch:', {
+          eventCount: data.events?.length || 0,
+          hasEvents: !!data.events,
+          isArray: Array.isArray(data.events)
+        });
+        
+        if (!data.events || !Array.isArray(data.events) || data.events.length === 0) {
+          console.warn('Invalid analytics batch data:', data);
           return;
         }
-
-        // Add user context
-        const analyticsData = {
-          ...data,
-          user_id: userData.id,
-          account_id: userData.id // Using user_id as account_id for now
-        };
-
-        // Store analytics event (fire-and-forget for performance)
-        analytics.create({ data: analyticsData, user: userData.id, account: userData.id })
-          .catch(error => console.error('Error storing analytics event:', error));
-
+        
+        // Validate required fields
+        const validEvents = data.events.filter(event => 
+          event.eventType && event.gameId && event.assetType && event.assetUrl && event.sessionId
+        );
+        
+        console.log('[Socket] Valid events:', {
+          total: data.events.length,
+          valid: validEvents.length,
+          invalid: data.events.length - validEvents.length
+        });
+        
+        if (validEvents.length === 0) {
+          console.warn('No valid events in analytics batch');
+          return;
+        }
+        
+        // Bulk insert (fire-and-forget for performance)
+        analytics.createMany({ 
+          events: validEvents, 
+          user: userData.id,
+          account: userData.id 
+        })
+          .then(result => {
+            console.log('[Socket] Analytics batch stored successfully:', {
+              insertedCount: result.insertedCount,
+              userId: userData.id
+            });
+          })
+          .catch(error => {
+            console.error('Error storing analytics batch:', error);
+          });
+          
       } catch (error) {
-        console.error('Error processing analytics event:', error);
+        console.error('Error processing analytics batch:', error);
       }
     });
 
