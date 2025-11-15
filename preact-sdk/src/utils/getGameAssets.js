@@ -7,7 +7,7 @@ export function getGameAssets(game) {
   if (!game.published) {
     return {
       imageUrl: game.defaultImage || '',
-      videoUrl: game.defaultVideo || ''
+      videoUrl: null
     };
   }
 

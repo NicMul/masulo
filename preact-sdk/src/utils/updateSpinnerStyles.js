@@ -17,8 +17,8 @@ export function injectUpdateSpinnerStyles() {
       right: 10px;
       width: 16px;
       height: 16px;
-      border: 2px solid rgba(34, 197, 94, 0.3);
-      border-top: 2px solid rgba(34, 197, 94, 0.9);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top: 2px solid rgba(255, 255, 255, 0.9);
       border-radius: 50%;
       animation: mesulo-spin 0.8s linear infinite;
       z-index: 1000;

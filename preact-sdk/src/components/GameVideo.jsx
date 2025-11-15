@@ -4,16 +4,25 @@ import "preact/debug";
 import { gameVideoStore, gameVideos } from '../store/gameVideoStore.js';
 import { VideoUpdateSpinner } from './VideoUpdateSpinner.jsx';
 import { injectUpdateSpinnerStyles } from '../utils/updateSpinnerStyles.js';
+import { injectWrapperStyles } from '../utils/wrapperStyles.js';
 
 export function GameVideo({ gameId, className, style, poster = '', version = '0', wrapperClassName = '', onVideoReady }) {
   const videoRef = useRef(null);
+  const wrapperRef = useRef(null);
   
-  // Access signal directly for reactivity - this will trigger re-renders when signal changes
   const state = gameVideos.value.get(gameId);
   const isLoading = state?.loading || false;
+  
+  // Base image logic:
+  // - During initial load: Lock to original website image (baseImageSrc)
+  // - After initial load: Allow updates to new poster for smooth transitions
+  const baseImageSrc = state?.isInitialLoad === false 
+    ? (state?.poster || poster)  // Allow updates after initial load
+    : ((state?.baseImageSrc && state.baseImageSrc !== '') ? state.baseImageSrc : poster);  // Lock during initial load
 
   useEffect(() => {
     injectUpdateSpinnerStyles();
+    injectWrapperStyles();
   }, []);
 
   useEffect(() => {
@@ -23,21 +32,21 @@ export function GameVideo({ gameId, className, style, poster = '', version = '0'
       if (!existingState) {
         gameVideoStore.setVideoState(gameId, {
           id: gameId,
-          videoRef: videoRef.current, 
+          videoRef: videoRef.current,
+          wrapperRef: wrapperRef.current,
           poster,
           src: null,
           version,
-          loading: false, 
+          loading: false,
         });
       } else {
         gameVideoStore.updateVideoState(gameId, {
-          videoRef: videoRef.current
+          videoRef: videoRef.current,
+          wrapperRef: wrapperRef.current
         });
       }
 
-      if (poster && !videoRef.current.poster) {
-        videoRef.current.poster = poster;
-      }
+      // NOTE: Poster is set declaratively in the render to baseImageSrc
       
       if (version) {
         videoRef.current.setAttribute('data-mesulo-version', version);
@@ -49,17 +58,114 @@ export function GameVideo({ gameId, className, style, poster = '', version = '0'
     }
   }, [gameId, poster, version, onVideoReady]);
 
-  // Update video element when state changes reactively
+  // NOTE: Video src updates are now orchestrated by lifecycle hooks
+  // This prevents conflicts with transition animations
+  // Direct reactive updates are disabled to maintain smooth transitions
+
+  // Enforce video state based on game configuration
   useEffect(() => {
-    if (videoRef.current && state) {
-      if (state.src && videoRef.current.src !== state.src) {
-        videoRef.current.src = state.src;
+    if (!videoRef.current || !state) return;
+    
+    const videoEl = videoRef.current;
+    const isAutoplayMode = state.hover === false && state.animate !== false;
+    const isPosterOnly = state.animate === false;
+    
+    // Autoplay mode: force play if paused
+    const handlePause = () => {
+      if (isAutoplayMode && videoEl.src) {
+        videoEl.play().catch(() => {});
       }
-      if (state.poster && videoRef.current.poster !== state.poster) {
-        videoRef.current.poster = state.poster;
+    };
+    
+    // Poster-only mode: force pause if playing
+    const handlePlay = () => {
+      if (isPosterOnly) {
+        videoEl.pause();
       }
+    };
+    
+    videoEl.addEventListener('pause', handlePause);
+    videoEl.addEventListener('play', handlePlay);
+    
+    return () => {
+      videoEl.removeEventListener('pause', handlePause);
+      videoEl.removeEventListener('play', handlePlay);
+    };
+  }, [state?.hover, state?.animate, state?.src]);
+
+  // Playback control based on hover and animate flags
+  useEffect(() => {
+    if (!videoRef.current || !state) return;
+    
+    const videoEl = videoRef.current;
+    const wrapperEl = videoEl.closest('.mesulo-video-wrapper');
+    if (!wrapperEl) return;
+    
+    // Determine playback mode
+    const isAutoplayMode = state.hover === false && state.animate !== false;
+    const isHoverMode = state.hover !== false && state.animate !== false;
+    const isPosterOnly = state.animate === false;
+    
+    // ALWAYS attach event listeners on wrapper (for tracking/analytics)
+    const handleMouseEnter = () => {
+      // Only act on hover mode
+      if (isHoverMode && videoEl.src) {
+        videoEl.play().catch(() => {});
+      }
+    };
+    
+    const handleMouseLeave = () => {
+      // Only act on hover mode
+      if (isHoverMode && videoEl.src) {
+        videoEl.pause();
+      }
+    };
+    
+    const handleTouchStart = () => {
+      // Only act on hover mode
+      if (isHoverMode && videoEl.src) {
+        videoEl.play().catch(() => {});
+      }
+    };
+    
+    const handleTouchEnd = () => {
+      // Only act on hover mode
+      if (isHoverMode && videoEl.src) {
+        videoEl.pause();
+      }
+    };
+    
+    // Always attach listeners regardless of mode
+    wrapperEl.addEventListener('mouseenter', handleMouseEnter);
+    wrapperEl.addEventListener('mouseleave', handleMouseLeave);
+    wrapperEl.addEventListener('touchstart', handleTouchStart);
+    wrapperEl.addEventListener('touchend', handleTouchEnd);
+    
+    // Handle autoplay mode
+    if (isAutoplayMode && videoEl.src) {
+      videoEl.autoplay = true;
+      const playWhenReady = () => {
+        videoEl.play().catch(() => {});
+      };
+      videoEl.addEventListener('loadeddata', playWhenReady);
+      
+      return () => {
+        wrapperEl.removeEventListener('mouseenter', handleMouseEnter);
+        wrapperEl.removeEventListener('mouseleave', handleMouseLeave);
+        wrapperEl.removeEventListener('touchstart', handleTouchStart);
+        wrapperEl.removeEventListener('touchend', handleTouchEnd);
+        videoEl.removeEventListener('loadeddata', playWhenReady);
+      };
     }
-  }, [state]);
+    
+    // Cleanup for hover/poster modes
+    return () => {
+      wrapperEl.removeEventListener('mouseenter', handleMouseEnter);
+      wrapperEl.removeEventListener('mouseleave', handleMouseLeave);
+      wrapperEl.removeEventListener('touchstart', handleTouchStart);
+      wrapperEl.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [state?.hover, state?.animate, state?.src]);
 
   const styleObj = {
     width: '100%',
@@ -82,45 +188,38 @@ export function GameVideo({ gameId, className, style, poster = '', version = '0'
     }
   }
 
-  const wrapperStyle = {
-    position: 'relative',
-    width: '100%',
-    height: '100%'
-  };
-
-  if (wrapperClassName.includes('mesulo-video-fade')) {
-    wrapperStyle.position = 'absolute';
-    wrapperStyle.top = '0';
-    wrapperStyle.left = '0';
-    wrapperStyle.zIndex = '2';
-    wrapperStyle.opacity = '0';
-  }
-
   return h('div', {
-    className: wrapperClassName,
-    style: wrapperStyle
+    ref: wrapperRef,
+    className: 'mesulo-video-wrapper',
+    style: styleObj
   }, [
+    // Base image - provides backdrop during transitions
+    h('img', {
+      className: 'mesulo-base-image',
+      src: baseImageSrc,
+      alt: ''
+    }),
+    
+    // Video element
     h('video', {
       ref: videoRef,
       'data-mesulo-id': gameId,
-      className: className || '',
+      className: wrapperClassName.includes('mesulo-video-fade') 
+        ? `${className || ''} mesulo-video-fade`.trim() 
+        : (className || ''),
       'data-mesulo-version': version,
-      style: styleObj,
       muted: true,
-      poster: state?.poster || poster,
-      autoplay: false,
+      poster: state.poster || poster,  // Use same as base-image to avoid flicker
+      autoplay: state?.hover === false,  // Autoplay if hover is false
       loop: true,
       preload: 'metadata',
-      onClick: (e) => {
-        if (videoRef.current) {
-          videoRef.current.play();
-        }
-      },
       playsInline: true,
       src: state?.src || null
     }),
-    h(VideoUpdateSpinner, {
-      className: isLoading ? 'visible' : ''
+    
+    // Spinner - always mounted, controlled by isLoading
+    h(VideoUpdateSpinner, { 
+      className: isLoading ? 'visible' : '' 
     })
   ]);
 }

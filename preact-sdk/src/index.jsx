@@ -4,6 +4,7 @@ import { injectLoadingSpinnerStyles } from './utils/loadingSpinnerStyles.js';
 import { getApplicationKeyFromScript } from './realtime/scriptLoader.js';
 import { getConnectionManager } from './realtime/connectionManager.js';
 import { useInitialLoadLifecycle } from './hooks/useInitialLoadLifecycle.js';
+import { useGameUpdateLifecycle } from './hooks/useGameUpdateLifecycle.js';
 
 const handlers = new Map(); 
 const mountPoints = new WeakMap(); 
@@ -69,6 +70,7 @@ function init() {
   if (applicationKey) {
     connectionManager = getConnectionManager(applicationKey);
     lifecycleManager = useInitialLoadLifecycle(connectionManager);
+    const updateLifecycleManager = useGameUpdateLifecycle();
     connectionManager.connect();
     
     connectionManager.on('connected', () => {
@@ -80,9 +82,7 @@ function init() {
     });
 
     connectionManager.on('game-updated', (data) => {
-      if (data && data.games && Array.isArray(data.games)) {
-        
-      }
+      updateLifecycleManager.handleGameUpdate(data);
     });
   }
 

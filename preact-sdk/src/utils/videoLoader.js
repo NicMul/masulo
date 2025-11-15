@@ -1,38 +1,6 @@
 import { h, render } from 'preact';
 import { GameVideo } from '../components/GameVideo.jsx';
-import { LoadingSpinner } from '../components/LoadingSpinner.jsx';
-import { setupImageFade } from './fadeTransition.js';
 import { gameVideoStore } from '../store/gameVideoStore.js';
-
-export function createSpinner(containerElement, gameId) {
-  if (!containerElement) return null;
-
-  const imgParent = containerElement.parentElement;
-  if (!imgParent) return null;
-
-  if (window.getComputedStyle(imgParent).position === 'static') {
-    imgParent.style.position = 'relative';
-  }
-
-  const spinnerContainer = document.createElement('div');
-  spinnerContainer.style.position = 'absolute';
-  spinnerContainer.style.bottom = '5px';
-  spinnerContainer.style.right = '5px';
-  spinnerContainer.style.zIndex = '1000';
-  spinnerContainer.style.pointerEvents = 'none';
-  
-  imgParent.appendChild(spinnerContainer);
-  render(h(LoadingSpinner), spinnerContainer);
-  
-  setTimeout(() => {
-    const spinner = spinnerContainer.querySelector('.mesulo-spinner');
-    if (spinner) {
-      spinner.classList.add('visible');
-    }
-  }, 10);
-
-  return spinnerContainer;
-}
 
 export function replaceImageWithVideo(imgElement, gameId, videoUrl, posterUrl, className, style, onComplete) {
   if (!imgElement) return;
@@ -40,12 +8,14 @@ export function replaceImageWithVideo(imgElement, gameId, videoUrl, posterUrl, c
   const imgParent = imgElement.parentElement;
   if (!imgParent) return;
 
-  setupImageFade(imgElement);
+  if (window.getComputedStyle(imgParent).position === 'static') {
+    imgParent.style.position = 'relative';
+  }
 
   const styleObj = {
     width: '100%',
     height: '100%',
-    objectFit: 'cover'
+    objectFit: 'cover',
   };
 
   if (style && typeof style === 'string') {
@@ -61,49 +31,42 @@ export function replaceImageWithVideo(imgElement, gameId, videoUrl, posterUrl, c
     Object.assign(styleObj, style);
   }
 
-  imgElement.style.opacity = '0';
-  
+  const version = imgElement.closest('[data-mesulo-game-id]')?.getAttribute('data-mesulo-version') || '0';
+
   setTimeout(() => {
-    const mountPoint = document.createElement('div');
-    
-    imgElement.replaceWith(mountPoint);
-
-    const version = imgElement.closest('[data-mesulo-game-id]')?.getAttribute('data-mesulo-version') || '0';
-
     render(
       h(GameVideo, {
         gameId,
         className,
         style: styleObj,
-        poster: posterUrl || '',
+        poster: posterUrl || imgElement.src,
         version,
-        wrapperClassName: 'mesulo-video-fade', 
+        wrapperClassName: 'mesulo-video-fade',
         onVideoReady: (videoRef) => {
-          if (videoRef) {
-            requestAnimationFrame(() => {
-              const gameVideoWrapper = mountPoint.querySelector('.mesulo-video-fade');
-              if (gameVideoWrapper && mountPoint.parentElement) {
-                mountPoint.replaceWith(gameVideoWrapper);
-              }
-
+          if (!videoRef) return;
+          
+          const videoEl = videoRef;
+          videoEl.style.opacity = '0';
+          videoEl.style.filter = 'blur(10px)';
+          videoEl.style.visibility = 'visible';
+          
+          requestAnimationFrame(() => {
+            videoEl.classList.add('mesulo-video-visible');
+            
+            if (onComplete) {
               setTimeout(() => {
-                const gameVideoWrapper = imgParent.querySelector('.mesulo-video-fade');
-                if (gameVideoWrapper) {
-                  gameVideoWrapper.style.opacity = '1';
-                  gameVideoWrapper.style.visibility = 'visible';
-                  
-                  if (onComplete) {
-                    onComplete(videoRef);
-                  }
+                if (imgElement && imgElement.parentElement) {
+                  imgElement.remove();
                 }
-              }, 600);
-            });
-          }
+                onComplete(videoRef);
+              }, 2000);
+            }
+          });
         }
       }),
-      mountPoint
+      imgParent
     );
-  }, 600);
+  }, 1000);
 }
 
 export function loadVideoWithSpinner(imgElement, gameId, className, style, poster, version, existingSpinnerContainer = null, onComplete) {
@@ -126,18 +89,16 @@ export function loadVideoWithSpinner(imgElement, gameId, className, style, poste
 
   spinnerTimeout = setTimeout(() => {
     if (!spinnerContainer) {
+      // Create mount point with display: contents so spinner renders directly
       spinnerContainer = document.createElement('div');
-      spinnerContainer.style.position = 'absolute';
-      spinnerContainer.style.bottom = '5px';
-      spinnerContainer.style.right = '5px';
-      spinnerContainer.style.zIndex = '1000';
-      spinnerContainer.style.pointerEvents = 'none';
+      spinnerContainer.style.display = 'contents';
+      spinnerContainer.setAttribute('data-mesulo-loading-spinner', 'true');
       
       imgParent.appendChild(spinnerContainer);
       render(h(LoadingSpinner), spinnerContainer);
       
       setTimeout(() => {
-        const spinner = spinnerContainer.querySelector('.mesulo-spinner');
+        const spinner = imgParent.querySelector('.mesulo-spinner');
         if (spinner) {
           spinner.classList.add('visible');
         }
@@ -161,12 +122,14 @@ export function loadVideoWithSpinner(imgElement, gameId, className, style, poste
       });
     }
 
-    imgElement.style.opacity = '0';
+    // Keep image visible - don't fade it out
+    // imgElement.style.opacity = '0';
     
     setTimeout(() => {
       const mountPoint = document.createElement('div');
       
-      imgElement.replaceWith(mountPoint);
+      // Append video instead of replacing image - keep image in DOM
+      imgParent.appendChild(mountPoint);
 
       render(
         h(GameVideo, {
@@ -186,39 +149,90 @@ export function loadVideoWithSpinner(imgElement, gameId, className, style, poste
       );
 
       requestAnimationFrame(() => {
-        const gameVideoWrapper = mountPoint.querySelector('.mesulo-video-fade');
-        if (gameVideoWrapper && mountPoint.parentElement) {
-          mountPoint.replaceWith(gameVideoWrapper);
+        const videoEl = mountPoint.querySelector('video.mesulo-video-fade');
+        const spinnerEl = mountPoint.querySelector('.mesulo-video-update-spinner');
+        
+        if (videoEl && mountPoint.parentElement) {
+          // Remove spinner if it exists - we don't need it
+          if (spinnerEl && spinnerEl.parentElement) {
+            spinnerEl.parentElement.removeChild(spinnerEl);
+          }
+          // Move only video directly to parent, replacing mountPoint
+          imgParent.appendChild(videoEl);
+          mountPoint.remove();
         }
       });
 
       spinnerStopTimeout = setTimeout(() => {
-        const spinner = spinnerContainer?.querySelector('.mesulo-spinner');
+        const spinner = imgParent.querySelector('.mesulo-spinner');
         if (spinner) {
           spinner.classList.add('stopped');
+          spinner.classList.remove('visible');
           spinner.style.animation = 'none';
           spinner.style.animationPlayState = 'paused';
         }
         
+        // Remove spinner mount point if we created it
+        if (spinnerContainer && !existingSpinnerContainer && spinnerContainer.parentElement) {
+          try {
+            spinnerContainer.parentElement.removeChild(spinnerContainer);
+          } catch (e) {
+            // Element may have already been removed, ignore error
+          }
+        }
+        
         setTimeout(() => {
           if (videoElement) {
-            const gameVideoWrapper = imgParent.querySelector('.mesulo-video-fade');
-            if (gameVideoWrapper) {
-              if (spinnerContainer) {
-                spinnerContainer.style.opacity = '0';
-                spinnerContainer.style.visibility = 'hidden';
-              }
+            const videoEl = imgParent.querySelector('video.mesulo-video-fade');
+            if (videoEl) {
+              // Start with opacity 0 and blur, then animate to 1 and no blur
+              videoEl.style.opacity = '0';
+              videoEl.style.filter = 'blur(10px)';
+              videoEl.style.visibility = 'visible';
               
-              gameVideoWrapper.style.opacity = '1';
-              gameVideoWrapper.style.visibility = 'visible';
-              
-              if (onComplete) {
-                onComplete(videoElement);
-              }
+              // Animate to opacity 1 and blur 0
+              requestAnimationFrame(() => {
+                videoEl.style.transition = 'opacity 2s ease-in-out, filter 2s ease-in-out';
+                videoEl.style.opacity = '1';
+                videoEl.style.filter = 'blur(0)';
+                
+                if (onComplete) {
+                  setTimeout(() => {
+                    // Remove all spinners and mount points after video transition completes
+                    const spinnerMounts = imgParent.querySelectorAll('[data-mesulo-loading-spinner="true"]');
+                    spinnerMounts.forEach(mount => {
+                      try {
+                        if (mount.parentElement) {
+                          mount.parentElement.removeChild(mount);
+                        }
+                      } catch (e) {
+                        // Ignore errors
+                      }
+                    });
+                    
+                    const allSpinners = imgParent.querySelectorAll('.mesulo-video-update-spinner, .mesulo-spinner');
+                    allSpinners.forEach(spinner => {
+                      try {
+                        if (spinner.parentElement) {
+                          spinner.parentElement.removeChild(spinner);
+                        }
+                      } catch (e) {
+                        // Ignore errors
+                      }
+                    });
+                    
+                    // Remove image from DOM after video transition completes
+                    if (imgElement && imgElement.parentElement) {
+                      imgElement.parentElement.removeChild(imgElement);
+                    }
+                    onComplete(videoElement);
+                  }, 2000);
+                }
+              });
             }
           }
         }, 600);
-      }, 3000);
+      }, 1000); // Changed from 3000 to 1000 - spinner runs for 1 second
     }, 600); 
   }, 2000);
 

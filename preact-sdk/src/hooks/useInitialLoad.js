@@ -11,16 +11,28 @@ export function useInitialLoad() {
       data.games.forEach(game => {
         if (!game.id) return;
     
-        const { imageUrl, videoUrl } = getGameAssets(game);
         const currentState = gameVideoStore.getVideoState(game.id);
+        const newVersion = game.version || '0';
+        
+        // Skip if already loaded with same version
+        if (currentState && currentState.version === newVersion) {
+          return;
+        }
+        
+        const { imageUrl, videoUrl } = getGameAssets(game);
         
         gameVideoStore.setVideoState(game.id, {
           id: game.id,
-          videoRef: currentState?.videoRef || null, 
+          videoRef: currentState?.videoRef || null,
+          wrapperRef: currentState?.wrapperRef || null,
+          baseImageSrc: currentState?.baseImageSrc || null,  // Preserve baseImageSrc if already set
           poster: imageUrl || null,
           src: videoUrl || null,
-          version: game.version || '0',
-          loading: false, 
+          version: newVersion,
+          loading: false,
+          published: game.published || false,
+          animate: game.animate !== undefined ? game.animate : true,
+          hover: game.hover !== undefined ? game.hover : true,
           type: game.publishedType || 'default',
         });
       });

@@ -37,22 +37,30 @@ export function injectLoadingSpinnerStyles() {
     }
     
     .mesulo-image-fade {
-      transition: opacity 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
+      transition: opacity 0 cubic-bezier(0.4, 0.0, 0.2, 1);
       will-change: opacity;
       backface-visibility: hidden;
       transform: translateZ(0);
     }
     
-    .mesulo-video-fade {
-      transition: opacity 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
-      will-change: opacity;
+    video.mesulo-video-fade {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      transition: opacity 2s cubic-bezier(0.4, 0.0, 0.2, 1), filter 2s cubic-bezier(0.4, 0.0, 0.2, 1);
+      will-change: opacity, filter;
       backface-visibility: hidden;
       transform: translateZ(0);
       opacity: 0;
+      filter: blur(10px);
     }
     
-    .mesulo-video-fade.active {
+    video.mesulo-video-fade.active {
       opacity: 1;
+      filter: blur(0);
     }
     
     video[data-mesulo-id] {
