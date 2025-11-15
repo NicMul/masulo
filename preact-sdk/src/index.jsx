@@ -3,8 +3,7 @@ import { GameCardWrapper } from './components/GameCardWrapper.jsx';
 import { injectLoadingSpinnerStyles } from './utils/loadingSpinnerStyles.js';
 import { getApplicationKeyFromScript } from './realtime/scriptLoader.js';
 import { getConnectionManager } from './realtime/connectionManager.js';
-import { processAllGames } from './utils/gameProcessor.js';
-import { requestGames } from './data/gameRequest.js';
+import { useInitialLoadLifecycle } from './hooks/useInitialLoadLifecycle.js';
 
 const handlers = new Map(); 
 const mountPoints = new WeakMap(); 
@@ -62,26 +61,24 @@ function init() {
 
   injectLoadingSpinnerStyles();
 
-
   const applicationKey = getApplicationKeyFromScript();
   
-  
   let connectionManager = null;
+  let lifecycleManager = null;
+  
   if (applicationKey) {
     connectionManager = getConnectionManager(applicationKey);
+    lifecycleManager = useInitialLoadLifecycle(connectionManager);
     connectionManager.connect();
     
     connectionManager.on('connected', () => {
-      requestGames(connectionManager);
+      lifecycleManager.initialize();
     });
     
     connectionManager.on('games-response', (data) => {
-      if (data && data.games && Array.isArray(data.games)) {
-        
-      }
+      lifecycleManager.handleGamesResponse(data);
     });
 
-    
     connectionManager.on('game-updated', (data) => {
       if (data && data.games && Array.isArray(data.games)) {
         
@@ -91,7 +88,11 @@ function init() {
 
   upgradeAllElements();
   
-  processAllGames();
+  if (lifecycleManager) {
+    if (connectionManager && connectionManager.isConnected) {
+      lifecycleManager.initialize();
+    }
+  }
 
   window.mesuloPreactSDK = {
     upgrade: upgradeAllElements,

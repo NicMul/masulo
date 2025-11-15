@@ -1,10 +1,10 @@
 import { signal } from '@preact/signals';
 
-const gameVideos = signal(new Map());
+export const gameVideos = signal(new Map());
 
 export const gameVideoStore = {
   getVideoState(gameId) {
-    return gameVideos.value.get(gameId) || null;
+    return gameVideos.value.get(gameId);
   },
 
   setVideoState(gameId, state) {

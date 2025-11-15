@@ -4,6 +4,108 @@ import { LoadingSpinner } from '../components/LoadingSpinner.jsx';
 import { setupImageFade } from './fadeTransition.js';
 import { gameVideoStore } from '../store/gameVideoStore.js';
 
+export function createSpinner(containerElement, gameId) {
+  if (!containerElement) return null;
+
+  const imgParent = containerElement.parentElement;
+  if (!imgParent) return null;
+
+  if (window.getComputedStyle(imgParent).position === 'static') {
+    imgParent.style.position = 'relative';
+  }
+
+  const spinnerContainer = document.createElement('div');
+  spinnerContainer.style.position = 'absolute';
+  spinnerContainer.style.bottom = '5px';
+  spinnerContainer.style.right = '5px';
+  spinnerContainer.style.zIndex = '1000';
+  spinnerContainer.style.pointerEvents = 'none';
+  
+  imgParent.appendChild(spinnerContainer);
+  render(h(LoadingSpinner), spinnerContainer);
+  
+  setTimeout(() => {
+    const spinner = spinnerContainer.querySelector('.mesulo-spinner');
+    if (spinner) {
+      spinner.classList.add('visible');
+    }
+  }, 10);
+
+  return spinnerContainer;
+}
+
+export function replaceImageWithVideo(imgElement, gameId, videoUrl, posterUrl, className, style, onComplete) {
+  if (!imgElement) return;
+
+  const imgParent = imgElement.parentElement;
+  if (!imgParent) return;
+
+  setupImageFade(imgElement);
+
+  const styleObj = {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover'
+  };
+
+  if (style && typeof style === 'string') {
+    const stylePairs = style.split(';').filter(s => s.trim());
+    stylePairs.forEach(pair => {
+      const [key, value] = pair.split(':').map(s => s.trim());
+      if (key && value) {
+        const camelKey = key.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+        styleObj[camelKey] = value;
+      }
+    });
+  } else if (typeof style === 'object') {
+    Object.assign(styleObj, style);
+  }
+
+  imgElement.style.opacity = '0';
+  
+  setTimeout(() => {
+    const mountPoint = document.createElement('div');
+    
+    imgElement.replaceWith(mountPoint);
+
+    const version = imgElement.closest('[data-mesulo-game-id]')?.getAttribute('data-mesulo-version') || '0';
+
+    render(
+      h(GameVideo, {
+        gameId,
+        className,
+        style: styleObj,
+        poster: posterUrl || '',
+        version,
+        wrapperClassName: 'mesulo-video-fade', 
+        onVideoReady: (videoRef) => {
+          if (videoRef) {
+            requestAnimationFrame(() => {
+              const gameVideoWrapper = mountPoint.querySelector('.mesulo-video-fade');
+              if (gameVideoWrapper && mountPoint.parentElement) {
+                mountPoint.replaceWith(gameVideoWrapper);
+              }
+
+              setTimeout(() => {
+                const gameVideoWrapper = imgParent.querySelector('.mesulo-video-fade');
+                if (gameVideoWrapper) {
+                  gameVideoWrapper.style.opacity = '1';
+                  gameVideoWrapper.style.visibility = 'visible';
+                  
+                  if (onComplete) {
+                    onComplete(videoRef);
+                  }
+                }
+              }, 600);
+            });
+          }
+        }
+      }),
+      mountPoint
+    );
+  }, 600);
+}
+
 export function loadVideoWithSpinner(imgElement, gameId, className, style, poster, version, existingSpinnerContainer = null, onComplete) {
   if (!imgElement) return () => {};
 

@@ -135,20 +135,18 @@ export function useGameEvents(containerElement, gameId, handlers = {}) {
     };
   }, [containerElement, gameId, handlers.onHover, handlers.onClick, handlers.onButtonClick]);
 
-  // Handle clicks outside cards to pause all videos
+
   useEffect(() => {
     const handleDocumentClick = (e) => {
-      // Check if click is outside any game card container
       const clickedElement = e.target;
       const gameContainer = clickedElement.closest('[data-mesulo-game-id]');
-      
-      // If click is not on a game card, pause all videos
+
       if (!gameContainer) {
         pauseAllVideos();
       }
     };
 
-    // Use capture phase to catch clicks early
+   
     document.addEventListener('click', handleDocumentClick, true);
     document.addEventListener('touchend', handleDocumentClick, true);
 
