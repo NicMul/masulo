@@ -124,12 +124,12 @@ async function processMediaPipeline({
         finalImagePrompt = await enrichPromptWithContext(
           baseImagePrompt, 
           imagePrompt || '', 
-          { imageUrl, assetType, theme }
+          { imageUrl, assetType }
         );
         finalVideoPrompt = await enrichPromptWithContext(
           baseVideoPrompt, 
           videoPrompt || '', 
-          { imageUrl, assetType, theme }
+          { imageUrl, assetType }
         );
         logPrompt('ENRICHED', 'Final Image Prompt (After Enrichment)', finalImagePrompt);
         logPrompt('ENRICHED', 'Final Video Prompt (After Enrichment)', finalVideoPrompt);

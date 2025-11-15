@@ -7,7 +7,7 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
  * Enriches a prompt with context using OpenAI, intelligently incorporating user prompts
  * @param {string} basePrompt - The base prompt (casino game instructions)
  * @param {string} userPrompt - The user's custom prompt (optional)
- * @param {object} metadata - Context metadata (imageUrl, assetType, theme, etc.)
+ * @param {object} metadata - Context metadata (imageUrl, assetType, etc.)
  * @returns {Promise<string>} - The enriched prompt
  */
 async function enrichPromptWithContext(basePrompt, userPrompt = '', metadata = {}) {
@@ -31,7 +31,6 @@ Base requirements: ${basePrompt}${userPrompt && userPrompt.trim() ? `\n\nUser's 
 
 Context:
 - Asset Type: ${metadata.assetType || 'current'}
-- Theme: ${metadata.theme || 'default'}
 - Image URL: ${metadata.imageUrl || 'N/A'}
 
 Create a single, comprehensive prompt that:

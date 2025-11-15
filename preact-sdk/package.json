@@ -1,0 +1,31 @@
+{
+  "name": "mesulo-sdk-preact",
+  "version": "1.0.0",
+  "description": "Mesulo SDK for Preact",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && npm run copy",
+    "build:watch": "vite build --watch",
+    "copy": "cp dist/mesulo-preact-sdk.js ../sdk/dist/mesulo-preact-sdk.js",
+    "watch": "concurrently \"vite build --watch\" \"node watch.js\"",
+    "preview": "vite preview",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@preact/signals": "^1.2.2",
+    "concurrently": "^9.2.1",
+    "socket.io-client": "^4.8.1"
+  },
+  "devDependencies": {
+    "@preact/preset-vite": "^2.10.2",
+    "chokidar": "^4.0.3",
+    "preact": "^10.27.2",
+    "terser": "^5.44.1",
+    "vite": "^5.4.21"
+  }
+}
