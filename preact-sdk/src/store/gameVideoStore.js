@@ -11,7 +11,7 @@ export const gameVideoStore = {
     const newMap = new Map(gameVideos.value);
     newMap.set(gameId, {
       id: gameId,
-      videoRef: state.videoRef || null,
+      videoRef: state.videoRef,
       poster: state.poster || null,
       src: state.src || null,
       version: state.version || '0',

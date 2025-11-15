@@ -2,34 +2,45 @@ import { h } from 'preact';
 import { useRef, useEffect } from 'preact/hooks';
 import "preact/debug";
 import { gameVideoStore } from '../store/gameVideoStore.js';
+import { VideoUpdateSpinner } from './VideoUpdateSpinner.jsx';
+import { injectUpdateSpinnerStyles } from '../utils/updateSpinnerStyles.js';
 
-export function GameVideo({ gameId, className, style, onVideoReady }) {
+export function GameVideo({ gameId, className, style, poster = '', version = '0', wrapperClassName = '', onVideoReady }) {
   const videoRef = useRef(null);
 
   useEffect(() => {
+    injectUpdateSpinnerStyles();
+  }, []);
+
+  useEffect(() => {
     if (videoRef.current) {
-      const state = gameVideoStore.getVideoState(gameId);
+      const existingState = gameVideoStore.getVideoState(gameId);
       
-      if (state) {
-        if (state.poster && !videoRef.current.poster) {
-          videoRef.current.poster = state.poster;
-        }
-        
-        if (state.version) {
-          videoRef.current.setAttribute('data-mesulo-version', state.version);
-        }
+      if (!existingState) {
+      
+        gameVideoStore.setVideoState(gameId, {
+          id: gameId,
+          videoRef: videoRef.current, 
+          poster,
+          src: null,
+          version,
+          loading: false, 
+        });
+      }
+
+      if (poster && !videoRef.current.poster) {
+        videoRef.current.poster = poster;
+      }
+      
+      if (version) {
+        videoRef.current.setAttribute('data-mesulo-version', version);
       }
 
       if (onVideoReady) {
         onVideoReady(videoRef.current);
       }
-
-      gameVideoStore.updateVideoState(gameId, {
-        videoRef: videoRef.current
-      });
     }
-  }, [gameId, onVideoReady]);
-
+  }, [gameId, poster, version, onVideoReady]);
 
   const styleObj = {
     width: '100%',
@@ -39,7 +50,6 @@ export function GameVideo({ gameId, className, style, onVideoReady }) {
 
   if (style) {
     if (typeof style === 'string') {
-      // Parse style string
       const stylePairs = style.split(';').filter(s => s.trim());
       stylePairs.forEach(pair => {
         const [key, value] = pair.split(':').map(s => s.trim());
@@ -49,34 +59,53 @@ export function GameVideo({ gameId, className, style, onVideoReady }) {
         }
       });
     } else if (typeof style === 'object') {
-      // Style is already an object, merge it
       Object.assign(styleObj, style);
     }
   }
 
   const state = gameVideoStore.getVideoState(gameId);
-  const poster = state?.poster || '';
-  const version = state?.version || '0';
+  const isLoading = state?.loading || false;
 
-  return h('video', {
-    ref: videoRef,
-    'data-mesulo-game-id': gameId,
-    className: className || '',
-    'data-mesulo-version': version,
-    style: styleObj,
-    muted: true,
-    poster: poster,
-    autoplay: false,
-    loop: true,
-    preload: 'metadata',
-    onClick: (e) => {
-      console.log('video clicked');
-      if (videoRef.current) {
-        videoRef.current.play();
-      }
-    },
-    playsInline: true,
-    src: null
-  });
+  const wrapperStyle = {
+    position: 'relative',
+    width: '100%',
+    height: '100%'
+  };
+
+  if (wrapperClassName.includes('mesulo-video-fade')) {
+    wrapperStyle.position = 'absolute';
+    wrapperStyle.top = '0';
+    wrapperStyle.left = '0';
+    wrapperStyle.zIndex = '2';
+    wrapperStyle.opacity = '0';
+  }
+
+  return h('div', {
+    className: wrapperClassName,
+    style: wrapperStyle
+  }, [
+    h('video', {
+      ref: videoRef,
+      'data-mesulo-id': gameId,
+      className: className || '',
+      'data-mesulo-version': version,
+      style: styleObj,
+      muted: true,
+      poster: poster,
+      autoplay: false,
+      loop: true,
+      preload: 'metadata',
+      onClick: (e) => {
+        if (videoRef.current) {
+          videoRef.current.play();
+        }
+      },
+      playsInline: true,
+      src: null
+    }),
+    h(VideoUpdateSpinner, {
+      className: isLoading ? 'visible' : ''
+    })
+  ]);
 }
 

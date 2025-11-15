@@ -1,11 +1,10 @@
-
-export function injectSpinnerStyles() {
-  if (document.getElementById('mesulo-spinner-styles')) {
+export function injectLoadingSpinnerStyles() {
+  if (document.getElementById('mesulo-loading-spinner-styles')) {
     return;
   }
 
   const style = document.createElement('style');
-  style.id = 'mesulo-spinner-styles';
+  style.id = 'mesulo-loading-spinner-styles';
   style.textContent = `
     @keyframes mesulo-spin {
       0% { transform: rotate(0deg); }
@@ -56,7 +55,7 @@ export function injectSpinnerStyles() {
       opacity: 1;
     }
     
-    video[data-mesulo-game-id] {
+    video[data-mesulo-id] {
       width: 100% !important;
       height: 100% !important;
       object-fit: cover !important;

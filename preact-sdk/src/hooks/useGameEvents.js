@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'preact/hooks';
+import { useEffect } from 'preact/hooks';
 import {
   detectInteractiveElement,
   handleHover,
@@ -6,43 +6,14 @@ import {
   handleButtonClick
 } from '../utils/eventHandlers.js';
 import { pauseAllVideos } from '../utils/videoManager.js';
+import { gameVideoStore } from '../store/gameVideoStore.js';
 
 export function useGameEvents(containerElement, gameId, handlers = {}) {
-  const videoRef = useRef(null);
-
-
-  useEffect(() => {
-    if (!containerElement) return;
-
-    const findVideo = () => {
-      const video = containerElement.querySelector('video[data-mesulo-game-id]');
-      if (video) {
-        videoRef.current = video;
-      }
-    };
-
-
-    findVideo();
-
-
-    const timeout = setTimeout(findVideo, 100);
-    
-    const observer = new MutationObserver(() => {
-      findVideo();
-    });
-
-    if (containerElement) {
-      observer.observe(containerElement, {
-        childList: true,
-        subtree: true
-      });
-    }
-
-    return () => {
-      clearTimeout(timeout);
-      observer.disconnect();
-    };
-  }, [containerElement]);
+  // Helper to get video ref from store
+  const getVideoRef = () => {
+    const state = gameVideoStore.getVideoState(gameId);
+    return state?.videoRef || null;
+  };
 
 
   useEffect(() => {
@@ -52,12 +23,7 @@ export function useGameEvents(containerElement, gameId, handlers = {}) {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.intersectionRatio > 0.75) {
-            console.log(`[Mesulo SDK] Game card entered viewport: ${gameId}`, {
-              gameId,
-              element: containerElement,
-              intersectionRatio: entry.intersectionRatio,
-              boundingClientRect: entry.boundingClientRect
-            });
+            //in viewport logic
           }
         });
       },
@@ -74,19 +40,21 @@ export function useGameEvents(containerElement, gameId, handlers = {}) {
   }, [containerElement, gameId]);
 
   useEffect(() => {
-    if (!containerElement) return;
+    if (!containerElement) {
+      return;
+    }
 
     let touchStartTarget = null;
     let isTouchInteraction = false;
 
     const handleMouseEnter = (e) => {
       if (isTouchInteraction) return;
-      handleHover(gameId, containerElement, true, e, videoRef.current, handlers.onHover);
+      handleHover(gameId, containerElement, true, e, getVideoRef(), handlers.onHover);
     };
 
     const handleMouseLeave = (e) => {
       if (isTouchInteraction) return;
-      handleHover(gameId, containerElement, false, e, videoRef.current, handlers.onHover);
+      handleHover(gameId, containerElement, false, e, getVideoRef(), handlers.onHover);
     };
 
     const handleClickEvent = (e) => {
@@ -103,11 +71,11 @@ export function useGameEvents(containerElement, gameId, handlers = {}) {
           containerElement,
           interactiveElement,
           e,
-          videoRef.current,
+          getVideoRef(),
           handlers.onButtonClick
         );
       } else {
-        handleClick(gameId, containerElement, e, videoRef.current, handlers.onClick);
+        handleClick(gameId, containerElement, e, getVideoRef(), handlers.onClick);
       }
     };
 
@@ -115,7 +83,7 @@ export function useGameEvents(containerElement, gameId, handlers = {}) {
       isTouchInteraction = true;
       touchStartTarget = e.target;
       
-      handleHover(gameId, containerElement, true, e, videoRef.current, handlers.onHover);
+      handleHover(gameId, containerElement, true, e, getVideoRef(), handlers.onHover);
     };
 
     const handleTouchEnd = (e) => {
@@ -130,7 +98,7 @@ export function useGameEvents(containerElement, gameId, handlers = {}) {
           containerElement,
           interactiveElement,
           e,
-          videoRef.current,
+          getVideoRef(),
           handlers.onButtonClick
         );
       } else {
@@ -145,7 +113,7 @@ export function useGameEvents(containerElement, gameId, handlers = {}) {
     };
 
     const handleTouchCancel = () => {
-      handleHover(gameId, containerElement, false, null, videoRef.current, handlers.onHover);
+      handleHover(gameId, containerElement, false, null, getVideoRef(), handlers.onHover);
       touchStartTarget = null;
       isTouchInteraction = false;
     };
@@ -189,7 +157,5 @@ export function useGameEvents(containerElement, gameId, handlers = {}) {
       document.removeEventListener('touchend', handleDocumentClick, true);
     };
   }, []);
-
-  return { videoRef };
 }
 

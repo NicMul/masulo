@@ -1,10 +1,15 @@
 import { gameVideoStore } from '../store/gameVideoStore.js';
 
 export function requestGames(connectionManager) {
-  const allVideos = gameVideoStore.getAllVideos();
-  const gameIds = allVideos.map(video => video.id);
+  const gameIdsFromStore = gameVideoStore.getAllVideos().map(video => video.id);
   
-  if (gameIds.length === 0) {
+  const gameIdsFromDOM = Array.from(document.querySelectorAll('[data-mesulo-game-id]'))
+    .map(el => el.getAttribute('data-mesulo-game-id'))
+    .filter(id => id);
+  
+  const allGameIds = [...new Set([...gameIdsFromStore, ...gameIdsFromDOM])];
+  
+  if (allGameIds.length === 0) {
     return;
   }
   
@@ -14,13 +19,13 @@ export function requestGames(connectionManager) {
   }
   
   socket.emit('join-game-rooms', {
-    gameIds,
+    gameIds: allGameIds,
     timestamp: new Date().toISOString()
   });
   
   socket.emit('sdk-event', {
     event: 'get-games',
-    data: { gameIds },
+    data: { gameIds: allGameIds },
     timestamp: new Date().toISOString()
   });
 }

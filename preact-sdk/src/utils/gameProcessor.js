@@ -1,9 +1,6 @@
 import { loadVideoWithSpinner } from './videoLoader.js';
 import { gameVideoStore } from '../store/gameVideoStore.js';
 
-const BATCH_SIZE = 10;
-const BATCH_DELAY = 50;
-
 const processingSet = new Set();
 const processedSet = new Set();
 
@@ -15,7 +12,7 @@ function processGameElement(containerElement) {
     return;
   }
 
-  if (containerElement.querySelector('video[data-mesulo-game-id]')) {
+  if (containerElement.querySelector('video[data-mesulo-id]')) {
     processedSet.add(gameId);
     return;
   }
@@ -31,52 +28,38 @@ function processGameElement(containerElement) {
   const className = imgElement.className || '';
   const style = imgElement.style.cssText || '';
 
-  gameVideoStore.setVideoState(gameId, {
-    id: gameId,
-    videoRef: null,
-    poster,
-    src: null,
-    version,
-    loading: true,
-    type
-  });
+  const imgParent = imgElement.parentElement;
+  if (imgParent && window.getComputedStyle(imgParent).position === 'static') {
+    imgParent.style.position = 'relative';
+  }
+
+  const spinnerContainer = document.createElement('div');
+  spinnerContainer.style.position = 'absolute';
+  spinnerContainer.style.bottom = '5px';
+  spinnerContainer.style.right = '5px';
+  spinnerContainer.style.zIndex = '1000';
+  spinnerContainer.style.pointerEvents = 'none';
+  imgParent.appendChild(spinnerContainer);
+  
+  const spinner = document.createElement('div');
+  spinner.className = 'mesulo-spinner visible';
+  spinnerContainer.appendChild(spinner);
 
   const cleanup = loadVideoWithSpinner(
     imgElement,
     gameId,
     className,
     style,
+    poster,
+    version,
+    spinnerContainer,
     (videoElement) => {
-      if (videoElement) {
-        gameVideoStore.updateVideoState(gameId, {
-          videoRef: videoElement,
-          src: videoElement.src || null,
-          loading: false
-        });
-      }
       processingSet.delete(gameId);
       processedSet.add(gameId);
     }
   );
 
   return cleanup;
-}
-
-function processBatch(elements, startIndex) {
-  const endIndex = Math.min(startIndex + BATCH_SIZE, elements.length);
-  
-  for (let i = startIndex; i < endIndex; i++) {
-    const element = elements[i];
-    if (element && element.nodeType === 1) {
-      processGameElement(element);
-    }
-  }
-
-  if (endIndex < elements.length) {
-    setTimeout(() => {
-      processBatch(elements, endIndex);
-    }, BATCH_DELAY);
-  }
 }
 
 export function processAllGames() {
@@ -91,7 +74,11 @@ export function processAllGames() {
 
   if (elementsToProcess.length === 0) return;
 
-  processBatch(elementsToProcess, 0);
+  elementsToProcess.forEach(element => {
+    if (element && element.nodeType === 1) {
+      processGameElement(element);
+    }
+  });
 }
 
 export { processGameElement };

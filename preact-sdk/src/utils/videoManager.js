@@ -1,7 +1,7 @@
 let activeVideo = null;
 
 export function pauseAllVideos(exceptVideo = null) {
-  const allVideos = document.querySelectorAll('video[data-mesulo-game-id]');
+  const allVideos = document.querySelectorAll('video[data-mesulo-id]');
   allVideos.forEach(video => {
     if (video !== exceptVideo && !video.paused) {
       video.pause();

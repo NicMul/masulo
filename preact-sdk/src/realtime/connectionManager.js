@@ -31,7 +31,6 @@ export class ConnectionManager {
 
       this.setupSocketListeners();
     } catch (error) {
-      console.error('[Mesulo Preact SDK] Connection error:', error);
       this.updateStatus('disconnected');
     }
   }
@@ -116,7 +115,7 @@ export class ConnectionManager {
         try {
           callback(data);
         } catch (error) {
-          console.error(`[Mesulo Preact SDK] Error in ${event} handler:`, error);
+          // Error in event handler
         }
       });
     }
@@ -125,13 +124,12 @@ export class ConnectionManager {
   updateStatus(status) {
     if (this.currentStatus !== status) {
       this.currentStatus = status;
-      console.log(`[Mesulo Preact SDK] Connection status: ${status}`);
     }
     this.statusCallbacks.forEach(callback => {
       try {
         callback(status);
       } catch (error) {
-        console.error('[Mesulo Preact SDK] Error in status callback:', error);
+        // Error in status callback
       }
     });
   }
