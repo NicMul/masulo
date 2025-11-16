@@ -204,11 +204,9 @@ export function GameVideo({ gameId, className, style, poster = '', version = '0'
     h('video', {
       ref: videoRef,
       'data-mesulo-id': gameId,
-      className: wrapperClassName.includes('mesulo-video-fade') 
-        ? `${className || ''} mesulo-video-fade`.trim() 
-        : (className || ''),
       'data-mesulo-version': version,
       muted: true,
+      className: state?.src && !isLoading ? 'mesulo-video-visible' : '',
       poster: state.poster || poster,  // Use same as base-image to avoid flicker
       autoplay: state?.hover === false,  // Autoplay if hover is false
       loop: true,

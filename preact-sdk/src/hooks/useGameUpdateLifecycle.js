@@ -2,6 +2,75 @@ import { getGameAssets } from '../utils/getGameAssets.js';
 import { gameVideoStore } from '../store/gameVideoStore.js';
 
 export function useGameUpdateLifecycle() {
+
+  const waitFor = (ms) => new Promise(resolve => setTimeout(resolve, ms)); 
+  const waitForVideoReady = (videoEl, timeoutMs = 3000) => {
+    return new Promise((resolve) => {
+      const handleCanPlay = () => {
+        videoEl.removeEventListener('canplay', handleCanPlay);
+        resolve();
+      };
+      
+      videoEl.addEventListener('canplay', handleCanPlay);
+      
+      // Fallback timeout
+      setTimeout(() => {
+        videoEl.removeEventListener('canplay', handleCanPlay);
+        resolve();
+      }, timeoutMs);
+    });
+  };
+
+  const phase1_prepare = (gameId, newVersion, newPublished, game, videoEl) => {
+    videoEl.style.opacity = '0';
+   
+    
+    gameVideoStore.updateVideoState(gameId, {
+      version: newVersion,
+      published: newPublished,
+      animate: game.animate !== undefined ? game.animate : true,
+      hover: game.hover !== undefined ? game.hover : true,
+      type: game.publishedType || 'default',
+      loading: true
+    });
+    
+  };
+
+  const phase2_loadVideo = async (gameId, videoEl, videoUrl, imageUrl) => {
+    const updatedState = gameVideoStore.getVideoState(gameId);
+    videoEl.style.filter = 'blur(10px)';
+ 
+
+    if (videoUrl && updatedState?.animate !== false) {
+
+      
+      videoEl.src = videoUrl;
+      videoEl.poster = imageUrl;
+
+      await waitForVideoReady(videoEl);
+      videoEl.load(); 
+
+      return true; 
+    } else {
+      videoEl.src = '';
+      return false; 
+    }
+   
+  };
+
+  const phase3_complete = (gameId, imageUrl, videoEl) => {
+    videoEl.style.opacity = '1';
+    videoEl.style.transition = 'opacity 2s ease-in-out, filter 2s ease-in-out';
+    gameVideoStore.updateVideoState(gameId, { 
+      loading: false,
+      baseImageSrc: imageUrl
+    });
+
+    return true;
+
+  };
+
+  // Main handler
   const handleGameUpdate = (data) => {
     if (!data?.games || !Array.isArray(data.games)) {
       return;
@@ -9,8 +78,6 @@ export function useGameUpdateLifecycle() {
     
     data.games.forEach(game => {
       const currentState = gameVideoStore.getVideoState(game.id);
-      
-      // Only update if video element exists (game was initially loaded)
       if (!currentState || !currentState.videoRef) {
         return;
       }
@@ -18,107 +85,26 @@ export function useGameUpdateLifecycle() {
       const newVersion = game.version || '0';
       const newPublished = game.published || false;
       
-      // Skip if version AND published state haven't changed
       if (currentState.version === newVersion && 
           currentState.published === newPublished) {
         return;
       }
       
-      // Get assets (respects published state)
       const { imageUrl, videoUrl } = getGameAssets(game);
+      const videoEl = currentState.videoRef;
       
-      // Add 1-second delay to debounce rapid updates
-      setTimeout(() => {
-        const videoEl = currentState.videoRef;
+      (async () => {
+        await waitFor(1000); 
         if (!videoEl) return;
         
-        const startTime = Date.now();
+        phase1_prepare(game.id, newVersion, newPublished, game, videoEl);
         
-        // Phase 1: Prepare transition
-        // Update base-image to new poster and show spinner
-        gameVideoStore.updateVideoState(game.id, {
-          poster: imageUrl,
-          version: newVersion,
-          published: newPublished,
-          animate: game.animate !== undefined ? game.animate : true,
-          hover: game.hover !== undefined ? game.hover : true,
-          type: game.publishedType || 'default',
-          loading: true
-        });
+        await waitFor(3000);
         
-        // Phase 2: Fade out current video
-        videoEl.style.transition = 'opacity 0.5s ease-in-out';
-        videoEl.style.opacity = '0';
+        await phase2_loadVideo(game.id, videoEl, videoUrl, imageUrl);
         
-        // Phase 3: Load new video (after fade out)
-        setTimeout(() => {
-          // Get updated state to check animate flag
-          const updatedState = gameVideoStore.getVideoState(game.id);
-          
-          // Update video src - only if animate is true
-          if (videoUrl && updatedState?.animate !== false) {
-            videoEl.src = videoUrl;
-            videoEl.load();
-            
-            // Wait for video to be ready
-            const handleCanPlay = () => {
-              videoEl.removeEventListener('canplay', handleCanPlay);
-              
-              // Phase 4: Fade in new video
-              requestAnimationFrame(() => {
-                videoEl.style.transition = 'opacity 2s ease-in-out';
-                videoEl.style.opacity = '1';
-                
-                // Phase 5: Complete (after 2s minimum from start)
-                const elapsed = Date.now() - startTime;
-                const remainingTime = Math.max(2000 - elapsed, 0);
-                
-                setTimeout(() => {
-                  gameVideoStore.updateVideoState(game.id, { loading: false });
-                }, remainingTime);
-              });
-            };
-            
-            videoEl.addEventListener('canplay', handleCanPlay);
-            
-            // Fallback if canplay doesn't fire
-            setTimeout(() => {
-              videoEl.removeEventListener('canplay', handleCanPlay);
-              videoEl.style.transition = 'opacity 2s ease-in-out';
-              videoEl.style.opacity = '1';
-              
-              const elapsed = Date.now() - startTime;
-              const remainingTime = Math.max(2000 - elapsed, 0);
-              
-              setTimeout(() => {
-                gameVideoStore.updateVideoState(game.id, { loading: false });
-              }, remainingTime);
-            }, 3000);
-          } else if (updatedState?.animate === false) {
-            // animate is false - only show poster
-            videoEl.src = '';
-            videoEl.style.opacity = '0';
-            
-            const elapsed = Date.now() - startTime;
-            const remainingTime = Math.max(2000 - elapsed, 0);
-            
-            setTimeout(() => {
-              gameVideoStore.updateVideoState(game.id, { loading: false });
-            }, remainingTime);
-          } else {
-            // No video (unpublished) - just show poster
-            videoEl.src = '';
-            videoEl.style.opacity = '0';
-            
-            const elapsed = Date.now() - startTime;
-            const remainingTime = Math.max(2000 - elapsed, 0);
-            
-            setTimeout(() => {
-              gameVideoStore.updateVideoState(game.id, { loading: false });
-            }, remainingTime);
-          }
-        }, 500); // Wait for fade out to complete
-      }, 1000); // 1-second delay
+        phase3_complete(game.id, imageUrl, videoEl);
+      })();
     });
   };
   
