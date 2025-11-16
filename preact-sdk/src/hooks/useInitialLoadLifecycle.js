@@ -4,6 +4,7 @@ import { useInitialLoad } from './useInitialLoad.js';
 import { getGameAssets } from '../utils/getGameAssets.js';
 import { GameVideo } from '../components/GameVideo.jsx';
 import { gameVideoStore } from '../store/gameVideoStore.js';
+import { promotionsStore } from '../store/promotionsStore.js';
 
 const PHASE_WAITING = 'waiting';
 const PHASE_SPINNER = 'spinner';
@@ -14,6 +15,7 @@ export function useInitialLoadLifecycle(connectionManager) {
   const gameElements = new Map();
   const loadResources = useInitialLoad();
   let gamesResponseData = null;
+  let initialLoadComplete = false;
 
   function createWrapperWithSpinner(imgElement, gameId, posterUrl, className, style, version) {
     const imgParent = imgElement.parentElement;
@@ -286,8 +288,14 @@ export function useInitialLoadLifecycle(connectionManager) {
       return;
     }
 
+    if (initialLoadComplete) {
+      return;
+    }
+
     gamesResponseData = data;
     loadResources(data);
+    
+    promotionsStore.updateGameMapping(data.games);
 
     data.games.forEach(game => {
       if (!game.id) return;
@@ -304,6 +312,8 @@ export function useInitialLoadLifecycle(connectionManager) {
         }
       }
     });
+
+    initialLoadComplete = true;
   }
 
   function cleanup() {

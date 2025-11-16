@@ -5,6 +5,10 @@ import { getApplicationKeyFromScript } from './realtime/scriptLoader.js';
 import { getConnectionManager } from './realtime/connectionManager.js';
 import { useInitialLoadLifecycle } from './hooks/useInitialLoadLifecycle.js';
 import { useGameUpdateLifecycle } from './hooks/useGameUpdateLifecycle.js';
+import { usePromotionsLifecycle } from './hooks/usePromotionsLifecycle.js';
+import { requestPromotions } from './data/promotionsRequest.js';
+import { requestGames } from './data/gameRequest.js';
+import { promotionsStore } from './store/promotionsStore.js';
 
 const handlers = new Map(); 
 const mountPoints = new WeakMap(); 
@@ -66,23 +70,56 @@ function init() {
   
   let connectionManager = null;
   let lifecycleManager = null;
+  let gamesData = null; // Store games data for promotions lifecycle
   
   if (applicationKey) {
     connectionManager = getConnectionManager(applicationKey);
     lifecycleManager = useInitialLoadLifecycle(connectionManager);
     const updateLifecycleManager = useGameUpdateLifecycle();
+    const promotionsLifecycleManager = usePromotionsLifecycle();
     connectionManager.connect();
     
     connectionManager.on('connected', () => {
       lifecycleManager.initialize();
+      requestPromotions(connectionManager);
     });
     
     connectionManager.on('games-response', (data) => {
+      if (data && data.games) {
+        gamesData = data.games;
+        promotionsStore.updateGameMapping(data.games);
+      }
       lifecycleManager.handleGamesResponse(data);
     });
 
     connectionManager.on('game-updated', (data) => {
+      if (data && data.games) {
+        data.games.forEach(updatedGame => {
+          if (gamesData) {
+            const index = gamesData.findIndex(g => g.id === updatedGame.id);
+            if (index >= 0) {
+              gamesData[index] = updatedGame;
+            } else {
+              gamesData.push(updatedGame);
+            }
+          }
+        });
+        promotionsStore.updateGameMapping(gamesData);
+      }
       updateLifecycleManager.handleGameUpdate(data);
+    });
+    
+    connectionManager.on('promotions-response', (data) => {
+      if (data && data.promotions) {
+        promotionsLifecycleManager.handlePromotionsUpdate(data.promotions, gamesData);
+      }
+    });
+    
+    connectionManager.on('promotions-updated', (data) => {
+      if (connectionManager && connectionManager.isConnected) {
+        requestGames(connectionManager);
+        requestPromotions(connectionManager);
+      }
     });
   }
 

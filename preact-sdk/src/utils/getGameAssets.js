@@ -1,13 +1,18 @@
-/**
- * Get the appropriate image and video URLs based on publishedType
- * @param {Object} game - Game object from socket response
- * @returns {Object} - { imageUrl, videoUrl }
- */
+import { promotionsStore } from '../store/promotionsStore.js';
+
 export function getGameAssets(game) {
   if (!game.published) {
     return {
       imageUrl: game.defaultImage || '',
       videoUrl: null
+    };
+  }
+
+  const promotionAssets = promotionsStore.getPromotionsForGame(game.id);
+  if (promotionAssets && (promotionAssets.promoImage || promotionAssets.promoVideo)) {
+    return {
+      imageUrl: promotionAssets.promoImage || game.defaultImage || '',
+      videoUrl: promotionAssets.promoVideo || null
     };
   }
 
