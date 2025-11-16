@@ -6,7 +6,9 @@ import { getConnectionManager } from './realtime/connectionManager.js';
 import { useInitialLoadLifecycle } from './hooks/useInitialLoadLifecycle.js';
 import { useGameUpdateLifecycle } from './hooks/useGameUpdateLifecycle.js';
 import { usePromotionsLifecycle } from './hooks/usePromotionsLifecycle.js';
+import { useABTestLifecycle } from './hooks/useABTestLifecycle.js';
 import { requestPromotions } from './data/promotionsRequest.js';
+import { requestABTests } from './data/abtestRequest.js';
 import { requestGames } from './data/gameRequest.js';
 import { promotionsStore } from './store/promotionsStore.js';
 
@@ -77,17 +79,18 @@ function init() {
     lifecycleManager = useInitialLoadLifecycle(connectionManager);
     const updateLifecycleManager = useGameUpdateLifecycle();
     const promotionsLifecycleManager = usePromotionsLifecycle();
+    const abtestLifecycleManager = useABTestLifecycle();
     connectionManager.connect();
     
     connectionManager.on('connected', () => {
       lifecycleManager.initialize();
       requestPromotions(connectionManager);
+      requestABTests(connectionManager);
     });
     
     connectionManager.on('games-response', (data) => {
       if (data && data.games) {
         gamesData = data.games;
-        promotionsStore.updateGameMapping(data.games);
       }
       lifecycleManager.handleGamesResponse(data);
     });
@@ -104,7 +107,6 @@ function init() {
             }
           }
         });
-        promotionsStore.updateGameMapping(gamesData);
       }
       updateLifecycleManager.handleGameUpdate(data);
     });
@@ -119,6 +121,19 @@ function init() {
       if (connectionManager && connectionManager.isConnected) {
         requestGames(connectionManager);
         requestPromotions(connectionManager);
+      }
+    });
+
+    connectionManager.on('abtests-response', (data) => {
+      if (data && data.abtests) {
+        abtestLifecycleManager.handleABTestsUpdate(data.abtests, gamesData);
+      }
+    });
+
+    connectionManager.on('abtests-updated', (data) => {
+      if (connectionManager && connectionManager.isConnected) {
+        requestGames(connectionManager);
+        requestABTests(connectionManager);
       }
     });
   }

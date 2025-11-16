@@ -294,8 +294,6 @@ export function useInitialLoadLifecycle(connectionManager) {
 
     gamesResponseData = data;
     loadResources(data);
-    
-    promotionsStore.updateGameMapping(data.games);
 
     data.games.forEach(game => {
       if (!game.id) return;

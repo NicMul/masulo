@@ -1,8 +1,8 @@
 import { getGameAssets } from '../utils/getGameAssets.js';
 import { gameVideoStore } from '../store/gameVideoStore.js';
-import { promotionsStore } from '../store/promotionsStore.js';
+import { abtestStore } from '../store/abtestStore.js';
 
-export function usePromotionsLifecycle() {
+export function useABTestLifecycle() {
 
   const waitFor = (ms) => new Promise(resolve => setTimeout(resolve, ms)); 
   const waitForVideoReady = (videoEl, timeoutMs = 3000) => {
@@ -14,7 +14,6 @@ export function usePromotionsLifecycle() {
       
       videoEl.addEventListener('canplay', handleCanPlay);
       
-      // Fallback timeout
       setTimeout(() => {
         videoEl.removeEventListener('canplay', handleCanPlay);
         resolve();
@@ -71,14 +70,14 @@ export function usePromotionsLifecycle() {
 
   };
 
-  const handlePromotionsUpdate = (promotionsData, gamesData) => {
-    if (!promotionsData || !Array.isArray(promotionsData)) {
-      promotionsData = [];
+  const handleABTestsUpdate = (abtestsData, gamesData) => {
+    if (!abtestsData || !Array.isArray(abtestsData)) {
+      abtestsData = [];
     }
     
-    const previouslyAffectedGameIds = promotionsStore.getAffectedGameIds();
-    promotionsStore.setPromotions(promotionsData);
-    const newlyAffectedGameIds = promotionsStore.getAffectedGameIds();
+    const previouslyAffectedGameIds = abtestStore.getAffectedGameIds();
+    abtestStore.setABTests(abtestsData);
+    const newlyAffectedGameIds = abtestStore.getAffectedGameIds();
     
     const gamesToRevert = previouslyAffectedGameIds.filter(gameId => 
       !newlyAffectedGameIds.includes(gameId)
@@ -124,6 +123,6 @@ export function usePromotionsLifecycle() {
     });
   };
   
-  return { handlePromotionsUpdate };
+  return { handleABTestsUpdate };
 }
 

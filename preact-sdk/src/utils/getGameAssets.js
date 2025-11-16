@@ -1,4 +1,5 @@
 import { promotionsStore } from '../store/promotionsStore.js';
+import { abtestStore } from '../store/abtestStore.js';
 
 export function getGameAssets(game) {
   if (!game.published) {
@@ -13,6 +14,14 @@ export function getGameAssets(game) {
     return {
       imageUrl: promotionAssets.promoImage || game.defaultImage || '',
       videoUrl: promotionAssets.promoVideo || null
+    };
+  }
+
+  const abtestAssets = abtestStore.getABTestForGame(game.id);
+  if (abtestAssets && (abtestAssets.imageUrl || abtestAssets.videoUrl)) {
+    return {
+      imageUrl: abtestAssets.imageUrl || game.defaultImage || '',
+      videoUrl: abtestAssets.videoUrl || null
     };
   }
 

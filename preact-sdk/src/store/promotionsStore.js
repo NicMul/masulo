@@ -1,7 +1,6 @@
 import { signal, computed } from '@preact/signals';
 
 export const promotions = signal([]);
-export const gameIdToCmsIdMap = signal([]);
 
 function isPromotionActive(promotion) {
   if (!promotion.startDate || !promotion.endDate || !promotion.published) {
@@ -95,36 +94,18 @@ export const promotionsStore = {
     promotions.value = promoArray;
   },
   
-  updateGameMapping(gamesData) {
-    if (!gamesData || !Array.isArray(gamesData)) {
-      return;
-    }
-    
-    const mapping = gamesData
-      .filter(game => game.id && game.cmsId)
-      .map(game => ({
-        gameId: game.id,
-        cmsId: game.cmsId
-      }));
-    
-    gameIdToCmsIdMap.value = mapping;
-  },
-  
   getPromotionsForGame(gameId) {
     if (!gameId) return null;
     
     const active = activePromotions.value;
     if (!active.length) return null;
     
-    const mapping = gameIdToCmsIdMap.value.find(m => m.gameId === gameId);
-    const gameCmsId = mapping ? mapping.cmsId : gameId;
-    
     for (const promotion of active) {
       if (!promotion.games || !Array.isArray(promotion.games)) {
         continue;
       }
       
-      const promoGame = promotion.games.find(g => g.gameCmsId === gameCmsId);
+      const promoGame = promotion.games.find(g => g.gameCmsId === gameId);
       if (promoGame) {
         return {
           promoImage: promoGame.promoImage || null,
@@ -153,10 +134,7 @@ export const promotionsStore = {
         gameElements.forEach(gameElement => {
           const gameId = gameElement.getAttribute('data-mesulo-game-id');
           if (gameId && !affectedIds.includes(gameId)) {
-            const mapping = gameIdToCmsIdMap.value.find(m => m.gameId === gameId);
-            const gameCmsId = mapping ? mapping.cmsId : gameId;
-            
-            if (promotion.games && promotion.games.some(g => g.gameCmsId === gameCmsId)) {
+            if (promotion.games && promotion.games.some(g => g.gameCmsId === gameId)) {
               affectedIds.push(gameId);
             }
           }
