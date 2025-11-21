@@ -1,40 +1,32 @@
-import { h } from 'preact';
+import { h, Fragment } from 'preact';
 import { useRef, useEffect } from 'preact/hooks';
 import "preact/debug";
 import { gameVideoStore, gameVideos } from '../store/gameVideoStore.js';
-import { VideoUpdateSpinner } from './VideoUpdateSpinner.jsx';
-import { injectUpdateSpinnerStyles } from '../utils/updateSpinnerStyles.js';
 import { injectWrapperStyles } from '../utils/wrapperStyles.js';
 
-export function GameVideo({ gameId, className, style, poster = '', version = '0', wrapperClassName = '', onVideoReady }) {
+export function GameVideo({ gameId, className, style, poster = '', defaultImage = '', version = '0', wrapperClassName = '', onVideoReady }) {
   const videoRef = useRef(null);
-  const wrapperRef = useRef(null);
+  const containerRef = useRef(null);
+  const spinnerRef = useRef(null);
   
   const state = gameVideos.value.get(gameId);
-  const isLoading = state?.loading || false;
   
-  // Base image logic:
-  // - During initial load: Lock to original website image (baseImageSrc)
-  // - After initial load: Allow updates to new poster for smooth transitions
-  const baseImageSrc = state?.isInitialLoad === false 
-    ? (state?.poster || poster)  // Allow updates after initial load
-    : ((state?.baseImageSrc && state.baseImageSrc !== '') ? state.baseImageSrc : poster);  // Lock during initial load
-
   useEffect(() => {
-    injectUpdateSpinnerStyles();
     injectWrapperStyles();
   }, []);
 
   useEffect(() => {
-    if (videoRef.current) {
+    if (videoRef.current && containerRef.current && spinnerRef.current) {
       const existingState = gameVideoStore.getVideoState(gameId);
       
       if (!existingState) {
         gameVideoStore.setVideoState(gameId, {
           id: gameId,
           videoRef: videoRef.current,
-          wrapperRef: wrapperRef.current,
+          containerRef: containerRef.current,
+          spinnerRef: spinnerRef.current,
           poster,
+          defaultImage,
           src: null,
           version,
           loading: false,
@@ -42,11 +34,10 @@ export function GameVideo({ gameId, className, style, poster = '', version = '0'
       } else {
         gameVideoStore.updateVideoState(gameId, {
           videoRef: videoRef.current,
-          wrapperRef: wrapperRef.current
+          containerRef: containerRef.current,
+          spinnerRef: spinnerRef.current
         });
       }
-
-      // NOTE: Poster is set declaratively in the render to baseImageSrc
       
       if (version) {
         videoRef.current.setAttribute('data-mesulo-version', version);
@@ -56,7 +47,7 @@ export function GameVideo({ gameId, className, style, poster = '', version = '0'
         onVideoReady(videoRef.current);
       }
     }
-  }, [gameId, poster, version, onVideoReady]);
+  }, [gameId, poster, defaultImage, version, onVideoReady]);
 
   // NOTE: Video src updates are now orchestrated by lifecycle hooks
   // This prevents conflicts with transition animations
@@ -98,15 +89,15 @@ export function GameVideo({ gameId, className, style, poster = '', version = '0'
     if (!videoRef.current || !state) return;
     
     const videoEl = videoRef.current;
-    const wrapperEl = videoEl.closest('.mesulo-video-wrapper');
-    if (!wrapperEl) return;
+    const parentEl = videoEl.parentElement;
+    if (!parentEl) return;
     
     // Determine playback mode
     const isAutoplayMode = state.hover === false && state.animate !== false;
     const isHoverMode = state.hover !== false && state.animate !== false;
     const isPosterOnly = state.animate === false;
     
-    // ALWAYS attach event listeners on wrapper (for tracking/analytics)
+    // ALWAYS attach event listeners on parent element (for tracking/analytics)
     const handleMouseEnter = () => {
       // Only act on hover mode
       if (isHoverMode && videoEl.src) {
@@ -136,10 +127,10 @@ export function GameVideo({ gameId, className, style, poster = '', version = '0'
     };
     
     // Always attach listeners regardless of mode
-    wrapperEl.addEventListener('mouseenter', handleMouseEnter);
-    wrapperEl.addEventListener('mouseleave', handleMouseLeave);
-    wrapperEl.addEventListener('touchstart', handleTouchStart);
-    wrapperEl.addEventListener('touchend', handleTouchEnd);
+    parentEl.addEventListener('mouseenter', handleMouseEnter);
+    parentEl.addEventListener('mouseleave', handleMouseLeave);
+    parentEl.addEventListener('touchstart', handleTouchStart);
+    parentEl.addEventListener('touchend', handleTouchEnd);
     
     // Handle autoplay mode
     if (isAutoplayMode && videoEl.src) {
@@ -150,20 +141,20 @@ export function GameVideo({ gameId, className, style, poster = '', version = '0'
       videoEl.addEventListener('loadeddata', playWhenReady);
       
       return () => {
-        wrapperEl.removeEventListener('mouseenter', handleMouseEnter);
-        wrapperEl.removeEventListener('mouseleave', handleMouseLeave);
-        wrapperEl.removeEventListener('touchstart', handleTouchStart);
-        wrapperEl.removeEventListener('touchend', handleTouchEnd);
+        parentEl.removeEventListener('mouseenter', handleMouseEnter);
+        parentEl.removeEventListener('mouseleave', handleMouseLeave);
+        parentEl.removeEventListener('touchstart', handleTouchStart);
+        parentEl.removeEventListener('touchend', handleTouchEnd);
         videoEl.removeEventListener('loadeddata', playWhenReady);
       };
     }
     
     // Cleanup for hover/poster modes
     return () => {
-      wrapperEl.removeEventListener('mouseenter', handleMouseEnter);
-      wrapperEl.removeEventListener('mouseleave', handleMouseLeave);
-      wrapperEl.removeEventListener('touchstart', handleTouchStart);
-      wrapperEl.removeEventListener('touchend', handleTouchEnd);
+      parentEl.removeEventListener('mouseenter', handleMouseEnter);
+      parentEl.removeEventListener('mouseleave', handleMouseLeave);
+      parentEl.removeEventListener('touchstart', handleTouchStart);
+      parentEl.removeEventListener('touchend', handleTouchEnd);
     };
   }, [state?.hover, state?.animate, state?.src]);
 
@@ -188,37 +179,38 @@ export function GameVideo({ gameId, className, style, poster = '', version = '0'
     }
   }
 
-  return h('div', {
-    ref: wrapperRef,
-    className: 'mesulo-video-wrapper',
-    style: styleObj
-  }, [
-    // Base image - provides backdrop during transitions
-    h('img', {
-      className: 'mesulo-base-image',
-      src: baseImageSrc,
-      alt: ''
-    }),
-    
-    // Video element
+  return h(Fragment, {}, [
+    // Video element (rendered first)
     h('video', {
       ref: videoRef,
       'data-mesulo-id': gameId,
       'data-mesulo-version': version,
+      className: className,
+      style: styleObj,
       muted: true,
-      className: state?.src && !isLoading ? 'mesulo-video-visible' : '',
-      poster: state.poster || poster,  // Use same as base-image to avoid flicker
-      autoplay: state?.hover === false,  // Autoplay if hover is false
+      poster: state?.poster || poster,
+      autoplay: state?.hover === false,
       loop: true,
       preload: 'metadata',
       playsInline: true,
       src: state?.src || null
     }),
     
-    // Spinner - always mounted, controlled by isLoading
-    h(VideoUpdateSpinner, { 
-      className: isLoading ? 'visible' : '' 
-    })
+    // Container with base image and spinner
+    h('div', {
+      ref: containerRef,
+      className: 'mesulo-container'
+    }, [
+      h('img', {
+        className: 'mesulo-base-image',
+        src: state?.defaultImage || defaultImage,
+        alt: ''
+      }),
+      h('div', {
+        ref: spinnerRef,
+        className: 'mesulo-spinner'
+      })
+    ])
   ]);
 }
 

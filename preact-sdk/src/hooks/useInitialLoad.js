@@ -19,13 +19,14 @@ export function useInitialLoad() {
           return;
         }
         
-        const { imageUrl, videoUrl } = getGameAssets(game);
+        const { imageUrl, videoUrl, defaultImage } = getGameAssets(game);
         
         gameVideoStore.setVideoState(game.id, {
           id: game.id,
           videoRef: currentState?.videoRef || null,
-          wrapperRef: currentState?.wrapperRef || null,
-          baseImageSrc: currentState?.baseImageSrc || null,  // Preserve baseImageSrc if already set
+          containerRef: currentState?.containerRef || null,
+          spinnerRef: currentState?.spinnerRef || null,
+          defaultImage: defaultImage || null,
           poster: imageUrl || null,
           src: videoUrl || null,
           version: newVersion,

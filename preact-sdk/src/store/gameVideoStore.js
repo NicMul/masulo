@@ -9,16 +9,13 @@ export const gameVideoStore = {
 
   setVideoState(gameId, state) {
     const newMap = new Map(gameVideos.value);
-    const currentState = gameVideos.value.get(gameId);
-    
-    // Preserve baseImageSrc once set - never allow it to be overridden
-    const preservedBaseImageSrc = currentState?.baseImageSrc || state.baseImageSrc || null;
     
     newMap.set(gameId, {
       id: gameId,
       videoRef: state.videoRef,
-      wrapperRef: state.wrapperRef || null,
-      baseImageSrc: preservedBaseImageSrc,  // Always preserve existing baseImageSrc
+      containerRef: state.containerRef || null,
+      spinnerRef: state.spinnerRef || null,
+      defaultImage: state.defaultImage || null,
       poster: state.poster || null,
       src: state.src || null,
       version: state.version || '0',
@@ -28,8 +25,7 @@ export const gameVideoStore = {
       animate: state.animate !== undefined ? state.animate : true,
       hover: state.hover !== undefined ? state.hover : true,
       type: state.type || 'default',
-      ...state,
-      baseImageSrc: preservedBaseImageSrc  // Override again to ensure it's never lost
+      ...state
     });
     gameVideos.value = newMap;
   },
