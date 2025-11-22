@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -37,7 +38,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: 
+            background:
                 radial-gradient(circle at 20% 50%, rgba(218, 165, 32, 0.1) 0%, transparent 50%),
                 radial-gradient(circle at 80% 80%, rgba(255, 69, 0, 0.08) 0%, transparent 50%),
                 radial-gradient(circle at 50% 20%, rgba(138, 43, 226, 0.06) 0%, transparent 50%),
@@ -47,8 +48,15 @@
         }
 
         @keyframes bgShift {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.8; }
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.8;
+            }
         }
 
         /* Floating particles */
@@ -59,7 +67,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: 
+            background-image:
                 radial-gradient(2px 2px at 20% 30%, rgba(218, 165, 32, 0.3), transparent),
                 radial-gradient(2px 2px at 60% 70%, rgba(255, 215, 0, 0.3), transparent),
                 radial-gradient(1px 1px at 50% 50%, rgba(255, 255, 255, 0.3), transparent),
@@ -74,8 +82,15 @@
         }
 
         @keyframes particles {
-            0%, 100% { background-position: 0% 0%; }
-            50% { background-position: 100% 100%; }
+
+            0%,
+            100% {
+                background-position: 0% 0%;
+            }
+
+            50% {
+                background-position: 100% 100%;
+            }
         }
 
         /* Custom Scrollbar */
@@ -111,7 +126,7 @@
             position: relative;
             overflow: hidden;
             border-bottom: 2px solid rgba(218, 165, 32, 0.3);
-            box-shadow: 
+            box-shadow:
                 0 8px 32px rgba(0, 0, 0, 0.4),
                 0 0 60px rgba(218, 165, 32, 0.2);
             flex-shrink: 0;
@@ -124,12 +139,10 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(
-                135deg,
-                rgba(0, 0, 0, 0.2) 0%,
-                rgba(0, 0, 0, 0.1) 50%,
-                rgba(0, 0, 0, 0.2) 100%
-            );
+            background: linear-gradient(135deg,
+                    rgba(0, 0, 0, 0.2) 0%,
+                    rgba(0, 0, 0, 0.1) 50%,
+                    rgba(0, 0, 0, 0.2) 100%);
             z-index: 1;
         }
 
@@ -145,9 +158,9 @@
         /* Sidebar */
         .sidebar {
             width: 280px;
-            background: linear-gradient(180deg, 
-                rgba(20, 20, 35, 0.8) 0%, 
-                rgba(15, 15, 25, 0.9) 100%);
+            background: linear-gradient(180deg,
+                    rgba(20, 20, 35, 0.8) 0%,
+                    rgba(15, 15, 25, 0.9) 100%);
             backdrop-filter: blur(20px);
             border-right: 1px solid rgba(218, 165, 32, 0.2);
             padding: 40px 25px;
@@ -211,10 +224,10 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, 
-                transparent, 
-                rgba(218, 165, 32, 0.2), 
-                transparent);
+            background: linear-gradient(90deg,
+                    transparent,
+                    rgba(218, 165, 32, 0.2),
+                    transparent);
             transition: left 0.5s;
         }
 
@@ -223,17 +236,17 @@
         }
 
         .nav-menu a:hover {
-            background: linear-gradient(90deg, 
-                rgba(218, 165, 32, 0.15), 
-                rgba(255, 215, 0, 0.1));
+            background: linear-gradient(90deg,
+                    rgba(218, 165, 32, 0.15),
+                    rgba(255, 215, 0, 0.1));
             border-left-color: #FFD700;
             color: #FFD700;
         }
 
         .nav-menu a.active {
-            background: linear-gradient(90deg, 
-                rgba(218, 165, 32, 0.25), 
-                rgba(255, 215, 0, 0.15));
+            background: linear-gradient(90deg,
+                    rgba(218, 165, 32, 0.25),
+                    rgba(255, 215, 0, 0.15));
             border-left-color: #FFD700;
             color: #FFD700;
         }
@@ -315,9 +328,9 @@
 
         .tab-button.active {
             color: #FFD700;
-            background: linear-gradient(180deg, 
-                rgba(218, 165, 32, 0.15), 
-                rgba(218, 165, 32, 0.05));
+            background: linear-gradient(180deg,
+                    rgba(218, 165, 32, 0.15),
+                    rgba(218, 165, 32, 0.05));
         }
 
         .tab-button.active::before {
@@ -343,6 +356,7 @@
                 opacity: 0;
                 transform: translateY(10px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -385,16 +399,16 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(135deg, 
-                rgba(218, 165, 32, 0) 0%, 
-                rgba(255, 215, 0, 0.15) 100%);
+            background: linear-gradient(135deg,
+                    rgba(218, 165, 32, 0) 0%,
+                    rgba(255, 215, 0, 0.15) 100%);
             opacity: 0;
             transition: opacity 0.5s;
             z-index: 1;
         }
 
         .game-body:hover {
-            box-shadow: 
+            box-shadow:
                 0 5px 15px rgba(218, 165, 32, 0.4),
                 0 0 0 2px rgba(218, 165, 32, 0.5),
                 0 0 5px rgba(255, 215, 0, 0.3);
@@ -503,9 +517,9 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: linear-gradient(180deg, 
-                rgba(15, 15, 25, 0.95) 0%, 
-                rgba(10, 10, 15, 0.98) 100%);
+            background: linear-gradient(180deg,
+                    rgba(15, 15, 25, 0.95) 0%,
+                    rgba(10, 10, 15, 0.98) 100%);
             backdrop-filter: blur(20px);
             border-top: 1px solid rgba(218, 165, 32, 0.3);
             padding: 20px 40px;
@@ -544,10 +558,13 @@
         }
 
         @keyframes pulse {
-            0%, 100% {
+
+            0%,
+            100% {
                 opacity: 1;
                 transform: scale(1);
             }
+
             50% {
                 opacity: 0.7;
                 transform: scale(1.1);
@@ -628,7 +645,7 @@
                 padding: 14px 24px;
                 font-size: 1rem;
             }
-            
+
             .group-title {
                 font-size: 1.2rem;
                 padding: 0 20px;
@@ -784,8 +801,13 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         @keyframes slideUp {
@@ -793,6 +815,7 @@
                 opacity: 0;
                 transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -800,15 +823,15 @@
         }
 
         .popup-content {
-            background: linear-gradient(180deg, 
-                rgba(20, 20, 35, 0.98) 0%, 
-                rgba(15, 15, 25, 0.98) 100%);
+            background: linear-gradient(180deg,
+                    rgba(20, 20, 35, 0.98) 0%,
+                    rgba(15, 15, 25, 0.98) 100%);
             border-radius: 20px;
             width: 90%;
             max-width: 500px;
             padding: 0;
             position: relative;
-            box-shadow: 
+            box-shadow:
                 0 20px 60px rgba(0, 0, 0, 0.8),
                 0 0 100px rgba(218, 165, 32, 0.3),
                 inset 0 1px 1px rgba(255, 255, 255, 0.1);
@@ -818,9 +841,9 @@
         }
 
         .popup-header {
-            background: linear-gradient(135deg, 
-                rgba(218, 165, 32, 0.2) 0%, 
-                rgba(255, 215, 0, 0.1) 100%);
+            background: linear-gradient(135deg,
+                    rgba(218, 165, 32, 0.2) 0%,
+                    rgba(255, 215, 0, 0.1) 100%);
             padding: 30px 40px;
             border-bottom: 2px solid rgba(218, 165, 32, 0.3);
             position: relative;
@@ -833,16 +856,23 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, 
-                transparent, 
-                rgba(218, 165, 32, 0.1), 
-                transparent);
+            background: linear-gradient(90deg,
+                    transparent,
+                    rgba(218, 165, 32, 0.1),
+                    transparent);
             animation: shimmer 3s infinite;
         }
 
         @keyframes shimmer {
-            0%, 100% { transform: translateX(-100%); }
-            50% { transform: translateX(100%); }
+
+            0%,
+            100% {
+                transform: translateX(-100%);
+            }
+
+            50% {
+                transform: translateX(100%);
+            }
         }
 
         .popup-title {
@@ -943,9 +973,9 @@
         }
 
         .popup-footer {
-            background: linear-gradient(180deg, 
-                rgba(10, 10, 20, 0.5) 0%, 
-                rgba(15, 15, 25, 0.8) 100%);
+            background: linear-gradient(180deg,
+                    rgba(10, 10, 20, 0.5) 0%,
+                    rgba(15, 15, 25, 0.8) 100%);
             padding: 25px 40px;
             text-align: center;
             border-top: 2px solid rgba(218, 165, 32, 0.3);
@@ -991,9 +1021,9 @@
                 padding: 14px 0 14px 30px;
             }
         }
-
     </style>
 </head>
+
 <body>
 
     <div class="banner"></div>
@@ -1013,8 +1043,8 @@
 
         <main class="main-content">
             <div class="lobby-header">
-                
-                
+
+
             </div>
 
             <!-- Tab Navigation -->
@@ -1025,212 +1055,119 @@
 
             <!-- With Mesulo Tab -->
             <div class="tab-content active" id="with-mesulo">
-                <p style="margin-top: 30px;" class="group-title" data-mesulo-group="b7854ss">Preact Test</p>
-                <div>
-                    <ul style="max-width: 280px; margin: 0 30px;">
-                    <li class="game-item" data-cy="slider-item" aria-hidden="false">
-                        <article aria-label="Cleocatra" class="game-article">
-                            <div class="game-body">
-                                <div class="img-wrapper">
-                                    <img
-                                         data-mesulo-game-id="d5352f25"  
-                                         src="images/cleo.jpg" 
-                                         alt="Cleocatra" 
-                                         class="game-image">
-                                </div>
-                                <div class="overlaying-content">
-                                    <a class="play-now-link" 
-                                       itemprop="url" 
-                                       aria-label="Cleocatra" 
-                                       href="/#">
-                                        <span>Join Now</span>
-                                    </a>
-                                    <div class="overlaying-content-footer">
-                                        <a class="play-free-link" 
-                                           itemprop="url" 
-                                           aria-label="Cleocatra Demo" 
-                                           href="#">DEMO PLAY</a>
-                                    </div>
-                                </div>
-                                <a aria-label="Cleocatra" 
-                                   aria-hidden="true" 
-                                   class="dummy-link" 
-                                   tabindex="-1" 
-                                   href="#"></a>
-                            </div>
-                            <h3 class="game-title">Cleocatra</h3>
-                        </article>
-                    </li>
-                    </ul>
-                </div>
+
                 <p style="margin-top: 30px;" class="group-title" data-mesulo-group="b7854">Popular</p>
                 <ul class="games-grid">
-                    <li class="game-item" data-cy="slider-item" aria-hidden="false">
+                    <li data-mesulo-game-id="d5352f25-9718-44a6-a95d-1ddd47ea63ce" class="game-item"
+                        data-cy="slider-item" aria-hidden="false">
                         <article aria-label="Cleocatra" class="game-article">
                             <div class="game-body">
                                 <div class="img-wrapper">
-                                    <img
-                                         data-mesulo-game-id="d5352f25-9718-44a6-a95d-1ddd47ea63ce"  
-                                         src="images/cleo.jpg" 
-                                         alt="Cleocatra" 
-                                         class="game-image">
+                                    <img src="images/cleo.jpg" alt="Cleocatra" class="game-image">
                                 </div>
                                 <div class="overlaying-content">
-                                    <a class="play-now-link" 
-                                       itemprop="url" 
-                                       aria-label="Cleocatra" 
-                                       href="/#">
+                                    <a class="play-now-link" itemprop="url" aria-label="Cleocatra" href="/#">
                                         <span>Join Now</span>
                                     </a>
                                     <div class="overlaying-content-footer">
-                                        <a class="play-free-link" 
-                                           itemprop="url" 
-                                           aria-label="Cleocatra Demo" 
-                                           href="#">DEMO PLAY</a>
+                                        <a class="play-free-link" itemprop="url" aria-label="Cleocatra Demo"
+                                            href="#">DEMO PLAY</a>
                                     </div>
                                 </div>
-                                <a aria-label="Cleocatra" 
-                                   aria-hidden="true" 
-                                   class="dummy-link" 
-                                   tabindex="-1" 
-                                   href="#"></a>
+                                <a aria-label="Cleocatra" aria-hidden="true" class="dummy-link" tabindex="-1"
+                                    href="#"></a>
                             </div>
                             <h3 class="game-title">Cleocatra</h3>
                         </article>
                     </li>
 
-                    <li class="game-item" data-cy="slider-item" aria-hidden="false">
+                    <li data-mesulo-game-id="b4a40dc5-e950-4e6b-bca9-1ae51589b2b5" class="game-item"
+                        data-cy="slider-item" aria-hidden="false">
                         <article aria-label="Hot as Hades" class="game-article">
                             <div class="game-body">
                                 <div class="img-wrapper">
-                                    <img 
-                                         data-mesulo-game-id="b4a40dc5-e950-4e6b-bca9-1ae51589b2b5" 
-                                         data-mesulo-theme="halloween" 
-                                         src="images/hades.jpg" 
-                                         alt="Hot as Hades" 
-                                         class="game-image">
+                                    <img src="images/hades.jpg" alt="Hot as Hades" class="game-image">
                                 </div>
                                 <div class="overlaying-content">
-                                    <a class="play-now-link" 
-                                       itemprop="url" 
-                                       aria-label="Hot as Hades" 
-                                       href="/#">
+                                    <a class="play-now-link" itemprop="url" aria-label="Hot as Hades" href="/#">
                                         <span>Join Now</span>
                                     </a>
                                     <div class="overlaying-content-footer">
-                                        <a class="play-free-link" 
-                                           itemprop="url" 
-                                           aria-label="Hot as Hades Demo" 
-                                           href="#">DEMO PLAY</a>
+                                        <a class="play-free-link" itemprop="url" aria-label="Hot as Hades Demo"
+                                            href="#">DEMO PLAY</a>
                                     </div>
                                 </div>
-                                <a aria-label="Hot as Hades" 
-                                   aria-hidden="true" 
-                                   class="dummy-link" 
-                                   tabindex="-1" 
-                                   href="#"></a>
+                                <a aria-label="Hot as Hades" aria-hidden="true" class="dummy-link" tabindex="-1"
+                                    href="#"></a>
                             </div>
                             <h3 class="game-title">Hot as Hades</h3>
                         </article>
                     </li>
 
-                    <li class="game-item" data-cy="slider-item" aria-hidden="false">
+                    <li data-mesulo-game-id="b37b4b9a-4f2f-4a3c-8a58-f4a76d19d88f" class="game-item"
+                        data-cy="slider-item" aria-hidden="false">
                         <article aria-label="Tome of Insanity" class="game-article">
                             <div class="game-body">
                                 <div class="img-wrapper">
-                                    <img 
-                                         data-mesulo-game-id="b37b4b9a-4f2f-4a3c-8a58-f4a76d19d88f" 
-                                         src="images/tome.webp" 
-                                         alt="Tome of Insanity" 
-                                         class="game-image">
+                                    <img src="images/tome.webp" alt="Tome of Insanity" class="game-image">
                                 </div>
                                 <div class="overlaying-content">
-                                    <a class="play-now-link" 
-                                       itemprop="url" 
-                                       aria-label="Tome of Insanity" 
-                                       href="/#">
+                                    <a class="play-now-link" itemprop="url" aria-label="Tome of Insanity" href="/#">
                                         <span>Join Now</span>
                                     </a>
                                     <div class="overlaying-content-footer">
-                                        <a class="play-free-link" 
-                                           itemprop="url" 
-                                           aria-label="Tome of Insanity Demo" 
-                                           href="#">DEMO PLAY</a>
+                                        <a class="play-free-link" itemprop="url" aria-label="Tome of Insanity Demo"
+                                            href="#">DEMO PLAY</a>
                                     </div>
                                 </div>
-                                <a aria-label="Tome of Insanity" 
-                                   aria-hidden="true" 
-                                   class="dummy-link" 
-                                   tabindex="-1" 
-                                   href="#"></a>
+                                <a aria-label="Tome of Insanity" aria-hidden="true" class="dummy-link" tabindex="-1"
+                                    href="#"></a>
                             </div>
                             <h3 class="game-title">Tome of Insanity</h3>
                         </article>
                     </li>
 
-                    <li class="game-item" data-cy="slider-item" aria-hidden="false">
+                    <li data-mesulo-game-id="8d0b5e73-13fa-42c4-901d-829406c8e207" class="game-item"
+                        data-cy="slider-item" aria-hidden="false">
                         <article aria-label="Gargantoonz" class="game-article">
                             <div class="game-body">
                                 <div class="img-wrapper">
-                                    <img 
-                                         data-mesulo-game-id="8d0b5e73-13fa-42c4-901d-829406c8e207" 
-                                         src="images/toonz.webp" 
-                                         alt="Gargantoonz" 
-                                         class="game-image">
+                                    <img src="images/toonz.webp" alt="Gargantoonz" class="game-image">
                                 </div>
                                 <div class="overlaying-content">
-                                    <a class="play-now-link" 
-                                       itemprop="url" 
-                                       aria-label="Gargantoonz" 
-                                       href="/#">
+                                    <a class="play-now-link" itemprop="url" aria-label="Gargantoonz" href="/#">
                                         <span>Join Now</span>
                                     </a>
                                     <div class="overlaying-content-footer">
-                                        <a class="play-free-link" 
-                                           itemprop="url" 
-                                           aria-label="Gargantoonz Demo" 
-                                           href="#">DEMO PLAY</a>
+                                        <a class="play-free-link" itemprop="url" aria-label="Gargantoonz Demo"
+                                            href="#">DEMO PLAY</a>
                                     </div>
                                 </div>
-                                <a aria-label="Gargantoonz" 
-                                   aria-hidden="true" 
-                                   class="dummy-link" 
-                                   tabindex="-1" 
-                                   href="#"></a>
+                                <a aria-label="Gargantoonz" aria-hidden="true" class="dummy-link" tabindex="-1"
+                                    href="#"></a>
                             </div>
                             <h3 class="game-title">Gargantoonz</h3>
                         </article>
                     </li>
 
-                    <li class="game-item" data-cy="slider-item" aria-hidden="false">
-                        <article  aria-label="Gates of Olympus" class="game-article">
+                    <li data-mesulo-game-id="7c371c7d-6ec2-494c-a553-1645a70007d3" class="game-item"
+                        data-cy="slider-item" aria-hidden="false">
+                        <article aria-label="Gates of Olympus" class="game-article">
                             <div class="game-body">
                                 <div class="img-wrapper">
-                                    <img 
-                                         data-mesulo-game-id="7c371c7d-6ec2-494c-a553-1645a70007d3" 
-                                         src="images/gates.webp" 
-                                         alt="Gates of Olympus" 
-                                         class="game-image">
+                                    <img src="images/gates.webp" alt="Gates of Olympus" class="game-image">
                                 </div>
                                 <div class="overlaying-content">
-                                    <a class="play-now-link" 
-                                       itemprop="url" 
-                                       aria-label="Gates of Olympus" 
-                                       href="/#">
+                                    <a class="play-now-link" itemprop="url" aria-label="Gates of Olympus" href="/#">
                                         <span>Join Now</span>
                                     </a>
                                     <div class="overlaying-content-footer">
-                                        <a class="play-free-link" 
-                                           itemprop="url" 
-                                           aria-label="Gates of Olympus Demo" 
-                                           href="#">DEMO PLAY</a>
+                                        <a class="play-free-link" itemprop="url" aria-label="Gates of Olympus Demo"
+                                            href="#">DEMO PLAY</a>
                                     </div>
                                 </div>
-                                <a aria-label="Gates of Olympus" 
-                                   aria-hidden="true" 
-                                   class="dummy-link" 
-                                   tabindex="-1" 
-                                   href="#"></a>
+                                <a aria-label="Gates of Olympus" aria-hidden="true" class="dummy-link" tabindex="-1"
+                                    href="#"></a>
                             </div>
                             <h3 class="game-title">Gates of Olympus</h3>
                         </article>
@@ -1238,137 +1175,89 @@
                 </ul>
                 <p class="group-title" data-mesulo-group="b6647">Hot Right Now</p>
                 <ul class="games-grid">
-                    <li class="game-item" data-cy="slider-item" aria-hidden="false">
+                    <li data-mesulo-game-id="a1b2c3dd" class="game-item" data-cy="slider-item" aria-hidden="false">
                         <article aria-label="Frank's Fortune" class="game-article">
                             <div class="game-body">
                                 <div class="img-wrapper">
-                                    <img
-                                         data-mesulo-game-id="a1b2c3dd"  
-                                         src="images/franks.jpg" 
-                                         alt="Frank's Fortune" 
-                                         class="game-image">
+                                    <img src="images/franks.jpg" alt="Frank's Fortune" class="game-image">
                                 </div>
                                 <div class="overlaying-content">
-                                    <a class="play-now-link" 
-                                       itemprop="url" 
-                                       aria-label="Frank's Fortune" 
-                                       href="/#">
+                                    <a class="play-now-link" itemprop="url" aria-label="Frank's Fortune" href="/#">
                                         <span>Join Now</span>
                                     </a>
                                     <div class="overlaying-content-footer">
-                                        <a class="play-free-link" 
-                                           itemprop="url" 
-                                           aria-label="Frank's Fortune Demo" 
-                                           href="#">DEMO PLAY</a>
+                                        <a class="play-free-link" itemprop="url" aria-label="Frank's Fortune Demo"
+                                            href="#">DEMO PLAY</a>
                                     </div>
                                 </div>
-                                <a aria-label="Frank's Fortune" 
-                                   aria-hidden="true" 
-                                   class="dummy-link" 
-                                   tabindex="-1" 
-                                   href="#"></a>
+                                <a aria-label="Frank's Fortune" aria-hidden="true" class="dummy-link" tabindex="-1"
+                                    href="#"></a>
                             </div>
                             <h3 class="game-title">Frank's Fortune</h3>
                         </article>
                     </li>
 
-                    <li class="game-item" data-cy="slider-item" aria-hidden="false">
+                    <li data-mesulo-game-id="b2c3d4e5" class="game-item" data-cy="slider-item" aria-hidden="false">
                         <article aria-label="Money Tree" class="game-article">
                             <div class="game-body">
                                 <div class="img-wrapper">
-                                    <img 
-                                         data-mesulo-game-id="b2c3d4e5" 
-                                         src="images/money.jpg" 
-                                         alt="Money Tree" 
-                                         class="game-image">
+                                    <img src="images/money.jpg" alt="Money Tree" class="game-image">
                                 </div>
                                 <div class="overlaying-content">
-                                    <a class="play-now-link" 
-                                       itemprop="url" 
-                                       aria-label="Money Tree" 
-                                       href="/#">
+                                    <a class="play-now-link" itemprop="url" aria-label="Money Tree" href="/#">
                                         <span>Join Now</span>
                                     </a>
                                     <div class="overlaying-content-footer">
-                                        <a class="play-free-link" 
-                                           itemprop="url" 
-                                           aria-label="Money Tree Demo" 
-                                           href="#">DEMO PLAY</a>
+                                        <a class="play-free-link" itemprop="url" aria-label="Money Tree Demo"
+                                            href="#">DEMO PLAY</a>
                                     </div>
                                 </div>
-                                <a aria-label="Money Tree" 
-                                   aria-hidden="true" 
-                                   class="dummy-link" 
-                                   tabindex="-1" 
-                                   href="#"></a>
+                                <a aria-label="Money Tree" aria-hidden="true" class="dummy-link" tabindex="-1"
+                                    href="#"></a>
                             </div>
                             <h3 class="game-title">Money Tree</h3>
                         </article>
                     </li>
 
-                    <li class="game-item" data-cy="slider-item" aria-hidden="false">
+                    <li data-mesulo-game-id="c3d4e5f6" class="game-item" data-cy="slider-item" aria-hidden="false">
                         <article aria-label="Smugglers Cove" class="game-article">
                             <div class="game-body">
                                 <div class="img-wrapper">
-                                    <img 
-                                         data-mesulo-game-id="c3d4e5f6" 
-                                         src="images/smugglers.jpg" 
-                                         alt="Smugglers Cove" 
-                                         class="game-image">
+                                    <img src="images/smugglers.jpg" alt="Smugglers Cove" class="game-image">
                                 </div>
                                 <div class="overlaying-content">
-                                    <a class="play-now-link" 
-                                       itemprop="url" 
-                                       aria-label="Smugglers Cove" 
-                                       href="/#">
+                                    <a class="play-now-link" itemprop="url" aria-label="Smugglers Cove" href="/#">
                                         <span>Join Now</span>
                                     </a>
                                     <div class="overlaying-content-footer">
-                                        <a class="play-free-link" 
-                                           itemprop="url" 
-                                           aria-label="Smugglers Cove Demo" 
-                                           href="#">DEMO PLAY</a>
+                                        <a class="play-free-link" itemprop="url" aria-label="Smugglers Cove Demo"
+                                            href="#">DEMO PLAY</a>
                                     </div>
                                 </div>
-                                <a aria-label="Smugglers Cove" 
-                                   aria-hidden="true" 
-                                   class="dummy-link" 
-                                   tabindex="-1" 
-                                   href="#"></a>
+                                <a aria-label="Smugglers Cove" aria-hidden="true" class="dummy-link" tabindex="-1"
+                                    href="#"></a>
                             </div>
                             <h3 class="game-title">Smugglers Cove</h3>
                         </article>
                     </li>
 
-                    <li class="game-item" data-cy="slider-item" aria-hidden="false">
+                    <li data-mesulo-game-id="d4e5f6a7" class="game-item" data-cy="slider-item" aria-hidden="false">
                         <article aria-label="Tiki Treasure" class="game-article">
                             <div class="game-body">
                                 <div class="img-wrapper">
-                                    <img 
-                                         data-mesulo-game-id="d4e5f6a7" 
-                                         src="images/tiki.jpg" 
-                                         alt="Tiki Treasure" 
-                                         class="game-image">
+                                    <img src="images/tiki.jpg" alt="Tiki Treasure" class="game-image">
                                 </div>
                                 <div class="overlaying-content">
-                                    <a class="play-now-link" 
-                                       itemprop="url" 
-                                       aria-label="Tiki Treasure" 
-                                       href="/#">
+                                    <a class="play-now-link" itemprop="url" aria-label="Tiki Treasure" href="/#">
                                         <span>Join Now</span>
                                     </a>
                                     <div class="overlaying-content-footer">
-                                        <a class="play-free-link" 
-                                           itemprop="url" 
-                                           aria-label="Tiki Treasure Demo" 
-                                           href="#">DEMO PLAY</a>
+                                        <a class="play-free-link" itemprop="url" aria-label="Tiki Treasure Demo"
+                                            href="#">DEMO PLAY</a>
                                     </div>
                                 </div>
-                                <a aria-label="Tiki Treasure" 
-                                   aria-hidden="true" 
-                                   class="dummy-link" 
-                                   tabindex="-1" 
-                                   href="#"></a>
+                                <a aria-label="Tiki Treasure" aria-hidden="true" class="dummy-link" tabindex="-1"
+                                    href="#"></a>
                             </div>
                             <h3 class="game-title">Tiki Treasure</h3>
                         </article>
@@ -1383,32 +1272,20 @@
                         <article aria-label="Cleocatra" class="game-article">
                             <div class="game-body">
                                 <div class="img-wrapper">
-                                    <img 
-                                        data-replace-with-video="true"
-                                        loading="lazy" 
-                                         src="images/cleo.jpg" 
-                                         alt="Cleocatra" 
-                                         class="game-image">
+                                    <img data-replace-with-video="true" loading="lazy" src="images/cleo.jpg"
+                                        alt="Cleocatra" class="game-image">
                                 </div>
                                 <div class="overlaying-content">
-                                    <a class="play-now-link" 
-                                       itemprop="url" 
-                                       aria-label="Cleocatra" 
-                                       href="/#">
+                                    <a class="play-now-link" itemprop="url" aria-label="Cleocatra" href="/#">
                                         <span>Join Now</span>
                                     </a>
                                     <div class="overlaying-content-footer">
-                                        <a class="play-free-link" 
-                                           itemprop="url" 
-                                           aria-label="Cleocatra Demo" 
-                                           href="#">DEMO PLAY</a>
+                                        <a class="play-free-link" itemprop="url" aria-label="Cleocatra Demo"
+                                            href="#">DEMO PLAY</a>
                                     </div>
                                 </div>
-                                <a aria-label="Cleocatra" 
-                                   aria-hidden="true" 
-                                   class="dummy-link" 
-                                   tabindex="-1" 
-                                   href="#"></a>
+                                <a aria-label="Cleocatra" aria-hidden="true" class="dummy-link" tabindex="-1"
+                                    href="#"></a>
                             </div>
                             <h3 class="game-title">Cleocatra</h3>
                         </article>
@@ -1418,31 +1295,20 @@
                         <article aria-label="Gates of Olympus" class="game-article">
                             <div class="game-body">
                                 <div class="img-wrapper">
-                                    <img loading="lazy" 
-                                        data-replace-with-video="true"
-                                            src="images/gates.webp" 
-                                         alt="Gates of Olympus" 
-                                         class="game-image">
+                                    <img loading="lazy" data-replace-with-video="true" src="images/gates.webp"
+                                        alt="Gates of Olympus" class="game-image">
                                 </div>
                                 <div class="overlaying-content">
-                                    <a class="play-now-link" 
-                                       itemprop="url" 
-                                       aria-label="Gates of Olympus" 
-                                       href="/#">
+                                    <a class="play-now-link" itemprop="url" aria-label="Gates of Olympus" href="/#">
                                         <span>Join Now</span>
                                     </a>
                                     <div class="overlaying-content-footer">
-                                        <a class="play-free-link" 
-                                           itemprop="url" 
-                                           aria-label="Gates of Olympus Demo" 
-                                        href="#">DEMO PLAY</a>
+                                        <a class="play-free-link" itemprop="url" aria-label="Gates of Olympus Demo"
+                                            href="#">DEMO PLAY</a>
                                     </div>
                                 </div>
-                                <a aria-label="Gates of Olympus" 
-                                   aria-hidden="true" 
-                                   class="dummy-link" 
-                                   tabindex="-1" 
-                                   href="#"></a>
+                                <a aria-label="Gates of Olympus" aria-hidden="true" class="dummy-link" tabindex="-1"
+                                    href="#"></a>
                             </div>
                             <h3 class="game-title">Gates of Olympus</h3>
                         </article>
@@ -1452,31 +1318,20 @@
                         <article aria-label="Hot as Hades" class="game-article">
                             <div class="game-body">
                                 <div class="img-wrapper">
-                                    <img loading="lazy" 
-                                        data-replace-with-video="true"
-                                         src="images/hades.jpg" 
-                                         alt="Hot as Hades" 
-                                         class="game-image">
+                                    <img loading="lazy" data-replace-with-video="true" src="images/hades.jpg"
+                                        alt="Hot as Hades" class="game-image">
                                 </div>
                                 <div class="overlaying-content">
-                                    <a class="play-now-link" 
-                                       itemprop="url" 
-                                       aria-label="Hot as Hades" 
-                                       href="/#">
+                                    <a class="play-now-link" itemprop="url" aria-label="Hot as Hades" href="/#">
                                         <span>Join Now</span>
                                     </a>
                                     <div class="overlaying-content-footer">
-                                        <a class="play-free-link" 
-                                           itemprop="url" 
-                                           aria-label="Hot as Hades Demo" 
-                                           href="#">DEMO PLAY</a>
+                                        <a class="play-free-link" itemprop="url" aria-label="Hot as Hades Demo"
+                                            href="#">DEMO PLAY</a>
                                     </div>
                                 </div>
-                                <a aria-label="Hot as Hades" 
-                                   aria-hidden="true" 
-                                   class="dummy-link" 
-                                   tabindex="-1" 
-                                   href="#"></a>
+                                <a aria-label="Hot as Hades" aria-hidden="true" class="dummy-link" tabindex="-1"
+                                    href="#"></a>
                             </div>
                             <h3 class="game-title">Hot as Hades</h3>
                         </article>
@@ -1486,31 +1341,20 @@
                         <article aria-label="Tome of Insanity" class="game-article">
                             <div class="game-body">
                                 <div class="img-wrapper">
-                                    <img loading="lazy" 
-                                        data-replace-with-video="true"
-                                         src="images/tome.webp" 
-                                         alt="Tome of Insanity" 
-                                         class="game-image">
+                                    <img loading="lazy" data-replace-with-video="true" src="images/tome.webp"
+                                        alt="Tome of Insanity" class="game-image">
                                 </div>
                                 <div class="overlaying-content">
-                                    <a class="play-now-link" 
-                                       itemprop="url" 
-                                       aria-label="Tome of Insanity" 
-                                       href="/#">
+                                    <a class="play-now-link" itemprop="url" aria-label="Tome of Insanity" href="/#">
                                         <span>Join Now</span>
                                     </a>
                                     <div class="overlaying-content-footer">
-                                        <a class="play-free-link" 
-                                           itemprop="url" 
-                                           aria-label="Tome of Insanity Demo" 
-                                           href="#">DEMO PLAY</a>
+                                        <a class="play-free-link" itemprop="url" aria-label="Tome of Insanity Demo"
+                                            href="#">DEMO PLAY</a>
                                     </div>
                                 </div>
-                                <a aria-label="Tome of Insanity" 
-                                   aria-hidden="true" 
-                                   class="dummy-link" 
-                                   tabindex="-1" 
-                                   href="#"></a>
+                                <a aria-label="Tome of Insanity" aria-hidden="true" class="dummy-link" tabindex="-1"
+                                    href="#"></a>
                             </div>
                             <h3 class="game-title">Tome of Insanity</h3>
                         </article>
@@ -1520,31 +1364,20 @@
                         <article aria-label="Gargantoonz" class="game-article">
                             <div class="game-body">
                                 <div class="img-wrapper">
-                                    <img loading="lazy" 
-                                        data-replace-with-video="true"
-                                         src="images/toonz.webp" 
-                                         alt="Gargantoonz" 
-                                         class="game-image">
+                                    <img loading="lazy" data-replace-with-video="true" src="images/toonz.webp"
+                                        alt="Gargantoonz" class="game-image">
                                 </div>
                                 <div class="overlaying-content">
-                                    <a class="play-now-link" 
-                                       itemprop="url" 
-                                       aria-label="Gargantoonz" 
-                                       href="/#">
+                                    <a class="play-now-link" itemprop="url" aria-label="Gargantoonz" href="/#">
                                         <span>Join Now</span>
                                     </a>
                                     <div class="overlaying-content-footer">
-                                        <a class="play-free-link" 
-                                           itemprop="url" 
-                                           aria-label="Gargantoonz Demo" 
-                                           href="#">DEMO PLAY</a>
+                                        <a class="play-free-link" itemprop="url" aria-label="Gargantoonz Demo"
+                                            href="#">DEMO PLAY</a>
                                     </div>
                                 </div>
-                                <a aria-label="Gargantoonz" 
-                                   aria-hidden="true" 
-                                   class="dummy-link" 
-                                   tabindex="-1" 
-                                   href="#"></a>
+                                <a aria-label="Gargantoonz" aria-hidden="true" class="dummy-link" tabindex="-1"
+                                    href="#"></a>
                             </div>
                             <h3 class="game-title">Gargantoonz</h3>
                         </article>
@@ -1608,17 +1441,19 @@
         </div>
     </div>
 
-    <!-- <script data-debug="true" type="module" src="https://mesulo.b-cdn.net/mesulo-ai-sdk-canary-v3.js" data-application-key="5f61931c-187c-4341-8874-360d29907b00"></script> -->
-    <script src="./dist/mesulo-preact-sdk.js"></script>
-    <!-- <script type="module" src="./src/index.js" data-application-key="5f61931c-187c-4341-8874-360d29907b00" data-debug="true"></script>  -->
+
+    <script data-application-key="5f61931c-187c-4341-8874-360d29907b00" src="./dist/mesulo-ai-sdk.js"></script>
+    <!-- <script data-application-key="5f61931c-187c-4341-8874-360d29907b00"
+        src="https://mesulo.b-cdn.net/mesulo-ai-sdk.js"></script> -->
+
     <script>
         // Tab switching functionality
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const tabButtons = document.querySelectorAll('.tab-button');
             const tabContents = document.querySelectorAll('.tab-content');
 
             tabButtons.forEach(button => {
-                button.addEventListener('click', function() {
+                button.addEventListener('click', function () {
                     const targetTab = this.getAttribute('data-tab');
 
                     // Remove active class from all buttons and contents
@@ -1634,12 +1469,12 @@
             // Navigation menu interactions
             const navLinks = document.querySelectorAll('.nav-menu a');
             navLinks.forEach(link => {
-                link.addEventListener('click', function(e) {
+                link.addEventListener('click', function (e) {
                     e.preventDefault();
-                    
+
                     // Remove active class from all links
                     navLinks.forEach(l => l.classList.remove('active'));
-                    
+
                     // Add active class to clicked link
                     this.classList.add('active');
                 });
@@ -1647,16 +1482,21 @@
         });
 
         // SDK Status Updates
+        // SDK Status Updates
         let statusCheckAttempts = 0;
         const maxStatusCheckAttempts = 50; // 5 seconds max (50 * 100ms)
-        
+
         function setupStatusUpdates() {
-            if (window.mesulo) {
+            if (window.mesuloPreactSDK) {
                 document.getElementById('sdk-status').textContent = 'Ready';
-                
-                window.mesulo.on('gameLaunched', (gameId) => {
-                    console.log(`Game launched: ${gameId}`);
-                });
+                console.log('SDK Initialized:', window.mesuloPreactSDK);
+
+                // Use the new SDK's event system if available, or fallback
+                if (window.mesuloPreactSDK.on) {
+                    window.mesuloPreactSDK.on('gameLaunched', (gameId) => {
+                        console.log(`Game launched: ${gameId}`);
+                    });
+                }
             } else {
                 statusCheckAttempts++;
                 if (statusCheckAttempts < maxStatusCheckAttempts) {
@@ -1664,10 +1504,11 @@
                     setTimeout(setupStatusUpdates, 100);
                 } else {
                     document.getElementById('sdk-status').textContent = 'Failed to Load';
+                    console.error('SDK failed to initialize after 5 seconds. window.mesuloPreactSDK is undefined.');
                 }
             }
         }
-        
+
         // Start checking for SDK initialization
         setupStatusUpdates();
 
@@ -1689,20 +1530,20 @@
         }
 
         // Add click handlers to all "Play Now" buttons
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const withMesuloButtons = document.querySelectorAll('#with-mesulo .play-now-link');
             const withoutMesuloButtons = document.querySelectorAll('#no-mesulo .play-now-link');
 
             // Add event listeners to "With Mesulo" tab buttons
             withMesuloButtons.forEach(button => {
-                button.addEventListener('click', function(e) {
+                button.addEventListener('click', function (e) {
                     e.preventDefault();
                     e.stopPropagation();
                     openPopup('popup-with-mesulo');
                 });
-                
+
                 // Handle touch events separately for mobile
-                button.addEventListener('touchend', function(e) {
+                button.addEventListener('touchend', function (e) {
                     e.preventDefault();
                     e.stopPropagation();
                     openPopup('popup-with-mesulo');
@@ -1711,13 +1552,13 @@
 
             // Add event listeners to "No Mesulo" tab buttons
             withoutMesuloButtons.forEach(button => {
-                button.addEventListener('click', function(e) {
+                button.addEventListener('click', function (e) {
                     e.preventDefault();
                     openPopup('popup-without-mesulo');
                 });
-                
+
                 // Handle touch events separately for mobile
-                button.addEventListener('touchend', function(e) {
+                button.addEventListener('touchend', function (e) {
                     e.preventDefault();
                     openPopup('popup-without-mesulo');
                 });
@@ -1725,7 +1566,7 @@
 
             // Close popup when clicking on overlay background
             document.querySelectorAll('.popup-overlay').forEach(overlay => {
-                overlay.addEventListener('click', function(e) {
+                overlay.addEventListener('click', function (e) {
                     if (e.target === overlay) {
                         closePopup(overlay.id);
                     }
@@ -1733,7 +1574,7 @@
             });
 
             // Close popup with Escape key
-            document.addEventListener('keydown', function(e) {
+            document.addEventListener('keydown', function (e) {
                 if (e.key === 'Escape') {
                     closePopup('popup-with-mesulo');
                     closePopup('popup-without-mesulo');
@@ -1742,4 +1583,5 @@
         });
     </script>
 </body>
+
 </html>

@@ -9,7 +9,7 @@ export const gameVideoStore = {
 
   setVideoState(gameId, state) {
     const newMap = new Map(gameVideos.value);
-    
+
     newMap.set(gameId, {
       id: gameId,
       videoRef: state.videoRef,
@@ -25,6 +25,7 @@ export const gameVideoStore = {
       animate: state.animate !== undefined ? state.animate : true,
       hover: state.hover !== undefined ? state.hover : true,
       type: state.type || 'default',
+      scroll: state.scroll !== undefined ? state.scroll : undefined,
       ...state
     });
     gameVideos.value = newMap;

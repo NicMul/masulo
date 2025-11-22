@@ -1,40 +1,32 @@
 import { defineConfig } from 'vite';
+import preact from '@preact/preset-vite';
 
 export default defineConfig({
+  plugins: [preact()],
   build: {
     outDir: 'dist',
     lib: {
-      entry: 'src/index.js',
-      name: 'MesuloGameComponents',
+      entry: 'src/index.jsx',
+      name: 'MesuloPreactSDK',
       fileName: (format) => 'mesulo-ai-sdk.js',
       formats: ['umd']
     },
     rollupOptions: {
       output: {
-        // Single file output
         inlineDynamicImports: true,
-        assetFileNames: 'game-components.css'
+        globals: {}
       }
     },
     minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: false, // Keep console logs for SDK feedback
-        drop_debugger: true
-      }
-    },
-    cssMinify: true,
-    // Target modern browsers
     target: 'es2015',
     sourcemap: false
   },
-  resolve: {
-    alias: {
-      '@': '/Users/develop/Code/mesolu/sdk/example2/src'
-    }
-  },
   server: {
-    port: 3000,
+    port: 3030,
     open: true
+  },
+  preview: {
+    port: 3030
   }
 });
+

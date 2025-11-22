@@ -96,6 +96,7 @@ function init() {
       const promotionsLifecycleManager = usePromotionsLifecycle();
       const abtestLifecycleManager = useABTestLifecycle(connectionManager);
       analyticsLifecycleManager = useAnalyticsLifecycle(connectionManager);
+
       connectionManager.connect();
 
       connectionManager.on('connected', () => {

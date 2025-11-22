@@ -28,7 +28,7 @@ export function useInitialLoadLifecycle(connectionManager) {
     const className = imgElement.className || '';
     const style = imgElement.style.cssText || '';
     const version = imgElement.closest('[data-mesulo-game-id]')?.getAttribute('data-mesulo-version') || '0';
-    
+
     const styleObj = {
       width: '100%',
       height: '100%',
@@ -68,6 +68,7 @@ export function useInitialLoadLifecycle(connectionManager) {
       animate: gameData.animate !== undefined ? gameData.animate : true,
       hover: gameData.hover !== undefined ? gameData.hover : true,
       type: gameData.publishedType || 'default',
+      scroll: gameData.scroll,
       isInitialLoad: true,
     });
 
@@ -103,7 +104,7 @@ export function useInitialLoadLifecycle(connectionManager) {
     videoEl.style.filter = 'blur(10px)';
     containerEl.style.opacity = '0';
     spinnerEl.style.opacity = '0';
-    
+
     // Set video source if animate is enabled
     if (videoUrl && gameData.animate !== false) {
       videoEl.src = videoUrl;
@@ -139,7 +140,7 @@ export function useInitialLoadLifecycle(connectionManager) {
     if (imgElement && imgElement.parentElement) {
       imgElement.remove();
     }
-    
+
     // Hide container and spinner
     containerEl.classList.remove('mesulo-container-fade-in');
     containerEl.classList.add('mesulo-container-hidden');
@@ -147,7 +148,7 @@ export function useInitialLoadLifecycle(connectionManager) {
     spinnerEl.classList.add('mesulo-spinner-hidden');
 
     // Mark initial load as complete
-    gameVideoStore.updateVideoState(gameId, { 
+    gameVideoStore.updateVideoState(gameId, {
       isInitialLoad: false
     });
   }
@@ -155,14 +156,14 @@ export function useInitialLoadLifecycle(connectionManager) {
   function findGameElements() {
     const elements = document.querySelectorAll('[data-mesulo-game-id]');
     const gameIds = new Set();
-    
+
     elements.forEach(element => {
       const gameId = element.getAttribute('data-mesulo-game-id');
       if (!gameId) return;
-      
+
       const imgElement = element.querySelector('img');
       if (!imgElement) return;
-      
+
       if (!gameElements.has(gameId)) {
         gameElements.set(gameId, {
           element,
@@ -175,7 +176,7 @@ export function useInitialLoadLifecycle(connectionManager) {
         gameIds.add(gameId);
       }
     });
-    
+
     return Array.from(gameIds);
   }
 
@@ -197,7 +198,7 @@ export function useInitialLoadLifecycle(connectionManager) {
     }
 
     gameState.phase = PHASE_SPINNER;
-    
+
     // If we have game data, start the animation immediately
     if (gameState.gameData) {
       await createAndAnimateWrapper(
@@ -246,7 +247,7 @@ export function useInitialLoadLifecycle(connectionManager) {
 
   function initialize() {
     const gameIds = findGameElements();
-    
+
     if (gameIds.length === 0) {
       return;
     }
@@ -278,7 +279,7 @@ export function useInitialLoadLifecycle(connectionManager) {
 
     data.games.forEach(game => {
       if (!game.id) return;
-      
+
       const gameState = gameElements.get(game.id);
       if (!gameState) return;
 
@@ -292,7 +293,7 @@ export function useInitialLoadLifecycle(connectionManager) {
         if (gameState.spinnerTimer) {
           clearTimeout(gameState.spinnerTimer);
         }
-        
+
         createAndAnimateWrapper(
           gameState.imgElement,
           game.id,
