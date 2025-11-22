@@ -1,0 +1,21 @@
+# Source files
+src/
+
+# Development files
+index.html
+index.production.html
+images/
+
+# Config files
+vite.config.js
+.gitignore
+
+# Documentation
+README.md
+
+# Only publish the dist folder
+*
+!dist/
+!dist/**
+!package.json
+!LICENSE

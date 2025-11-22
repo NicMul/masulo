@@ -1,0 +1,23 @@
+{
+  "name": "mesolu-game-components",
+  "version": "1.0.0",
+  "description": "Lit + Haunted web components for game cards",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "build:plain": "vite build",
+    "build:post": "javascript-obfuscator dist/mesulo-ai-sdk.js --output dist/mesulo-ai-sdk-obf.js --config .obfuscatorrc.json && mv dist/mesulo-ai-sdk-obf.js dist/mesulo-ai-sdk.js",
+    "build:obfuscated": "vite build && npm run build:post",
+    "build:all": "vite build && npm run build:post",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "socket.io-client": "^4.8.1"
+  },
+  "devDependencies": {
+    "javascript-obfuscator": "^4.1.0",
+    "terser": "^5.44.0",
+    "vite": "^5.4.0"
+  }
+}
