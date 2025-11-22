@@ -3,7 +3,7 @@ import { abtestStore } from '../store/abtestStore.js';
 
 export function getGameAssets(game) {
   const defaultImage = game.defaultImage || '';
-  
+
   if (!game.published) {
     return {
       imageUrl: defaultImage,
@@ -26,7 +26,8 @@ export function getGameAssets(game) {
     return {
       imageUrl: abtestAssets.imageUrl || defaultImage,
       videoUrl: abtestAssets.videoUrl || null,
-      defaultImage
+      defaultImage,
+      variant: abtestAssets.variant  // Include variant for AB test analytics
     };
   }
 
@@ -37,21 +38,21 @@ export function getGameAssets(game) {
         videoUrl: game.currentVideo || game.defaultVideo || '',
         defaultImage
       };
-    
+
     case 'theme':
       return {
         imageUrl: game.themeImage || defaultImage,
         videoUrl: game.themeVideo || game.defaultVideo || '',
         defaultImage
       };
-    
+
     case 'promo':
       return {
         imageUrl: game.promoImage || defaultImage,
         videoUrl: game.promoVideo || game.defaultVideo || '',
         defaultImage
       };
-    
+
     case 'default':
     default:
       return {

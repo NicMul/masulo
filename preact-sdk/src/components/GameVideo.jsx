@@ -3,22 +3,26 @@ import { useRef, useEffect } from 'preact/hooks';
 import "preact/debug";
 import { gameVideoStore, gameVideos } from '../store/gameVideoStore.js';
 import { injectWrapperStyles } from '../utils/wrapperStyles.js';
+import { useVideoAnalytics } from '../hooks/useVideoAnalytics.js';
 
 export function GameVideo({ gameId, className, style, poster = '', defaultImage = '', version = '0', wrapperClassName = '', onVideoReady }) {
   const videoRef = useRef(null);
   const containerRef = useRef(null);
   const spinnerRef = useRef(null);
-  
+
   const state = gameVideos.value.get(gameId);
-  
+
   useEffect(() => {
     injectWrapperStyles();
   }, []);
 
+  // Track video analytics events
+  useVideoAnalytics(gameId, videoRef, state?.src);
+
   useEffect(() => {
     if (videoRef.current && containerRef.current && spinnerRef.current) {
       const existingState = gameVideoStore.getVideoState(gameId);
-      
+
       if (!existingState) {
         gameVideoStore.setVideoState(gameId, {
           id: gameId,
@@ -38,7 +42,7 @@ export function GameVideo({ gameId, className, style, poster = '', defaultImage 
           spinnerRef: spinnerRef.current
         });
       }
-      
+
       if (version) {
         videoRef.current.setAttribute('data-mesulo-version', version);
       }
@@ -56,28 +60,28 @@ export function GameVideo({ gameId, className, style, poster = '', defaultImage 
   // Enforce video state based on game configuration
   useEffect(() => {
     if (!videoRef.current || !state) return;
-    
+
     const videoEl = videoRef.current;
     const isAutoplayMode = state.hover === false && state.animate !== false;
     const isPosterOnly = state.animate === false;
-    
+
     // Autoplay mode: force play if paused
     const handlePause = () => {
       if (isAutoplayMode && videoEl.src) {
-        videoEl.play().catch(() => {});
+        videoEl.play().catch(() => { });
       }
     };
-    
+
     // Poster-only mode: force pause if playing
     const handlePlay = () => {
       if (isPosterOnly) {
         videoEl.pause();
       }
     };
-    
+
     videoEl.addEventListener('pause', handlePause);
     videoEl.addEventListener('play', handlePlay);
-    
+
     return () => {
       videoEl.removeEventListener('pause', handlePause);
       videoEl.removeEventListener('play', handlePlay);
@@ -87,59 +91,59 @@ export function GameVideo({ gameId, className, style, poster = '', defaultImage 
   // Playback control based on hover and animate flags
   useEffect(() => {
     if (!videoRef.current || !state) return;
-    
+
     const videoEl = videoRef.current;
     const parentEl = videoEl.parentElement;
     if (!parentEl) return;
-    
+
     // Determine playback mode
     const isAutoplayMode = state.hover === false && state.animate !== false;
     const isHoverMode = state.hover !== false && state.animate !== false;
     const isPosterOnly = state.animate === false;
-    
+
     // ALWAYS attach event listeners on parent element (for tracking/analytics)
     const handleMouseEnter = () => {
       // Only act on hover mode
       if (isHoverMode && videoEl.src) {
-        videoEl.play().catch(() => {});
+        videoEl.play().catch(() => { });
       }
     };
-    
+
     const handleMouseLeave = () => {
       // Only act on hover mode
       if (isHoverMode && videoEl.src) {
         videoEl.pause();
       }
     };
-    
+
     const handleTouchStart = () => {
       // Only act on hover mode
       if (isHoverMode && videoEl.src) {
-        videoEl.play().catch(() => {});
+        videoEl.play().catch(() => { });
       }
     };
-    
+
     const handleTouchEnd = () => {
       // Only act on hover mode
       if (isHoverMode && videoEl.src) {
         videoEl.pause();
       }
     };
-    
+
     // Always attach listeners regardless of mode
     parentEl.addEventListener('mouseenter', handleMouseEnter);
     parentEl.addEventListener('mouseleave', handleMouseLeave);
     parentEl.addEventListener('touchstart', handleTouchStart);
     parentEl.addEventListener('touchend', handleTouchEnd);
-    
+
     // Handle autoplay mode
     if (isAutoplayMode && videoEl.src) {
       videoEl.autoplay = true;
       const playWhenReady = () => {
-        videoEl.play().catch(() => {});
+        videoEl.play().catch(() => { });
       };
       videoEl.addEventListener('loadeddata', playWhenReady);
-      
+
       return () => {
         parentEl.removeEventListener('mouseenter', handleMouseEnter);
         parentEl.removeEventListener('mouseleave', handleMouseLeave);
@@ -148,7 +152,7 @@ export function GameVideo({ gameId, className, style, poster = '', defaultImage 
         videoEl.removeEventListener('loadeddata', playWhenReady);
       };
     }
-    
+
     // Cleanup for hover/poster modes
     return () => {
       parentEl.removeEventListener('mouseenter', handleMouseEnter);
@@ -195,7 +199,7 @@ export function GameVideo({ gameId, className, style, poster = '', defaultImage 
       playsInline: true,
       src: state?.src || null
     }),
-    
+
     // Container with base image and spinner
     h('div', {
       ref: containerRef,

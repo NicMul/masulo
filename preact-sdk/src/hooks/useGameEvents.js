@@ -19,11 +19,28 @@ export function useGameEvents(containerElement, gameId, handlers = {}) {
   useEffect(() => {
     if (!containerElement) return;
 
+    let hasTrackedImpression = false;
+
     const intersectionObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.intersectionRatio > 0.75) {
-            //in viewport logic
+            // Track impression when game card enters viewport
+            if (!hasTrackedImpression) {
+              const analytics = window.mesuloPreactSDK?.analytics;
+              const videoRef = getVideoRef();
+              const videoUrl = videoRef?.src;
+
+              if (analytics && videoUrl) {
+                analytics.trackEvent('impression', gameId, 'video', videoUrl, {
+                  visibility_ratio: entry.intersectionRatio
+                });
+                hasTrackedImpression = true;
+              }
+            }
+          } else {
+            // Reset when leaving viewport
+            hasTrackedImpression = false;
           }
         });
       },
@@ -64,7 +81,7 @@ export function useGameEvents(containerElement, gameId, handlers = {}) {
       }
 
       const interactiveElement = detectInteractiveElement(e.target);
-      
+
       if (interactiveElement) {
         handleButtonClick(
           gameId,
@@ -75,6 +92,15 @@ export function useGameEvents(containerElement, gameId, handlers = {}) {
           handlers.onButtonClick
         );
       } else {
+        // Track video click analytics
+        const analytics = window.mesuloPreactSDK?.analytics;
+        const videoRef = getVideoRef();
+        const videoUrl = videoRef?.src;
+
+        if (analytics && videoUrl) {
+          analytics.trackEvent('video_click', gameId, 'video', videoUrl, {});
+        }
+
         handleClick(gameId, containerElement, e, getVideoRef(), handlers.onClick);
       }
     };
@@ -82,7 +108,7 @@ export function useGameEvents(containerElement, gameId, handlers = {}) {
     const handleTouchStart = (e) => {
       isTouchInteraction = true;
       touchStartTarget = e.target;
-      
+
       handleHover(gameId, containerElement, true, e, getVideoRef(), handlers.onHover);
     };
 
@@ -91,7 +117,7 @@ export function useGameEvents(containerElement, gameId, handlers = {}) {
 
       const touchEndTarget = e.target;
       const interactiveElement = detectInteractiveElement(touchEndTarget);
-      
+
       if (interactiveElement) {
         handleButtonClick(
           gameId,
@@ -146,7 +172,7 @@ export function useGameEvents(containerElement, gameId, handlers = {}) {
       }
     };
 
-   
+
     document.addEventListener('click', handleDocumentClick, true);
     document.addEventListener('touchend', handleDocumentClick, true);
 

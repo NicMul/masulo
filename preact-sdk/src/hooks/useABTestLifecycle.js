@@ -1,19 +1,22 @@
 import { getGameAssets } from '../utils/getGameAssets.js';
 import { gameVideoStore } from '../store/gameVideoStore.js';
 import { abtestStore } from '../store/abtestStore.js';
+import { ABTestAnalytics } from '../analytics/ABTestAnalytics.js';
 
-export function useABTestLifecycle() {
+let abtestAnalyticsInstance = null;
 
-  const waitFor = (ms) => new Promise(resolve => setTimeout(resolve, ms)); 
+export function useABTestLifecycle(connectionManager) {
+
+  const waitFor = (ms) => new Promise(resolve => setTimeout(resolve, ms));
   const waitForVideoReady = (videoEl, timeoutMs = 3000) => {
     return new Promise((resolve) => {
       const handleCanPlay = () => {
         videoEl.removeEventListener('canplay', handleCanPlay);
         resolve();
       };
-      
+
       videoEl.addEventListener('canplay', handleCanPlay);
-      
+
       // Fallback timeout
       setTimeout(() => {
         videoEl.removeEventListener('canplay', handleCanPlay);
@@ -27,23 +30,23 @@ export function useABTestLifecycle() {
     gameVideoStore.updateVideoState(gameId, {
       defaultImage: currentPoster
     });
-    
+
     // Step 2: Fade in container and spinner (1 second)
     if (containerEl && spinnerEl) {
       containerEl.style.opacity = '0';
       spinnerEl.style.opacity = '0';
       containerEl.classList.remove('mesulo-container-hidden');
       spinnerEl.classList.remove('mesulo-spinner-hidden');
-      
+
       await new Promise(resolve => requestAnimationFrame(resolve));
-      
+
       containerEl.style.transition = 'opacity 1s ease-in-out';
       containerEl.style.opacity = '1';
       spinnerEl.style.transition = 'opacity 1s ease-in-out';
       spinnerEl.style.opacity = '1';
       spinnerEl.classList.add('mesulo-spinner-active');
     }
-    
+
     // Wait for fade in to complete
     await waitFor(1000);
   };
@@ -52,10 +55,10 @@ export function useABTestLifecycle() {
     // Step 3: Fade out video (1 second)
     videoEl.style.transition = 'opacity 1s ease-in-out';
     videoEl.style.opacity = '0';
-    
+
     // Wait for fade out to complete
     await waitFor(1000);
-    
+
     // Step 4: Apply blur immediately (no transition)
     videoEl.style.transition = 'none';
     videoEl.style.filter = 'blur(10px)';
@@ -63,12 +66,12 @@ export function useABTestLifecycle() {
 
   const phase3_loadVideo = async (gameId, videoEl, videoUrl, imageUrl, newVersion, newPublished, game) => {
     const updatedState = gameVideoStore.getVideoState(gameId);
-    
+
     // Step 5: Update video and poster src immediately
     if (videoUrl && updatedState?.animate !== false) {
       videoEl.src = videoUrl;
       videoEl.poster = imageUrl;
-      
+
       // Update state to keep in sync
       gameVideoStore.updateVideoState(gameId, {
         poster: imageUrl,
@@ -80,12 +83,12 @@ export function useABTestLifecycle() {
         type: game.publishedType || 'default',
         loading: true
       });
-      
+
       // Start loading (non-blocking)
       waitForVideoReady(videoEl).then(() => {
         videoEl.load();
       });
-      
+
       return true;
     } else {
       videoEl.src = '';
@@ -102,7 +105,7 @@ export function useABTestLifecycle() {
       spinnerEl.style.transition = 'opacity 1s ease-in-out';
       spinnerEl.style.opacity = '0';
     }
-    
+
     await waitFor(1000);
   };
 
@@ -112,18 +115,18 @@ export function useABTestLifecycle() {
     videoEl.style.transition = 'opacity 2s ease-in-out, filter 2s ease-in-out';
     videoEl.style.opacity = '1';
     videoEl.style.filter = 'blur(0px)';
-    
+
     // Wait for video transition to complete
     await waitFor(2000);
-    
+
     // Clean up
     if (containerEl && spinnerEl) {
       containerEl.classList.add('mesulo-container-hidden');
       spinnerEl.classList.remove('mesulo-spinner-active');
       spinnerEl.classList.add('mesulo-spinner-hidden');
     }
-    
-    gameVideoStore.updateVideoState(gameId, { 
+
+    gameVideoStore.updateVideoState(gameId, {
       loading: false
     });
   };
@@ -132,46 +135,85 @@ export function useABTestLifecycle() {
     if (!abtestsData || !Array.isArray(abtestsData)) {
       abtestsData = [];
     }
-    
+
     const previouslyAffectedGameIds = abtestStore.getAffectedGameIds();
     abtestStore.setABTests(abtestsData);
     const newlyAffectedGameIds = abtestStore.getAffectedGameIds();
-    
-    const gamesToRevert = previouslyAffectedGameIds.filter(gameId => 
+
+    // Initialize AB test analytics if not already done
+    if (!abtestAnalyticsInstance && connectionManager) {
+
+      const hasActiveABTestCallback = (gameId) => {
+        const hasTest = abtestStore.getABTestForGame(gameId) !== null;
+        return hasTest;
+      };
+
+      const getABTestAssetsCallback = (gameId) => {
+        const assets = abtestStore.getABTestForGame(gameId);
+        return assets;
+      };
+
+      abtestAnalyticsInstance = new ABTestAnalytics(
+        hasActiveABTestCallback,
+        connectionManager,
+        getABTestAssetsCallback
+      );
+
+      abtestAnalyticsInstance.setup();
+    }
+
+    const gamesToRevert = previouslyAffectedGameIds.filter(gameId =>
       !newlyAffectedGameIds.includes(gameId)
     );
-    
+
     const allGamesToUpdate = [...new Set([...gamesToRevert, ...newlyAffectedGameIds])];
-    
+
     if (allGamesToUpdate.length === 0) {
       return;
     }
-    
+
     allGamesToUpdate.forEach(gameId => {
       const currentState = gameVideoStore.getVideoState(gameId);
       if (!currentState || !currentState.videoRef) {
         return;
       }
-      
+
       let game = null;
       if (gamesData && Array.isArray(gamesData)) {
         game = gamesData.find(g => g.id === gameId);
       }
-      
+
       if (!game) {
         return;
       }
-      
-      const { imageUrl, videoUrl } = getGameAssets(game);
+
+      const { imageUrl, videoUrl, variant } = getGameAssets(game);
       const videoEl = currentState.videoRef;
       const containerEl = currentState.containerRef;
       const spinnerEl = currentState.spinnerRef;
       const currentPoster = currentState.poster;
       const newVersion = (parseInt(currentState.version || '0') + 1).toString();
-      
+
+      // Set variant attribute for AB test analytics
+      if (variant && videoEl) {
+        videoEl.setAttribute('data-mesulo-variant', variant);
+
+        // Manually trigger AB test analytics observer for this video
+        if (abtestAnalyticsInstance && abtestAnalyticsInstance.impressionObserver) {
+          abtestAnalyticsInstance.impressionObserver.observe(videoEl);
+        }
+      } else if (videoEl) {
+        videoEl.removeAttribute('data-mesulo-variant');
+
+        // Unobserve if variant is removed
+        if (abtestAnalyticsInstance && abtestAnalyticsInstance.impressionObserver) {
+          abtestAnalyticsInstance.impressionObserver.unobserve(videoEl);
+        }
+      }
+
       (async () => {
         if (!videoEl) return;
-        
+
         await phase1_prepare(gameId, currentPoster, containerEl, spinnerEl);
         await phase2_fadeOutVideo(videoEl);
         await phase3_loadVideo(gameId, videoEl, videoUrl, imageUrl, newVersion, true, game);
@@ -180,7 +222,7 @@ export function useABTestLifecycle() {
       })();
     });
   };
-  
+
   return { handleABTestsUpdate };
 }
 
