@@ -1,6 +1,14 @@
-import runpod
-from runpod.serverless.utils import rp_upload
+# Import with error handling to catch import failures early
+try:
+    import runpod
+    from runpod.serverless.utils import rp_upload
+except ImportError as e:
+    print(f"CRITICAL: Failed to import runpod: {e}")
+    print("This is a fatal error - handler cannot start without runpod")
+    raise
+
 import os
+import sys
 import websocket
 import base64
 import json
@@ -12,9 +20,20 @@ import binascii  # Base64 error handling
 import subprocess
 import time
 import requests  # For Bunny CDN upload
-# Logging configuration
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+
+# Logging configuration - set up immediately so we can log errors
+logging.basicConfig(
+    level=logging.DEBUG, 
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(sys.stdout),
+        logging.StreamHandler(sys.stderr)
+    ]
+)
 logger = logging.getLogger(__name__)
+
+# Log that imports succeeded
+logger.info("All imports successful")
 
 
 server_address = os.getenv('SERVER_ADDRESS', '127.0.0.1')
@@ -458,32 +477,56 @@ def handler(job):
 
 # Start the RunPod serverless worker
 # This will keep the process alive and wait for jobs from RunPod
-logger.info("="*60)
-logger.info("🚀 Starting RunPod Serverless Worker")
-logger.info("="*60)
-logger.info(f"Server address: {server_address}")
-logger.info(f"Client ID: {client_id}")
+def start_worker():
+    """Start the RunPod serverless worker with comprehensive error handling"""
+    try:
+        logger.info("="*60)
+        logger.info("🚀 Starting RunPod Serverless Worker")
+        logger.info("="*60)
+        logger.info(f"Python version: {sys.version}")
+        logger.info(f"Python executable: {sys.executable}")
+        logger.info(f"Server address: {server_address}")
+        logger.info(f"Client ID: {client_id}")
+        logger.info(f"Working directory: {os.getcwd()}")
+        
+        # Verify ComfyUI is accessible before starting
+        logger.info("Verifying ComfyUI is accessible...")
+        try:
+            response = urllib.request.urlopen(f"http://{server_address}:8188/", timeout=5)
+            logger.info("✅ ComfyUI is accessible and ready")
+        except Exception as e:
+            logger.warning(f"⚠️  ComfyUI is not accessible: {e}")
+            logger.warning("Handler will start anyway, but jobs may fail if ComfyUI is not ready")
+        
+        logger.info("Registering handler function...")
+        logger.info("Handler registered and ready to process jobs")
+        logger.info("Worker will now wait for jobs from RunPod...")
+        logger.info("This process should stay alive indefinitely...")
+        logger.info("="*60)
+        
+        # Start the RunPod serverless worker
+        # This call blocks and keeps the process alive
+        runpod.serverless.start({"handler": handler})
+        
+    except KeyboardInterrupt:
+        logger.info("Received interrupt signal, shutting down gracefully...")
+        sys.exit(0)
+    except Exception as e:
+        logger.error("="*60)
+        logger.error("FATAL ERROR in RunPod serverless worker")
+        logger.error("="*60)
+        logger.error(f"Error type: {type(e).__name__}")
+        logger.error(f"Error message: {str(e)}")
+        logger.exception("Full exception traceback:")
+        logger.error("="*60)
+        # Don't re-raise - log the error and exit cleanly
+        # Re-raising would cause immediate container restart
+        sys.exit(1)
 
-# Verify ComfyUI is accessible before starting
-logger.info("Verifying ComfyUI is accessible...")
-try:
-    import urllib.request
-    response = urllib.request.urlopen(f"http://{server_address}:8188/", timeout=5)
-    logger.info("✅ ComfyUI is accessible and ready")
-except Exception as e:
-    logger.error(f"❌ ComfyUI is not accessible: {e}")
-    logger.error("Handler will start anyway, but jobs may fail if ComfyUI is not ready")
-
-logger.info("Handler registered and ready to process jobs")
-logger.info("Worker will now wait for jobs from RunPod...")
-logger.info("="*60)
-
-try:
-    runpod.serverless.start({"handler": handler})
-except KeyboardInterrupt:
-    logger.info("Received interrupt signal, shutting down...")
-except Exception as e:
-    logger.error(f"Fatal error in RunPod serverless worker: {e}")
-    logger.exception("Full exception traceback:")
-    # Re-raise to ensure the container exits with an error code
-    raise
+# Only start if this script is executed directly (not imported)
+if __name__ == "__main__":
+    start_worker()
+else:
+    # If imported, still try to start (for RunPod compatibility)
+    logger.info("Handler module loaded (not main), starting worker...")
+    start_worker()

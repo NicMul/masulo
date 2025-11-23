@@ -111,6 +111,19 @@ echo "Starting the handler..."
 echo "Handler will start and wait for jobs from RunPod..."
 echo "================================================"
 
+# Test that Python can import the handler before starting
+echo "Testing handler import..."
+if python -c "import handler; print('✅ Handler import successful')" 2>&1; then
+    echo "✅ Handler can be imported successfully"
+else
+    echo "❌ CRITICAL: Handler import failed!"
+    echo "This will cause the container to fail"
+    exit 1
+fi
+echo ""
+
 # Use exec to replace the shell process with the handler
 # This ensures the handler is PID 1 and the container stays alive
-exec python handler.py
+# Redirect stderr to stdout to ensure all errors are visible
+echo "Starting handler process (this will become PID 1)..."
+exec python handler.py 2>&1
