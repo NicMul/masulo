@@ -256,13 +256,21 @@ def handler(job):
     
     # Skip test jobs to prevent infinite loops
     # Test jobs are identified by prompt="test" and are used for local testing only
+    # This is processed when RunPod SDK reads test_input.json on startup
     prompt = job_input.get("prompt", "")
     if prompt == "test" and job_input.get("image_path") == "/example_image.png":
+        logger.info("="*60)
+        logger.info("🔍 TEST JOB DETECTED - Processing test_input.json")
+        logger.info("="*60)
+        logger.info(f"⏰ Timestamp: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())}")
+        logger.info(f"📋 Job data: {json.dumps(job, indent=2)}")
         logger.info("⏭️  Skipping test job (test_input.json) - this is a startup test job")
+        logger.info("✅ Handler is ready and will wait for real jobs from RunPod")
         logger.info("="*60)
         return {
             "status": "skipped",
-            "message": "Test job skipped - worker is ready for real jobs"
+            "message": "Test job skipped - worker is ready for real jobs",
+            "timestamp": time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
         }
     
     task_id = f"task_{uuid.uuid4()}"
