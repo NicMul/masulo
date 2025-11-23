@@ -426,7 +426,6 @@ def handler(job):
     # Attempt WebSocket connection (max 3 minutes)
     max_attempts = int(180/5)  # 3 minutes (attempt every 5 seconds)
     for attempt in range(max_attempts):
-        import time
         try:
             ws.connect(ws_url)
             logger.info(f"WebSocket connection successful (attempt {attempt+1})")
