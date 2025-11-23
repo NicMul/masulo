@@ -55,35 +55,6 @@ fi
 echo "================================================"
 echo ""
 
-# Create test_input.json - RunPod serverless requires this file to exist
-# In production, create an empty/invalid file to prevent RunPod from processing it
-# In local testing, create a valid test job that the handler will skip
-if [ -z "${RUNPOD_POD_ID}" ] && [ -z "${RUNPOD_WORKER_ID}" ]; then
-    # Local testing mode - create valid test input
-    echo "Creating test_input.json for local testing..."
-    cat > /test_input.json << 'EOF'
-{
-  "input": {
-    "prompt": "test",
-    "image_path": "/example_image.png",
-    "width": 480,
-    "height": 832,
-    "length": 81,
-    "steps": 10,
-    "seed": 42,
-    "cfg": 2.0
-  }
-}
-EOF
-    echo "✅ test_input.json created (local testing mode)"
-else
-    # Production mode - create empty file to satisfy requirement but prevent processing
-    echo "Creating empty test_input.json (production mode - prevents local testing)..."
-    echo "{}" > /test_input.json
-    echo "✅ test_input.json created (empty - prevents RunPod local testing mode)"
-fi
-echo ""
-
 # Start ComfyUI in the background
 echo "Starting ComfyUI in the background..."
 python /ComfyUI/main.py --listen --use-sage-attention &
