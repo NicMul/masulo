@@ -108,4 +108,9 @@ fi
 # Start the handler in the foreground
 # This script becomes the main process of the container
 echo "Starting the handler..."
+echo "Handler will start and wait for jobs from RunPod..."
+echo "================================================"
+
+# Use exec to replace the shell process with the handler
+# This ensures the handler is PID 1 and the container stays alive
 exec python handler.py

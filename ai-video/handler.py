@@ -456,4 +456,34 @@ def handler(job):
     logger.info("="*60)
     return {"error": "Video not found.", "task_id": task_id}
 
-runpod.serverless.start({"handler": handler})
+# Start the RunPod serverless worker
+# This will keep the process alive and wait for jobs from RunPod
+logger.info("="*60)
+logger.info("🚀 Starting RunPod Serverless Worker")
+logger.info("="*60)
+logger.info(f"Server address: {server_address}")
+logger.info(f"Client ID: {client_id}")
+
+# Verify ComfyUI is accessible before starting
+logger.info("Verifying ComfyUI is accessible...")
+try:
+    import urllib.request
+    response = urllib.request.urlopen(f"http://{server_address}:8188/", timeout=5)
+    logger.info("✅ ComfyUI is accessible and ready")
+except Exception as e:
+    logger.error(f"❌ ComfyUI is not accessible: {e}")
+    logger.error("Handler will start anyway, but jobs may fail if ComfyUI is not ready")
+
+logger.info("Handler registered and ready to process jobs")
+logger.info("Worker will now wait for jobs from RunPod...")
+logger.info("="*60)
+
+try:
+    runpod.serverless.start({"handler": handler})
+except KeyboardInterrupt:
+    logger.info("Received interrupt signal, shutting down...")
+except Exception as e:
+    logger.error(f"Fatal error in RunPod serverless worker: {e}")
+    logger.exception("Full exception traceback:")
+    # Re-raise to ensure the container exits with an error code
+    raise
