@@ -55,10 +55,13 @@ fi
 echo "================================================"
 echo ""
 
-# Create test_input.json - RunPod serverless REQUIRES this file to exist
-# The handler will detect and skip test jobs to prevent infinite loops
-echo "Creating test_input.json (required by RunPod serverless)..."
-cat > /test_input.json << 'EOF'
+# Create test_input.json - RunPod serverless requires this file to exist
+# In production, create an empty/invalid file to prevent RunPod from processing it
+# In local testing, create a valid test job that the handler will skip
+if [ -z "${RUNPOD_POD_ID}" ] && [ -z "${RUNPOD_WORKER_ID}" ]; then
+    # Local testing mode - create valid test input
+    echo "Creating test_input.json for local testing..."
+    cat > /test_input.json << 'EOF'
 {
   "input": {
     "prompt": "test",
@@ -72,7 +75,13 @@ cat > /test_input.json << 'EOF'
   }
 }
 EOF
-echo "✅ test_input.json created (handler will skip processing this test job)"
+    echo "✅ test_input.json created (local testing mode)"
+else
+    # Production mode - create empty file to satisfy requirement but prevent processing
+    echo "Creating empty test_input.json (production mode - prevents local testing)..."
+    echo "{}" > /test_input.json
+    echo "✅ test_input.json created (empty - prevents RunPod local testing mode)"
+fi
 echo ""
 
 # Start ComfyUI in the background
