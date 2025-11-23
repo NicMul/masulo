@@ -55,8 +55,9 @@ fi
 echo "================================================"
 echo ""
 
-# Create test_input.json for RunPod serverless worker (prevents exit on startup)
-echo "Creating test_input.json for RunPod serverless worker..."
+# Create test_input.json for RunPod serverless worker (for local testing only)
+# The handler will detect and skip test jobs to prevent infinite loops
+echo "Creating test_input.json for RunPod serverless worker (local testing)..."
 cat > /test_input.json << 'EOF'
 {
   "input": {
@@ -71,7 +72,7 @@ cat > /test_input.json << 'EOF'
   }
 }
 EOF
-echo "✅ test_input.json created"
+echo "✅ test_input.json created (will be skipped by handler)"
 echo ""
 
 # Start ComfyUI in the background

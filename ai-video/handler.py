@@ -235,6 +235,17 @@ def handler(job):
     logger.info(f"📥 Job input received:")
     logger.debug(json.dumps(job_input, indent=2))
     
+    # Skip test jobs to prevent infinite loops
+    # Test jobs are identified by prompt="test" and are used for local testing only
+    prompt = job_input.get("prompt", "")
+    if prompt == "test" and job_input.get("image_path") == "/example_image.png":
+        logger.info("⏭️  Skipping test job (test_input.json) - this is a startup test job")
+        logger.info("="*60)
+        return {
+            "status": "skipped",
+            "message": "Test job skipped - worker is ready for real jobs"
+        }
+    
     task_id = f"task_{uuid.uuid4()}"
     logger.info(f"🆔 Task ID: {task_id}")
 
