@@ -55,6 +55,25 @@ fi
 echo "================================================"
 echo ""
 
+# Create test_input.json for RunPod serverless worker (prevents exit on startup)
+echo "Creating test_input.json for RunPod serverless worker..."
+cat > /test_input.json << 'EOF'
+{
+  "input": {
+    "prompt": "test",
+    "image_path": "/example_image.png",
+    "width": 480,
+    "height": 832,
+    "length": 81,
+    "steps": 10,
+    "seed": 42,
+    "cfg": 2.0
+  }
+}
+EOF
+echo "✅ test_input.json created"
+echo ""
+
 # Start ComfyUI in the background
 echo "Starting ComfyUI in the background..."
 python /ComfyUI/main.py --listen --use-sage-attention &

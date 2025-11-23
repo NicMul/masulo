@@ -177,7 +177,7 @@ def upload_to_bunny_storage(video_path, folder, filename):
     try:
         # Hardcoded Bunny CDN credentials (TESTING ONLY)
         STORAGE_ZONE_NAME = "mesulo"
-        STORAGE_KEY = "02f9e35c-7f00-493d-81fd3edc20ed-15da-49e4"
+        STORAGE_KEY = "c624d050-d61f-4306-968c05d196ba-bd76-40e8"
         CDN_URL = "mesulo.b-cdn.net"
         
         logger.info(f"📦 Storage Zone: {STORAGE_ZONE_NAME}")
