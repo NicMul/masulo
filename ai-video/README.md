@@ -10,23 +10,35 @@ This Wan2.2 client is designed for **Mesulo**, providing video generation capabi
 
 ## 🚀 Quick Setup (RTX 5090)
 
-For detailed setup instructions, see [SETUP.md](SETUP.md).
+### Recommended: Network Volume Deployment
 
-**Deployment Options:**
-- **GitHub Container Registry (GHCR)**: See [GHCR_SETUP.md](GHCR_SETUP.md) for setup
-- **Private Registry**: Build and push to your registry, then deploy to RunPod. See [PRIVATE_REGISTRY_SETUP.md](PRIVATE_REGISTRY_SETUP.md)
-- **Build from Repository**: Deploy directly from GitHub/repository
+**⚡ Fast builds (2-3 minutes)** - Store 50GB models on RunPod Network Volume instead of rebuilding them every time.
 
-**Quick start:**
-```bash
-# Set your RunPod credentials
-export RUNPOD_ENDPOINT_ID="your-endpoint-id"
-export RUNPOD_API_KEY="your-api-key"
+1. **Set up Network Volume** (one-time, ~1 hour):
+   - See [NETWORK_VOLUME_SETUP.md](NETWORK_VOLUME_SETUP.md) for complete instructions
+   - Install `runpodctl`: `brew install runpod/runpodctl/runpodctl`
+   - Create a 60GB network volume in RunPod
+   - Run `setup_network_volume.sh` to download models
 
-# Or use the setup script
-./quick_setup.sh <endpoint-id> <api-key>
-```
-set
+2. **Deploy from GitHub**:
+   - Connect your GitHub repository to RunPod
+   - Attach the network volume to your endpoint (automatically mounts at `/workspace`)
+   - Deploy! Builds complete in 2-3 minutes instead of 30+
+
+3. **Use the Client**:
+   ```bash
+   # Set your RunPod credentials
+   export RUNPOD_ENDPOINT_ID="your-endpoint-id"
+   export RUNPOD_API_KEY="your-api-key"
+   
+   # Or use the setup script
+   ./quick_setup.sh <endpoint-id> <api-key>
+   ```
+
+**Alternative Deployment Options:**
+- **Container Registry**: Build and push to Docker Hub/GHCR, then deploy. See [SETUP.md](SETUP.md)
+- **Direct Build**: RunPod builds from Dockerfile (30+ minutes per build)
+
 **Recommended GPU**: RTX 5090 (32GB VRAM) - excellent performance for this workload.
 
 ## ✨ Key Features
@@ -295,20 +307,39 @@ If the job fails, it returns a JSON object containing an error message.
 ## 🛠️ Direct API Usage
 
 1.  Create a Serverless Endpoint on RunPod based on this repository.
-2.  Once the build is complete and the endpoint is active, submit jobs via HTTP POST requests according to the API Reference above.
+2.  **Set up Network Volume** with models (recommended - see [NETWORK_VOLUME_SETUP.md](NETWORK_VOLUME_SETUP.md))
+3.  Once the build is complete and the endpoint is active, submit jobs via HTTP POST requests according to the API Reference above.
 
 ### 📁 Using Network Volumes
 
-Instead of directly transmitting Base64 encoded files, use RunPod's Network Volumes to handle large files. This is especially useful when dealing with large image files and LoRA models.
+RunPod Network Volumes serve two purposes in this setup:
 
-1.  **Create and Connect Network Volume**: Create a Network Volume (e.g., S3-based volume) from the RunPod dashboard and connect it to the Serverless Endpoint settings.
-2.  **Upload Files**: Upload the image files and LoRA models to the created Network Volume.
+#### 1. Model Storage (Required for Fast Builds)
+
+Store the ~50GB of AI models on a persistent network volume to avoid re-downloading them on every Docker build.
+
+- **Setup**: Follow [NETWORK_VOLUME_SETUP.md](NETWORK_VOLUME_SETUP.md) for detailed instructions
+- **Mount Path**: `/workspace` (RunPod's standard network volume path)
+- **Structure**:
+  ```
+  /workspace/
+  ├── models/              # Diffusion models, CLIP, VAE, text encoders
+  └── loras/               # LoRA models
+  ```
+- **Benefits**: Reduces build time from 30+ minutes to 2-3 minutes
+
+#### 2. Input Files and Custom LoRAs (Optional)
+
+Use the same or a different network volume to handle large input files and custom LoRA models.
+
+1.  **Create and Connect Network Volume**: Create a Network Volume from the RunPod dashboard and connect it to the Serverless Endpoint settings.
+2.  **Upload Files**: Upload the image files and custom LoRA models to the Network Volume.
 3.  **File Organization**: 
     - Place input images anywhere in the Network Volume
-    - Place LoRA model files in the `/loras/` folder within the Network Volume
+    - Place custom LoRA model files in the `/loras/` folder within the Network Volume
 4.  **Specify Paths**: When making an API request, specify the file paths within the Network Volume:
-    - For `image_path`: Use the full path to the image file (e.g., `"/my_volume/images/portrait.jpg"`)
-    - For LoRA models: Use only the filename (e.g., `"mesulo_lora_model.safetensors"`) - the system will automatically look in the `/loras/` folder
+    - For `image_path`: Use the full path to the image file (e.g., `"/workspace/images/portrait.jpg"`)
+    - For LoRA models: Use only the filename (e.g., `"my_custom_lora.safetensors"`) - the system will automatically look in the `/loras/` folder
 
 ## 🔧 Client Methods
 

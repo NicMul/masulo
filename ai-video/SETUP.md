@@ -113,10 +113,3 @@ If you want to use LoRA models or large images:
 - **Slow generation**: RTX 5090 should be fast, but check GPU utilization in RunPod dashboard
 - **Connection errors**: Verify endpoint ID and API key are correct
 
-## Next Steps
-
-- Integrate with Mesulo platform
-- Set up monitoring and logging
-- Configure auto-scaling if needed
-- Set up network volumes for production use
-
