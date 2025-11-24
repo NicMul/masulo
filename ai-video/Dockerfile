@@ -2,6 +2,12 @@
 # FROM wlsdml1114/my-comfy-models:v1 as model_provider
 FROM wlsdml1114/multitalk-base:1.7 as runtime
 
+# Reinstall PyTorch with A100 (compute capability 8.0) support
+# The base image's PyTorch may not include A100 kernels
+RUN pip uninstall -y torch torchvision torchaudio xformers || true && \
+    pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121 && \
+    pip install xformers
+
 RUN pip install -U "huggingface_hub[hf_transfer]"
 RUN pip install runpod websocket-client requests
 

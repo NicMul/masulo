@@ -338,7 +338,6 @@ def handler(job):
     max_http_attempts = 180
     for http_attempt in range(max_http_attempts):
         try:
-            import urllib.request
             response = urllib.request.urlopen(http_url, timeout=5)
             logger.info(f"HTTP connection successful (attempt {http_attempt+1})")
             break
@@ -352,7 +351,6 @@ def handler(job):
     # Attempt WebSocket connection (max 3 minutes)
     max_attempts = int(180/5)  # 3 minutes (try once per second)
     for attempt in range(max_attempts):
-        import time
         try:
             ws.connect(ws_url)
             logger.info(f"WebSocket connection successful (attempt {attempt+1})")
