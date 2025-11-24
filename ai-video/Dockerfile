@@ -60,6 +60,10 @@ RUN cd /ComfyUI/custom_nodes && \
 # See NETWORK_VOLUME_SETUP.md for setup instructions
 # This reduces Docker build time from 30+ minutes to 2-3 minutes
 
+# Force RunPod SDK into worker mode by setting a placeholder API key
+# This prevents it from looking for test_input.json and exiting in "local test mode"
+ENV RUNPOD_API_KEY=mock
+
 COPY . .
 COPY extra_model_paths.yaml /ComfyUI/extra_model_paths.yaml
 RUN chmod +x /entrypoint.sh
