@@ -1,14 +1,6 @@
-# Import with error handling to catch import failures early
-try:
-    import runpod
-    from runpod.serverless.utils import rp_upload
-except ImportError as e:
-    print(f"CRITICAL: Failed to import runpod: {e}")
-    print("This is a fatal error - handler cannot start without runpod")
-    raise
-
+import runpod
+from runpod.serverless.utils import rp_upload
 import os
-import sys
 import websocket
 import base64
 import json
@@ -16,44 +8,31 @@ import uuid
 import logging
 import urllib.request
 import urllib.parse
-import binascii  # Base64 error handling
+import binascii # Import for Base64 error handling
 import subprocess
 import time
-import requests  # For Bunny CDN upload
-
-# Logging configuration - set up immediately so we can log errors
-logging.basicConfig(
-    level=logging.DEBUG, 
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.StreamHandler(sys.stdout),
-        logging.StreamHandler(sys.stderr)
-    ]
-)
+import requests
+# Logging configuration
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-# Log that imports succeeded
-logger.info("All imports successful")
 
 
 server_address = os.getenv('SERVER_ADDRESS', '127.0.0.1')
 client_id = str(uuid.uuid4())
-
 def to_nearest_multiple_of_16(value):
-    """Adjust given value to nearest multiple of 16, minimum 16"""
+    """Round the given value to the nearest multiple of 16, minimum 16 guaranteed"""
     try:
         numeric_value = float(value)
     except Exception:
-        raise Exception(f"width/height value is not a number: {value}")
+        raise Exception(f"width/height value is not numeric: {value}")
     adjusted = int(round(numeric_value / 16.0) * 16)
     if adjusted < 16:
         adjusted = 16
     return adjusted
-
 def process_input(input_data, temp_dir, output_filename, input_type):
     """Process input data and return file path"""
     if input_type == "path":
-        # Return path as-is
+        # Return path as is
         logger.info(f"📁 Processing path input: {input_data}")
         return input_data
     elif input_type == "url":
@@ -63,7 +42,7 @@ def process_input(input_data, temp_dir, output_filename, input_type):
         file_path = os.path.abspath(os.path.join(temp_dir, output_filename))
         return download_file_from_url(input_data, file_path)
     elif input_type == "base64":
-        # Decode and save Base64 data
+        # Decode and save Base64
         logger.info(f"🔢 Processing Base64 input")
         return save_base64_to_file(input_data, temp_dir, output_filename)
     else:
@@ -106,84 +85,11 @@ def save_base64_to_file(base64_data, temp_dir, output_filename):
         with open(file_path, 'wb') as f:
             f.write(decoded_data)
         
-        logger.info(f"✅ Saved Base64 input to file: '{file_path}'")
+        logger.info(f"✅ Saved Base64 input to file '{file_path}'.")
         return file_path
     except (binascii.Error, ValueError) as e:
         logger.error(f"❌ Base64 decoding failed: {e}")
         raise Exception(f"Base64 decoding failed: {e}")
-    
-def queue_prompt(prompt):
-    url = f"http://{server_address}:8188/prompt"
-    logger.info(f"Queueing prompt to: {url}")
-    p = {"prompt": prompt, "client_id": client_id}
-    data = json.dumps(p).encode('utf-8')
-    req = urllib.request.Request(url, data=data)
-    return json.loads(urllib.request.urlopen(req).read())
-
-def get_image(filename, subfolder, folder_type):
-    url = f"http://{server_address}:8188/view"
-    logger.info(f"Getting image from: {url}")
-    data = {"filename": filename, "subfolder": subfolder, "type": folder_type}
-    url_values = urllib.parse.urlencode(data)
-    with urllib.request.urlopen(f"{url}?{url_values}") as response:
-        return response.read()
-
-def get_history(prompt_id):
-    url = f"http://{server_address}:8188/history/{prompt_id}"
-    logger.info(f"Getting history from: {url}")
-    with urllib.request.urlopen(url) as response:
-        return json.loads(response.read())
-
-def get_videos(ws, prompt):
-    logger.info("🎬 Starting video generation...")
-    prompt_id = queue_prompt(prompt)['prompt_id']
-    logger.info(f"📝 Prompt ID: {prompt_id}")
-    
-    output_videos = {}
-    logger.debug("⏳ Waiting for video generation to complete...")
-    
-    while True:
-        out = ws.recv()
-        if isinstance(out, str):
-            message = json.loads(out)
-            logger.debug(f"WebSocket message: {message.get('type', 'unknown')}")
-            if message['type'] == 'executing':
-                data = message['data']
-                if data['node'] is None and data['prompt_id'] == prompt_id:
-                    logger.info("✅ Video generation completed!")
-                    break
-        else:
-            continue
-
-    logger.debug("📊 Fetching generation history...")
-    history = get_history(prompt_id)[prompt_id]
-    logger.debug(f"History nodes: {list(history['outputs'].keys())}")
-    
-    for node_id in history['outputs']:
-        node_output = history['outputs'][node_id]
-        videos_output = []
-        if 'gifs' in node_output:
-            logger.info(f"🎥 Found {len(node_output['gifs'])} video(s) in node {node_id}")
-            for idx, video in enumerate(node_output['gifs']):
-                video_path = video['fullpath']
-                logger.info(f"📁 Video {idx + 1} path: {video_path}")
-                
-                # Check if file exists and get size
-                if os.path.exists(video_path):
-                    file_size_mb = os.path.getsize(video_path) / (1024 * 1024)
-                    logger.info(f"📊 Video file size: {file_size_mb:.2f} MB")
-                else:
-                    logger.error(f"❌ Video file not found: {video_path}")
-                
-                # Return the file path instead of base64
-                videos_output.append(video_path)
-        output_videos[node_id] = videos_output
-
-    return output_videos
-
-def load_workflow(workflow_path):
-    with open(workflow_path, 'r') as file:
-        return json.load(file)
 
 def upload_to_bunny_storage(video_path, folder, filename):
     """
@@ -246,300 +152,220 @@ def upload_to_bunny_storage(video_path, folder, filename):
         logger.error(f"❌ Upload to Bunny CDN failed: {str(e)}")
         logger.exception("Full exception details:")
         raise
+    
+def queue_prompt(prompt):
+    url = f"http://{server_address}:8188/prompt"
+    logger.info(f"Queueing prompt to: {url}")
+    p = {"prompt": prompt, "client_id": client_id}
+    data = json.dumps(p).encode('utf-8')
+    req = urllib.request.Request(url, data=data)
+    return json.loads(urllib.request.urlopen(req).read())
+
+def get_image(filename, subfolder, folder_type):
+    url = f"http://{server_address}:8188/view"
+    logger.info(f"Getting image from: {url}")
+    data = {"filename": filename, "subfolder": subfolder, "type": folder_type}
+    url_values = urllib.parse.urlencode(data)
+    with urllib.request.urlopen(f"{url}?{url_values}") as response:
+        return response.read()
+
+def get_history(prompt_id):
+    url = f"http://{server_address}:8188/history/{prompt_id}"
+    logger.info(f"Getting history from: {url}")
+    with urllib.request.urlopen(url) as response:
+        return json.loads(response.read())
+
+def get_videos(ws, prompt):
+    prompt_id = queue_prompt(prompt)['prompt_id']
+    output_videos = {}
+    while True:
+        out = ws.recv()
+        if isinstance(out, str):
+            message = json.loads(out)
+            if message['type'] == 'executing':
+                data = message['data']
+                if data['node'] is None and data['prompt_id'] == prompt_id:
+                    break
+        else:
+            continue
+
+    history = get_history(prompt_id)[prompt_id]
+    for node_id in history['outputs']:
+        node_output = history['outputs'][node_id]
+        videos_output = []
+        if 'gifs' in node_output:
+            for video in node_output['gifs']:
+                # Return the full path instead of base64 encoding
+                videos_output.append(video['fullpath'])
+        output_videos[node_id] = videos_output
+
+    return output_videos
+
+def load_workflow(workflow_path):
+    with open(workflow_path, 'r') as file:
+        return json.load(file)
 
 def handler(job):
-    """
-    Main job handler - wrapped with comprehensive error handling
-    This function should NEVER raise unhandled exceptions
-    """
-    try:
-        logger.info("="*60)
-        logger.info("🚀 NEW JOB STARTED")
-        logger.info("="*60)
-        
-        job_input = job.get("input", {})
-        logger.debug(f"📥 Job input: {json.dumps(job_input, indent=2)}")
-        
-        task_id = f"task_{uuid.uuid4()}"
-        logger.info(f"🆔 Task ID: {task_id}")
+    job_input = job.get("input", {})
 
-        # Process image input
-        logger.info("🖼️  Processing input image...")
-        image_path = None
-        if "image_path" in job_input:
-            logger.info("📁 Using image_path input")
-            image_path = process_input(job_input["image_path"], task_id, "input_image.jpg", "path")
-        elif "image_url" in job_input:
-            logger.info("🌐 Using image_url input")
-            image_path = process_input(job_input["image_url"], task_id, "input_image.jpg", "url")
-        elif "image_base64" in job_input:
-            logger.info("🔢 Using image_base64 input")
-            image_path = process_input(job_input["image_base64"], task_id, "input_image.jpg", "base64")
-        else:
-            logger.error("❌ No image input provided")
-            return {"error": "No image input provided (image_path, image_url, or image_base64)", "task_id": task_id}
+    logger.info(f"Received job input: {job_input}")
+    task_id = f"task_{uuid.uuid4()}"
 
-        # Process end image input (use only one of end_image_path, end_image_url, end_image_base64)
-        end_image_path_local = None
-        if "end_image_path" in job_input:
-            end_image_path_local = process_input(job_input["end_image_path"], task_id, "end_image.jpg", "path")
-        elif "end_image_url" in job_input:
-            end_image_path_local = process_input(job_input["end_image_url"], task_id, "end_image.jpg", "url")
-        elif "end_image_base64" in job_input:
-            end_image_path_local = process_input(job_input["end_image_base64"], task_id, "end_image.jpg", "base64")
-        
-        # Validate LoRA configuration - process as array
-        logger.info("🎨 Processing LoRA configuration...")
-        lora_pairs = job_input.get("lora_pairs", [])
-        logger.debug(f"LoRA pairs provided: {len(lora_pairs)}")
-        
-        # Support up to 4 LoRA pairs
-        lora_count = min(len(lora_pairs), 4)
-        if len(lora_pairs) > 4:
-            logger.warning(f"⚠️  LoRA count is {len(lora_pairs)}. Only up to 4 LoRA pairs are supported. Using first 4 only.")
-            lora_pairs = lora_pairs[:4]
-        
-        # Select workflow file (use FLF2V workflow if end_image_* is present)
-        workflow_file = "/new_Wan22_flf2v_api.json" if end_image_path_local else "/new_Wan22_api.json"
-        logger.info(f"📋 Workflow: {'FLF2V (first-last-frame)' if end_image_path_local else 'Single image'}")
-        logger.info(f"🎨 LoRA pairs: {lora_count}")
-        
-        logger.debug(f"Loading workflow from: {workflow_file}")
-        prompt = load_workflow(workflow_file)
-        logger.info("✅ Workflow loaded successfully")
-        
-        length = job_input.get("length", 81)
-        steps = job_input.get("steps", 10)
-        logger.info(f"⚙️  Video length: {length} frames")
-        logger.info(f"⚙️  Denoising steps: {steps}")
+    # Process image input (use only one of: image_path, image_url, image_base64)
+    image_path = None
+    if "image_path" in job_input:
+        image_path = process_input(job_input["image_path"], task_id, "input_image.jpg", "path")
+    elif "image_url" in job_input:
+        image_path = process_input(job_input["image_url"], task_id, "input_image.jpg", "url")
+    elif "image_base64" in job_input:
+        image_path = process_input(job_input["image_base64"], task_id, "input_image.jpg", "base64")
+    else:
+        # Use default value
+        image_path = "/example_image.png"
+        logger.info("Using default image file: /example_image.png")
 
-        logger.info("🔧 Configuring workflow parameters...")
-        prompt["244"]["inputs"]["image"] = image_path
-        logger.debug(f"Image path set: {image_path}")
-        
-        prompt["541"]["inputs"]["num_frames"] = length
-        logger.debug(f"Number of frames: {length}")
-        
-        positive_prompt = job_input["prompt"]
-        negative_prompt = job_input.get("negative_prompt", "bright tones, overexposed, static, blurred details, subtitles, style, works, paintings, images, static, overall gray, worst quality, low quality, JPEG compression residue, ugly, incomplete, extra fingers, poorly drawn hands, poorly drawn faces, deformed, disfigured, misshapen limbs, fused fingers, still picture, messy background, three legs, many people in the background, walking backwards")
-        prompt["135"]["inputs"]["positive_prompt"] = positive_prompt
-        prompt["135"]["inputs"]["negative_prompt"] = negative_prompt
-        logger.info(f"💬 Positive prompt: {positive_prompt[:100]}...")
-        logger.debug(f"💬 Negative prompt: {negative_prompt[:100]}...")
-        
-        seed = job_input["seed"]
-        cfg = job_input["cfg"]
-        prompt["220"]["inputs"]["seed"] = seed
-        prompt["540"]["inputs"]["seed"] = seed
-        prompt["540"]["inputs"]["cfg"] = cfg
-        logger.info(f"🎲 Seed: {seed}")
-        logger.info(f"⚙️  CFG scale: {cfg}")
-        
-        # Adjust resolution (width/height) to nearest multiple of 16
-        original_width = job_input["width"]
-        original_height = job_input["height"]
-        adjusted_width = to_nearest_multiple_of_16(original_width)
-        adjusted_height = to_nearest_multiple_of_16(original_height)
-        if adjusted_width != original_width:
-            logger.info(f"Width adjusted to nearest multiple of 16: {original_width} -> {adjusted_width}")
-        if adjusted_height != original_height:
-            logger.info(f"Height adjusted to nearest multiple of 16: {original_height} -> {adjusted_height}")
-        prompt["235"]["inputs"]["value"] = adjusted_width
-        prompt["236"]["inputs"]["value"] = adjusted_height
-        prompt["498"]["inputs"]["context_overlap"] = job_input.get("context_overlap", 48)
-        
-        # Apply step settings
-        if "834" in prompt:
-            prompt["834"]["inputs"]["steps"] = steps
-            logger.info(f"Steps set to: {steps}")
-            lowsteps = int(steps*0.6)
-            prompt["829"]["inputs"]["step"] = lowsteps
-            logger.info(f"LowSteps set to: {lowsteps}")
+    # Process end image input (use only one of: end_image_path, end_image_url, end_image_base64)
+    end_image_path_local = None
+    if "end_image_path" in job_input:
+        end_image_path_local = process_input(job_input["end_image_path"], task_id, "end_image.jpg", "path")
+    elif "end_image_url" in job_input:
+        end_image_path_local = process_input(job_input["end_image_url"], task_id, "end_image.jpg", "url")
+    elif "end_image_base64" in job_input:
+        end_image_path_local = process_input(job_input["end_image_base64"], task_id, "end_image.jpg", "base64")
+    
+    # Check LoRA configuration - process as array
+    lora_pairs = job_input.get("lora_pairs", [])
+    
+    # Support up to 4 LoRAs
+    lora_count = min(len(lora_pairs), 4)
+    if lora_count > len(lora_pairs):
+        logger.warning(f"LoRA count is {len(lora_pairs)}. Only up to 4 LoRAs are supported. Using first 4 only.")
+        lora_pairs = lora_pairs[:4]
+    
+    # Select workflow file (use FLF2V workflow if end_image_* is present)
+    workflow_file = "/new_Wan22_flf2v_api.json" if end_image_path_local else "/new_Wan22_api.json"
+    logger.info(f"Using {'FLF2V' if end_image_path_local else 'single'} workflow with {lora_count} LoRA pairs")
+    
+    prompt = load_workflow(workflow_file)
+    
+    length = job_input.get("length", 81)
+    steps = job_input.get("steps", 10)
 
-        # Apply end image path to node 617 if present (FLF2V only)
-        if end_image_path_local:
-            prompt["617"]["inputs"]["image"] = end_image_path_local
-        
-        # Apply LoRA settings - HIGH LoRA uses node 279, LOW LoRA uses node 553
-        if lora_count > 0:
-            # HIGH LoRA node (279)
-            high_lora_node_id = "279"
-            
-            # LOW LoRA node (553)
-            low_lora_node_id = "553"
-            
-            # Apply LoRA pairs from input (starting from lora_1)
-            for i, lora_pair in enumerate(lora_pairs):
-                if i < 4:  # Maximum 4 pairs
-                    lora_high = lora_pair.get("high")
-                    lora_low = lora_pair.get("low")
-                    lora_high_weight = lora_pair.get("high_weight", 1.0)
-                    lora_low_weight = lora_pair.get("low_weight", 1.0)
-                    
-                    # HIGH LoRA settings (node 279, starting from lora_1)
-                    if lora_high:
-                        prompt[high_lora_node_id]["inputs"][f"lora_{i+1}"] = lora_high
-                        prompt[high_lora_node_id]["inputs"][f"strength_{i+1}"] = lora_high_weight
-                        logger.info(f"LoRA {i+1} HIGH applied to node 279: {lora_high} with weight {lora_high_weight}")
-                    
-                    # LOW LoRA settings (node 553, starting from lora_1)
-                    if lora_low:
-                        prompt[low_lora_node_id]["inputs"][f"lora_{i+1}"] = lora_low
-                        prompt[low_lora_node_id]["inputs"][f"strength_{i+1}"] = lora_low_weight
-                        logger.info(f"LoRA {i+1} LOW applied to node 553: {lora_low} with weight {lora_low_weight}")
+    prompt["244"]["inputs"]["image"] = image_path
+    prompt["541"]["inputs"]["num_frames"] = length
+    prompt["135"]["inputs"]["positive_prompt"] = job_input["prompt"]
+    prompt["135"]["inputs"]["negative_prompt"] = job_input.get("negative_prompt", "bright tones, overexposed, static, blurred details, subtitles, style, works, paintings, images, static, overall gray, worst quality, low quality, JPEG compression residue, ugly, incomplete, extra fingers, poorly drawn hands, poorly drawn faces, deformed, disfigured, misshapen limbs, fused fingers, still picture, messy background, three legs, many people in the background, walking backwards")
+    prompt["220"]["inputs"]["seed"] = job_input["seed"]
+    prompt["540"]["inputs"]["seed"] = job_input["seed"]
+    prompt["540"]["inputs"]["cfg"] = job_input["cfg"]
+    # Adjust resolution (width/height) to multiples of 16
+    original_width = job_input["width"]
+    original_height = job_input["height"]
+    adjusted_width = to_nearest_multiple_of_16(original_width)
+    adjusted_height = to_nearest_multiple_of_16(original_height)
+    if adjusted_width != original_width:
+        logger.info(f"Width adjusted to nearest multiple of 16: {original_width} -> {adjusted_width}")
+    if adjusted_height != original_height:
+        logger.info(f"Height adjusted to nearest multiple of 16: {original_height} -> {adjusted_height}")
+    prompt["235"]["inputs"]["value"] = adjusted_width
+    prompt["236"]["inputs"]["value"] = adjusted_height
+    prompt["498"]["inputs"]["context_overlap"] = job_input.get("context_overlap", 48)
+    
+    # Apply step configuration
+    if "834" in prompt:
+        prompt["834"]["inputs"]["steps"] = steps
+        logger.info(f"Steps set to: {steps}")
+        lowsteps = int(steps*0.6)
+        prompt["829"]["inputs"]["step"] = lowsteps
+        logger.info(f"LowSteps set to: {lowsteps}")
 
-        ws_url = f"ws://{server_address}:8188/ws?clientId={client_id}"
-        logger.info(f"Connecting to WebSocket: {ws_url}")
+    # Apply end image path to node 617 if present (FLF2V only)
+    if end_image_path_local:
+        prompt["617"]["inputs"]["image"] = end_image_path_local
+    
+    # Apply LoRA configuration - HIGH LoRA is node 279, LOW LoRA is node 553
+    if lora_count > 0:
+        # HIGH LoRA node (279)
+        high_lora_node_id = "279"
         
-        # First check if HTTP connection is available
-        http_url = f"http://{server_address}:8188/"
-        logger.info(f"Checking HTTP connection to: {http_url}")
+        # LOW LoRA node (553)
+        low_lora_node_id = "553"
         
-        # Check HTTP connection (max 1 minute)
-        max_http_attempts = 180
-        for http_attempt in range(max_http_attempts):
-            try:
-                response = urllib.request.urlopen(http_url, timeout=5)
-                logger.info(f"HTTP connection successful (attempt {http_attempt+1})")
-                break
-            except Exception as e:
-                logger.warning(f"HTTP connection failed (attempt {http_attempt+1}/{max_http_attempts}): {e}")
-                if http_attempt == max_http_attempts - 1:
-                    raise Exception("Cannot connect to ComfyUI server. Please check if the server is running.")
-                time.sleep(1)
-        
-        ws = websocket.WebSocket()
-        # Attempt WebSocket connection (max 3 minutes)
-        max_attempts = int(180/5)  # 3 minutes (attempt every 5 seconds)
-        for attempt in range(max_attempts):
-            try:
-                ws.connect(ws_url)
-                logger.info(f"WebSocket connection successful (attempt {attempt+1})")
-                break
-            except Exception as e:
-                logger.warning(f"WebSocket connection failed (attempt {attempt+1}/{max_attempts}): {e}")
-                if attempt == max_attempts - 1:
-                    raise Exception("WebSocket connection timeout (3 minutes)")
-                time.sleep(5)
-        
-        logger.info("🎬 Generating video with ComfyUI...")
-        videos = get_videos(ws, prompt)
-        ws.close()
-        logger.info("🔌 WebSocket connection closed")
-
-        # Handle case when no video is found
-        logger.info("🔍 Checking for generated videos...")
-        for node_id in videos:
-            if videos[node_id]:
-                video_path = videos[node_id][0]
-                logger.info(f"✅ Video found in node {node_id}")
-                logger.info(f"📁 Video path: {video_path}")
+        # Apply received LoRA pairs (starting from lora_1)
+        for i, lora_pair in enumerate(lora_pairs):
+            if i < 4:  # Maximum 4 only
+                lora_high = lora_pair.get("high")
+                lora_low = lora_pair.get("low")
+                lora_high_weight = lora_pair.get("high_weight", 1.0)
+                lora_low_weight = lora_pair.get("low_weight", 1.0)
                 
-                # Generate unique filename for CDN
-                video_filename = f"{task_id}_{uuid.uuid4().hex[:8]}.mp4"
-                logger.info(f"📝 Generated filename: {video_filename}")
+                # Configure HIGH LoRA (node 279, starting from lora_1)
+                if lora_high:
+                    prompt[high_lora_node_id]["inputs"][f"lora_{i+1}"] = lora_high
+                    prompt[high_lora_node_id]["inputs"][f"strength_{i+1}"] = lora_high_weight
+                    logger.info(f"LoRA {i+1} HIGH applied to node 279: {lora_high} with weight {lora_high_weight}")
                 
-                try:
-                    # Upload to Bunny CDN
-                    logger.info("📤 Uploading video to Bunny CDN...")
-                    cdn_url = upload_to_bunny_storage(video_path, "runpod", video_filename)
-                    logger.info(f"✅ Upload successful!")
-                    logger.info(f"🔗 Video URL: {cdn_url}")
-                    
-                    logger.info("="*60)
-                    logger.info("🎉 JOB COMPLETED SUCCESSFULLY")
-                    logger.info("="*60)
-                    
-                    return {
-                        "video_url": cdn_url,
-                        "task_id": task_id,
-                        "filename": video_filename
-                    }
-                except Exception as e:
-                    logger.error(f"❌ Failed to upload to CDN: {str(e)}")
-                    logger.exception("Full exception:")
-                    return {
-                        "error": f"Video generated but CDN upload failed: {str(e)}",
-                        "task_id": task_id
-                    }
-        
-        logger.error("❌ No video found in generation output")
-        logger.info("="*60)
-        logger.info("❌ JOB FAILED")
-        logger.info("="*60)
-        return {"error": "Video not found.", "task_id": task_id}
-        
-    except Exception as e:
-        # CRITICAL: Never let exceptions propagate - always return error response
-        logger.error("="*60)
-        logger.error("❌ JOB FAILED WITH EXCEPTION")
-        logger.error("="*60)
-        logger.error(f"Error: {str(e)}")
-        logger.exception("Full traceback:")
-        
-        return {
-            "error": str(e),
-            "error_type": type(e).__name__,
-            "task_id": locals().get('task_id', 'unknown')
-        }
+                # Configure LOW LoRA (node 553, starting from lora_1)
+                if lora_low:
+                    prompt[low_lora_node_id]["inputs"][f"lora_{i+1}"] = lora_low
+                    prompt[low_lora_node_id]["inputs"][f"strength_{i+1}"] = lora_low_weight
+                    logger.info(f"LoRA {i+1} LOW applied to node 553: {lora_low} with weight {lora_low_weight}")
 
-def start_worker():
-    """Start the RunPod serverless worker with test job prevention"""
-    try:
-        logger.info("="*60)
-        logger.info("🚀 Starting RunPod Serverless Worker")
-        logger.info("="*60)
-        
-        logger.info(f"Server address: {server_address}")
-        logger.info(f"Client ID: {client_id}")
-        
-        # Verify ComfyUI is accessible (non-blocking check)
+    ws_url = f"ws://{server_address}:8188/ws?clientId={client_id}"
+    logger.info(f"Connecting to WebSocket: {ws_url}")
+    
+    # First check if HTTP connection is possible
+    http_url = f"http://{server_address}:8188/"
+    logger.info(f"Checking HTTP connection to: {http_url}")
+    
+    # Check HTTP connection (max 1 minute)
+    max_http_attempts = 180
+    for http_attempt in range(max_http_attempts):
         try:
-            response = urllib.request.urlopen(f"http://{server_address}:8188/", timeout=5)
-            logger.info("✅ ComfyUI is accessible and ready")
+            import urllib.request
+            response = urllib.request.urlopen(http_url, timeout=5)
+            logger.info(f"HTTP connection successful (attempt {http_attempt+1})")
+            break
         except Exception as e:
-            logger.warning(f"⚠️  ComfyUI check failed: {e}")
-            logger.warning("Handler will start anyway, but jobs may fail if ComfyUI is not ready")
-        
-        logger.info("Starting handler and waiting for jobs from RunPod...")
-        logger.info("="*60)
-        
-        # Start the RunPod serverless worker
-        # This should block indefinitely and keep the process alive
+            logger.warning(f"HTTP connection failed (attempt {http_attempt+1}/{max_http_attempts}): {e}")
+            if http_attempt == max_http_attempts - 1:
+                raise Exception("Cannot connect to ComfyUI server. Please check if the server is running.")
+            time.sleep(1)
+    
+    ws = websocket.WebSocket()
+    # Attempt WebSocket connection (max 3 minutes)
+    max_attempts = int(180/5)  # 3 minutes (try once per second)
+    for attempt in range(max_attempts):
+        import time
         try:
-            runpod.serverless.start({"handler": handler})
-        except SystemExit:
-            logger.warning("⚠️  runpod.serverless.start() triggered SystemExit!")
-            logger.warning("Caught SystemExit to prevent container restart.")
-        
-        # If we reach here, something went wrong
-        logger.error("⚠️  runpod.serverless.start() returned unexpectedly!")
-        logger.error("This should not happen in production mode")
-        logger.error("Keeping process alive with infinite loop to prevent restart...")
-        
-        # Keep process alive to prevent container restart
-        while True:
-            logger.info("Worker is in fallback keep-alive mode...")
-            time.sleep(3600)  # Sleep for 1 hour
-        
-    except KeyboardInterrupt:
-        logger.info("Received interrupt signal, shutting down gracefully...")
-        sys.exit(0)
-    except Exception as e:
-        logger.error("="*60)
-        logger.error("FATAL ERROR in RunPod serverless worker")
-        logger.error("="*60)
-        logger.error(f"Error type: {type(e).__name__}")
-        logger.error(f"Error message: {str(e)}")
-        logger.exception("Full exception traceback:")
-        logger.error("="*60)
-        
-        # Keep process alive even on error to prevent restart loop
-        logger.error("Keeping process alive to prevent restart loop...")
-        while True:
-            logger.error("Worker is in error keep-alive mode...")
-            time.sleep(3600)
+            ws.connect(ws_url)
+            logger.info(f"WebSocket connection successful (attempt {attempt+1})")
+            break
+        except Exception as e:
+            logger.warning(f"WebSocket connection failed (attempt {attempt+1}/{max_attempts}): {e}")
+            if attempt == max_attempts - 1:
+                raise Exception("WebSocket connection timeout (3 minutes)")
+            time.sleep(5)
+    videos = get_videos(ws, prompt)
+    ws.close()
 
-# CRITICAL: Only start worker in main block
-if __name__ == "__main__":
-    start_worker()
+    # Handle case when video is not found
+    for node_id in videos:
+        if videos[node_id]:
+            video_path = videos[node_id][0]
+            
+            # Generate unique filename
+            unique_filename = f"{task_id}.mp4"
+            folder = "ai-videos"  # You can change this folder name
+            
+            # Upload to Bunny CDN
+            try:
+                cdn_url = upload_to_bunny_storage(video_path, folder, unique_filename)
+                return {"video_url": cdn_url}
+            except Exception as e:
+                logger.error(f"Failed to upload video: {str(e)}")
+                return {"error": f"Failed to upload video: {str(e)}"}
+    
+    return {"error": "Video not found."}
+
+runpod.serverless.start({"handler": handler})

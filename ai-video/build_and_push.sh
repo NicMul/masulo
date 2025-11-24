@@ -58,4 +58,3 @@ echo "   1. Configure RunPod to use this image: ${FULL_IMAGE_NAME}"
 echo "   2. Set up registry credentials in RunPod if using private registry"
 echo "   3. Create/update your Serverless endpoint with this image"
 echo ""
-

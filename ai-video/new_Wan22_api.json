@@ -129,7 +129,7 @@
     },
     "class_type": "CLIPVisionLoader",
     "_meta": {
-      "title": "Load CLIP_VISION"
+      "title": "CLIP_VISION 로드"
     }
   },
   "193": {
@@ -225,7 +225,7 @@
     },
     "class_type": "LoadImage",
     "_meta": {
-      "title": "Load Image"
+      "title": "이미지 로드"
     }
   },
   "279": {

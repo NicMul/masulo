@@ -1,5 +1,5 @@
 #config for comfyui
-#base path should be either an existing comfy install or a central folder where models, loras, etc. are stored
+#your base path should be either an existing comfy install or a central folder where you store all of your models, loras, etc.
 
 comfyui:
     base_path: /ComfyUI/
@@ -7,23 +7,16 @@ comfyui:
     is_default: true
     checkpoints: models/checkpoints/
     clip: models/clip/
-    clip_vision: |
-        /workspace/models/clip_vision/
-        models/clip_vision/
+    clip_vision: models/clip_vision/
     configs: models/configs/
     controlnet: models/controlnet/
     diffusion_models: |
-        /workspace/models/
         models/diffusion_models
         models/unet
+        /runpod-volume/models/
     embeddings: models/embeddings/
     loras: |
-        /workspace/loras/
         models/loras/
-    text_encoders: |
-        /workspace/models/text_encoders/
-        models/text_encoders/
+        /runpod-volume/loras/
     upscale_models: models/upscale_models/
-    vae: |
-        /workspace/models/vae/
-        models/vae/
+    vae: models/vae/
