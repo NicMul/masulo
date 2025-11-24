@@ -506,7 +506,11 @@ def start_worker():
         
         # Start the RunPod serverless worker
         # This should block indefinitely and keep the process alive
-        runpod.serverless.start({"handler": handler})
+        try:
+            runpod.serverless.start({"handler": handler})
+        except SystemExit:
+            logger.warning("⚠️  runpod.serverless.start() triggered SystemExit!")
+            logger.warning("Caught SystemExit to prevent container restart.")
         
         # If we reach here, something went wrong
         logger.error("⚠️  runpod.serverless.start() returned unexpectedly!")

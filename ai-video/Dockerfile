@@ -63,6 +63,7 @@ RUN cd /ComfyUI/custom_nodes && \
 # Force RunPod SDK into worker mode by setting a placeholder API key
 # This prevents it from looking for test_input.json and exiting in "local test mode"
 ENV RUNPOD_API_KEY=mock
+ENV RUNPOD_ENDPOINT_ID=mock
 
 COPY . .
 COPY extra_model_paths.yaml /ComfyUI/extra_model_paths.yaml
