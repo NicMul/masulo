@@ -260,15 +260,6 @@ def handler(job):
         job_input = job.get("input", {})
         logger.debug(f"📥 Job input: {json.dumps(job_input, indent=2)}")
         
-        # Skip test jobs
-        prompt = job_input.get("prompt", "")
-        if prompt == "test" and job_input.get("image_path") == "/example_image.png":
-            logger.info("⏭️  Skipping test job (test_input.json)")
-            return {
-                "status": "skipped",
-                "message": "Test job skipped - worker is ready for real jobs"
-            }
-        
         task_id = f"task_{uuid.uuid4()}"
         logger.info(f"🆔 Task ID: {task_id}")
 
@@ -285,8 +276,8 @@ def handler(job):
             logger.info("🔢 Using image_base64 input")
             image_path = process_input(job_input["image_base64"], task_id, "input_image.jpg", "base64")
         else:
-            image_path = "/example_image.png"
-            logger.info("⚠️  No image input provided, using default: /example_image.png")
+            logger.error("❌ No image input provided")
+            return {"error": "No image input provided (image_path, image_url, or image_base64)", "task_id": task_id}
 
         # Process end image input (use only one of end_image_path, end_image_url, end_image_base64)
         end_image_path_local = None
@@ -498,15 +489,6 @@ def start_worker():
         logger.info("="*60)
         logger.info("🚀 Starting RunPod Serverless Worker")
         logger.info("="*60)
-        
-        # CRITICAL: Delete test_input.json if it exists to prevent local test mode
-        test_file = "/workspace/test_input.json"
-        if os.path.exists(test_file):
-            logger.info(f"🗑️  Removing {test_file} to prevent local test mode...")
-            os.remove(test_file)
-            logger.info("✅ test_input.json removed - worker will wait for real jobs")
-        else:
-            logger.info("ℹ️  test_input.json not found (already removed or never created)")
         
         logger.info(f"Server address: {server_address}")
         logger.info(f"Client ID: {client_id}")
