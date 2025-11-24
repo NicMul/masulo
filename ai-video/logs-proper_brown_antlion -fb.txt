@@ -1,181 +1,84 @@
-2025-11-24  18:23:18.849 | info | jg8i98ei4koq0v | FETCH DATA from: https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/custom-node-list.json
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v | Cannot connect to comfyregistry.\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v | FETCH ComfyRegistry Data: 10/108\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v | Finished.
-2025-11-24  18:23:18.651 | error | jg8i98ei4koq0v | {\n    "error_type": "<class 'urllib.error.HTTPError'>",\n    "error_message": "HTTP Error 400: Bad Request",\n    "error_traceback": "Traceback (most recent call last):\n  File \"/usr/local/lib/python3.10/dist-packages/runpod/serverless/modules/rp_job.py\", line 182, in run_job\n    handler_return = handler(job)\n  File \"//handler.py\", line 349, in handler\n    videos = get_videos(ws, prompt)\n  File \"//handler.py\", line 179, in get_videos\n    prompt_id = queue_prompt(prompt)['prompt_id']\n  File \"//handler.py\", line 162, in queue_prompt\n    return json.loads(urllib.request.urlopen(req).read())\n  File \"/usr/lib/python3.10/urllib/request.py\", line 216, in urlopen\n    return opener.open(url, data, timeout)\n  File \"/usr/lib/python3.10/urllib/request.py\", line 525, in open\n    response = meth(req, response)\n  File \"/usr/lib/python3.10/urllib/request.py\", line 634, in http_response\n    response = self.parent.error(\n  File \"/usr/lib/python3.10/urllib/request.py\", line 563, in error\n    return self._call_chain(*args)\n  File \"/usr/lib/python3.10/urllib/request.py\", line 496, in _call_chain\n    result = func(*args)\n  File \"/usr/lib/python3.10/urllib/request.py\", line 643, in http_error_default\n    raise HTTPError(req.full_url, code, msg, hdrs, fp)\nurllib.error.HTTPError: HTTP Error 400: Bad Request\n",\n    "hostname": "jg8i98ei4koq0v-6441155d",\n    "worker_id": "jg8i98ei4koq0v",\n    "runpod_version": "1.7.13"\n}
-2025-11-24  18:23:18.651 | error | jg8i98ei4koq0v | Captured Handler Exception
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v | invalid prompt: {'type': 'prompt_outputs_failed_validation', 'message': 'Prompt outputs failed validation', 'details': '', 'extra_info': {}}\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v | Output will be ignored\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v |   - Value not in list: model: 'Wan2_2-I2V-A14B-HIGH_fp8_e4m3fn_scaled_KJ.safetensors' not in []\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v | * WanVideoModelLoader 122:\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v |   - Value not in list: lora_0: 'high_noise_model.safetensors' not in ['none']\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v | * WanVideoLoraSelectMulti 279:\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v |   - Value not in list: model: 'Wan2_2-I2V-A14B-LOW_fp8_e4m3fn_scaled_KJ.safetensors' not in []\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v | * WanVideoModelLoader 549:\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v |   - Value not in list: lora_0: 'low_noise_model.safetensors' not in ['none']\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v | * WanVideoLoraSelectMulti 553:\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v | Failed to validate prompt for output 131:\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v | got prompt\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v | handler.py          :158  2025-11-24 17:16:56,327 Queueing prompt to: http://127.0.0.1:8188/prompt\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v | handler.py          :342  2025-11-24 17:16:56,327 WebSocket connection successful (attempt 1)\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v | handler.py          :327  2025-11-24 17:16:56,326 HTTP connection successful (attempt 1)\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v | handler.py          :319  2025-11-24 17:16:56,325 Checking HTTP connection to: http://127.0.0.1:8188/\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v | handler.py          :315  2025-11-24 17:16:56,325 Connecting to WebSocket: ws://127.0.0.1:8188/ws?clientId=65810be7-4e0b-45b5-8da0-77557d175642\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v | handler.py          :247  2025-11-24 17:16:56,324 Using single workflow with 0 LoRA pairs\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v | handler.py          :61   2025-11-24 17:16:56,324 ✅ Successfully downloaded file from URL: https://casino-cdn-45tz9ud.b-cdn.net/images/current-xih6nwzkt.jpg -> /task_4cd51977-e3c2-432c-96a7-4c575ef2386b/input_image.jpg\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v | handler.py          :40   2025-11-24 17:16:55,869 🌐 Processing URL input: https://casino-cdn-45tz9ud.b-cdn.net/images/current-xih6nwzkt.jpg\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v | handler.py          :211  2025-11-24 17:16:55,869 Received job input: {'cfg': 2, 'height': 832, 'image_url': 'https://casino-cdn-45tz9ud.b-cdn.net/images/current-xih6nwzkt.jpg', 'length': 81, 'negative_prompt': 'blurry, low quality, distorted', 'prompt': 'The character feel happy and dances', 'seed': 42, 'steps': 10, 'width': 480}\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v | Started.
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v | Jobs in progress: 1
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v | Jobs in queue: 1
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v | FETCH ComfyRegistry Data: 5/108\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v | --- Starting Serverless Worker |  Version 1.7.13 ---\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v | Starting the handler...\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v | ComfyUI is ready!\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v | To see the GUI go to: http://[::]:8188\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v | To see the GUI go to: http://0.0.0.0:8188\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v | \n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v | Starting server\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v | No target revision found.\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v | Will assume non-transactional DDL.\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v | Context impl SQLiteImpl.\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v | \n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v |    0.8 seconds: /ComfyUI/custom_nodes/ComfyUI-WanVideoWrapper\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v |    0.1 seconds: /ComfyUI/custom_nodes/ComfyUI-VideoHelperSuite\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v |    0.1 seconds: /ComfyUI/custom_nodes/ComfyUI-Manager\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v |    0.1 seconds: /ComfyUI/custom_nodes/ComfyUI-KJNodes\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v |    0.0 seconds: /ComfyUI/custom_nodes/ComfyUI-GGUF\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v |    0.0 seconds: /ComfyUI/custom_nodes/IntelligentVRAMNode\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v |    0.0 seconds: /ComfyUI/custom_nodes/ComfyUI-AdaptiveWindowSize\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v |    0.0 seconds (IMPORT FAILED): /ComfyUI/custom_nodes/ComfyUI-GGUF-FantasyTalking\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v |    0.0 seconds: /ComfyUI/custom_nodes/ComfyUI-wanBlockswap\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v |    0.0 seconds: /ComfyUI/custom_nodes/auto_wan2.2animate_freamtowindow_server\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v |    0.0 seconds: /ComfyUI/custom_nodes/websocket_image_save.py\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v | Import times for custom nodes:\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v | \n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v | ComfyUI-GGUF: Allowing full torch compile\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v | Cannot import /ComfyUI/custom_nodes/ComfyUI-GGUF-FantasyTalking module for custom nodes: (unicode error) 'unicodeescape' codec can't decode bytes in position 149-150: truncated \UXXXXXXXX escape (nodes.py, line 669)\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v | \n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v | SyntaxError: (unicode error) 'unicodeescape' codec can't decode bytes in position 149-150: truncated \UXXXXXXXX escape\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v |                                        ^\n
-2025-11-24  18:23:18.651 | info | jg8i98ei4koq0v |     Prompt executed in 88.52 seconds"""\n
-2025-11-24  18:23:18.650 | info | jg8i98ei4koq0v |   File "/ComfyUI/custom_nodes/ComfyUI-GGUF-FantasyTalking/nodes.py", line 669\n
-2025-11-24  18:23:18.650 | info | jg8i98ei4koq0v |     from .nodes import NODE_CLASS_MAPPINGS\n
-2025-11-24  18:23:18.650 | info | jg8i98ei4koq0v |   File "/ComfyUI/custom_nodes/ComfyUI-GGUF-FantasyTalking/__init__.py", line 7, in <module>\n
-2025-11-24  18:23:18.650 | info | jg8i98ei4koq0v |   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed\n
-2025-11-24  18:23:18.650 | info | jg8i98ei4koq0v |   File "<frozen importlib._bootstrap_external>", line 883, in exec_module\n
-2025-11-24  18:23:18.650 | info | jg8i98ei4koq0v |     module_spec.loader.exec_module(module)\n
-2025-11-24  18:23:18.650 | info | jg8i98ei4koq0v |   File "/ComfyUI/nodes.py", line 2136, in load_custom_node\n
-2025-11-24  18:23:18.650 | info | jg8i98ei4koq0v | Traceback (most recent call last):\n
-2025-11-24  18:23:18.650 | warning | jg8i98ei4koq0v | WanVideoWrapper WARNING: FantasyPortrait nodes not available due to error in importing them: No module named 'onnx'\n
-2025-11-24  18:23:18.650 | info | jg8i98ei4koq0v | [ComfyUI-Manager] default cache updated: https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/extension-node-map.json\n
-2025-11-24  18:23:18.650 | info | jg8i98ei4koq0v | Waiting for ComfyUI... (6/120)\n
-2025-11-24  18:23:18.650 | info | jg8i98ei4koq0v | [ComfyUI-Manager] default cache updated: https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/custom-node-list.json\n
-2025-11-24  18:23:18.650 | info | jg8i98ei4koq0v | [ComfyUI-Manager] default cache updated: https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/github-stats.json\n
-2025-11-24  18:23:18.650 | info | jg8i98ei4koq0v | [ComfyUI-Manager] default cache updated: https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/model-list.json\n
-2025-11-24  18:23:18.650 | info | jg8i98ei4koq0v | [ComfyUI-Manager] default cache updated: https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/alter-list.json\n
-2025-11-24  18:23:18.650 | info | jg8i98ei4koq0v |    - Adaptive WanVideo Animate Embeds (AdaptiveWanVideoAnimateEmbeds)\n
-2025-11-24  18:23:18.650 | info | jg8i98ei4koq0v |    Available nodes:\n
-2025-11-24  18:23:18.650 | info | jg8i98ei4koq0v | ⚠️  Enhanced face crop nodes not available: No module named '/ComfyUI/custom_nodes/ComfyUI-AdaptiveWindowSize.enhanced_face_crop'\n
-2025-11-24  18:23:18.650 | info | jg8i98ei4koq0v | ### ComfyUI Version: v0.3.71-6-gf66183a5 | Released on '2025-11-23'\n
-2025-11-24  18:23:18.650 | info | jg8i98ei4koq0v | [ComfyUI-Manager] network_mode: public\n
-2025-11-24  18:23:18.650 | info | jg8i98ei4koq0v | ### Loading: ComfyUI-Manager (V3.37.1)\n
-2025-11-24  18:23:18.650 | info | jg8i98ei4koq0v | Enabled pinned memory 121617.0\n
-2025-11-24  18:23:18.650 | info | jg8i98ei4koq0v | Device: cuda:0 NVIDIA GeForce RTX 4090 : cudaMallocAsync\n
-2025-11-24  18:23:18.650 | info | jg8i98ei4koq0v | Set vram state to: NORMAL_VRAM\n
-2025-11-24  18:23:18.650 | info | jg8i98ei4koq0v | xformers version: 0.0.32.post2\n
-2025-11-24  18:23:18.650 | info | jg8i98ei4koq0v | pytorch version: 2.8.0+cu128\n
-2025-11-24  18:23:18.650 | info | jg8i98ei4koq0v | Total VRAM 24091 MB, total RAM 128018 MB\n
-2025-11-24  17:58:23.294 | info | avpdwguqvsmj6s | FETCH ComfyRegistry Data: 15/108\n
-2025-11-24  17:58:23.294 | info | avpdwguqvsmj6s | FETCH ComfyRegistry Data: 10/108\n
-2025-11-24  17:58:23.294 | info | avpdwguqvsmj6s | Finished.
-2025-11-24  17:58:23.294 | error | avpdwguqvsmj6s | {\n    "error_type": "<class 'urllib.error.HTTPError'>",\n    "error_message": "HTTP Error 400: Bad Request",\n    "error_traceback": "Traceback (most recent call last):\n  File \"/usr/local/lib/python3.10/dist-packages/runpod/serverless/modules/rp_job.py\", line 182, in run_job\n    handler_return = handler(job)\n  File \"//handler.py\", line 349, in handler\n    videos = get_videos(ws, prompt)\n  File \"//handler.py\", line 179, in get_videos\n    prompt_id = queue_prompt(prompt)['prompt_id']\n  File \"//handler.py\", line 162, in queue_prompt\n    return json.loads(urllib.request.urlopen(req).read())\n  File \"/usr/lib/python3.10/urllib/request.py\", line 216, in urlopen\n    return opener.open(url, data, timeout)\n  File \"/usr/lib/python3.10/urllib/request.py\", line 525, in open\n    response = meth(req, response)\n  File \"/usr/lib/python3.10/urllib/request.py\", line 634, in http_response\n    response = self.parent.error(\n  File \"/usr/lib/python3.10/urllib/request.py\", line 563, in error\n    return self._call_chain(*args)\n  File \"/usr/lib/python3.10/urllib/request.py\", line 496, in _call_chain\n    result = func(*args)\n  File \"/usr/lib/python3.10/urllib/request.py\", line 643, in http_error_default\n    raise HTTPError(req.full_url, code, msg, hdrs, fp)\nurllib.error.HTTPError: HTTP Error 400: Bad Request\n",\n    "hostname": "avpdwguqvsmj6s-64411339",\n    "worker_id": "avpdwguqvsmj6s",\n    "runpod_version": "1.7.13"\n}
-2025-11-24  17:58:23.294 | error | avpdwguqvsmj6s | Captured Handler Exception
-2025-11-24  17:58:23.294 | info | avpdwguqvsmj6s | invalid prompt: {'type': 'prompt_outputs_failed_validation', 'message': 'Prompt outputs failed validation', 'details': '', 'extra_info': {}}\n
-2025-11-24  17:58:23.294 | info | avpdwguqvsmj6s | Output will be ignored\n
-2025-11-24  17:58:23.294 | info | avpdwguqvsmj6s |   - Custom validation failed for node: image - Invalid image file: https://casino-cdn-45tz9ud.b-cdn.net/images/current-xih6nwzkt.jpg\n
-2025-11-24  17:58:23.294 | info | avpdwguqvsmj6s | * LoadImage 244:\n
-2025-11-24  17:58:23.294 | info | avpdwguqvsmj6s |   - Value not in list: model: 'Wan2_2-I2V-A14B-HIGH_fp8_e4m3fn_scaled_KJ.safetensors' not in []\n
-2025-11-24  17:58:23.294 | info | avpdwguqvsmj6s | * WanVideoModelLoader 122:\n
-2025-11-24  17:58:23.294 | info | avpdwguqvsmj6s |   - Value not in list: lora_0: 'high_noise_model.safetensors' not in ['none']\n
-2025-11-24  17:58:23.294 | info | avpdwguqvsmj6s | * WanVideoLoraSelectMulti 279:\n
-2025-11-24  17:58:23.294 | info | avpdwguqvsmj6s |   - Value not in list: model: 'Wan2_2-I2V-A14B-LOW_fp8_e4m3fn_scaled_KJ.safetensors' not in []\n
-2025-11-24  17:58:23.294 | info | avpdwguqvsmj6s | * WanVideoModelLoader 549:\n
-2025-11-24  17:58:23.294 | info | avpdwguqvsmj6s |   - Value not in list: lora_0: 'low_noise_model.safetensors' not in ['none']\n
-2025-11-24  17:58:23.294 | info | avpdwguqvsmj6s | * WanVideoLoraSelectMulti 553:\n
-2025-11-24  17:58:23.294 | info | avpdwguqvsmj6s | Failed to validate prompt for output 131:\n
-2025-11-24  17:58:23.294 | info | avpdwguqvsmj6s | got prompt\n
-2025-11-24  17:58:23.294 | info | avpdwguqvsmj6s | handler.py          :158  2025-11-24 16:58:17,870 Queueing prompt to: http://127.0.0.1:8188/prompt\n
-2025-11-24  17:58:23.294 | info | avpdwguqvsmj6s | handler.py          :342  2025-11-24 16:58:17,870 WebSocket connection successful (attempt 1)\n
-2025-11-24  17:58:23.294 | info | avpdwguqvsmj6s | handler.py          :327  2025-11-24 16:58:17,869 HTTP connection successful (attempt 1)\n
-2025-11-24  17:58:23.294 | info | avpdwguqvsmj6s | handler.py          :319  2025-11-24 16:58:17,867 Checking HTTP connection to: http://127.0.0.1:8188/\n
-2025-11-24  17:58:23.294 | info | avpdwguqvsmj6s | handler.py          :315  2025-11-24 16:58:17,867 Connecting to WebSocket: ws://127.0.0.1:8188/ws?clientId=50557f63-6dbe-4b52-a801-bb113b344ac1\n
-2025-11-24  17:58:23.294 | info | avpdwguqvsmj6s | handler.py          :247  2025-11-24 16:58:17,866 Using single workflow with 0 LoRA pairs\n
-2025-11-24  17:58:23.294 | info | avpdwguqvsmj6s | handler.py          :36   2025-11-24 16:58:17,866 📁 Processing path input: https://casino-cdn-45tz9ud.b-cdn.net/images/current-xih6nwzkt.jpg\n
-2025-11-24  17:58:23.294 | info | avpdwguqvsmj6s | handler.py          :211  2025-11-24 16:58:17,866 Received job input: {'cfg': 2, 'height': 832, 'image_path': 'https://casino-cdn-45tz9ud.b-cdn.net/images/current-xih6nwzkt.jpg', 'length': 81, 'negative_prompt': 'blurry, low quality, distorted', 'prompt': 'The character feel happy and dances', 'seed': 42, 'steps': 10, 'width': 480}\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | Started.
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | Jobs in progress: 1
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | Jobs in queue: 1
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | --- Starting Serverless Worker |  Version 1.7.13 ---\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | FETCH ComfyRegistry Data: 5/108\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | Starting the handler...\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | ComfyUI is ready!\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | To see the GUI go to: http://[::]:8188\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | To see the GUI go to: http://0.0.0.0:8188\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | \n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | Starting server\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | No target revision found.\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | Will assume non-transactional DDL.\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | Context impl SQLiteImpl.\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | Waiting for ComfyUI... (8/120)\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | \n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s |    0.4 seconds: /ComfyUI/custom_nodes/ComfyUI-WanVideoWrapper\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s |    0.2 seconds: /ComfyUI/custom_nodes/ComfyUI-KJNodes\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s |    0.2 seconds: /ComfyUI/custom_nodes/IntelligentVRAMNode\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s |    0.2 seconds: /ComfyUI/custom_nodes/ComfyUI-AdaptiveWindowSize\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s |    0.1 seconds: /ComfyUI/custom_nodes/ComfyUI-VideoHelperSuite\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s |    0.1 seconds: /ComfyUI/custom_nodes/auto_wan2.2animate_freamtowindow_server\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s |    0.1 seconds: /ComfyUI/custom_nodes/ComfyUI-Manager\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s |    0.0 seconds: /ComfyUI/custom_nodes/ComfyUI-GGUF\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s |    0.0 seconds (IMPORT FAILED): /ComfyUI/custom_nodes/ComfyUI-GGUF-FantasyTalking\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s |    0.0 seconds: /ComfyUI/custom_nodes/ComfyUI-wanBlockswap\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s |    0.0 seconds: /ComfyUI/custom_nodes/websocket_image_save.py\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | Import times for custom nodes:\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | \n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | ComfyUI-GGUF: Allowing full torch compile\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | Cannot import /ComfyUI/custom_nodes/ComfyUI-GGUF-FantasyTalking module for custom nodes: (unicode error) 'unicodeescape' codec can't decode bytes in position 149-150: truncated \UXXXXXXXX escape (nodes.py, line 669)\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | \n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | SyntaxError: (unicode error) 'unicodeescape' codec can't decode bytes in position 149-150: truncated \UXXXXXXXX escape\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s |                                        ^\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s |     Prompt executed in 88.52 seconds"""\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s |   File "/ComfyUI/custom_nodes/ComfyUI-GGUF-FantasyTalking/nodes.py", line 669\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s |     from .nodes import NODE_CLASS_MAPPINGS\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s |   File "/ComfyUI/custom_nodes/ComfyUI-GGUF-FantasyTalking/__init__.py", line 7, in <module>\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s |   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s |   File "<frozen importlib._bootstrap_external>", line 883, in exec_module\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s |     module_spec.loader.exec_module(module)\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s |   File "/ComfyUI/nodes.py", line 2136, in load_custom_node\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | Traceback (most recent call last):\n
-2025-11-24  17:58:23.293 | warning | avpdwguqvsmj6s | WanVideoWrapper WARNING: FantasyPortrait nodes not available due to error in importing them: No module named 'onnx'\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | [ComfyUI-Manager] default cache updated: https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/custom-node-list.json\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | [ComfyUI-Manager] default cache updated: https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/extension-node-map.json\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | [ComfyUI-Manager] default cache updated: https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/github-stats.json\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s |    - Adaptive WanVideo Animate Embeds (AdaptiveWanVideoAnimateEmbeds)\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s |    Available nodes:\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | ⚠️  Enhanced face crop nodes not available: No module named '/ComfyUI/custom_nodes/ComfyUI-AdaptiveWindowSize.enhanced_face_crop'\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | [ComfyUI-Manager] default cache updated: https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/alter-list.json\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | [ComfyUI-Manager] default cache updated: https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/model-list.json\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | ### ComfyUI Version: v0.3.71-6-gf66183a5 | Released on '2025-11-23'\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | [ComfyUI-Manager] network_mode: public\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | ### Loading: ComfyUI-Manager (V3.37.1)\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | Waiting for ComfyUI... (6/120)\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | Enabled pinned memory 121514.0\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | Device: cuda:0 NVIDIA GeForce RTX 4090 : cudaMallocAsync\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | Set vram state to: NORMAL_VRAM\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | xformers version: 0.0.32.post2\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | pytorch version: 2.8.0+cu128\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | Total VRAM 24091 MB, total RAM 127910 MB\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | [Prompt Server] web root: /usr/local/lib/python3.10/dist-packages/comfyui_frontend_package/static\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | ComfyUI frontend version: 1.30.6\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | ComfyUI version: 0.3.71\n
-2025-11-24  17:58:23.293 | info | avpdwguqvsmj6s | Python version: 3.10.12 (main, Aug 15 2025, 14:32:43) [GCC 11.4.0]\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | FETCH ComfyRegistry Data: 10/108\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | Finished.
+2025-11-24  20:40:57.222 | error | ucxqi3fw8af7c8 | {\n    "error_type": "<class 'urllib.error.HTTPError'>",\n    "error_message": "HTTP Error 400: Bad Request",\n    "error_traceback": "Traceback (most recent call last):\n  File \"/usr/local/lib/python3.10/dist-packages/runpod/serverless/modules/rp_job.py\", line 182, in run_job\n    handler_return = handler(job)\n  File \"//handler.py\", line 349, in handler\n    videos = get_videos(ws, prompt)\n  File \"//handler.py\", line 179, in get_videos\n    prompt_id = queue_prompt(prompt)['prompt_id']\n  File \"//handler.py\", line 162, in queue_prompt\n    return json.loads(urllib.request.urlopen(req).read())\n  File \"/usr/lib/python3.10/urllib/request.py\", line 216, in urlopen\n    return opener.open(url, data, timeout)\n  File \"/usr/lib/python3.10/urllib/request.py\", line 525, in open\n    response = meth(req, response)\n  File \"/usr/lib/python3.10/urllib/request.py\", line 634, in http_response\n    response = self.parent.error(\n  File \"/usr/lib/python3.10/urllib/request.py\", line 563, in error\n    return self._call_chain(*args)\n  File \"/usr/lib/python3.10/urllib/request.py\", line 496, in _call_chain\n    result = func(*args)\n  File \"/usr/lib/python3.10/urllib/request.py\", line 643, in http_error_default\n    raise HTTPError(req.full_url, code, msg, hdrs, fp)\nurllib.error.HTTPError: HTTP Error 400: Bad Request\n",\n    "hostname": "ucxqi3fw8af7c8-64410d5a",\n    "worker_id": "ucxqi3fw8af7c8",\n    "runpod_version": "1.7.13"\n}
+2025-11-24  20:40:57.222 | error | ucxqi3fw8af7c8 | Captured Handler Exception
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | invalid prompt: {'type': 'prompt_outputs_failed_validation', 'message': 'Prompt outputs failed validation', 'details': '', 'extra_info': {}}\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | Output will be ignored\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 |   - Custom validation failed for node: image - Invalid image file: https://casino-cdn-45tz9ud.b-cdn.net/images/current-xih6nwzkt.jpg\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | * LoadImage 244:\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | Failed to validate prompt for output 131:\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | got prompt\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | handler.py          :158  2025-11-24 19:40:53,481 Queueing prompt to: http://127.0.0.1:8188/prompt\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | handler.py          :342  2025-11-24 19:40:53,481 WebSocket connection successful (attempt 1)\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | handler.py          :327  2025-11-24 19:40:53,479 HTTP connection successful (attempt 1)\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | handler.py          :319  2025-11-24 19:40:53,475 Checking HTTP connection to: http://127.0.0.1:8188/\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | handler.py          :315  2025-11-24 19:40:53,475 Connecting to WebSocket: ws://127.0.0.1:8188/ws?clientId=de3aba58-1b50-422b-b23c-b3c68b420b30\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | handler.py          :247  2025-11-24 19:40:53,475 Using single workflow with 0 LoRA pairs\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | handler.py          :36   2025-11-24 19:40:53,475 📁 Processing path input: https://casino-cdn-45tz9ud.b-cdn.net/images/current-xih6nwzkt.jpg\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | handler.py          :211  2025-11-24 19:40:53,474 Received job input: {'cfg': 2, 'height': 832, 'image_path': 'https://casino-cdn-45tz9ud.b-cdn.net/images/current-xih6nwzkt.jpg', 'length': 81, 'negative_prompt': 'blurry, low quality, distorted', 'prompt': 'The character feel happy and dances', 'seed': 42, 'steps': 10, 'width': 480}\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | Started.
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | Jobs in progress: 1
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | Jobs in queue: 1
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | FETCH ComfyRegistry Data: 5/108\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | --- Starting Serverless Worker |  Version 1.7.13 ---\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | Starting the handler...\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | ComfyUI is ready!\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | To see the GUI go to: http://[::]:8188\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | To see the GUI go to: http://0.0.0.0:8188\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | \n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | Starting server\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | No target revision found.\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | Will assume non-transactional DDL.\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | Context impl SQLiteImpl.\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | \n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 |    0.8 seconds: /ComfyUI/custom_nodes/ComfyUI-WanVideoWrapper\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 |    0.1 seconds: /ComfyUI/custom_nodes/ComfyUI-Manager\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 |    0.1 seconds: /ComfyUI/custom_nodes/ComfyUI-KJNodes\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 |    0.1 seconds: /ComfyUI/custom_nodes/ComfyUI-VideoHelperSuite\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 |    0.0 seconds: /ComfyUI/custom_nodes/ComfyUI-GGUF\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 |    0.0 seconds: /ComfyUI/custom_nodes/IntelligentVRAMNode\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 |    0.0 seconds (IMPORT FAILED): /ComfyUI/custom_nodes/ComfyUI-GGUF-FantasyTalking\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 |    0.0 seconds: /ComfyUI/custom_nodes/ComfyUI-AdaptiveWindowSize\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 |    0.0 seconds: /ComfyUI/custom_nodes/ComfyUI-wanBlockswap\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 |    0.0 seconds: /ComfyUI/custom_nodes/auto_wan2.2animate_freamtowindow_server\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 |    0.0 seconds: /ComfyUI/custom_nodes/websocket_image_save.py\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | Import times for custom nodes:\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | \n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | ComfyUI-GGUF: Allowing full torch compile\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | Cannot import /ComfyUI/custom_nodes/ComfyUI-GGUF-FantasyTalking module for custom nodes: (unicode error) 'unicodeescape' codec can't decode bytes in position 149-150: truncated \UXXXXXXXX escape (nodes.py, line 669)\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | \n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | SyntaxError: (unicode error) 'unicodeescape' codec can't decode bytes in position 149-150: truncated \UXXXXXXXX escape\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 |                                        ^\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 |     Prompt executed in 88.52 seconds"""\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 |   File "/ComfyUI/custom_nodes/ComfyUI-GGUF-FantasyTalking/nodes.py", line 669\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 |     from .nodes import NODE_CLASS_MAPPINGS\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 |   File "/ComfyUI/custom_nodes/ComfyUI-GGUF-FantasyTalking/__init__.py", line 7, in <module>\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 |   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 |   File "<frozen importlib._bootstrap_external>", line 883, in exec_module\n
+2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 |     module_spec.loader.exec_module(module)\n
+2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 |   File "/ComfyUI/nodes.py", line 2136, in load_custom_node\n
+2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | Traceback (most recent call last):\n
+2025-11-24  20:40:57.221 | warning | ucxqi3fw8af7c8 | WanVideoWrapper WARNING: FantasyPortrait nodes not available due to error in importing them: No module named 'onnx'\n
+2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | [ComfyUI-Manager] default cache updated: https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/custom-node-list.json\n
+2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | [ComfyUI-Manager] default cache updated: https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/extension-node-map.json\n
+2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | [ComfyUI-Manager] default cache updated: https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/github-stats.json\n
+2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | [ComfyUI-Manager] default cache updated: https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/alter-list.json\n
+2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | [ComfyUI-Manager] default cache updated: https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/model-list.json\n
+2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | Waiting for ComfyUI... (8/120)\n
+2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 |    - Adaptive WanVideo Animate Embeds (AdaptiveWanVideoAnimateEmbeds)\n
+2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 |    Available nodes:\n
+2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | ⚠️  Enhanced face crop nodes not available: No module named '/ComfyUI/custom_nodes/ComfyUI-AdaptiveWindowSize.enhanced_face_crop'\n
+2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | ### ComfyUI Version: v0.3.71-5-gcbd68e3d | Released on '2025-11-23'\n
+2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | [ComfyUI-Manager] network_mode: public\n
+2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | ### Loading: ComfyUI-Manager (V3.37.1)\n
+2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | Enabled pinned memory 490030.0\n
+2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | Device: cuda:0 NVIDIA A100-SXM4-80GB : cudaMallocAsync\n
+2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | Set vram state to: NORMAL_VRAM\n
+2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | xformers version: 0.0.32.post2\n
+2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | pytorch version: 2.8.0+cu128\n
+2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | Total VRAM 81154 MB, total RAM 515821 MB\n
+2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | [Prompt Server] web root: /usr/local/lib/python3.10/dist-packages/comfyui_frontend_package/static\n
+2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | ComfyUI frontend version: 1.30.6\n
+2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | ComfyUI version: 0.3.71\n
+2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | Python version: 3.10.12 (main, Aug 15 2025, 14:32:43) [GCC 11.4.0]\n
+2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | Waiting for ComfyUI... (6/120)\n

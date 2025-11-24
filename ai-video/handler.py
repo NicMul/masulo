@@ -214,7 +214,15 @@ def handler(job):
     # Process image input (use only one of: image_path, image_url, image_base64)
     image_path = None
     if "image_path" in job_input:
-        image_path = process_input(job_input["image_path"], task_id, "input_image.jpg", "path")
+        # Check if image_path is actually a URL
+        input_value = job_input["image_path"]
+        if input_value.startswith(("http://", "https://")):
+            # It's a URL, treat it as such
+            logger.info(f"🌐 Detected URL in image_path, treating as URL: {input_value}")
+            image_path = process_input(input_value, task_id, "input_image.jpg", "url")
+        else:
+            # It's a local path
+            image_path = process_input(input_value, task_id, "input_image.jpg", "path")
     elif "image_url" in job_input:
         image_path = process_input(job_input["image_url"], task_id, "input_image.jpg", "url")
     elif "image_base64" in job_input:
@@ -227,7 +235,15 @@ def handler(job):
     # Process end image input (use only one of: end_image_path, end_image_url, end_image_base64)
     end_image_path_local = None
     if "end_image_path" in job_input:
-        end_image_path_local = process_input(job_input["end_image_path"], task_id, "end_image.jpg", "path")
+        # Check if end_image_path is actually a URL
+        input_value = job_input["end_image_path"]
+        if input_value.startswith(("http://", "https://")):
+            # It's a URL, treat it as such
+            logger.info(f"🌐 Detected URL in end_image_path, treating as URL: {input_value}")
+            end_image_path_local = process_input(input_value, task_id, "end_image.jpg", "url")
+        else:
+            # It's a local path
+            end_image_path_local = process_input(input_value, task_id, "end_image.jpg", "path")
     elif "end_image_url" in job_input:
         end_image_path_local = process_input(job_input["end_image_url"], task_id, "end_image.jpg", "url")
     elif "end_image_base64" in job_input:
