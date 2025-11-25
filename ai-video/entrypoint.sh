@@ -6,7 +6,7 @@ set -e
 # Start ComfyUI in the background with output logging
 echo "Starting ComfyUI in the background..."
 cd /ComfyUI
-python main.py --listen --use-sage-attention > /tmp/comfyui.log 2>&1 &
+python main.py --listen > /tmp/comfyui.log 2>&1 &
 COMFYUI_PID=$!
 
 # Function to check if ComfyUI process is still running
