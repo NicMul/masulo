@@ -4,59 +4,82 @@ FROM wlsdml1114/multitalk-base:1.7 as runtime
 
 # Reinstall PyTorch with A100 (compute capability 8.0) support
 # The base image's PyTorch may not include A100 kernels
-RUN pip uninstall -y torch torchvision torchaudio xformers || true && \
-    pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121 && \
-    pip install xformers
+# Also reinstall sageattention to match the new PyTorch version
+RUN pip uninstall -y torch torchvision torchaudio xformers sageattention || true && \
+    pip install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121 && \
+    pip install --no-cache-dir xformers && \
+    pip install --no-cache-dir sageattention && \
+    pip cache purge
 
-RUN pip install -U "huggingface_hub[hf_transfer]"
-RUN pip install runpod websocket-client requests
+RUN pip install --no-cache-dir -U "huggingface_hub[hf_transfer]" && \
+    pip install --no-cache-dir runpod websocket-client requests && \
+    pip cache purge
 
 WORKDIR /
 
-RUN git clone https://github.com/comfyanonymous/ComfyUI.git && \
+RUN git clone --depth 1 https://github.com/comfyanonymous/ComfyUI.git && \
     cd /ComfyUI && \
-    pip install -r requirements.txt
+    pip install --no-cache-dir -r requirements.txt && \
+    pip cache purge && \
+    rm -rf .git
 
 RUN cd /ComfyUI/custom_nodes && \
-    git clone https://github.com/Comfy-Org/ComfyUI-Manager.git && \
+    git clone --depth 1 https://github.com/Comfy-Org/ComfyUI-Manager.git && \
     cd ComfyUI-Manager && \
-    pip install -r requirements.txt
+    pip install --no-cache-dir -r requirements.txt && \
+    pip cache purge && \
+    rm -rf .git
     
 RUN cd /ComfyUI/custom_nodes && \
-    git clone https://github.com/city96/ComfyUI-GGUF && \
+    git clone --depth 1 https://github.com/city96/ComfyUI-GGUF && \
     cd ComfyUI-GGUF && \
-    pip install -r requirements.txt
+    pip install --no-cache-dir -r requirements.txt && \
+    pip cache purge && \
+    rm -rf .git
 
 RUN cd /ComfyUI/custom_nodes && \
-    git clone https://github.com/kijai/ComfyUI-KJNodes && \
+    git clone --depth 1 https://github.com/kijai/ComfyUI-KJNodes && \
     cd ComfyUI-KJNodes && \
-    pip install -r requirements.txt
+    pip install --no-cache-dir -r requirements.txt && \
+    pip cache purge && \
+    rm -rf .git
 
 RUN cd /ComfyUI/custom_nodes && \
-    git clone https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite && \
+    git clone --depth 1 https://github.com/Kosinkadink/ComfyUI-VideoHelperSuite && \
     cd ComfyUI-VideoHelperSuite && \
-    pip install -r requirements.txt
+    pip install --no-cache-dir -r requirements.txt && \
+    pip cache purge && \
+    rm -rf .git
     
 RUN cd /ComfyUI/custom_nodes && \
-    git clone https://github.com/kael558/ComfyUI-GGUF-FantasyTalking && \
+    git clone --depth 1 https://github.com/kael558/ComfyUI-GGUF-FantasyTalking && \
     cd ComfyUI-GGUF-FantasyTalking && \
-    pip install -r requirements.txt
+    pip install --no-cache-dir -r requirements.txt && \
+    pip cache purge && \
+    rm -rf .git
     
 RUN cd /ComfyUI/custom_nodes && \
-    git clone https://github.com/orssorbit/ComfyUI-wanBlockswap
+    git clone --depth 1 https://github.com/orssorbit/ComfyUI-wanBlockswap && \
+    rm -rf ComfyUI-wanBlockswap/.git
 
 RUN cd /ComfyUI/custom_nodes && \
-    git clone https://github.com/kijai/ComfyUI-WanVideoWrapper && \
+    git clone --depth 1 https://github.com/kijai/ComfyUI-WanVideoWrapper && \
     cd ComfyUI-WanVideoWrapper && \
-    pip install -r requirements.txt
+    pip install --no-cache-dir -r requirements.txt && \
+    pip cache purge && \
+    rm -rf .git
 
     
 RUN cd /ComfyUI/custom_nodes && \
-    git clone https://github.com/eddyhhlure1Eddy/IntelligentVRAMNode && \
-    git clone https://github.com/eddyhhlure1Eddy/auto_wan2.2animate_freamtowindow_server && \
-    git clone https://github.com/eddyhhlure1Eddy/ComfyUI-AdaptiveWindowSize && \
+    git clone --depth 1 https://github.com/eddyhhlure1Eddy/IntelligentVRAMNode && \
+    rm -rf IntelligentVRAMNode/.git && \
+    git clone --depth 1 https://github.com/eddyhhlure1Eddy/auto_wan2.2animate_freamtowindow_server && \
+    rm -rf auto_wan2.2animate_freamtowindow_server/.git && \
+    git clone --depth 1 https://github.com/eddyhhlure1Eddy/ComfyUI-AdaptiveWindowSize && \
     cd ComfyUI-AdaptiveWindowSize/ComfyUI-AdaptiveWindowSize && \
-    mv * ../
+    mv * ../ && \
+    cd /ComfyUI/custom_nodes && \
+    rm -rf ComfyUI-AdaptiveWindowSize/.git
 
 # All models are now loaded from /runpod-volume/ network volume
 # This reduces Docker image size significantly and allows sharing models across instances
@@ -73,8 +96,20 @@ RUN cd /ComfyUI/custom_nodes && \
 
 # All models are loaded from network volume - no downloads in image
 
-COPY . .
+# Final cleanup: remove pip cache, git, and other unnecessary files
+RUN pip cache purge && \
+    rm -rf /root/.cache/pip && \
+    rm -rf /root/.cache/huggingface && \
+    find /ComfyUI -type d -name ".git" -exec rm -rf {} + 2>/dev/null || true && \
+    find /ComfyUI -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true && \
+    find /ComfyUI -type f -name "*.pyc" -delete 2>/dev/null || true
+
+COPY handler.py /handler.py
+COPY entrypoint.sh /entrypoint.sh
+COPY new_Wan22_api.json /new_Wan22_api.json
+COPY new_Wan22_flf2v_api.json /new_Wan22_flf2v_api.json
 COPY extra_model_paths.yaml /ComfyUI/extra_model_paths.yaml
+COPY example_image.png /example_image.png
 RUN chmod +x /entrypoint.sh
 
 CMD ["/entrypoint.sh"]

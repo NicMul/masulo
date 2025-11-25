@@ -1,440 +1,78 @@
-2025-11-24  20:52:22.111 | info | sgx15f8eabrwx6 | Finished.
-2025-11-24  20:52:22.111 | error | sgx15f8eabrwx6 | {\n    "error_type": "<class 'websocket._exceptions.WebSocketConnectionClosedException'>",\n    "error_message": "Connection to remote host was lost.",\n    "error_traceback": "Traceback (most recent call last):\n  File \"/usr/local/lib/python3.10/dist-packages/runpod/serverless/modules/rp_job.py\", line 182, in run_job\n    handler_return = handler(job)\n  File \"//handler.py\", line 365, in handler\n    videos = get_videos(ws, prompt)\n  File \"//handler.py\", line 182, in get_videos\n    out = ws.recv()\n  File \"/usr/local/lib/python3.10/dist-packages/websocket/_core.py\", line 395, in recv\n    opcode, data = self.recv_data()\n  File \"/usr/local/lib/python3.10/dist-packages/websocket/_core.py\", line 423, in recv_data\n    opcode, frame = self.recv_data_frame(control_frame)\n  File \"/usr/local/lib/python3.10/dist-packages/websocket/_core.py\", line 444, in recv_data_frame\n    frame = self.recv_frame()\n  File \"/usr/local/lib/python3.10/dist-packages/websocket/_core.py\", line 485, in recv_frame\n    return self.frame_buffer.recv_frame()\n  File \"/usr/local/lib/python3.10/dist-packages/websocket/_abnf.py\", line 375, in recv_frame\n    self.recv_header()\n  File \"/usr/local/lib/python3.10/dist-packages/websocket/_abnf.py\", line 329, in recv_header\n    header = self.recv_strict(2)\n  File \"/usr/local/lib/python3.10/dist-packages/websocket/_abnf.py\", line 418, in recv_strict\n    bytes_ = self.recv(min(16384, shortage))\n  File \"/usr/local/lib/python3.10/dist-packages/websocket/_core.py\", line 581, in _recv\n    return recv(self.sock, bufsize)\n  File \"/usr/local/lib/python3.10/dist-packages/websocket/_socket.py\", line 143, in recv\n    raise WebSocketConnectionClosedException(\"Connection to remote host was lost.\")\nwebsocket._exceptions.WebSocketConnectionClosedException: Connection to remote host was lost.\n",\n    "hostname": "sgx15f8eabrwx6-64410f17",\n    "worker_id": "sgx15f8eabrwx6",\n    "runpod_version": "1.7.13"\n}
-2025-11-24  20:52:21.861 | error | sgx15f8eabrwx6 | Captured Handler Exception
-2025-11-24  20:52:21.861 | info | sgx15f8eabrwx6 | \n
-2025-11-24  20:52:21.861 | info | sgx15f8eabrwx6 | frame #61: <unknown function> + 0x90a4 (0x7ed6032110a4 in /usr/lib/python3.10/lib-dynload/_asyncio.cpython-310-x86_64-linux-gnu.so)\n
-2025-11-24  20:52:21.861 | info | sgx15f8eabrwx6 | frame #60: <unknown function> + 0x928e (0x7ed60321128e in /usr/lib/python3.10/lib-dynload/_asyncio.cpython-310-x86_64-linux-gnu.so)\n
-2025-11-24  20:52:21.861 | info | sgx15f8eabrwx6 | <omitting python frames>\n
-2025-11-24  20:52:21.861 | info | sgx15f8eabrwx6 | frame #6: <unknown function> + 0x6df774 (0x7ed5f39e9774 in /usr/local/lib/python3.10/dist-packages/torch/lib/libtorch_python.so)\n
-2025-11-24  20:52:21.861 | info | sgx15f8eabrwx6 | frame #5: <unknown function> + 0x6df3d8 (0x7ed5f39e93d8 in /usr/local/lib/python3.10/dist-packages/torch/lib/libtorch_python.so)\n
-2025-11-24  20:52:21.861 | info | sgx15f8eabrwx6 | frame #4: c10::TensorImpl::~TensorImpl() + 0x9 (0x7ed60129b179 in /usr/local/lib/python3.10/dist-packages/torch/lib/libc10.so)\n
-2025-11-24  20:52:21.861 | info | sgx15f8eabrwx6 | frame #3: <unknown function> + 0x43fc6f (0x7ed5f3749c6f in /usr/local/lib/python3.10/dist-packages/torch/lib/libtorch_python.so)\n
-2025-11-24  20:52:21.861 | info | sgx15f8eabrwx6 | frame #2: <unknown function> + 0x56ad1 (0x7ed601395ad1 in /usr/local/lib/python3.10/dist-packages/torch/lib/libc10_cuda.so)\n
-2025-11-24  20:52:21.861 | info | sgx15f8eabrwx6 | frame #1: <unknown function> + 0x111c7 (0x7ed6013501c7 in /usr/local/lib/python3.10/dist-packages/torch/lib/libc10_cuda.so)\n
-2025-11-24  20:52:21.861 | info | sgx15f8eabrwx6 | frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x80 (0x7ed6012bdeb0 in /usr/local/lib/python3.10/dist-packages/torch/lib/libc10.so)\n
-2025-11-24  20:52:21.861 | info | sgx15f8eabrwx6 | Exception raised from c10_cuda_check_implementation at /pytorch/c10/cuda/CUDAException.cpp:42 (most recent call first):\n
-2025-11-24  20:52:21.861 | info | sgx15f8eabrwx6 | \n
-2025-11-24  20:52:21.861 | info | sgx15f8eabrwx6 | Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.\n
-2025-11-24  20:52:21.861 | info | sgx15f8eabrwx6 | For debugging consider passing CUDA_LAUNCH_BLOCKING=1\n
-2025-11-24  20:52:21.861 | info | sgx15f8eabrwx6 | CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.\n
-2025-11-24  20:52:21.861 | info | sgx15f8eabrwx6 |   what():  CUDA error: no kernel image is available for execution on the device\n
-2025-11-24  20:52:20.232 | info | sgx15f8eabrwx6 | \r  0%|          | 0/4 [00:00<?, ?it/s]terminate called after throwing an instance of 'c10::AcceleratorError'\n
-2025-11-24  20:52:20.232 | info | sgx15f8eabrwx6 | Sampling 81 frames at 480x832 with 4 steps\n
-2025-11-24  20:52:18.959 | info | sgx15f8eabrwx6 | Input sequence length: 32760\n
-2025-11-24  20:52:18.958 | info | sgx15f8eabrwx6 | Context schedule enabled: 21 frames, 1 stride, 12 overlap\n
-2025-11-24  20:52:18.958 | info | sgx15f8eabrwx6 | Applying FreeNoise\n
-2025-11-24  20:52:18.958 | info | sgx15f8eabrwx6 | context window seq len: 32760\n
-2025-11-24  20:52:18.958 | info | sgx15f8eabrwx6 | Section size: 21.0\n
-2025-11-24  20:52:18.958 | info | sgx15f8eabrwx6 | Number of prompts: 1\n
-2025-11-24  20:52:18.958 | info | sgx15f8eabrwx6 | image_cond shape: torch.Size([20, 21, 104, 60])\n
-2025-11-24  20:52:18.958 | info | sgx15f8eabrwx6 | Using per-step cfg list: [2.0, 1.0, 1.0, 1.0]\n
-2025-11-24  20:52:18.958 | info | sgx15f8eabrwx6 | Received 8 cfg values, but only 4 steps. Slicing cfg list to match steps.\n
-2025-11-24  20:52:18.958 | info | sgx15f8eabrwx6 | sigmas: tensor([1.0000, 0.9844, 0.9643, 0.9375, 0.9000])\n
-2025-11-24  20:52:18.958 | info | sgx15f8eabrwx6 | ------------------------------\n
-2025-11-24  20:52:18.958 | info | sgx15f8eabrwx6 | Using sigmas: tensor([1.0000, 0.9844, 0.9643, 0.9375, 0.9000])\n
-2025-11-24  20:52:18.958 | info | sgx15f8eabrwx6 | Using timesteps: tensor([999, 984, 964, 937], device='cuda:0')\n
-2025-11-24  20:52:18.958 | info | sgx15f8eabrwx6 | Total timesteps: tensor([999, 984, 964, 937, 899, 843, 749, 562], device='cuda:0')\n
-2025-11-24  20:52:18.599 | info | sgx15f8eabrwx6 | ------- Scheduler info -------\n
-2025-11-24  20:52:17.430 | info | sgx15f8eabrwx6 | FETCH ComfyRegistry Data: 65/108\n
-2025-11-24  20:52:13.568 | info | sgx15f8eabrwx6 | FETCH ComfyRegistry Data: 60/108\n
-2025-11-24  20:52:09.336 | info | sgx15f8eabrwx6 | FETCH ComfyRegistry Data: 55/108\n
-2025-11-24  20:52:09.336 | info | sgx15f8eabrwx6 | Using 400 LoRA weight patches for WanVideo model\n
-2025-11-24  20:52:07.841 | info | sgx15f8eabrwx6 | \rLoading transformer parameters to cuda:0:   0%|          | 0/1095 [00:00<?, ?it/s]\rLoading transformer parameters to cuda:0:   0%|          | 3/1095 [00:00<02:19,  7.83it/s]\rLoading transformer parameters to cuda:0:   0%|          | 5/1095 [00:00<02:45,  6.59it/s]\rLoading transformer parameters to cuda:0:   1%|          | 9/1095 [00:01<02:02,  8.89it/s]\rLoading transformer parameters to cuda:0:   1%|          | 11/1095 [00:02<04:28,  4.04it/s]\rLoading transformer parameters to cuda:0:   1%|▏         | 16/1095 [00:02<02:30,  7.15it/s]\rLoading transformer parameters to cuda:0:   2%|▏         | 20/1095 [00:02<01:54,  9.37it/s]\rLoading transformer parameters to cuda:0:   3%|▎         | 28/1095 [00:02<01:10, 15.19it/s]\rLoading transformer parameters to cuda:0:   3%|▎         | 31/1095 [00:02<01:03, 16.75it/s]\rLoading transformer parameters to cuda:0:   3%|▎         | 34/1095 [00:03<00:59, 17.88it/s]\rLoading transformer parameters to cuda:0:   3%|▎         | 37/1095 [00:03<00:57, 18.26it/s]\rLoading transformer parameters to cuda:0:   4%|▎         | 40/1095 [00:03<00:54, 19.23it/s]\rLoading transformer parameters to cuda:0:   4%|▍         | 43/1095 [00:03<01:06, 15.86it/s]\rLoading transformer parameters to cuda:0:   4%|▍         | 47/1095 [00:03<00:59, 17.53it/s]\rLoading transformer parameters to cuda:0:   5%|▍         | 53/1095 [00:03<00:42, 24.34it/s]\rLoading transformer parameters to cuda:0:   5%|▌         | 57/1095 [00:04<00:44, 23.41it/s]\rLoading transformer parameters to cuda:0:   6%|▌         | 63/1095 [00:04<00:45, 22.63it/s]\rLoading transformer parameters to cuda:0:   6%|▌         | 66/1095 [00:04<00:43, 23.58it/s]\rLoading transformer parameters to cuda:0:   6%|▋         | 69/1095 [00:04<00:42, 24.28it/s]\rLoading transformer parameters to cuda:0:   7%|▋         | 72/1095 [00:04<00:47, 21.75it/s]\rLoading transformer parameters to cuda:0:   7%|▋         | 80/1095 [00:04<00:36, 27.75it/s]\rLoading transformer parameters to cuda:0:   8%|▊         | 84/1095 [00:05<00:38, 26.14it/s]\rLoading transformer parameters to cuda:0:   8%|▊         | 87/1095 [00:05<00:38, 26.49it/s]\rLoading transformer parameters to cuda:0:   8%|▊         | 90/1095 [00:05<00:40, 24.92it/s]\rLoading transformer parameters to cuda:0:   8%|▊         | 93/1095 [00:05<00:41, 24.15it/s]\rLoading transformer parameters to cuda:0:   9%|▉         | 96/1095 [00:05<00:40, 24.39it/s]\rLoading transformer parameters to cuda:0:   9%|▉         | 99/1095 [00:05<00:48, 20.60it/s]\rLoading transformer parameters to cuda:0:  10%|▉         | 107/1095 [00:06<00:34, 28.34it/s]\rLoading transformer parameters to cuda:0:  10%|█         | 111/1095 [00:06<00:37, 26.31it/s]\rLoading transformer parameters to cuda:0:  11%|█         | 117/1095 [00:06<00:38, 25.69it/s]\rLoading transformer parameters to cuda:0:  11%|█         | 120/1095 [00:06<00:37, 26.16it/s]\rLoading transformer parameters to cuda:0:  11%|█▏        | 124/1095 [00:06<00:40, 24.02it/s]\rLoading transformer parameters to cuda:0:  12%|█▏        | 127/1095 [00:06<00:40, 23.80it/s]\rLoading transformer parameters to cuda:0:  12%|█▏        | 130/1095 [00:07<00:39, 24.64it/s]\rLoading transformer parameters to cuda:0:  12%|█▏        | 134/1095 [00:07<00:35, 27.16it/s]\rLoading transformer parameters to cuda:0:  13%|█▎        | 137/1095 [00:07<00:34, 27.50it/s]\rLoading transformer parameters to cuda:0:  13%|█▎        | 140/1095 [00:07<00:41, 23.28it/s]\rLoading transformer parameters to cuda:0:  13%|█▎        | 144/1095 [00:07<00:39, 24.17it/s]\rLoading transformer parameters to cuda:0:  13%|█▎        | 147/1095 [00:07<00:39, 23.73it/s]\rLoading transformer parameters to cuda:0:  14%|█▎        | 150/1095 [00:07<00:39, 23.93it/s]\rLoading transformer parameters to cuda:0:  14%|█▍        | 153/1095 [00:08<00:47, 19.70it/s]\rLoading transformer parameters to cuda:0:  15%|█▍        | 161/1095 [00:08<00:34, 27.26it/s]\rLoading transformer parameters to cuda:0:  15%|█▌        | 165/1095 [00:08<00:36, 25.75it/s]\rLoading transformer parameters to cuda:0:  16%|█▌        | 171/1095 [00:08<00:36, 25.59it/s]\rLoading transformer parameters to cuda:0:  16%|█▌        | 174/1095 [00:08<00:36, 24.98it/s]\rLoading transformer parameters to cuda:0:  16%|█▌        | 177/1095 [00:08<00:35, 25.88it/s]\rLoading transformer parameters to cuda:0:  16%|█▋        | 180/1095 [00:09<00:43, 21.23it/s]\rLoading transformer parameters to cuda:0:  17%|█▋        | 188/1095 [00:09<00:32, 28.02it/s]\rLoading transformer parameters to cuda:0:  17%|█▋        | 191/1095 [00:09<00:32, 27.94it/s]\rLoading transformer parameters to cuda:0:  18%|█▊        | 194/1095 [00:09<00:38, 23.40it/s]\rLoading transformer parameters to cuda:0:  18%|█▊        | 198/1095 [00:09<00:41, 21.67it/s]\rLoading transformer parameters to cuda:0:  18%|█▊        | 201/1095 [00:09<00:41, 21.61it/s]\rLoading transformer parameters to cuda:0:  19%|█▊        | 205/1095 [00:10<00:41, 21.37it/s]\rLoading transformer parameters to cuda:0:  19%|█▉        | 209/1095 [00:10<00:42, 21.08it/s]\rLoading transformer parameters to cuda:0:  20%|█▉        | 217/1095 [00:10<00:33, 26.28it/s]\rLoading transformer parameters to cuda:0:  20%|██        | 221/1095 [00:10<00:35, 24.79it/s]\rLoading transformer parameters to cuda:0:  21%|██        | 225/1095 [00:10<00:34, 25.06it/s]\rLoading transformer parameters to cuda:0:  21%|██        | 228/1095 [00:11<00:34, 25.15it/s]\rLoading transformer parameters to cuda:0:  21%|██        | 231/1095 [00:11<00:34, 25.12it/s]\rLoading transformer parameters to cuda:0:  21%|██▏       | 234/1095 [00:11<00:38, 22.14it/s]\rLoading transformer parameters to cuda:0:  22%|██▏       | 237/1095 [00:11<00:36, 23.45it/s]\rLoading transformer parameters to cuda:0:  22%|██▏       | 244/1095 [00:11<00:28, 29.81it/s]\rLoading transformer parameters to cuda:0:  23%|██▎       | 248/1095 [00:11<00:31, 26.49it/s]\rLoading transformer parameters to cuda:0:  23%|██▎       | 252/1095 [00:12<00:33, 24.90it/s]\rLoading transformer parameters to cuda:0:  23%|██▎       | 255/1095 [00:12<00:35, 23.74it/s]\rLoading transformer parameters to cuda:0:  24%|██▎       | 258/1095 [00:12<00:36, 23.18it/s]\rLoading transformer parameters to cuda:0:  24%|██▍       | 261/1095 [00:12<00:39, 20.95it/s]\rLoading transformer parameters to cuda:0:  24%|██▍       | 264/1095 [00:12<00:36, 22.54it/s]\rLoading transformer parameters to cuda:0:  25%|██▍       | 271/1095 [00:12<00:29, 27.77it/s]\rLoading transformer parameters to cuda:0:  25%|██▌       | 275/1095 [00:12<00:32, 24.88it/s]\rLoading transformer parameters to cuda:0:  25%|██▌       | 279/1095 [00:13<00:33, 24.65it/s]\rLoading transformer parameters to cuda:0:  26%|██▌       | 282/1095 [00:13<00:33, 24.16it/s]\rLoading transformer parameters to cuda:0:  26%|██▌       | 286/1095 [00:13<00:31, 25.82it/s]\rLoading transformer parameters to cuda:0:  26%|██▋       | 290/1095 [00:13<00:29, 27.51it/s]\rLoading transformer parameters to cuda:0:  27%|██▋       | 298/1095 [00:13<00:20, 39.26it/s]\rLoading transformer parameters to cuda:0:  28%|██▊       | 303/1095 [00:13<00:22, 34.81it/s]\rLoading transformer parameters to cuda:0:  28%|██▊       | 307/1095 [00:13<00:25, 31.06it/s]\rLoading transformer parameters to cuda:0:  28%|██▊       | 311/1095 [00:14<00:27, 28.63it/s]\rLoading transformer parameters to cuda:0:  29%|██▉       | 315/1095 [00:14<00:29, 26.64it/s]\rLoading transformer parameters to cuda:0:  29%|██▉       | 323/1095 [00:14<00:23, 32.67it/s]\rLoading transformer parameters to cuda:0:  30%|██▉       | 327/1095 [00:14<00:26, 29.04it/s]\rLoading transformer parameters to cuda:0:  30%|███       | 330/1095 [00:14<00:27, 28.25it/s]\rLoading transformer parameters to cuda:0:  30%|███       | 333/1095 [00:14<00:29, 25.82it/s]\rLoading transformer parameters to cuda:0:  31%|███       | 336/1095 [00:15<00:30, 25.06it/s]\rLoading transformer parameters to cuda:0:  31%|███       | 340/1095 [00:15<00:32, 23.04it/s]\rLoading transformer parameters to cuda:0:  31%|███▏      | 344/1095 [00:15<00:34, 21.95it/s]\rLoading transformer parameters to cuda:0:  32%|███▏      | 350/1095 [00:15<00:26, 28.27it/s]\rLoading transformer parameters to cuda:0:  32%|███▏      | 354/1095 [00:15<00:29, 25.36it/s]\rLoading transformer parameters to cuda:0:  33%|███▎      | 357/1095 [00:15<00:28, 25.94it/s]\rLoading transformer parameters to cuda:0:  33%|███▎      | 360/1095 [00:16<00:30, 24.39it/s]\rLoading transformer parameters to cuda:0:  33%|███▎      | 363/1095 [00:16<00:29, 24.51it/s]\rLoading transformer parameters to cuda:0:  33%|███▎      | 366/1095 [00:16<00:28, 25.62it/s]\rLoading transformer parameters to cuda:0:  34%|███▎      | 369/1095 [00:16<00:32, 22.12it/s]\rLoading transformer parameters to cuda:0:  34%|███▍      | 377/1095 [00:16<00:24, 29.03it/s]\rLoading transformer parameters to cuda:0:  35%|███▍      | 381/1095 [00:16<00:25, 27.92it/s]\rLoading transformer parameters to cuda:0:  35%|███▌      | 387/1095 [00:17<00:26, 26.34it/s]\rLoading transformer parameters to cuda:0:  36%|███▌      | 390/1095 [00:17<00:26, 26.17it/s]\rLoading transformer parameters to cuda:0:  36%|███▌      | 394/1095 [00:17<00:28, 24.39it/s]\rLoading transformer parameters to cuda:0:  36%|███▋      | 398/1095 [00:17<00:31, 22.28it/s]\rLoading transformer parameters to cuda:0:  37%|███▋      | 406/1095 [00:17<00:23, 29.13it/s]\rLoading transformer parameters to cuda:0:  37%|███▋      | 410/1095 [00:17<00:25, 26.99it/s]\rLoading transformer parameters to cuda:0:  38%|███▊      | 414/1095 [00:18<00:25, 26.39it/s]\rLoading transformer parameters to cuda:0:  38%|███▊      | 417/1095 [00:18<00:26, 25.81it/s]\rLoading transformer parameters to cuda:0: 100%|██████████| 1095/1095 [00:18<00:00, 59.87it/s]\n
-2025-11-24  20:52:05.121 | info | sgx15f8eabrwx6 | FETCH ComfyRegistry Data: 50/108\n
-2025-11-24  20:52:00.524 | info | sgx15f8eabrwx6 | FETCH ComfyRegistry Data: 45/108\n
-2025-11-24  20:51:56.680 | info | sgx15f8eabrwx6 | FETCH ComfyRegistry Data: 40/108\n
-2025-11-24  20:51:52.806 | info | sgx15f8eabrwx6 | FETCH ComfyRegistry Data: 35/108\n
-2025-11-24  20:51:49.548 | info | sgx15f8eabrwx6 | Using accelerate to load and assign model weights to device...\n
-2025-11-24  20:51:48.685 | info | sgx15f8eabrwx6 | FETCH ComfyRegistry Data: 30/108\n
-2025-11-24  20:51:47.445 | info | sgx15f8eabrwx6 | Loading LoRA: high_noise_model with strength: 1.0\n
-2025-11-24  20:51:47.303 | info | sgx15f8eabrwx6 | model_type FLOW\n
-2025-11-24  20:51:47.303 | info | sgx15f8eabrwx6 | Model variant detected: i2v_14B_2.2\n
-2025-11-24  20:51:47.303 | info | sgx15f8eabrwx6 | Model cross attention type: t2v, num_heads: 40, num_layers: 40\n
-2025-11-24  20:51:47.303 | info | sgx15f8eabrwx6 | Detected model in_channels: 36\n
-2025-11-24  20:51:47.175 | info | sgx15f8eabrwx6 | CUDA Compute Capability: 8.0\n
-2025-11-24  20:51:47.175 | info | sgx15f8eabrwx6 |    Final config: blocks=25, streams=6, ratio=80%\n
-2025-11-24  20:51:47.174 | info | sgx15f8eabrwx6 | Enhanced BlockSwap configuration completed\n
-2025-11-24  20:51:47.174 | info | sgx15f8eabrwx6 | Intelligent VRAM manager initialized: threshold=50.0%, device=cuda (NVIDIA A100-SXM4-80GB)\n
-2025-11-24  20:51:47.174 | info | sgx15f8eabrwx6 |    GPU optimization: True\n
-2025-11-24  20:51:47.174 | info | sgx15f8eabrwx6 |    VRAM threshold: 50.0%\n
-2025-11-24  20:51:47.174 | info | sgx15f8eabrwx6 |    Auto tuning: False\n
-2025-11-24  20:51:44.999 | info | sgx15f8eabrwx6 | WanVideo Enhanced BlockSwap\n
-2025-11-24  20:51:43.843 | info | sgx15f8eabrwx6 | FETCH ComfyRegistry Data: 25/108\n
-2025-11-24  20:51:43.843 | info | sgx15f8eabrwx6 | Combined clip embeds shape: torch.Size([1, 257, 1280])\n
-2025-11-24  20:51:41.889 | info | sgx15f8eabrwx6 | Clip embeds shape: torch.Size([1, 257, 1280]), dtype: torch.float32\n
-2025-11-24  20:51:41.889 | info | sgx15f8eabrwx6 | loaded completely; 78059.32 MB usable, 1208.10 MB loaded, full load: True\n
-2025-11-24  20:51:41.709 | info | sgx15f8eabrwx6 | Requested to load CLIPVisionModelProjection\n
-2025-11-24  20:51:39.391 | info | sgx15f8eabrwx6 | FETCH ComfyRegistry Data: 20/108\n
-2025-11-24  20:51:35.419 | info | sgx15f8eabrwx6 | FETCH ComfyRegistry Data: 15/108\n
-2025-11-24  20:51:31.528 | info | sgx15f8eabrwx6 | FETCH ComfyRegistry Data: 10/108\n
-2025-11-24  20:51:31.295 | info | sgx15f8eabrwx6 | prompt token count: tensor([9], device='cuda:0')\n
-2025-11-24  20:51:31.295 | info | sgx15f8eabrwx6 | \rT5Encoder:   0%|          | 0/24 [00:00<?, ?it/s]\rT5Encoder: 100%|██████████| 24/24 [00:00<00:00, 678.25it/s]\n
-2025-11-24  20:51:31.295 | info | sgx15f8eabrwx6 | prompt token count: tensor([8], device='cuda:0')\n
-2025-11-24  20:51:31.193 | info | sgx15f8eabrwx6 | \rT5Encoder:   0%|          | 0/24 [00:00<?, ?it/s]\rT5Encoder:   4%|▍         | 1/24 [00:00<00:08,  2.68it/s]\rT5Encoder: 100%|██████████| 24/24 [00:00<00:00, 58.66it/s]\n
-2025-11-24  20:51:26.302 | info | sgx15f8eabrwx6 | FETCH ComfyRegistry Data: 5/108\n
-2025-11-24  20:51:26.302 | info | sgx15f8eabrwx6 | got prompt\n
-2025-11-24  20:51:26.302 | info | sgx15f8eabrwx6 | handler.py          :158  2025-11-24 19:51:25,899 Queueing prompt to: http://127.0.0.1:8188/prompt\n
-2025-11-24  20:51:26.302 | info | sgx15f8eabrwx6 | handler.py          :358  2025-11-24 19:51:25,899 WebSocket connection successful (attempt 1)\n
-2025-11-24  20:51:26.302 | info | sgx15f8eabrwx6 | handler.py          :343  2025-11-24 19:51:25,897 HTTP connection successful (attempt 1)\n
-2025-11-24  20:51:26.302 | info | sgx15f8eabrwx6 | handler.py          :335  2025-11-24 19:51:25,894 Checking HTTP connection to: http://127.0.0.1:8188/\n
-2025-11-24  20:51:26.302 | info | sgx15f8eabrwx6 | handler.py          :331  2025-11-24 19:51:25,894 Connecting to WebSocket: ws://127.0.0.1:8188/ws?clientId=f9c17efa-9968-46f1-a4ce-9b4ae594ed1b\n
-2025-11-24  20:51:26.301 | info | sgx15f8eabrwx6 | handler.py          :263  2025-11-24 19:51:25,893 Using single workflow with 0 LoRA pairs\n
-2025-11-24  20:51:25.894 | info | sgx15f8eabrwx6 | handler.py          :61   2025-11-24 19:51:25,893 ✅ Successfully downloaded file from URL: https://casino-cdn-45tz9ud.b-cdn.net/images/current-xih6nwzkt.jpg -> /task_409fa89f-a21e-413f-9d4b-195d875eb483/input_image.jpg\n
-2025-11-24  20:51:25.894 | info | sgx15f8eabrwx6 | handler.py          :40   2025-11-24 19:51:25,692 🌐 Processing URL input: https://casino-cdn-45tz9ud.b-cdn.net/images/current-xih6nwzkt.jpg\n
-2025-11-24  20:51:25.894 | info | sgx15f8eabrwx6 | handler.py          :221  2025-11-24 19:51:25,692 🌐 Detected URL in image_path, treating as URL: https://casino-cdn-45tz9ud.b-cdn.net/images/current-xih6nwzkt.jpg\n
-2025-11-24  20:51:25.894 | info | sgx15f8eabrwx6 | handler.py          :211  2025-11-24 19:51:25,692 Received job input: {'cfg': 2, 'height': 832, 'image_path': 'https://casino-cdn-45tz9ud.b-cdn.net/images/current-xih6nwzkt.jpg', 'length': 81, 'negative_prompt': 'blurry, low quality, distorted', 'prompt': 'The character feel happy and dances', 'seed': 42, 'steps': 10, 'width': 480}\n
-2025-11-24  20:51:25.894 | info | sgx15f8eabrwx6 | Started.
-2025-11-24  20:51:25.894 | info | sgx15f8eabrwx6 | Jobs in progress: 1
-2025-11-24  20:51:25.692 | info | sgx15f8eabrwx6 | Jobs in queue: 1
-2025-11-24  20:51:25.313 | info | sgx15f8eabrwx6 | --- Starting Serverless Worker |  Version 1.7.13 ---\n
-2025-11-24  20:51:25.313 | info | sgx15f8eabrwx6 | Starting the handler...\n
-2025-11-24  20:51:23.358 | info | sgx15f8eabrwx6 | ComfyUI is ready!\n
-2025-11-24  20:51:23.358 | info | sgx15f8eabrwx6 | To see the GUI go to: http://[::]:8188\n
-2025-11-24  20:51:23.358 | info | sgx15f8eabrwx6 | To see the GUI go to: http://0.0.0.0:8188\n
-2025-11-24  20:51:23.357 | info | sgx15f8eabrwx6 | \n
-2025-11-24  20:51:23.357 | info | sgx15f8eabrwx6 | Starting server\n
-2025-11-24  20:51:23.357 | info | sgx15f8eabrwx6 | No target revision found.\n
-2025-11-24  20:51:23.357 | info | sgx15f8eabrwx6 | Will assume non-transactional DDL.\n
-2025-11-24  20:51:23.169 | info | sgx15f8eabrwx6 | Context impl SQLiteImpl.\n
-2025-11-24  20:51:23.169 | info | sgx15f8eabrwx6 | \n
-2025-11-24  20:51:23.169 | info | sgx15f8eabrwx6 |    0.9 seconds: /ComfyUI/custom_nodes/ComfyUI-WanVideoWrapper\n
-2025-11-24  20:51:23.169 | info | sgx15f8eabrwx6 |    0.1 seconds: /ComfyUI/custom_nodes/ComfyUI-Manager\n
-2025-11-24  20:51:23.169 | info | sgx15f8eabrwx6 |    0.1 seconds: /ComfyUI/custom_nodes/ComfyUI-KJNodes\n
-2025-11-24  20:51:23.169 | info | sgx15f8eabrwx6 |    0.1 seconds: /ComfyUI/custom_nodes/ComfyUI-VideoHelperSuite\n
-2025-11-24  20:51:23.169 | info | sgx15f8eabrwx6 |    0.0 seconds: /ComfyUI/custom_nodes/ComfyUI-GGUF\n
-2025-11-24  20:51:23.169 | info | sgx15f8eabrwx6 |    0.0 seconds: /ComfyUI/custom_nodes/IntelligentVRAMNode\n
-2025-11-24  20:51:23.169 | info | sgx15f8eabrwx6 |    0.0 seconds: /ComfyUI/custom_nodes/ComfyUI-AdaptiveWindowSize\n
-2025-11-24  20:51:23.169 | info | sgx15f8eabrwx6 |    0.0 seconds (IMPORT FAILED): /ComfyUI/custom_nodes/ComfyUI-GGUF-FantasyTalking\n
-2025-11-24  20:51:23.169 | info | sgx15f8eabrwx6 |    0.0 seconds: /ComfyUI/custom_nodes/ComfyUI-wanBlockswap\n
-2025-11-24  20:51:23.169 | info | sgx15f8eabrwx6 |    0.0 seconds: /ComfyUI/custom_nodes/auto_wan2.2animate_freamtowindow_server\n
-2025-11-24  20:51:23.169 | info | sgx15f8eabrwx6 |    0.0 seconds: /ComfyUI/custom_nodes/websocket_image_save.py\n
-2025-11-24  20:51:23.169 | info | sgx15f8eabrwx6 | Import times for custom nodes:\n
-2025-11-24  20:51:23.168 | info | sgx15f8eabrwx6 | \n
-2025-11-24  20:51:22.947 | info | sgx15f8eabrwx6 | ComfyUI-GGUF: Allowing full torch compile\n
-2025-11-24  20:51:22.947 | info | sgx15f8eabrwx6 | Cannot import /ComfyUI/custom_nodes/ComfyUI-GGUF-FantasyTalking module for custom nodes: (unicode error) 'unicodeescape' codec can't decode bytes in position 149-150: truncated \UXXXXXXXX escape (nodes.py, line 669)\n
-2025-11-24  20:51:22.947 | info | sgx15f8eabrwx6 | \n
-2025-11-24  20:51:22.947 | info | sgx15f8eabrwx6 | SyntaxError: (unicode error) 'unicodeescape' codec can't decode bytes in position 149-150: truncated \UXXXXXXXX escape\n
-2025-11-24  20:51:22.947 | info | sgx15f8eabrwx6 |                                        ^\n
-2025-11-24  20:51:22.947 | info | sgx15f8eabrwx6 |     Prompt executed in 88.52 seconds"""\n
-2025-11-24  20:51:22.947 | info | sgx15f8eabrwx6 |   File "/ComfyUI/custom_nodes/ComfyUI-GGUF-FantasyTalking/nodes.py", line 669\n
-2025-11-24  20:51:22.947 | info | sgx15f8eabrwx6 |     from .nodes import NODE_CLASS_MAPPINGS\n
-2025-11-24  20:51:22.947 | info | sgx15f8eabrwx6 |   File "/ComfyUI/custom_nodes/ComfyUI-GGUF-FantasyTalking/__init__.py", line 7, in <module>\n
-2025-11-24  20:51:22.947 | info | sgx15f8eabrwx6 |   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed\n
-2025-11-24  20:51:22.947 | info | sgx15f8eabrwx6 |   File "<frozen importlib._bootstrap_external>", line 883, in exec_module\n
-2025-11-24  20:51:22.947 | info | sgx15f8eabrwx6 |     module_spec.loader.exec_module(module)\n
-2025-11-24  20:51:22.947 | info | sgx15f8eabrwx6 |   File "/ComfyUI/nodes.py", line 2136, in load_custom_node\n
-2025-11-24  20:51:22.947 | info | sgx15f8eabrwx6 | Traceback (most recent call last):\n
-2025-11-24  20:51:22.716 | warning | sgx15f8eabrwx6 | WanVideoWrapper WARNING: FantasyPortrait nodes not available due to error in importing them: No module named 'onnx'\n
-2025-11-24  20:51:22.481 | info | sgx15f8eabrwx6 | [ComfyUI-Manager] default cache updated: https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/extension-node-map.json\n
-2025-11-24  20:51:22.481 | info | sgx15f8eabrwx6 | [ComfyUI-Manager] default cache updated: https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/custom-node-list.json\n
-2025-11-24  20:51:22.344 | info | sgx15f8eabrwx6 | [ComfyUI-Manager] default cache updated: https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/github-stats.json\n
-2025-11-24  20:51:22.344 | info | sgx15f8eabrwx6 | [ComfyUI-Manager] default cache updated: https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/model-list.json\n
-2025-11-24  20:51:21.942 | info | sgx15f8eabrwx6 | [ComfyUI-Manager] default cache updated: https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/alter-list.json\n
-2025-11-24  20:51:21.942 | info | sgx15f8eabrwx6 |    - Adaptive WanVideo Animate Embeds (AdaptiveWanVideoAnimateEmbeds)\n
-2025-11-24  20:51:21.942 | info | sgx15f8eabrwx6 |    Available nodes:\n
-2025-11-24  20:51:21.942 | info | sgx15f8eabrwx6 | ⚠️  Enhanced face crop nodes not available: No module named '/ComfyUI/custom_nodes/ComfyUI-AdaptiveWindowSize.enhanced_face_crop'\n
-2025-11-24  20:51:21.942 | info | sgx15f8eabrwx6 | ### ComfyUI Version: v0.3.71-5-gcbd68e3d | Released on '2025-11-23'\n
-2025-11-24  20:51:21.942 | info | sgx15f8eabrwx6 | [ComfyUI-Manager] network_mode: public\n
-2025-11-24  20:51:21.762 | info | sgx15f8eabrwx6 | ### Loading: ComfyUI-Manager (V3.37.1)\n
-2025-11-24  20:51:21.343 | info | sgx15f8eabrwx6 | Waiting for ComfyUI... (8/120)\n
-2025-11-24  20:51:21.343 | info | sgx15f8eabrwx6 | Enabled pinned memory 1949334.0\n
-2025-11-24  20:51:21.343 | info | sgx15f8eabrwx6 | Device: cuda:0 NVIDIA A100-SXM4-80GB : cudaMallocAsync\n
-2025-11-24  20:51:21.343 | info | sgx15f8eabrwx6 | Set vram state to: NORMAL_VRAM\n
-2025-11-24  20:51:21.343 | info | sgx15f8eabrwx6 | xformers version: 0.0.32.post2\n
-2025-11-24  20:51:21.343 | info | sgx15f8eabrwx6 | pytorch version: 2.8.0+cu128\n
-2025-11-24  20:51:20.970 | info | sgx15f8eabrwx6 | Total VRAM 81038 MB, total RAM 2051931 MB\n
-2025-11-24  20:51:20.970 | info | sgx15f8eabrwx6 | [Prompt Server] web root: /usr/local/lib/python3.10/dist-packages/comfyui_frontend_package/static\n
-2025-11-24  20:51:20.970 | info | sgx15f8eabrwx6 | ComfyUI frontend version: 1.30.6\n
-2025-11-24  20:51:20.970 | info | sgx15f8eabrwx6 | ComfyUI version: 0.3.71\n
-2025-11-24  20:51:20.396 | info | sgx15f8eabrwx6 | Python version: 3.10.12 (main, Aug 15 2025, 14:32:43) [GCC 11.4.0]\n
-2025-11-24  20:51:19.330 | info | sgx15f8eabrwx6 | Waiting for ComfyUI... (6/120)\n
-2025-11-24  20:51:18.804 | info | sgx15f8eabrwx6 | Using sage attention\n
-2025-11-24  20:51:18.804 | info | sgx15f8eabrwx6 | Enabled pinned memory 1949334.0\n
-2025-11-24  20:51:18.804 | info | sgx15f8eabrwx6 | Device: cuda:0 NVIDIA A100-SXM4-80GB : cudaMallocAsync\n
-2025-11-24  20:51:18.804 | info | sgx15f8eabrwx6 | Set vram state to: NORMAL_VRAM\n
-2025-11-24  20:51:18.534 | info | sgx15f8eabrwx6 | xformers version: 0.0.32.post2\n
-2025-11-24  20:51:17.317 | info | sgx15f8eabrwx6 | Waiting for ComfyUI... (4/120)\n
-2025-11-24  20:51:17.317 | info | sgx15f8eabrwx6 | pytorch version: 2.8.0+cu128\n
-2025-11-24  20:51:17.178 | info | sgx15f8eabrwx6 | Total VRAM 81038 MB, total RAM 2051931 MB\n
-2025-11-24  20:51:16.615 | info | sgx15f8eabrwx6 | Checkpoint files will always be loaded safely.\n
-2025-11-24  20:51:15.304 | info | sgx15f8eabrwx6 | Waiting for ComfyUI... (2/120)\n
-2025-11-24  20:51:15.304 | info | sgx15f8eabrwx6 | \n
-2025-11-24  20:51:15.304 | info | sgx15f8eabrwx6 |    1.8 seconds: /ComfyUI/custom_nodes/ComfyUI-Manager\n
-2025-11-24  20:51:15.304 | info | sgx15f8eabrwx6 | Prestartup times for custom nodes:\n
-2025-11-24  20:51:15.203 | info | sgx15f8eabrwx6 | \n
-2025-11-24  20:51:15.203 | info | sgx15f8eabrwx6 | ** Log path: /ComfyUI/user/comfyui.log\n
-2025-11-24  20:51:15.203 | info | sgx15f8eabrwx6 | ** ComfyUI-Manager config path: /ComfyUI/user/default/ComfyUI-Manager/config.ini\n
-2025-11-24  20:51:15.203 | info | sgx15f8eabrwx6 | ** User directory: /ComfyUI/user\n
-2025-11-24  20:51:15.203 | info | sgx15f8eabrwx6 | ** ComfyUI Base Folder Path: /ComfyUI\n
-2025-11-24  20:51:15.203 | info | sgx15f8eabrwx6 | ** ComfyUI Path: /ComfyUI\n
-2025-11-24  20:51:15.203 | info | sgx15f8eabrwx6 | ** Python executable: /usr/bin/python\n
-2025-11-24  20:51:15.203 | info | sgx15f8eabrwx6 | ** Python version: 3.10.12 (main, Aug 15 2025, 14:32:43) [GCC 11.4.0]\n
-2025-11-24  20:51:15.203 | info | sgx15f8eabrwx6 | ** Platform: Linux\n
-2025-11-24  20:51:15.203 | info | sgx15f8eabrwx6 | ** ComfyUI startup time: 2025-11-24 19:51:14.449\n
-2025-11-24  20:51:15.203 | info | sgx15f8eabrwx6 | ## ComfyUI-Manager: installing dependencies done.\n
-2025-11-24  20:51:15.203 | info | sgx15f8eabrwx6 | [DONE] Security scan\n
-2025-11-24  20:51:14.450 | info | sgx15f8eabrwx6 | [START] Security scan\n
-2025-11-24  20:51:14.450 | info | sgx15f8eabrwx6 | Adding extra search path vae /ComfyUI/models/vae\n
-2025-11-24  20:51:14.450 | info | sgx15f8eabrwx6 | Adding extra search path upscale_models /ComfyUI/models/upscale_models\n
-2025-11-24  20:51:14.450 | info | sgx15f8eabrwx6 | Adding extra search path loras /runpod-volume/loras\n
-2025-11-24  20:51:14.450 | info | sgx15f8eabrwx6 | Adding extra search path loras /ComfyUI/models/loras\n
-2025-11-24  20:51:14.450 | info | sgx15f8eabrwx6 | Adding extra search path embeddings /ComfyUI/models/embeddings\n
-2025-11-24  20:51:14.450 | info | sgx15f8eabrwx6 | Adding extra search path diffusion_models /runpod-volume/models\n
-2025-11-24  20:51:14.450 | info | sgx15f8eabrwx6 | Adding extra search path diffusion_models /ComfyUI/models/unet\n
-2025-11-24  20:51:14.450 | info | sgx15f8eabrwx6 | Adding extra search path diffusion_models /ComfyUI/models/diffusion_models\n
-2025-11-24  20:51:14.450 | info | sgx15f8eabrwx6 | Adding extra search path controlnet /ComfyUI/models/controlnet\n
-2025-11-24  20:51:14.450 | info | sgx15f8eabrwx6 | Adding extra search path configs /ComfyUI/models/configs\n
-2025-11-24  20:51:14.450 | info | sgx15f8eabrwx6 | Adding extra search path clip_vision /ComfyUI/models/clip_vision\n
-2025-11-24  20:51:14.450 | info | sgx15f8eabrwx6 | Adding extra search path clip /ComfyUI/models/clip\n
-2025-11-24  20:51:14.450 | info | sgx15f8eabrwx6 | Adding extra search path checkpoints /ComfyUI/models/checkpoints\n
-2025-11-24  20:51:14.450 | info | sgx15f8eabrwx6 | Waiting for ComfyUI... (0/120)\n
-2025-11-24  20:51:14.450 | info | sgx15f8eabrwx6 | Waiting for ComfyUI to be ready...\n
-2025-11-24  20:51:14.450 | info | sgx15f8eabrwx6 | Starting ComfyUI in the background...\n
-2025-11-24  20:51:14.450 | info | sgx15f8eabrwx6 | \n
-2025-11-24  20:51:14.450 | info | sgx15f8eabrwx6 | A copy of this license is made available in this container at /NGC-DL-CONTAINER-LICENSE for your convenience.\n
-2025-11-24  20:51:14.450 | info | sgx15f8eabrwx6 | \n
-2025-11-24  20:51:14.450 | info | sgx15f8eabrwx6 | https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license\n
-2025-11-24  20:51:14.450 | info | sgx15f8eabrwx6 | By pulling and using the container, you accept the terms and conditions of this license:\n
-2025-11-24  20:51:14.450 | info | sgx15f8eabrwx6 | This container image and its contents are governed by the NVIDIA Deep Learning Container License.\n
-2025-11-24  20:51:14.450 | info | sgx15f8eabrwx6 | \n
-2025-11-24  20:51:14.450 | info | sgx15f8eabrwx6 | Container image Copyright (c) 2016-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.\n
-2025-11-24  20:51:14.450 | info | sgx15f8eabrwx6 | \n
-2025-11-24  20:51:14.449 | info | sgx15f8eabrwx6 | CUDA Version 12.8.1\n
-2025-11-24  20:51:14.449 | info | sgx15f8eabrwx6 | \n
-2025-11-24  20:51:14.449 | info | sgx15f8eabrwx6 | ==========\n
-2025-11-24  20:51:14.449 | info | sgx15f8eabrwx6 | == CUDA ==\n
-2025-11-24  20:51:14.449 | info | sgx15f8eabrwx6 | ==========\n
-2025-11-24  20:51:14.449 | info | sgx15f8eabrwx6 | \n
-2025-11-24  20:50:42.553 | info | nuuuod99wu00f2 | Finished.
-2025-11-24  20:50:42.553 | error | nuuuod99wu00f2 | {\n    "error_type": "<class 'websocket._exceptions.WebSocketConnectionClosedException'>",\n    "error_message": "Connection to remote host was lost.",\n    "error_traceback": "Traceback (most recent call last):\n  File \"/usr/local/lib/python3.10/dist-packages/runpod/serverless/modules/rp_job.py\", line 182, in run_job\n    handler_return = handler(job)\n  File \"//handler.py\", line 365, in handler\n    videos = get_videos(ws, prompt)\n  File \"//handler.py\", line 182, in get_videos\n    out = ws.recv()\n  File \"/usr/local/lib/python3.10/dist-packages/websocket/_core.py\", line 395, in recv\n    opcode, data = self.recv_data()\n  File \"/usr/local/lib/python3.10/dist-packages/websocket/_core.py\", line 423, in recv_data\n    opcode, frame = self.recv_data_frame(control_frame)\n  File \"/usr/local/lib/python3.10/dist-packages/websocket/_core.py\", line 444, in recv_data_frame\n    frame = self.recv_frame()\n  File \"/usr/local/lib/python3.10/dist-packages/websocket/_core.py\", line 485, in recv_frame\n    return self.frame_buffer.recv_frame()\n  File \"/usr/local/lib/python3.10/dist-packages/websocket/_abnf.py\", line 375, in recv_frame\n    self.recv_header()\n  File \"/usr/local/lib/python3.10/dist-packages/websocket/_abnf.py\", line 329, in recv_header\n    header = self.recv_strict(2)\n  File \"/usr/local/lib/python3.10/dist-packages/websocket/_abnf.py\", line 418, in recv_strict\n    bytes_ = self.recv(min(16384, shortage))\n  File \"/usr/local/lib/python3.10/dist-packages/websocket/_core.py\", line 581, in _recv\n    return recv(self.sock, bufsize)\n  File \"/usr/local/lib/python3.10/dist-packages/websocket/_socket.py\", line 143, in recv\n    raise WebSocketConnectionClosedException(\"Connection to remote host was lost.\")\nwebsocket._exceptions.WebSocketConnectionClosedException: Connection to remote host was lost.\n",\n    "hostname": "nuuuod99wu00f2-64410ec5",\n    "worker_id": "nuuuod99wu00f2",\n    "runpod_version": "1.7.13"\n}
-2025-11-24  20:50:42.326 | error | nuuuod99wu00f2 | Captured Handler Exception
-2025-11-24  20:50:42.326 | info | nuuuod99wu00f2 | \n
-2025-11-24  20:50:42.326 | info | nuuuod99wu00f2 | frame #61: <unknown function> + 0x90a4 (0x79bf558970a4 in /usr/lib/python3.10/lib-dynload/_asyncio.cpython-310-x86_64-linux-gnu.so)\n
-2025-11-24  20:50:42.326 | info | nuuuod99wu00f2 | frame #60: <unknown function> + 0x928e (0x79bf5589728e in /usr/lib/python3.10/lib-dynload/_asyncio.cpython-310-x86_64-linux-gnu.so)\n
-2025-11-24  20:50:42.326 | info | nuuuod99wu00f2 | <omitting python frames>\n
-2025-11-24  20:50:42.326 | info | nuuuod99wu00f2 | frame #6: <unknown function> + 0x6df774 (0x79bf461e9774 in /usr/local/lib/python3.10/dist-packages/torch/lib/libtorch_python.so)\n
-2025-11-24  20:50:42.326 | info | nuuuod99wu00f2 | frame #5: <unknown function> + 0x6df3d8 (0x79bf461e93d8 in /usr/local/lib/python3.10/dist-packages/torch/lib/libtorch_python.so)\n
-2025-11-24  20:50:42.326 | info | nuuuod99wu00f2 | frame #4: c10::TensorImpl::~TensorImpl() + 0x9 (0x79bf539e5179 in /usr/local/lib/python3.10/dist-packages/torch/lib/libc10.so)\n
-2025-11-24  20:50:42.326 | info | nuuuod99wu00f2 | frame #3: <unknown function> + 0x43fc6f (0x79bf45f49c6f in /usr/local/lib/python3.10/dist-packages/torch/lib/libtorch_python.so)\n
-2025-11-24  20:50:42.326 | info | nuuuod99wu00f2 | frame #2: <unknown function> + 0x56ad1 (0x79bf53adfad1 in /usr/local/lib/python3.10/dist-packages/torch/lib/libc10_cuda.so)\n
-2025-11-24  20:50:42.326 | info | nuuuod99wu00f2 | frame #1: <unknown function> + 0x111c7 (0x79bf53a9a1c7 in /usr/local/lib/python3.10/dist-packages/torch/lib/libc10_cuda.so)\n
-2025-11-24  20:50:42.326 | info | nuuuod99wu00f2 | frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x80 (0x79bf53a07eb0 in /usr/local/lib/python3.10/dist-packages/torch/lib/libc10.so)\n
-2025-11-24  20:50:42.326 | info | nuuuod99wu00f2 | Exception raised from c10_cuda_check_implementation at /pytorch/c10/cuda/CUDAException.cpp:42 (most recent call first):\n
-2025-11-24  20:50:42.326 | info | nuuuod99wu00f2 | \n
-2025-11-24  20:50:42.326 | info | nuuuod99wu00f2 | Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.\n
-2025-11-24  20:50:42.326 | info | nuuuod99wu00f2 | For debugging consider passing CUDA_LAUNCH_BLOCKING=1\n
-2025-11-24  20:50:42.326 | info | nuuuod99wu00f2 | CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.\n
-2025-11-24  20:50:42.326 | info | nuuuod99wu00f2 |   what():  CUDA error: no kernel image is available for execution on the device\n
-2025-11-24  20:50:40.721 | info | nuuuod99wu00f2 | \r  0%|          | 0/4 [00:00<?, ?it/s]terminate called after throwing an instance of 'c10::AcceleratorError'\n
-2025-11-24  20:50:40.721 | info | nuuuod99wu00f2 | Sampling 81 frames at 480x832 with 4 steps\n
-2025-11-24  20:50:39.636 | info | nuuuod99wu00f2 | Input sequence length: 32760\n
-2025-11-24  20:50:39.636 | info | nuuuod99wu00f2 | Context schedule enabled: 21 frames, 1 stride, 12 overlap\n
-2025-11-24  20:50:39.636 | info | nuuuod99wu00f2 | Applying FreeNoise\n
-2025-11-24  20:50:39.636 | info | nuuuod99wu00f2 | context window seq len: 32760\n
-2025-11-24  20:50:39.636 | info | nuuuod99wu00f2 | Section size: 21.0\n
-2025-11-24  20:50:39.636 | info | nuuuod99wu00f2 | Number of prompts: 1\n
-2025-11-24  20:50:39.636 | info | nuuuod99wu00f2 | image_cond shape: torch.Size([20, 21, 104, 60])\n
-2025-11-24  20:50:39.636 | info | nuuuod99wu00f2 | Using per-step cfg list: [2.0, 1.0, 1.0, 1.0]\n
-2025-11-24  20:50:39.636 | info | nuuuod99wu00f2 | Received 8 cfg values, but only 4 steps. Slicing cfg list to match steps.\n
-2025-11-24  20:50:39.636 | info | nuuuod99wu00f2 | sigmas: tensor([1.0000, 0.9844, 0.9643, 0.9375, 0.9000])\n
-2025-11-24  20:50:39.636 | info | nuuuod99wu00f2 | ------------------------------\n
-2025-11-24  20:50:39.636 | info | nuuuod99wu00f2 | Using sigmas: tensor([1.0000, 0.9844, 0.9643, 0.9375, 0.9000])\n
-2025-11-24  20:50:39.636 | info | nuuuod99wu00f2 | Using timesteps: tensor([999, 984, 964, 937], device='cuda:0')\n
-2025-11-24  20:50:39.636 | info | nuuuod99wu00f2 | Total timesteps: tensor([999, 984, 964, 937, 899, 843, 749, 562], device='cuda:0')\n
-2025-11-24  20:50:39.405 | info | nuuuod99wu00f2 | ------- Scheduler info -------\n
-2025-11-24  20:50:37.935 | info | nuuuod99wu00f2 | FETCH ComfyRegistry Data: 60/108\n
-2025-11-24  20:50:34.091 | info | nuuuod99wu00f2 | FETCH ComfyRegistry Data: 55/108\n
-2025-11-24  20:50:34.091 | info | nuuuod99wu00f2 | Using 400 LoRA weight patches for WanVideo model\n
-2025-11-24  20:50:33.658 | info | nuuuod99wu00f2 | \rLoading transformer parameters to cuda:0:   0%|          | 0/1095 [00:00<?, ?it/s]\rLoading transformer parameters to cuda:0:   0%|          | 3/1095 [00:00<01:33, 11.72it/s]\rLoading transformer parameters to cuda:0:   0%|          | 5/1095 [00:00<01:54,  9.49it/s]\rLoading transformer parameters to cuda:0:   1%|          | 9/1095 [00:00<01:43, 10.52it/s]\rLoading transformer parameters to cuda:0:   1%|          | 11/1095 [00:01<03:55,  4.60it/s]\rLoading transformer parameters to cuda:0:   1%|▏         | 14/1095 [00:02<03:07,  5.76it/s]\rLoading transformer parameters to cuda:0:   2%|▏         | 18/1095 [00:02<02:14,  8.02it/s]\rLoading transformer parameters to cuda:0:   2%|▏         | 26/1095 [00:02<01:22, 12.94it/s]\rLoading transformer parameters to cuda:0:   3%|▎         | 30/1095 [00:02<01:12, 14.60it/s]\rLoading transformer parameters to cuda:0:   3%|▎         | 32/1095 [00:03<01:09, 15.20it/s]\rLoading transformer parameters to cuda:0:   3%|▎         | 36/1095 [00:03<00:58, 18.00it/s]\rLoading transformer parameters to cuda:0:   4%|▎         | 39/1095 [00:03<00:55, 19.04it/s]\rLoading transformer parameters to cuda:0:   4%|▍         | 42/1095 [00:03<00:52, 20.17it/s]\rLoading transformer parameters to cuda:0:   4%|▍         | 45/1095 [00:03<00:56, 18.47it/s]\rLoading transformer parameters to cuda:0:   5%|▍         | 53/1095 [00:03<00:40, 25.81it/s]\rLoading transformer parameters to cuda:0:   5%|▌         | 56/1095 [00:03<00:41, 24.81it/s]\rLoading transformer parameters to cuda:0:   5%|▌         | 59/1095 [00:04<00:46, 22.28it/s]\rLoading transformer parameters to cuda:0:   6%|▌         | 63/1095 [00:04<00:45, 22.87it/s]\rLoading transformer parameters to cuda:0:   6%|▌         | 66/1095 [00:04<00:44, 23.26it/s]\rLoading transformer parameters to cuda:0:   6%|▋         | 69/1095 [00:04<00:42, 24.33it/s]\rLoading transformer parameters to cuda:0:   7%|▋         | 72/1095 [00:04<00:48, 21.25it/s]\rLoading transformer parameters to cuda:0:   7%|▋         | 80/1095 [00:04<00:35, 28.71it/s]\rLoading transformer parameters to cuda:0:   8%|▊         | 83/1095 [00:04<00:35, 28.69it/s]\rLoading transformer parameters to cuda:0:   8%|▊         | 86/1095 [00:05<00:41, 24.52it/s]\rLoading transformer parameters to cuda:0:   8%|▊         | 90/1095 [00:05<00:39, 25.69it/s]\rLoading transformer parameters to cuda:0:   8%|▊         | 93/1095 [00:05<00:39, 25.09it/s]\rLoading transformer parameters to cuda:0:   9%|▉         | 96/1095 [00:05<00:46, 21.51it/s]\rLoading transformer parameters to cuda:0:   9%|▉         | 99/1095 [00:05<00:53, 18.63it/s]\rLoading transformer parameters to cuda:0:  10%|▉         | 107/1095 [00:06<00:44, 22.41it/s]\rLoading transformer parameters to cuda:0:  10%|█         | 111/1095 [00:06<00:43, 22.62it/s]\rLoading transformer parameters to cuda:0:  11%|█         | 117/1095 [00:06<00:41, 23.70it/s]\rLoading transformer parameters to cuda:0:  11%|█         | 120/1095 [00:06<00:40, 24.18it/s]\rLoading transformer parameters to cuda:0:  11%|█         | 123/1095 [00:06<00:38, 25.11it/s]\rLoading transformer parameters to cuda:0:  12%|█▏        | 126/1095 [00:06<00:42, 22.59it/s]\rLoading transformer parameters to cuda:0:  12%|█▏        | 134/1095 [00:07<00:34, 27.69it/s]\rLoading transformer parameters to cuda:0:  13%|█▎        | 138/1095 [00:07<00:38, 24.63it/s]\rLoading transformer parameters to cuda:0:  13%|█▎        | 144/1095 [00:07<00:41, 23.04it/s]\rLoading transformer parameters to cuda:0:  13%|█▎        | 147/1095 [00:07<00:39, 23.87it/s]\rLoading transformer parameters to cuda:0:  14%|█▎        | 150/1095 [00:07<00:38, 24.31it/s]\rLoading transformer parameters to cuda:0:  14%|█▍        | 153/1095 [00:08<00:42, 21.94it/s]\rLoading transformer parameters to cuda:0:  15%|█▍        | 161/1095 [00:08<00:32, 28.67it/s]\rLoading transformer parameters to cuda:0:  15%|█▌        | 165/1095 [00:08<00:34, 26.76it/s]\rLoading transformer parameters to cuda:0:  16%|█▌        | 171/1095 [00:08<00:40, 22.71it/s]\rLoading transformer parameters to cuda:0:  16%|█▌        | 174/1095 [00:08<00:39, 23.21it/s]\rLoading transformer parameters to cuda:0:  16%|█▋        | 178/1095 [00:09<00:46, 19.62it/s]\rLoading transformer parameters to cuda:0:  17%|█▋        | 182/1095 [00:09<00:44, 20.55it/s]\rLoading transformer parameters to cuda:0:  17%|█▋        | 190/1095 [00:09<00:32, 27.98it/s]\rLoading transformer parameters to cuda:0:  18%|█▊        | 194/1095 [00:09<00:33, 26.52it/s]\rLoading transformer parameters to cuda:0:  18%|█▊        | 198/1095 [00:09<00:33, 26.39it/s]\rLoading transformer parameters to cuda:0:  18%|█▊        | 201/1095 [00:09<00:33, 26.60it/s]\rLoading transformer parameters to cuda:0:  19%|█▊        | 204/1095 [00:10<00:32, 27.14it/s]\rLoading transformer parameters to cuda:0:  19%|█▉        | 207/1095 [00:10<00:37, 23.45it/s]\rLoading transformer parameters to cuda:0:  19%|█▉        | 210/1095 [00:10<00:38, 23.27it/s]\rLoading transformer parameters to cuda:0:  20%|█▉        | 215/1095 [00:10<00:31, 27.88it/s]\rLoading transformer parameters to cuda:0:  20%|██        | 219/1095 [00:10<00:36, 24.07it/s]\rLoading transformer parameters to cuda:0:  21%|██        | 225/1095 [00:10<00:37, 23.37it/s]\rLoading transformer parameters to cuda:0:  21%|██        | 228/1095 [00:11<00:38, 22.60it/s]\rLoading transformer parameters to cuda:0:  21%|██        | 231/1095 [00:11<00:36, 23.71it/s]\rLoading transformer parameters to cuda:0:  21%|██▏       | 234/1095 [00:11<00:43, 19.97it/s]\rLoading transformer parameters to cuda:0:  22%|██▏       | 237/1095 [00:11<00:40, 21.42it/s]\rLoading transformer parameters to cuda:0:  22%|██▏       | 242/1095 [00:11<00:34, 24.69it/s]\rLoading transformer parameters to cuda:0:  22%|██▏       | 245/1095 [00:11<00:34, 24.99it/s]\rLoading transformer parameters to cuda:0:  23%|██▎       | 248/1095 [00:11<00:38, 22.14it/s]\rLoading transformer parameters to cuda:0:  23%|██▎       | 252/1095 [00:12<00:36, 22.96it/s]\rLoading transformer parameters to cuda:0:  23%|██▎       | 255/1095 [00:12<00:35, 23.99it/s]\rLoading transformer parameters to cuda:0:  24%|██▎       | 258/1095 [00:12<00:42, 19.75it/s]\rLoading transformer parameters to cuda:0:  24%|██▍       | 261/1095 [00:12<00:46, 18.00it/s]\rLoading transformer parameters to cuda:0:  24%|██▍       | 263/1095 [00:12<00:45, 18.36it/s]\rLoading transformer parameters to cuda:0:  25%|██▍       | 269/1095 [00:12<00:30, 27.27it/s]\rLoading transformer parameters to cuda:0:  25%|██▍       | 273/1095 [00:13<00:30, 26.59it/s]\rLoading transformer parameters to cuda:0:  25%|██▌       | 276/1095 [00:13<00:33, 24.55it/s]\rLoading transformer parameters to cuda:0:  25%|██▌       | 279/1095 [00:13<00:37, 21.89it/s]\rLoading transformer parameters to cuda:0:  26%|██▌       | 282/1095 [00:13<00:36, 22.55it/s]\rLoading transformer parameters to cuda:0:  26%|██▌       | 286/1095 [00:13<00:30, 26.17it/s]\rLoading transformer parameters to cuda:0:  27%|██▋       | 296/1095 [00:13<00:24, 32.08it/s]\rLoading transformer parameters to cuda:0:  28%|██▊       | 302/1095 [00:14<00:22, 35.53it/s]\rLoading transformer parameters to cuda:0:  28%|██▊       | 306/1095 [00:14<00:25, 31.42it/s]\rLoading transformer parameters to cuda:0:  28%|██▊       | 311/1095 [00:14<00:25, 31.08it/s]\rLoading transformer parameters to cuda:0:  29%|██▉       | 315/1095 [00:14<00:29, 26.60it/s]\rLoading transformer parameters to cuda:0:  29%|██▉       | 323/1095 [00:14<00:25, 30.29it/s]\rLoading transformer parameters to cuda:0:  30%|██▉       | 327/1095 [00:14<00:29, 26.38it/s]\rLoading transformer parameters to cuda:0:  30%|███       | 333/1095 [00:15<00:37, 20.15it/s]\rLoading transformer parameters to cuda:0:  31%|███       | 336/1095 [00:15<00:35, 21.46it/s]\rLoading transformer parameters to cuda:0:  31%|███       | 339/1095 [00:15<00:36, 20.72it/s]\rLoading transformer parameters to cuda:0:  31%|███       | 342/1095 [00:15<00:38, 19.53it/s]\rLoading transformer parameters to cuda:0:  32%|███▏      | 350/1095 [00:16<00:27, 26.63it/s]\rLoading transformer parameters to cuda:0:  32%|███▏      | 354/1095 [00:16<00:29, 24.96it/s]\rLoading transformer parameters to cuda:0:  33%|███▎      | 357/1095 [00:16<00:28, 25.70it/s]\rLoading transformer parameters to cuda:0:  33%|███▎      | 360/1095 [00:16<00:37, 19.76it/s]\rLoading transformer parameters to cuda:0:  33%|███▎      | 363/1095 [00:16<00:35, 20.78it/s]\rLoading transformer parameters to cuda:0:  33%|███▎      | 366/1095 [00:16<00:33, 21.55it/s]\rLoading transformer parameters to cuda:0:  34%|███▎      | 369/1095 [00:17<00:36, 20.11it/s]\rLoading transformer parameters to cuda:0:  34%|███▍      | 372/1095 [00:17<00:33, 21.45it/s]\rLoading transformer parameters to cuda:0:  35%|███▍      | 379/1095 [00:17<00:27, 26.22it/s]\rLoading transformer parameters to cuda:0:  35%|███▍      | 382/1095 [00:17<00:28, 25.44it/s]\rLoading transformer parameters to cuda:0:  35%|███▌      | 387/1095 [00:17<00:35, 19.80it/s]\rLoading transformer parameters to cuda:0:  36%|███▌      | 390/1095 [00:17<00:34, 20.17it/s]\rLoading transformer parameters to cuda:0:  36%|███▌      | 393/1095 [00:18<00:35, 19.68it/s]\rLoading transformer parameters to cuda:0:  36%|███▌      | 396/1095 [00:18<00:47, 14.76it/s]\rLoading transformer parameters to cuda:0:  36%|███▋      | 398/1095 [00:18<00:49, 13.97it/s]\rLoading transformer parameters to cuda:0:  37%|███▋      | 404/1095 [00:18<00:36, 18.90it/s]\rLoading transformer parameters to cuda:0:  37%|███▋      | 408/1095 [00:19<00:34, 19.84it/s]\rLoading transformer parameters to cuda:0:  38%|███▊      | 414/1095 [00:19<00:32, 21.04it/s]\rLoading transformer parameters to cuda:0:  38%|███▊      | 417/1095 [00:19<00:31, 21.59it/s]\rLoading transformer parameters to cuda:0: 100%|██████████| 1095/1095 [00:19<00:00, 56.29it/s]\n
-2025-11-24  20:50:30.265 | info | nuuuod99wu00f2 | FETCH ComfyRegistry Data: 50/108\n
-2025-11-24  20:50:26.472 | info | nuuuod99wu00f2 | FETCH ComfyRegistry Data: 45/108\n
-2025-11-24  20:50:21.976 | info | nuuuod99wu00f2 | FETCH ComfyRegistry Data: 40/108\n
-2025-11-24  20:50:18.065 | info | nuuuod99wu00f2 | FETCH ComfyRegistry Data: 35/108\n
-2025-11-24  20:50:18.065 | info | nuuuod99wu00f2 | Using accelerate to load and assign model weights to device...\n
-2025-11-24  20:50:14.173 | info | nuuuod99wu00f2 | FETCH ComfyRegistry Data: 30/108\n
-2025-11-24  20:50:11.233 | info | nuuuod99wu00f2 | Loading LoRA: high_noise_model with strength: 1.0\n
-2025-11-24  20:50:11.106 | info | nuuuod99wu00f2 | model_type FLOW\n
-2025-11-24  20:50:11.106 | info | nuuuod99wu00f2 | Model variant detected: i2v_14B_2.2\n
-2025-11-24  20:50:11.106 | info | nuuuod99wu00f2 | Model cross attention type: t2v, num_heads: 40, num_layers: 40\n
-2025-11-24  20:50:11.106 | info | nuuuod99wu00f2 | Detected model in_channels: 36\n
-2025-11-24  20:50:10.973 | info | nuuuod99wu00f2 | CUDA Compute Capability: 8.0\n
-2025-11-24  20:50:08.523 | info | nuuuod99wu00f2 | FETCH ComfyRegistry Data: 25/108\n
-2025-11-24  20:50:08.523 | info | nuuuod99wu00f2 |    Final config: blocks=25, streams=6, ratio=80%\n
-2025-11-24  20:50:08.523 | info | nuuuod99wu00f2 | Enhanced BlockSwap configuration completed\n
-2025-11-24  20:50:08.523 | info | nuuuod99wu00f2 | Intelligent VRAM manager initialized: threshold=50.0%, device=cuda (NVIDIA A100 80GB PCIe)\n
-2025-11-24  20:50:08.523 | info | nuuuod99wu00f2 |    GPU optimization: True\n
-2025-11-24  20:50:08.523 | info | nuuuod99wu00f2 |    VRAM threshold: 50.0%\n
-2025-11-24  20:50:08.523 | info | nuuuod99wu00f2 |    Auto tuning: False\n
-2025-11-24  20:50:07.311 | info | nuuuod99wu00f2 | WanVideo Enhanced BlockSwap\n
-2025-11-24  20:50:04.156 | info | nuuuod99wu00f2 | FETCH ComfyRegistry Data: 20/108\n
-2025-11-24  20:50:04.156 | info | nuuuod99wu00f2 | Combined clip embeds shape: torch.Size([1, 257, 1280])\n
-2025-11-24  20:50:03.998 | info | nuuuod99wu00f2 | Clip embeds shape: torch.Size([1, 257, 1280]), dtype: torch.float32\n
-2025-11-24  20:50:03.998 | info | nuuuod99wu00f2 | loaded completely; 78059.32 MB usable, 1208.10 MB loaded, full load: True\n
-2025-11-24  20:50:03.853 | info | nuuuod99wu00f2 | Requested to load CLIPVisionModelProjection\n
-2025-11-24  20:50:00.280 | info | nuuuod99wu00f2 | FETCH ComfyRegistry Data: 15/108\n
-2025-11-24  20:49:56.402 | info | nuuuod99wu00f2 | FETCH ComfyRegistry Data: 10/108\n
-2025-11-24  20:49:56.402 | info | nuuuod99wu00f2 | prompt token count: tensor([9], device='cuda:0')\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 | \rT5Encoder:   0%|          | 0/24 [00:00<?, ?it/s]\rT5Encoder: 100%|██████████| 24/24 [00:00<00:00, 742.56it/s]\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 | prompt token count: tensor([8], device='cuda:0')\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 | \rT5Encoder:   0%|          | 0/24 [00:00<?, ?it/s]\rT5Encoder:   4%|▍         | 1/24 [00:00<00:07,  3.02it/s]\rT5Encoder: 100%|██████████| 24/24 [00:00<00:00, 65.33it/s]\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 | got prompt\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 | handler.py          :158  2025-11-24 19:49:52,814 Queueing prompt to: http://127.0.0.1:8188/prompt\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 | handler.py          :358  2025-11-24 19:49:52,814 WebSocket connection successful (attempt 1)\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 | handler.py          :343  2025-11-24 19:49:52,813 HTTP connection successful (attempt 1)\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 | handler.py          :335  2025-11-24 19:49:52,809 Checking HTTP connection to: http://127.0.0.1:8188/\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 | handler.py          :331  2025-11-24 19:49:52,809 Connecting to WebSocket: ws://127.0.0.1:8188/ws?clientId=61c4fe61-6692-4bbb-bf0f-323f53748688\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 | handler.py          :263  2025-11-24 19:49:52,809 Using single workflow with 0 LoRA pairs\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 | handler.py          :61   2025-11-24 19:49:52,808 ✅ Successfully downloaded file from URL: https://casino-cdn-45tz9ud.b-cdn.net/images/current-xih6nwzkt.jpg -> /task_881d07f9-42df-47a8-a343-ce1f163a99c5/input_image.jpg\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 | handler.py          :40   2025-11-24 19:49:52,596 🌐 Processing URL input: https://casino-cdn-45tz9ud.b-cdn.net/images/current-xih6nwzkt.jpg\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 | handler.py          :221  2025-11-24 19:49:52,596 🌐 Detected URL in image_path, treating as URL: https://casino-cdn-45tz9ud.b-cdn.net/images/current-xih6nwzkt.jpg\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 | handler.py          :211  2025-11-24 19:49:52,596 Received job input: {'cfg': 2, 'height': 832, 'image_path': 'https://casino-cdn-45tz9ud.b-cdn.net/images/current-xih6nwzkt.jpg', 'length': 81, 'negative_prompt': 'blurry, low quality, distorted', 'prompt': 'The character feel happy and dances', 'seed': 42, 'steps': 10, 'width': 480}\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 | Started.
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 | Jobs in progress: 1
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 | Jobs in queue: 1
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 | --- Starting Serverless Worker |  Version 1.7.13 ---\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 | FETCH ComfyRegistry Data: 5/108\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 | Starting the handler...\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 | ComfyUI is ready!\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 | To see the GUI go to: http://[::]:8188\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 | To see the GUI go to: http://0.0.0.0:8188\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 | \n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 | Starting server\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 | No target revision found.\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 | Will assume non-transactional DDL.\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 | Context impl SQLiteImpl.\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 | \n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 |    0.9 seconds: /ComfyUI/custom_nodes/ComfyUI-WanVideoWrapper\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 |    0.1 seconds: /ComfyUI/custom_nodes/ComfyUI-Manager\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 |    0.1 seconds: /ComfyUI/custom_nodes/ComfyUI-VideoHelperSuite\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 |    0.1 seconds: /ComfyUI/custom_nodes/ComfyUI-KJNodes\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 |    0.0 seconds: /ComfyUI/custom_nodes/ComfyUI-GGUF\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 |    0.0 seconds: /ComfyUI/custom_nodes/IntelligentVRAMNode\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 |    0.0 seconds: /ComfyUI/custom_nodes/ComfyUI-AdaptiveWindowSize\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 |    0.0 seconds (IMPORT FAILED): /ComfyUI/custom_nodes/ComfyUI-GGUF-FantasyTalking\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 |    0.0 seconds: /ComfyUI/custom_nodes/ComfyUI-wanBlockswap\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 |    0.0 seconds: /ComfyUI/custom_nodes/auto_wan2.2animate_freamtowindow_server\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 |    0.0 seconds: /ComfyUI/custom_nodes/websocket_image_save.py\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 | Import times for custom nodes:\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 | \n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 | ComfyUI-GGUF: Allowing full torch compile\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 | Cannot import /ComfyUI/custom_nodes/ComfyUI-GGUF-FantasyTalking module for custom nodes: (unicode error) 'unicodeescape' codec can't decode bytes in position 149-150: truncated \UXXXXXXXX escape (nodes.py, line 669)\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 | \n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 | SyntaxError: (unicode error) 'unicodeescape' codec can't decode bytes in position 149-150: truncated \UXXXXXXXX escape\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 |                                        ^\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 |     Prompt executed in 88.52 seconds"""\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 |   File "/ComfyUI/custom_nodes/ComfyUI-GGUF-FantasyTalking/nodes.py", line 669\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 |     from .nodes import NODE_CLASS_MAPPINGS\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 |   File "/ComfyUI/custom_nodes/ComfyUI-GGUF-FantasyTalking/__init__.py", line 7, in <module>\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 |   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed\n
-2025-11-24  20:49:56.401 | info | nuuuod99wu00f2 |   File "<frozen importlib._bootstrap_external>", line 883, in exec_module\n
-2025-11-24  20:49:56.400 | info | nuuuod99wu00f2 |     module_spec.loader.exec_module(module)\n
-2025-11-24  20:49:56.400 | info | nuuuod99wu00f2 |   File "/ComfyUI/nodes.py", line 2136, in load_custom_node\n
-2025-11-24  20:49:56.400 | info | nuuuod99wu00f2 | Traceback (most recent call last):\n
-2025-11-24  20:49:56.400 | warning | nuuuod99wu00f2 | WanVideoWrapper WARNING: FantasyPortrait nodes not available due to error in importing them: No module named 'onnx'\n
-2025-11-24  20:49:56.400 | info | nuuuod99wu00f2 | [ComfyUI-Manager] default cache updated: https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/custom-node-list.json\n
-2025-11-24  20:49:56.400 | info | nuuuod99wu00f2 | Waiting for ComfyUI... (8/120)\n
-2025-11-24  20:49:56.400 | info | nuuuod99wu00f2 | [ComfyUI-Manager] default cache updated: https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/extension-node-map.json\n
-2025-11-24  20:49:56.400 | info | nuuuod99wu00f2 | [ComfyUI-Manager] default cache updated: https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/github-stats.json\n
-2025-11-24  20:49:56.400 | info | nuuuod99wu00f2 | [ComfyUI-Manager] default cache updated: https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/model-list.json\n
-2025-11-24  20:49:56.400 | info | nuuuod99wu00f2 | [ComfyUI-Manager] default cache updated: https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/alter-list.json\n
-2025-11-24  20:49:56.400 | info | nuuuod99wu00f2 |    - Adaptive WanVideo Animate Embeds (AdaptiveWanVideoAnimateEmbeds)\n
-2025-11-24  20:49:56.400 | info | nuuuod99wu00f2 |    Available nodes:\n
-2025-11-24  20:49:56.400 | info | nuuuod99wu00f2 | ⚠️  Enhanced face crop nodes not available: No module named '/ComfyUI/custom_nodes/ComfyUI-AdaptiveWindowSize.enhanced_face_crop'\n
-2025-11-24  20:49:56.400 | info | nuuuod99wu00f2 | ### ComfyUI Version: v0.3.71-5-gcbd68e3d | Released on '2025-11-23'\n
-2025-11-24  20:49:56.400 | info | nuuuod99wu00f2 | [ComfyUI-Manager] network_mode: public\n
-2025-11-24  20:49:56.400 | info | nuuuod99wu00f2 | ### Loading: ComfyUI-Manager (V3.37.1)\n
-2025-11-24  20:49:56.400 | info | nuuuod99wu00f2 | Enabled pinned memory 980281.0\n
-2025-11-24  20:49:56.400 | info | nuuuod99wu00f2 | Device: cuda:0 NVIDIA A100 80GB PCIe : cudaMallocAsync\n
-2025-11-24  20:49:56.400 | info | nuuuod99wu00f2 | Set vram state to: NORMAL_VRAM\n
-2025-11-24  20:49:56.400 | info | nuuuod99wu00f2 | xformers version: 0.0.32.post2\n
-2025-11-24  20:49:56.400 | info | nuuuod99wu00f2 | pytorch version: 2.8.0+cu128\n
-2025-11-24  20:49:56.400 | info | nuuuod99wu00f2 | Total VRAM 81038 MB, total RAM 1031875 MB\n
-2025-11-24  20:49:56.400 | info | nuuuod99wu00f2 | [Prompt Server] web root: /usr/local/lib/python3.10/dist-packages/comfyui_frontend_package/static\n
-2025-11-24  20:49:56.400 | info | nuuuod99wu00f2 | ComfyUI frontend version: 1.30.6\n
-2025-11-24  20:49:56.400 | info | nuuuod99wu00f2 | ComfyUI version: 0.3.71\n
-2025-11-24  20:49:56.400 | info | nuuuod99wu00f2 | Python version: 3.10.12 (main, Aug 15 2025, 14:32:43) [GCC 11.4.0]\n
-2025-11-24  20:49:56.400 | info | nuuuod99wu00f2 | Waiting for ComfyUI... (6/120)\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | FETCH ComfyRegistry Data: 10/108\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | Finished.
-2025-11-24  20:40:57.222 | error | ucxqi3fw8af7c8 | {\n    "error_type": "<class 'urllib.error.HTTPError'>",\n    "error_message": "HTTP Error 400: Bad Request",\n    "error_traceback": "Traceback (most recent call last):\n  File \"/usr/local/lib/python3.10/dist-packages/runpod/serverless/modules/rp_job.py\", line 182, in run_job\n    handler_return = handler(job)\n  File \"//handler.py\", line 349, in handler\n    videos = get_videos(ws, prompt)\n  File \"//handler.py\", line 179, in get_videos\n    prompt_id = queue_prompt(prompt)['prompt_id']\n  File \"//handler.py\", line 162, in queue_prompt\n    return json.loads(urllib.request.urlopen(req).read())\n  File \"/usr/lib/python3.10/urllib/request.py\", line 216, in urlopen\n    return opener.open(url, data, timeout)\n  File \"/usr/lib/python3.10/urllib/request.py\", line 525, in open\n    response = meth(req, response)\n  File \"/usr/lib/python3.10/urllib/request.py\", line 634, in http_response\n    response = self.parent.error(\n  File \"/usr/lib/python3.10/urllib/request.py\", line 563, in error\n    return self._call_chain(*args)\n  File \"/usr/lib/python3.10/urllib/request.py\", line 496, in _call_chain\n    result = func(*args)\n  File \"/usr/lib/python3.10/urllib/request.py\", line 643, in http_error_default\n    raise HTTPError(req.full_url, code, msg, hdrs, fp)\nurllib.error.HTTPError: HTTP Error 400: Bad Request\n",\n    "hostname": "ucxqi3fw8af7c8-64410d5a",\n    "worker_id": "ucxqi3fw8af7c8",\n    "runpod_version": "1.7.13"\n}
-2025-11-24  20:40:57.222 | error | ucxqi3fw8af7c8 | Captured Handler Exception
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | invalid prompt: {'type': 'prompt_outputs_failed_validation', 'message': 'Prompt outputs failed validation', 'details': '', 'extra_info': {}}\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | Output will be ignored\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 |   - Custom validation failed for node: image - Invalid image file: https://casino-cdn-45tz9ud.b-cdn.net/images/current-xih6nwzkt.jpg\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | * LoadImage 244:\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | Failed to validate prompt for output 131:\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | got prompt\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | handler.py          :158  2025-11-24 19:40:53,481 Queueing prompt to: http://127.0.0.1:8188/prompt\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | handler.py          :342  2025-11-24 19:40:53,481 WebSocket connection successful (attempt 1)\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | handler.py          :327  2025-11-24 19:40:53,479 HTTP connection successful (attempt 1)\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | handler.py          :319  2025-11-24 19:40:53,475 Checking HTTP connection to: http://127.0.0.1:8188/\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | handler.py          :315  2025-11-24 19:40:53,475 Connecting to WebSocket: ws://127.0.0.1:8188/ws?clientId=de3aba58-1b50-422b-b23c-b3c68b420b30\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | handler.py          :247  2025-11-24 19:40:53,475 Using single workflow with 0 LoRA pairs\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | handler.py          :36   2025-11-24 19:40:53,475 📁 Processing path input: https://casino-cdn-45tz9ud.b-cdn.net/images/current-xih6nwzkt.jpg\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | handler.py          :211  2025-11-24 19:40:53,474 Received job input: {'cfg': 2, 'height': 832, 'image_path': 'https://casino-cdn-45tz9ud.b-cdn.net/images/current-xih6nwzkt.jpg', 'length': 81, 'negative_prompt': 'blurry, low quality, distorted', 'prompt': 'The character feel happy and dances', 'seed': 42, 'steps': 10, 'width': 480}\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | Started.
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | Jobs in progress: 1
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | Jobs in queue: 1
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | FETCH ComfyRegistry Data: 5/108\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | --- Starting Serverless Worker |  Version 1.7.13 ---\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | Starting the handler...\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | ComfyUI is ready!\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | To see the GUI go to: http://[::]:8188\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | To see the GUI go to: http://0.0.0.0:8188\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | \n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | Starting server\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | No target revision found.\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | Will assume non-transactional DDL.\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | Context impl SQLiteImpl.\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | \n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 |    0.8 seconds: /ComfyUI/custom_nodes/ComfyUI-WanVideoWrapper\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 |    0.1 seconds: /ComfyUI/custom_nodes/ComfyUI-Manager\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 |    0.1 seconds: /ComfyUI/custom_nodes/ComfyUI-KJNodes\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 |    0.1 seconds: /ComfyUI/custom_nodes/ComfyUI-VideoHelperSuite\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 |    0.0 seconds: /ComfyUI/custom_nodes/ComfyUI-GGUF\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 |    0.0 seconds: /ComfyUI/custom_nodes/IntelligentVRAMNode\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 |    0.0 seconds (IMPORT FAILED): /ComfyUI/custom_nodes/ComfyUI-GGUF-FantasyTalking\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 |    0.0 seconds: /ComfyUI/custom_nodes/ComfyUI-AdaptiveWindowSize\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 |    0.0 seconds: /ComfyUI/custom_nodes/ComfyUI-wanBlockswap\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 |    0.0 seconds: /ComfyUI/custom_nodes/auto_wan2.2animate_freamtowindow_server\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 |    0.0 seconds: /ComfyUI/custom_nodes/websocket_image_save.py\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | Import times for custom nodes:\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | \n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | ComfyUI-GGUF: Allowing full torch compile\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | Cannot import /ComfyUI/custom_nodes/ComfyUI-GGUF-FantasyTalking module for custom nodes: (unicode error) 'unicodeescape' codec can't decode bytes in position 149-150: truncated \UXXXXXXXX escape (nodes.py, line 669)\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | \n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 | SyntaxError: (unicode error) 'unicodeescape' codec can't decode bytes in position 149-150: truncated \UXXXXXXXX escape\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 |                                        ^\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 |     Prompt executed in 88.52 seconds"""\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 |   File "/ComfyUI/custom_nodes/ComfyUI-GGUF-FantasyTalking/nodes.py", line 669\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 |     from .nodes import NODE_CLASS_MAPPINGS\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 |   File "/ComfyUI/custom_nodes/ComfyUI-GGUF-FantasyTalking/__init__.py", line 7, in <module>\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 |   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 |   File "<frozen importlib._bootstrap_external>", line 883, in exec_module\n
-2025-11-24  20:40:57.222 | info | ucxqi3fw8af7c8 |     module_spec.loader.exec_module(module)\n
-2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 |   File "/ComfyUI/nodes.py", line 2136, in load_custom_node\n
-2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | Traceback (most recent call last):\n
-2025-11-24  20:40:57.221 | warning | ucxqi3fw8af7c8 | WanVideoWrapper WARNING: FantasyPortrait nodes not available due to error in importing them: No module named 'onnx'\n
-2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | [ComfyUI-Manager] default cache updated: https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/custom-node-list.json\n
-2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | [ComfyUI-Manager] default cache updated: https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/extension-node-map.json\n
-2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | [ComfyUI-Manager] default cache updated: https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/github-stats.json\n
-2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | [ComfyUI-Manager] default cache updated: https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/alter-list.json\n
-2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | [ComfyUI-Manager] default cache updated: https://raw.githubusercontent.com/ltdrdata/ComfyUI-Manager/main/model-list.json\n
-2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | Waiting for ComfyUI... (8/120)\n
-2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 |    - Adaptive WanVideo Animate Embeds (AdaptiveWanVideoAnimateEmbeds)\n
-2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 |    Available nodes:\n
-2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | ⚠️  Enhanced face crop nodes not available: No module named '/ComfyUI/custom_nodes/ComfyUI-AdaptiveWindowSize.enhanced_face_crop'\n
-2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | ### ComfyUI Version: v0.3.71-5-gcbd68e3d | Released on '2025-11-23'\n
-2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | [ComfyUI-Manager] network_mode: public\n
-2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | ### Loading: ComfyUI-Manager (V3.37.1)\n
-2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | Enabled pinned memory 490030.0\n
-2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | Device: cuda:0 NVIDIA A100-SXM4-80GB : cudaMallocAsync\n
-2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | Set vram state to: NORMAL_VRAM\n
-2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | xformers version: 0.0.32.post2\n
-2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | pytorch version: 2.8.0+cu128\n
-2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | Total VRAM 81154 MB, total RAM 515821 MB\n
-2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | [Prompt Server] web root: /usr/local/lib/python3.10/dist-packages/comfyui_frontend_package/static\n
-2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | ComfyUI frontend version: 1.30.6\n
-2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | ComfyUI version: 0.3.71\n
-2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | Python version: 3.10.12 (main, Aug 15 2025, 14:32:43) [GCC 11.4.0]\n
-2025-11-24  20:40:57.221 | info | ucxqi3fw8af7c8 | Waiting for ComfyUI... (6/120)\n
+2025-11-25T08:22:49.178417492Z ==========
+2025-11-25T08:22:49.178422689Z == CUDA ==
+2025-11-25T08:22:49.178543439Z ==========
+2025-11-25T08:22:49.185330263Z CUDA Version 12.8.1
+2025-11-25T08:22:49.187160548Z Container image Copyright (c) 2016-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+2025-11-25T08:22:49.188905205Z This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+2025-11-25T08:22:49.188911995Z By pulling and using the container, you accept the terms and conditions of this license:
+2025-11-25T08:22:49.188917073Z https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+2025-11-25T08:22:49.188925395Z A copy of this license is made available in this container at /NGC-DL-CONTAINER-LICENSE for your convenience.
+2025-11-25T08:22:49.207208754Z Starting ComfyUI in the background...
+2025-11-25T08:22:49.207577493Z Waiting for ComfyUI to be ready...
+2025-11-25T08:22:49.218580273Z Waiting for ComfyUI... (0/300)
+2025-11-25T08:22:51.232751464Z Waiting for ComfyUI... (2/300)
+2025-11-25T08:22:53.247289411Z Waiting for ComfyUI... (4/300)
+2025-11-25T08:22:55.250223163Z ERROR: ComfyUI process died!
+2025-11-25T08:22:55.250272726Z Last 50 lines of ComfyUI log:
+2025-11-25T08:22:55.252620051Z ## ComfyUI-Manager: installing dependencies done.
+2025-11-25T08:22:55.252635854Z ** ComfyUI startup time: 2025-11-25 08:22:50.334
+2025-11-25T08:22:55.252639390Z ** Platform: Linux
+2025-11-25T08:22:55.252643265Z ** Python version: 3.10.12 (main, Aug 15 2025, 14:32:43) [GCC 11.4.0]
+2025-11-25T08:22:55.252647021Z ** Python executable: /usr/bin/python
+2025-11-25T08:22:55.252649324Z ** ComfyUI Path: /ComfyUI
+2025-11-25T08:22:55.252651618Z ** ComfyUI Base Folder Path: /ComfyUI
+2025-11-25T08:22:55.252654262Z ** User directory: /ComfyUI/user
+2025-11-25T08:22:55.252656595Z ** ComfyUI-Manager config path: /ComfyUI/user/default/ComfyUI-Manager/config.ini
+2025-11-25T08:22:55.252659239Z ** Log path: /ComfyUI/user/comfyui.log
+2025-11-25T08:22:55.252663936Z Prestartup times for custom nodes:
+2025-11-25T08:22:55.252666290Z    1.7 seconds: /ComfyUI/custom_nodes/ComfyUI-Manager
+2025-11-25T08:22:55.252670997Z Checkpoint files will always be loaded safely.
+2025-11-25T08:22:55.252673551Z Total VRAM 45468 MB, total RAM 1547881 MB
+2025-11-25T08:22:55.252675864Z pytorch version: 2.5.1+cu124
+2025-11-25T08:22:55.252678227Z WARNING[XFORMERS]: xFormers can't load C++/CUDA extensions. xFormers was built for:
+2025-11-25T08:22:55.252680922Z     PyTorch 2.9.0+cu128 with CUDA 1208 (you have 2.5.1+cu124)
+2025-11-25T08:22:55.252683195Z     Python  3.10.19 (you have 3.10.12)
+2025-11-25T08:22:55.252685498Z   Please reinstall xformers (see https://github.com/facebookresearch/xformers#installing-xformers)
+2025-11-25T08:22:55.252689074Z   Memory-efficient attention, SwiGLU, sparse and more won't be available.
+2025-11-25T08:22:55.252691767Z   Set XFORMERS_MORE_DETAILS=1 for more details
+2025-11-25T08:22:55.252694001Z Set vram state to: NORMAL_VRAM
+2025-11-25T08:22:55.252696555Z Device: cuda:0 NVIDIA L40S : cudaMallocAsync
+2025-11-25T08:22:55.252698968Z Enabled pinned memory 1470486.0
+2025-11-25T08:22:55.252701722Z Traceback (most recent call last):
+2025-11-25T08:22:55.252703966Z   File "/ComfyUI/main.py", line 149, in <module>
+2025-11-25T08:22:55.252706249Z     import execution
+2025-11-25T08:22:55.252709264Z   File "/ComfyUI/execution.py", line 16, in <module>
+2025-11-25T08:22:55.252711868Z     import nodes
+2025-11-25T08:22:55.252714451Z   File "/ComfyUI/nodes.py", line 24, in <module>
+2025-11-25T08:22:55.252716735Z     import comfy.diffusers_load
+2025-11-25T08:22:55.252719208Z   File "/ComfyUI/comfy/diffusers_load.py", line 3, in <module>
+2025-11-25T08:22:55.252721532Z     import comfy.sd
+2025-11-25T08:22:55.252723825Z   File "/ComfyUI/comfy/sd.py", line 13, in <module>
+2025-11-25T08:22:55.252726349Z     import comfy.ldm.genmo.vae.model
+2025-11-25T08:22:55.252728612Z   File "/ComfyUI/comfy/ldm/genmo/vae/model.py", line 13, in <module>
+2025-11-25T08:22:55.252730896Z     from comfy.ldm.modules.attention import optimized_attention
+2025-11-25T08:22:55.252751026Z   File "/ComfyUI/comfy/ldm/modules/attention.py", line 30, in <module>
+2025-11-25T08:22:55.252753580Z     raise e
+2025-11-25T08:22:55.252755963Z   File "/ComfyUI/comfy/ldm/modules/attention.py", line 23, in <module>
+2025-11-25T08:22:55.252758266Z     from sageattention import sageattn
+2025-11-25T08:22:55.252760580Z   File "/usr/local/lib/python3.10/dist-packages/sageattention/__init__.py", line 1, in <module>
+2025-11-25T08:22:55.252763454Z     from .core import sageattn, sageattn_varlen
+2025-11-25T08:22:55.252765898Z   File "/usr/local/lib/python3.10/dist-packages/sageattention/core.py", line 47, in <module>
+2025-11-25T08:22:55.252768272Z     from .quant import per_block_int8 as per_block_int8_cuda
+2025-11-25T08:22:55.252770565Z   File "/usr/local/lib/python3.10/dist-packages/sageattention/quant.py", line 20, in <module>
+2025-11-25T08:22:55.252772918Z     from . import _fused
+2025-11-25T08:22:55.252775372Z ImportError: /usr/local/lib/python3.10/dist-packages/sageattention/_fused.cpython-310-x86_64-linux-gnu.so: undefined symbol: _ZN3c106detail14torchCheckFailEPKcS2_jRKNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
+2025-11-25T08:23:06.420701004Z ==========
+2025-11-25T08:23:06.420709516Z == CUDA ==
+2025-11-25T08:23:06.420714344Z ==========
+2025-11-25T08:23:06.426107493Z CUDA Version 12.8.1
+2025-11-25T08:23:06.427591762Z Container image Copyright (c) 2016-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+2025-11-25T08:23:06.429389579Z This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+2025-11-25T08:23:06.429395557Z By pulling and using the container, you accept the terms and conditions of this license:
+2025-11-25T08:23:06.429401016Z https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+2025-11-25T08:23:06.429411361Z A copy of this license is made available in this container at /NGC-DL-CONTAINER-LICENSE for your convenience.
+2025-11-25T08:23:06.448881997Z Starting ComfyUI in the background...
+2025-11-25T08:23:06.449356864Z Waiting for ComfyUI to be ready...
+2025-11-25T08:23:06.460335869Z Waiting for ComfyUI... (0/300)
+2025-11-25T08:23:08.474543034Z Waiting for ComfyUI... (2/300)
+2025-11-25T08:23:10.489553755Z Waiting for ComfyUI... (4/300)
