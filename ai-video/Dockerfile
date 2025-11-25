@@ -58,20 +58,20 @@ RUN cd /ComfyUI/custom_nodes && \
     cd ComfyUI-AdaptiveWindowSize/ComfyUI-AdaptiveWindowSize && \
     mv * ../
 
-# Large diffusion models and LoRAs are now loaded from /runpod-volume/ network volume
-# This reduces Docker image size and allows sharing models across instances
+# All models are now loaded from /runpod-volume/ network volume
+# This reduces Docker image size significantly and allows sharing models across instances
 # 
 # Required models on network volume:
 # - /runpod-volume/models/Wan2_2-I2V-A14B-HIGH_fp8_e4m3fn_scaled_KJ.safetensors
 # - /runpod-volume/models/Wan2_2-I2V-A14B-LOW_fp8_e4m3fn_scaled_KJ.safetensors
+# - /runpod-volume/models/clip_vision/clip_vision_h.safetensors
+# - /runpod-volume/models/text_encoders/umt5-xxl-enc-bf16.safetensors
+# - /runpod-volume/models/vae/Wan2_1_VAE_bf16.safetensors
 # - /runpod-volume/loras/high_noise_model.safetensors
 # - /runpod-volume/loras/low_noise_model.safetensors
 # - /runpod-volume/loras/ (your custom LoRA files)
 
-# Keep smaller supporting models in the image for convenience
-RUN wget -q https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/resolve/main/split_files/clip_vision/clip_vision_h.safetensors -O /ComfyUI/models/clip_vision/clip_vision_h.safetensors
-RUN wget -q https://huggingface.co/Kijai/WanVideo_comfy/resolve/main/umt5-xxl-enc-bf16.safetensors -O /ComfyUI/models/text_encoders/umt5-xxl-enc-bf16.safetensors
-RUN wget -q https://huggingface.co/Kijai/WanVideo_comfy/resolve/main/Wan2_1_VAE_bf16.safetensors -O /ComfyUI/models/vae/Wan2_1_VAE_bf16.safetensors
+# All models are loaded from network volume - no downloads in image
 
 COPY . .
 COPY extra_model_paths.yaml /ComfyUI/extra_model_paths.yaml
