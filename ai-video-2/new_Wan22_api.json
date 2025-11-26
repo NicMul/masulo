@@ -5,7 +5,7 @@
       "base_precision": "bf16",
       "quantization": "disabled",
       "load_device": "offload_device",
-      "attention_mode": "default",
+      "attention_mode": "sdpa",
       "rms_norm_function": "default"
     },
     "class_type": "WanVideoModelLoader",
@@ -370,7 +370,7 @@
       "base_precision": "bf16",
       "quantization": "disabled",
       "load_device": "offload_device",
-      "attention_mode": "default",
+      "attention_mode": "sdpa",
       "rms_norm_function": "default",
       "block_swap_args": [
         "525",
