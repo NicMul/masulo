@@ -11,8 +11,6 @@ RUN rm -f /usr/bin/python /usr/bin/pip && \
 
 RUN pip install -U "huggingface_hub[hf_transfer]"
 RUN pip install runpod websocket-client requests
-# Install sageattention for WanVideo model (required for sageattn attention mode)
-RUN pip install sageattention
 
 WORKDIR /
 
