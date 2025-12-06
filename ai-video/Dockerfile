@@ -1,6 +1,13 @@
 # Use specific version of nvidia cuda image
 # FROM wlsdml1114/my-comfy-models:v1 as model_provider
-FROM wlsdml1114/multitalk-base:1.7 as runtime
+FROM nvidia/cuda:12.1.0-runtime-ubuntu22.04
+
+# Install Python, pip, and ffmpeg (required for VideoHelperSuite)
+RUN apt-get update && apt-get install -y python3 python3-pip git curl ffmpeg && rm -rf /var/lib/apt/lists/*
+# Create symlinks for python and pip (remove existing if they exist)
+RUN rm -f /usr/bin/python /usr/bin/pip && \
+    ln -s /usr/bin/python3 /usr/bin/python && \
+    ln -s /usr/bin/pip3 /usr/bin/pip
 
 RUN pip install -U "huggingface_hub[hf_transfer]"
 RUN pip install runpod websocket-client requests
@@ -39,14 +46,8 @@ RUN cd /ComfyUI/custom_nodes && \
     cd ComfyUI-VideoHelperSuite && \
     pip install --no-cache-dir -r requirements.txt && \
     pip cache purge && \
-    rm -rf .git
-    
-RUN cd /ComfyUI/custom_nodes && \
-    git clone --depth 1 https://github.com/kael558/ComfyUI-GGUF-FantasyTalking && \
-    cd ComfyUI-GGUF-FantasyTalking && \
-    pip install --no-cache-dir -r requirements.txt && \
-    pip cache purge && \
-    rm -rf .git
+    rm -rf .git && \
+    echo "VideoHelperSuite installed successfully"
     
 RUN cd /ComfyUI/custom_nodes && \
     git clone --depth 1 https://github.com/orssorbit/ComfyUI-wanBlockswap && \

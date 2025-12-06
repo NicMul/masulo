@@ -3,7 +3,7 @@
 This Mesulo repo provides a Python client for generating videos from images using **Wan2.2** model through RunPod's generate_video endpoint. The client supports base64 encoding, LoRA configurations, and batch processing capabilities.
 
 
-This **Wan2.2** model is fine tuned by Mesulo. It ss an advanced AI model for iGaming that converts static images into dynamic videos with natural motion and realistic animations. It's built on top of ComfyUI and provides high-quality video generation capabilities for thumbnails and banners.
+This project uses the standard **Wan2.2** model for image-to-video generation. It is an advanced AI model that converts static images into dynamic videos with natural motion and realistic animations. It's built on top of ComfyUI and provides high-quality video generation capabilities for thumbnails and banners.
 
 ## ✨ Key Features
 

@@ -32,6 +32,9 @@ while [ $wait_count -lt $max_wait ]; do
     
     # Check if HTTP endpoint is responding
     if curl -s http://127.0.0.1:8188/ > /dev/null 2>&1; then
+        # Give ComfyUI a few more seconds to load all custom nodes
+        echo "ComfyUI HTTP endpoint is up, waiting for custom nodes to load..."
+        sleep 5
         echo "ComfyUI is ready!"
         break
     fi
