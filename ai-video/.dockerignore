@@ -1,0 +1,48 @@
+# Exclude unnecessary files from Docker build
+*.log
+*.txt
+*.md
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.git/
+.gitignore
+.DS_Store
+*.png
+!example_image.png
+*.jpg
+*.jpeg
+*.gif
+*.mp4
+*.mov
+node_modules/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Exclude specific scripts (not needed in image)
+# Keep entrypoint.sh as it's required
+upload_models_to_s3.sh
+build_and_push.sh
+
+# Exclude client script (not needed in image)
+generate_video_client.py
+
+# Exclude logs
+logs-*.txt
+
+# Exclude environment files (contain secrets)
+.env
+.env.*
+*.env
+*.env.*
+!*.env.example
