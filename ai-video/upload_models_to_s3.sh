@@ -5,12 +5,25 @@
 
 set -e
 
-# S3 Configuration
-S3_BUCKET="i5oxk2vdao"
-S3_REGION="eu-ro-1"
-S3_ENDPOINT="https://s3api-eu-ro-1.runpod.io"
-AWS_ACCESS_KEY_ID="user_35qBy7jX7fLGRPS3aVubxza3fuY"
-AWS_SECRET_ACCESS_KEY="rps_A5SVLFI6FEC8M8JCVN90F3HTY2O0VYGBWM2H452L1a542s"
+# S3 Configuration from environment variables
+S3_BUCKET="${S3_BUCKET:-i5oxk2vdao}"
+S3_REGION="${S3_REGION:-eu-ro-1}"
+S3_ENDPOINT="${S3_ENDPOINT:-https://s3api-eu-ro-1.runpod.io}"
+AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}"
+AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}"
+
+# Validate required environment variables
+if [ -z "$AWS_ACCESS_KEY_ID" ] || [ -z "$AWS_SECRET_ACCESS_KEY" ]; then
+    echo "❌ Error: AWS credentials environment variables are required"
+    echo ""
+    echo "Please set the following environment variables:"
+    echo "  export AWS_ACCESS_KEY_ID=your_access_key"
+    echo "  export AWS_SECRET_ACCESS_KEY=your_secret_key"
+    echo "  export S3_BUCKET=i5oxk2vdao  # optional, defaults to i5oxk2vdao"
+    echo "  export S3_REGION=eu-ro-1  # optional, defaults to eu-ro-1"
+    echo "  export S3_ENDPOINT=https://s3api-eu-ro-1.runpod.io  # optional"
+    exit 1
+fi
 
 # Export AWS credentials for aws cli
 export AWS_ACCESS_KEY_ID

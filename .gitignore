@@ -12,6 +12,10 @@ env.*
 *.secret
 *.credentials
 
+# Allow .env.example files (templates that should be committed)
+!.env.example
+!**/.env.example
+
 # OS files
 .DS_Store
 .DS_Store?

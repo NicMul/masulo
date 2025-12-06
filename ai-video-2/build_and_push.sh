@@ -15,10 +15,21 @@ if [ $# -lt 2 ]; then
     exit 1
 fi
 
-# Hardcoded Docker Hub credentials
-REGISTRY="docker.io"
-USERNAME="mesulo"
+# Docker Hub credentials from environment variables
+REGISTRY="${DOCKER_REGISTRY:-docker.io}"
+USERNAME="${DOCKER_USERNAME:-mesulo}"
 PASSWORD="${DOCKER_PASSWORD}"
+
+# Validate required environment variables
+if [ -z "$PASSWORD" ]; then
+    echo "❌ Error: DOCKER_PASSWORD environment variable is required"
+    echo ""
+    echo "Please set the following environment variables:"
+    echo "  export DOCKER_USERNAME=mesulo"
+    echo "  export DOCKER_PASSWORD=your_docker_token"
+    echo "  export DOCKER_REGISTRY=docker.io  # optional, defaults to docker.io"
+    exit 1
+fi
 
 IMAGE_NAME=$1
 TAG=$2
