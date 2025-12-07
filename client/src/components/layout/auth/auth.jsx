@@ -33,14 +33,8 @@ export function AuthLayout({ children }){
         { /* optional: add a cool visual here */ }
         <div className='text-white max-w-96 text-lg text-opacity-80 my-auto'>
           <blockquote>
-            "Mesulo provided the foundation to jumpstart my SaaS product. 
-            The attention to detail, thoughtful approach, and creative 
-            inclination provided the most ideal outcome. 
-            In my capacity as a UX Lead at Apple I've worked 
-            with countless engineers — of which Mesulo stands ahead 
-            of the pack. I hope to continue leveraging Mesulo 
-            long into the future."
-            <cite className='block mt-4'>- Brat Bitler, Designer at Apple</cite>
+          "Mesulo gave our team the power to optimize our lobby at lightning speed. Managing game assets and promotions is now seamless. We create new game thumbnails, A/B test them instantly, and see an engagement uplift in minutes. It's truly a game-changer and the fastest way we've found to drive results."
+            <cite className='block mt-4'>- Brat Fuller, Casino Manager at casino.com</cite>
           </blockquote>
         </div>
 
