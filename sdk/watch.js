@@ -6,22 +6,16 @@ import { dirname, join } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const distFile = join(__dirname, 'dist', 'mesulo-preact-sdk.js');
-const targetFile = join(__dirname, '..', 'sdk', 'dist', 'mesulo-preact-sdk.js');
+const distFile = join(__dirname, 'dist', 'mesulo-ai-sdk.js');
+const targetFile = join(__dirname, 'dist', 'mesulo-ai-sdk.js');
 
-function copyFile() {
-  exec(`cp "${distFile}" "${targetFile}"`, (error) => {
-    if (error) {
-      console.error('Error copying file:', error);
-    } else {
-      const timestamp = new Date().toLocaleTimeString();
-      console.log(`[${timestamp}] ✓ Copied to SDK dist`);
-    }
-  });
+function notifyFileReady() {
+  const timestamp = new Date().toLocaleTimeString();
+  console.log(`[${timestamp}] ✓ Build file ready: dist/mesulo-ai-sdk.js`);
 }
 
-console.log('📦 Watching for changes in dist/mesulo-preact-sdk.js...');
-console.log('📋 Copying to ../sdk/dist/mesulo-preact-sdk.js on changes\n');
+console.log('📦 Watching for changes in dist/mesulo-ai-sdk.js...');
+console.log('📋 File ready: dist/mesulo-ai-sdk.js\n');
 
 // Watch the dist file
 const watcher = watch(distFile, {
@@ -30,15 +24,15 @@ const watcher = watch(distFile, {
 });
 
 watcher.on('change', () => {
-  copyFile();
+  notifyFileReady();
 });
 
 watcher.on('add', () => {
-  copyFile();
+  notifyFileReady();
 });
 
-// Initial copy
-copyFile();
+// Initial notification
+notifyFileReady();
 
 // Handle process termination
 process.on('SIGINT', () => {
