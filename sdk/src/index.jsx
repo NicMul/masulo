@@ -63,11 +63,28 @@ function upgradeAllElements() {
   });
 }
 
+function cleanupElement(containerElement) {
+  const mountPoint = mountPoints.get(containerElement);
+  if (mountPoint) {
+    // Unmount the Preact component
+    render(null, mountPoint);
+    // Remove the mount point from the DOM
+    if (mountPoint.parentNode) {
+      mountPoint.parentNode.removeChild(mountPoint);
+    }
+    // Remove from our mapping
+    mountPoints.delete(containerElement);
+  }
+}
+
+
 function observeDOMMutations() {
   const observer = new MutationObserver((mutations) => {
     const newElements = [];
+    const removedElements = [];
 
     mutations.forEach(mutation => {
+      // Handle added nodes
       mutation.addedNodes.forEach(node => {
         // Element node
         if (node.nodeType === 1) {
@@ -81,11 +98,33 @@ function observeDOMMutations() {
           }
         }
       });
+
+      // Handle removed nodes
+      mutation.removedNodes.forEach(node => {
+        // Element node
+        if (node.nodeType === 1) {
+          if (node.hasAttribute('data-mesulo-game-id')) {
+            removedElements.push(node);
+          }
+          // Also check children
+          const children = node.querySelectorAll('[data-mesulo-game-id]');
+          if (children.length > 0) {
+            removedElements.push(...Array.from(children));
+          }
+        }
+      });
     });
 
     if (newElements.length > 0) {
       scheduleChunkedTask(newElements, (element) => {
         upgradeElement(element);
+      });
+    }
+
+    if (removedElements.length > 0) {
+      // Execute cleanup synchronously to ensure memory is freed
+      removedElements.forEach(element => {
+        cleanupElement(element);
       });
     }
   });
