@@ -1,0 +1,37 @@
+ have analyzed the SDK implementation (mesulo-sdk-preact) to identify any red flags, particularly keeping in mind the scenario where there could be thousands of assets that need to be upgraded.
+
+Here are the major performance red flags and bottlenecks I found in the current implementation:
+
+1. Main Thread Blocking on Initialization (upgradeAllElements)
+In src/index.jsx, the SDK uses document.querySelectorAll('[data-mesulo-game-id]') and then iterates over every single node to synchronously call upgradeElement.
+
+The Red Flag: If there are thousands of tags on the page, querying them all at once and synchronously mounting a Preact tree for each one will completely block the browser's main thread. This will freeze the UI, prevent scrolling, and cause severe jank during initial load.
+Fix: This needs to be batched or yielded (e.g., using requestIdleCallback, setTimeout chunks, or a recursive requestAnimationFrame loop) so the browser can breathe between upgrades.
+
+
+
+2. Excessive Intersection Observers (useGameEvents.js)
+In src/hooks/useGameEvents.js, every single upgraded game component creates its own instance of IntersectionObserver to track impressions.
+
+The Red Flag: Instantiating thousands of individual IntersectionObserver objects is highly memory-intensive and computationally expensive.
+Fix: There should be a single, global IntersectionObserver instance at the SDK level that observes all activated elements, rather than each component managing its own observer.
+
+
+3. Inefficient Global Click Tracking (batchAnalytics.js)
+In src/analytics/batchAnalytics.js, the BatchAnalytics.setupGlobalClickTracking method attaches a global click listener to the document. On every single click anywhere on the page, it executes a while loop over DOM elements under the cursor (_findVideoUnderPoint) changing pointerEvents back and forth, and iterates over the entire e.composedPath() to find buttons.
+
+The Red Flag: Modifying pointerEvents synchronously during a click event forces expensive browser style recalculations and reflows. Doing this globally on every click will make the page feel unresponsive.
+4. Forced Synchronous Layouts / DOM Thrashing (useInitialLoadLifecycle.js)
+In the animation lifecycle (e.g., createAndAnimateWrapper), there is heavy use of inline style modifications (element.style.opacity, element.style.filter, etc.) mixed with reading computed styles (window.getComputedStyle).
+
+The Red Flag: Reading getComputedStyle and immediately writing to styling across thousands of components causes "layout thrashing" (forced synchronous reflows), heavily degrading performance.
+Fix: Animations should be handled purely through CSS class toggling rather than inline style manipulation via JS.
+5. Lack of DOM Virtualization / Hidden Resource Exhaustion
+Currently, the SDK mounts a Preact component and a <video> element for every single [data-mesulo-game-id] it finds, regardless of whether it is on-screen.
+
+The Red Flag: Having thousands of <video> tags (even if paused or hidden) in the DOM simultaneously will exhaust the browser's media decoding resources, crash mobile browsers, and consume massive amounts of memory.
+Fix: The SDK should implement virtualization or lazy-loading. It should only mount the heavy video components (or at least only set the src attribute) when the element is actually near the viewport.
+6. Memory Leaks in Event Handlers (index.jsx)
+When mesuloPreactSDK.off(gameId) is called, the handlers are deleted from the map, but the mountPoint and the Preact app are never actually unmounted (they just re-render with "universalHandlers"). If elements are dynamically added and removed from the DOM by a host SPA (Single Page App), this SDK has no built-in MutationObserver or cleanup mechanism to unmount the Preact trees for elements that no longer exist, leading to zombie memory leaks.
+
+Would you like me to create an implementation plan to systematically fix these performance bottlenecks?

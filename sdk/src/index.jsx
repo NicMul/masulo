@@ -1,5 +1,6 @@
 import { h, render } from 'preact';
 import { GameCardWrapper } from './components/GameCardWrapper.jsx';
+import { scheduleChunkedTask } from './utils/scheduler.js';
 import { injectLoadingSpinnerStyles } from './utils/loadingSpinnerStyles.js';
 import { DebugWindow } from './components/debug/DebugWindow';
 import { getApplicationKeyFromScript } from './realtime/scriptLoader.js';
@@ -57,8 +58,41 @@ function upgradeAllElements() {
   const selector = '[data-mesulo-game-id]';
   const elements = document.querySelectorAll(selector);
 
-  elements.forEach(element => {
+  scheduleChunkedTask(elements, (element) => {
     upgradeElement(element);
+  });
+}
+
+function observeDOMMutations() {
+  const observer = new MutationObserver((mutations) => {
+    const newElements = [];
+
+    mutations.forEach(mutation => {
+      mutation.addedNodes.forEach(node => {
+        // Element node
+        if (node.nodeType === 1) {
+          if (node.hasAttribute('data-mesulo-game-id')) {
+            newElements.push(node);
+          }
+          // Also check children
+          const children = node.querySelectorAll('[data-mesulo-game-id]');
+          if (children.length > 0) {
+            newElements.push(...Array.from(children));
+          }
+        }
+      });
+    });
+
+    if (newElements.length > 0) {
+      scheduleChunkedTask(newElements, (element) => {
+        upgradeElement(element);
+      });
+    }
+  });
+
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true
   });
 }
 
@@ -156,6 +190,7 @@ function init() {
     }
 
     upgradeAllElements();
+    observeDOMMutations();
 
     if (lifecycleManager) {
       if (connectionManager && connectionManager.isConnected) {
