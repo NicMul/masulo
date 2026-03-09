@@ -6,6 +6,8 @@ import { GameVideo } from '../components/GameVideo.jsx';
 import { gameVideoStore } from '../store/gameVideoStore.js';
 import { promotionsStore } from '../store/promotionsStore.js';
 import { observeVideo } from '../utils/lazyLoadObserver.js';
+import { activeGamesStore } from '../elements/MesuloGameElement.js';
+import { effect } from '@preact/signals';
 
 const PHASE_WAITING = 'waiting';
 const PHASE_SPINNER = 'spinner';
@@ -17,6 +19,7 @@ export function useInitialLoadLifecycle(connectionManager) {
   const loadResources = useInitialLoad();
   let gamesResponseData = null;
   let initialLoadComplete = false;
+  let signalCleanup = null;
 
   async function createAndAnimateWrapper(imgElement, gameId, gameData) {
     const imgParent = imgElement.parentElement;
@@ -154,14 +157,12 @@ export function useInitialLoadLifecycle(connectionManager) {
     });
   }
 
-  function findGameElements() {
-    const elements = document.querySelectorAll('[data-mesulo-game-id]');
+  function syncGameElements() {
+    const activeGames = activeGamesStore.value;
     const gameIds = new Set();
 
-    elements.forEach(element => {
-      const gameId = element.getAttribute('data-mesulo-game-id');
-      if (!gameId) return;
-
+    activeGames.forEach((element, gameId) => {
+      // The image is expected to be a direct child of the Web Component now
       const imgElement = element.querySelector('img');
       if (!imgElement) return;
 
@@ -172,10 +173,13 @@ export function useInitialLoadLifecycle(connectionManager) {
           phase: PHASE_WAITING,
           waitTimer: null,
           spinnerTimer: null,
-          gameData: null
+          gameData: gamesResponseData?.games?.find(g => g.id === gameId) || null
         });
-        gameIds.add(gameId);
+
+        // Auto-start waiting phase for new dynamic additions
+        startWaitingPhase(gameId);
       }
+      gameIds.add(gameId);
     });
 
     return Array.from(gameIds);
@@ -247,22 +251,19 @@ export function useInitialLoadLifecycle(connectionManager) {
   }
 
   function initialize() {
-    const gameIds = findGameElements();
+    signalCleanup = effect(() => {
+      const gameIds = syncGameElements();
 
-    if (gameIds.length === 0) {
-      return;
-    }
-
-    if (connectionManager && connectionManager.isConnected) {
-      requestGames(connectionManager);
-    } else {
-      connectionManager?.on('connected', () => {
-        requestGames(connectionManager);
-      });
-    }
-
-    gameIds.forEach(gameId => {
-      startWaitingPhase(gameId);
+      // Try requesting games if we need to, only on the very first init
+      if (!initialLoadComplete && gameIds.length > 0) {
+        if (connectionManager && connectionManager.isConnected) {
+          requestGames(connectionManager);
+        } else {
+          connectionManager?.on('connected', () => {
+            requestGames(connectionManager);
+          });
+        }
+      }
     });
   }
 
@@ -309,6 +310,9 @@ export function useInitialLoadLifecycle(connectionManager) {
   }
 
   function cleanup() {
+    if (signalCleanup) {
+      signalCleanup();
+    }
     gameElements.forEach((gameState, gameId) => {
       if (gameState.waitTimer) {
         clearTimeout(gameState.waitTimer);

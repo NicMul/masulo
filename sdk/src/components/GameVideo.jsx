@@ -106,8 +106,10 @@ export function GameVideo({ gameId, className, style, poster = '', defaultImage 
     if (!videoRef.current || !state) return;
 
     const videoEl = videoRef.current;
-    const parentEl = videoEl.parentElement;
-    if (!parentEl) return;
+    // Walk up the DOM to find the mesulo-game custom element
+    // so our hover zone encompasses the entire widget, not just the inner div.
+    const containerEl = videoEl.closest('mesulo-game') || videoEl.parentElement;
+    if (!containerEl) return;
 
     // Determine playback mode
     const isAutoplayMode = state.hover === false && state.animate !== false;
@@ -144,10 +146,10 @@ export function GameVideo({ gameId, className, style, poster = '', defaultImage 
     };
 
     // Always attach listeners regardless of mode
-    parentEl.addEventListener('mouseenter', handleMouseEnter);
-    parentEl.addEventListener('mouseleave', handleMouseLeave);
-    parentEl.addEventListener('touchstart', handleTouchStart);
-    parentEl.addEventListener('touchend', handleTouchEnd);
+    containerEl.addEventListener('mouseenter', handleMouseEnter);
+    containerEl.addEventListener('mouseleave', handleMouseLeave);
+    containerEl.addEventListener('touchstart', handleTouchStart);
+    containerEl.addEventListener('touchend', handleTouchEnd);
 
     // Handle autoplay mode
     if (isAutoplayMode && videoEl.src) {
@@ -158,20 +160,20 @@ export function GameVideo({ gameId, className, style, poster = '', defaultImage 
       videoEl.addEventListener('loadeddata', playWhenReady);
 
       return () => {
-        parentEl.removeEventListener('mouseenter', handleMouseEnter);
-        parentEl.removeEventListener('mouseleave', handleMouseLeave);
-        parentEl.removeEventListener('touchstart', handleTouchStart);
-        parentEl.removeEventListener('touchend', handleTouchEnd);
+        containerEl.removeEventListener('mouseenter', handleMouseEnter);
+        containerEl.removeEventListener('mouseleave', handleMouseLeave);
+        containerEl.removeEventListener('touchstart', handleTouchStart);
+        containerEl.removeEventListener('touchend', handleTouchEnd);
         videoEl.removeEventListener('loadeddata', playWhenReady);
       };
     }
 
     // Cleanup for hover/poster modes
     return () => {
-      parentEl.removeEventListener('mouseenter', handleMouseEnter);
-      parentEl.removeEventListener('mouseleave', handleMouseLeave);
-      parentEl.removeEventListener('touchstart', handleTouchStart);
-      parentEl.removeEventListener('touchend', handleTouchEnd);
+      containerEl.removeEventListener('mouseenter', handleMouseEnter);
+      containerEl.removeEventListener('mouseleave', handleMouseLeave);
+      containerEl.removeEventListener('touchstart', handleTouchStart);
+      containerEl.removeEventListener('touchend', handleTouchEnd);
     };
   }, [state?.hover, state?.animate, state?.src]);
 

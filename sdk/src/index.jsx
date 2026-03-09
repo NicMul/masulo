@@ -1,6 +1,6 @@
 import { h, render } from 'preact';
+import { createPortal } from 'preact/compat';
 import { GameCardWrapper } from './components/GameCardWrapper.jsx';
-import { scheduleChunkedTask } from './utils/scheduler.js';
 import { injectLoadingSpinnerStyles } from './utils/loadingSpinnerStyles.js';
 import { DebugWindow } from './components/debug/DebugWindow';
 import { getApplicationKeyFromScript } from './realtime/scriptLoader.js';
@@ -14,125 +14,30 @@ import { requestPromotions } from './data/promotionsRequest.js';
 import { requestABTests } from './data/abtestRequest.js';
 import { requestGames } from './data/gameRequest.js';
 import { promotionsStore } from './store/promotionsStore.js';
+import { activeGamesStore, registerMesuloGameElement } from './elements/MesuloGameElement.js';
 
 const handlers = new Map();
-const mountPoints = new WeakMap();
 
-function upgradeElement(containerElement) {
-  if (!containerElement.hasAttribute('data-mesulo-game-id')) return;
+function SdkRoot() {
+  const activeGames = activeGamesStore.value;
+  const portals = [];
 
-  const gameId = containerElement.getAttribute('data-mesulo-game-id');
+  activeGames.forEach((containerElement, gameId) => {
+    const gameHandlers = handlers.get(gameId) || handlers.get('*') || {};
 
-  if (containerElement.hasAttribute('data-mesulo-wrapped')) {
-    return;
-  }
-
-
-  containerElement.setAttribute('data-mesulo-wrapped', 'true');
-
-
-  const mountPoint = document.createElement('div');
-  mountPoint.style.display = 'none';
-  mountPoint.style.position = 'absolute';
-  mountPoint.style.pointerEvents = 'none';
-  mountPoint.setAttribute('data-mesulo-mount', gameId);
-  document.body.appendChild(mountPoint);
-
-
-  mountPoints.set(containerElement, mountPoint);
-
-  const gameHandlers = handlers.get(gameId) || handlers.get('*') || {};
-
-
-  render(
-    h(GameCardWrapper, {
-      gameId,
-      containerElement,
-      handlers: gameHandlers
-    }),
-    mountPoint
-  );
-}
-
-function upgradeAllElements() {
-  const selector = '[data-mesulo-game-id]';
-  const elements = document.querySelectorAll(selector);
-
-  scheduleChunkedTask(elements, (element) => {
-    upgradeElement(element);
-  });
-}
-
-function cleanupElement(containerElement) {
-  const mountPoint = mountPoints.get(containerElement);
-  if (mountPoint) {
-    // Unmount the Preact component
-    render(null, mountPoint);
-    // Remove the mount point from the DOM
-    if (mountPoint.parentNode) {
-      mountPoint.parentNode.removeChild(mountPoint);
-    }
-    // Remove from our mapping
-    mountPoints.delete(containerElement);
-  }
-}
-
-
-function observeDOMMutations() {
-  const observer = new MutationObserver((mutations) => {
-    const newElements = [];
-    const removedElements = [];
-
-    mutations.forEach(mutation => {
-      // Handle added nodes
-      mutation.addedNodes.forEach(node => {
-        // Element node
-        if (node.nodeType === 1) {
-          if (node.hasAttribute('data-mesulo-game-id')) {
-            newElements.push(node);
-          }
-          // Also check children
-          const children = node.querySelectorAll('[data-mesulo-game-id]');
-          if (children.length > 0) {
-            newElements.push(...Array.from(children));
-          }
-        }
-      });
-
-      // Handle removed nodes
-      mutation.removedNodes.forEach(node => {
-        // Element node
-        if (node.nodeType === 1) {
-          if (node.hasAttribute('data-mesulo-game-id')) {
-            removedElements.push(node);
-          }
-          // Also check children
-          const children = node.querySelectorAll('[data-mesulo-game-id]');
-          if (children.length > 0) {
-            removedElements.push(...Array.from(children));
-          }
-        }
-      });
-    });
-
-    if (newElements.length > 0) {
-      scheduleChunkedTask(newElements, (element) => {
-        upgradeElement(element);
-      });
-    }
-
-    if (removedElements.length > 0) {
-      // Execute cleanup synchronously to ensure memory is freed
-      removedElements.forEach(element => {
-        cleanupElement(element);
-      });
-    }
+    portals.push(
+      createPortal(
+        h(GameCardWrapper, {
+          gameId,
+          containerElement,
+          handlers: gameHandlers
+        }),
+        containerElement
+      )
+    );
   });
 
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true
-  });
+  return h('div', { id: 'mesulo-sdk-root-internal', style: { display: 'none' } }, portals);
 }
 
 function renderDebugWindow(connectionManager) {
@@ -228,8 +133,12 @@ function init() {
       });
     }
 
-    upgradeAllElements();
-    observeDOMMutations();
+    registerMesuloGameElement();
+
+    const rootMountPoint = document.createElement('div');
+    rootMountPoint.id = 'mesulo-sdk-app-root';
+    document.body.appendChild(rootMountPoint);
+    render(h(SdkRoot), rootMountPoint);
 
     if (lifecycleManager) {
       if (connectionManager && connectionManager.isConnected) {
@@ -238,47 +147,15 @@ function init() {
     }
 
     window.mesuloPreactSDK = {
-      upgrade: upgradeAllElements,
-      upgradeElement,
       on: (gameId, eventHandlers) => {
         handlers.set(gameId, eventHandlers);
-
-        document.querySelectorAll(`[data-mesulo-game-id="${gameId}"]`).forEach(el => {
-          if (el.hasAttribute('data-mesulo-wrapped')) {
-            const mountPoint = mountPoints.get(el);
-            if (mountPoint) {
-              render(
-                h(GameCardWrapper, {
-                  gameId,
-                  containerElement: el,
-                  handlers: eventHandlers
-                }),
-                mountPoint
-              );
-            }
-          }
-        });
+        // Force a re-render of the root to update portals with new handlers
+        activeGamesStore.value = new Map(activeGamesStore.value);
       },
       off: (gameId) => {
         handlers.delete(gameId);
-
-
-        document.querySelectorAll(`[data-mesulo-game-id="${gameId}"]`).forEach(el => {
-          if (el.hasAttribute('data-mesulo-wrapped')) {
-            const mountPoint = mountPoints.get(el);
-            if (mountPoint) {
-              const universalHandlers = handlers.get('*') || {};
-              render(
-                h(GameCardWrapper, {
-                  gameId,
-                  containerElement: el,
-                  handlers: universalHandlers
-                }),
-                mountPoint
-              );
-            }
-          }
-        });
+        // Force a re-render of the root to update portals without handlers
+        activeGamesStore.value = new Map(activeGamesStore.value);
       },
 
       connect: (appKey) => {
