@@ -20,35 +20,11 @@ export class BatchAnalytics {
       return;
     }
 
-    // Track video clicks - find video under click point
+    // Unified global click listener
     document.addEventListener('click', (e) => {
-      const videoElement = this._findVideoUnderPoint(e.clientX, e.clientY);
-      if (videoElement && videoElement.hasAttribute('data-mesulo-game-id')) {
-        const gameId = videoElement.getAttribute('data-mesulo-game-id');
-        const videoUrl = videoElement.src || videoElement.getAttribute('data-mesulo-video-url');
-
-        if (videoUrl && this.analyticsEnabled) {
-          const game = this.gamesMap.get(gameId);
-          if (game) { // Relaxed check
-            this.trackEvent('video_click', gameId, 'video', videoUrl, {
-              viewport: this.getViewportInfo()
-            }, false);
-          }
-        }
-      }
-    }, true);
-
-    // Track button clicks
-    document.addEventListener('click', (e) => {
+      // 1. Process Button Clicks
       const path = e.composedPath();
-      let buttonElement = null;
-
-      for (const element of path) {
-        if (element && (element.tagName === 'BUTTON' || (element.tagName === 'A' && element.href))) {
-          buttonElement = element;
-          break;
-        }
-      }
+      let buttonElement = path.find(element => element && (element.tagName === 'BUTTON' || (element.tagName === 'A' && element.href)));
 
       if (!buttonElement) {
         const target = e.target;
@@ -92,36 +68,29 @@ export class BatchAnalytics {
           }
         }
       }
+
+      // 2. Process Video Clicks using elementsFromPoint
+      if (typeof document.elementsFromPoint === 'function') {
+        const elementsUnderPoint = document.elementsFromPoint(e.clientX, e.clientY);
+        const videoElement = elementsUnderPoint.find(el => el.tagName === 'VIDEO' && el.hasAttribute('data-mesulo-game-id'));
+
+        if (videoElement) {
+          const gameId = videoElement.getAttribute('data-mesulo-game-id');
+          const videoUrl = videoElement.src || videoElement.getAttribute('data-mesulo-video-url');
+
+          if (videoUrl && this.analyticsEnabled) {
+            const game = this.gamesMap.get(gameId);
+            if (game) { // Relaxed check
+              this.trackEvent('video_click', gameId, 'video', videoUrl, {
+                viewport: this.getViewportInfo()
+              }, false);
+            }
+          }
+        }
+      }
     }, true);
 
     this.clickListenersSetup = true;
-  }
-
-  _findVideoUnderPoint(x, y) {
-    const seen = new Set();
-    let el = document.elementFromPoint(x, y);
-    let underneath = null;
-
-    while (el && !seen.has(el)) {
-      seen.add(el);
-
-      if (el.tagName === 'VIDEO' && el.hasAttribute('data-mesulo-game-id')) {
-        return el;
-      }
-
-      const prev = el.style.pointerEvents;
-      el.style.pointerEvents = 'none';
-      underneath = document.elementFromPoint(x, y);
-      el.style.pointerEvents = prev;
-
-      if (underneath && underneath.tagName === 'VIDEO' && underneath.hasAttribute('data-mesulo-game-id')) {
-        return underneath;
-      }
-
-      el = underneath;
-    }
-
-    return null;
   }
 
   generateSessionId() {
