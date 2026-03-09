@@ -182,7 +182,7 @@ export function useGameEvents(containerElement, gameId, handlers = {}) {
   useEffect(() => {
     const handleDocumentClick = (e) => {
       const clickedElement = e.target;
-      const gameContainer = clickedElement.closest('[data-mesulo-game-id]');
+      const gameContainer = clickedElement.closest('mesulo-game');
 
       if (!gameContainer) {
         pauseAllVideos();

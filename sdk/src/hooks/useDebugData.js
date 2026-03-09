@@ -129,16 +129,16 @@ export function useDebugData(connectionManager) {
 
     // Detect games on page
     const detectPageGames = useCallback(() => {
-        const gameImages = document.querySelectorAll('img[data-mesulo-game-id]');
+        const gameElements = document.querySelectorAll('mesulo-game');
         const gameIds = new Set();
         let changed = false;
 
-        gameImages.forEach(img => {
-            const gameId = img.getAttribute('data-mesulo-game-id');
+        gameElements.forEach(el => {
+            const gameId = el.getAttribute('data-mesulo-game-id') || el.getAttribute('game-id');
             if (gameId) {
                 gameIds.add(gameId);
                 const roomName = `game:${gameId}`;
-                const gameName = img.alt || img.closest('article')?.getAttribute('aria-label') || 'Unknown Game';
+                const gameName = el.getAttribute('game-name') || 'Unknown Game';
 
                 if (!roomsRef.current.has(roomName)) {
                     roomsRef.current.set(roomName, {

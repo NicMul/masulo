@@ -31,7 +31,7 @@ export function useInitialLoadLifecycle(connectionManager) {
 
     const className = imgElement.className || '';
     const style = imgElement.style.cssText || '';
-    const version = imgElement.closest('[data-mesulo-game-id]')?.getAttribute('data-mesulo-version') || '0';
+    const version = imgElement.closest('mesulo-game')?.getAttribute('data-mesulo-version') || '0';
 
     const styleObj = {
       width: '100%',
