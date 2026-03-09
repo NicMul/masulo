@@ -4,6 +4,7 @@ import "preact/debug";
 import { gameVideoStore, gameVideos } from '../store/gameVideoStore.js';
 import { injectWrapperStyles } from '../utils/wrapperStyles.js';
 import { useVideoAnalytics } from '../hooks/useVideoAnalytics.js';
+import { observeVideo, unobserveVideo } from '../utils/lazyLoadObserver.js';
 
 export function GameVideo({ gameId, className, style, poster = '', defaultImage = '', version = '0', wrapperClassName = '', onVideoReady }) {
   const videoRef = useRef(null);
@@ -18,6 +19,18 @@ export function GameVideo({ gameId, className, style, poster = '', defaultImage 
 
   // Track video analytics events
   useVideoAnalytics(gameId, videoRef, state?.src);
+
+  // Lazy load video src
+  useEffect(() => {
+    if (videoRef.current && state?.src && state?.animate !== false) {
+      observeVideo(videoRef.current, state.src);
+    }
+    return () => {
+      if (videoRef.current) {
+        unobserveVideo(videoRef.current);
+      }
+    };
+  }, [state?.src, state?.animate]);
 
   useEffect(() => {
     if (videoRef.current && containerRef.current && spinnerRef.current) {
@@ -196,8 +209,7 @@ export function GameVideo({ gameId, className, style, poster = '', defaultImage 
       autoplay: state?.hover === false,
       loop: true,
       preload: 'metadata',
-      playsInline: true,
-      src: state?.src || null
+      playsInline: true
     }),
 
     // Container with base image and spinner

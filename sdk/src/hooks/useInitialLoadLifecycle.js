@@ -5,6 +5,7 @@ import { getGameAssets } from '../utils/getGameAssets.js';
 import { GameVideo } from '../components/GameVideo.jsx';
 import { gameVideoStore } from '../store/gameVideoStore.js';
 import { promotionsStore } from '../store/promotionsStore.js';
+import { observeVideo } from '../utils/lazyLoadObserver.js';
 
 const PHASE_WAITING = 'waiting';
 const PHASE_SPINNER = 'spinner';
@@ -107,7 +108,7 @@ export function useInitialLoadLifecycle(connectionManager) {
 
     // Set video source if animate is enabled
     if (videoUrl && gameData.animate !== false) {
-      videoEl.src = videoUrl;
+      observeVideo(videoEl, videoUrl);
     }
 
     // Phase 2: Fade in container (wait 1s, transition 1s)
