@@ -8,6 +8,28 @@ import {
 import { pauseAllVideos } from '../utils/videoManager.js';
 import { gameVideoStore } from '../store/gameVideoStore.js';
 
+const observerCallbacks = new WeakMap();
+let globalObserver = null;
+
+function getGlobalObserver() {
+  if (!globalObserver) {
+    globalObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const callback = observerCallbacks.get(entry.target);
+          if (callback) {
+            callback(entry);
+          }
+        });
+      },
+      {
+        threshold: 0.75
+      }
+    );
+  }
+  return globalObserver;
+}
+
 export function useGameEvents(containerElement, gameId, handlers = {}) {
   // Helper to get video ref from store
   const getVideoRef = () => {
@@ -21,38 +43,33 @@ export function useGameEvents(containerElement, gameId, handlers = {}) {
 
     let hasTrackedImpression = false;
 
-    const intersectionObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.intersectionRatio > 0.75) {
-            // Track impression when game card enters viewport
-            if (!hasTrackedImpression) {
-              const analytics = window.mesuloPreactSDK?.analytics;
-              const videoRef = getVideoRef();
-              const videoUrl = videoRef?.src;
+    observerCallbacks.set(containerElement, (entry) => {
+      if (entry.intersectionRatio > 0.75) {
+        // Track impression when game card enters viewport
+        if (!hasTrackedImpression) {
+          const analytics = window.mesuloPreactSDK?.analytics;
+          const videoRef = getVideoRef();
+          const videoUrl = videoRef?.src;
 
-              if (analytics && videoUrl) {
-                analytics.trackEvent('impression', gameId, 'video', videoUrl, {
-                  visibility_ratio: entry.intersectionRatio
-                });
-                hasTrackedImpression = true;
-              }
-            }
-          } else {
-            // Reset when leaving viewport
-            hasTrackedImpression = false;
+          if (analytics && videoUrl) {
+            analytics.trackEvent('impression', gameId, 'video', videoUrl, {
+              visibility_ratio: entry.intersectionRatio
+            });
+            hasTrackedImpression = true;
           }
-        });
-      },
-      {
-        threshold: 0.75
+        }
+      } else {
+        // Reset when leaving viewport
+        hasTrackedImpression = false;
       }
-    );
+    });
 
-    intersectionObserver.observe(containerElement);
+    const observer = getGlobalObserver();
+    observer.observe(containerElement);
 
     return () => {
-      intersectionObserver.disconnect();
+      observer.unobserve(containerElement);
+      observerCallbacks.delete(containerElement);
     };
   }, [containerElement, gameId]);
 
