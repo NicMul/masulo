@@ -15,6 +15,7 @@ import { requestABTests } from './data/abtestRequest.js';
 import { requestGames } from './data/gameRequest.js';
 import { promotionsStore } from './store/promotionsStore.js';
 import { activeGamesStore, registerMesuloGameElement } from './elements/MesuloGameElement.js';
+import { observeAndUpgradeDOM } from './utils/domUpgrader.js';
 
 const handlers = new Map();
 
@@ -134,6 +135,7 @@ function init() {
     }
 
     registerMesuloGameElement();
+    observeAndUpgradeDOM();
 
     const rootMountPoint = document.createElement('div');
     rootMountPoint.id = 'mesulo-sdk-app-root';

@@ -30,6 +30,7 @@ export function scheduleChunkedTask(items, taskFn, options = {}) {
         while (queue.length > 0 && (deadline.timeRemaining() > 5 || deadline.didTimeout)) {
             const item = queue.shift();
             try {
+                console.log('[Scheduler] Executing task for item', item);
                 taskFn(item);
             } catch (error) {
                 console.error('Mesulo SDK: Error processing chunk item', error);
