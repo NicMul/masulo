@@ -69,7 +69,4 @@ coverage/
 # Misc
 *.pem
 .cache/
-
-
-
-
+sdk/index.html
