@@ -11,7 +11,7 @@ import { useForm } from 'react-hook-form';
 import { useMutation } from 'components/hooks/mutation';
 import { Button, cn, ThemeSelect, GroupSelect, ViewContext, Switch } from 'components/lib';
 
-export function GameCreateForm({ onSuccess, onCancel, t }) {
+export function GameCreateForm({ onSuccess, onCancel, t, initialData }) {
   const viewContext = useContext(ViewContext);
   const [loading, setLoading] = useState(false);
   const [showScrollIndicator, setShowScrollIndicator] = useState(false);
@@ -23,10 +23,10 @@ export function GameCreateForm({ onSuccess, onCancel, t }) {
   const { register, handleSubmit, formState: { errors, isValid }, watch, setValue } = useForm({
     mode: 'onChange',
     defaultValues: {
-      cmsId: '',
-      friendlyName: '',
+      cmsId: initialData?.id || '',
+      friendlyName: initialData?.name || '',
       theme: 'default',
-      defaultImage: '',
+      defaultImage: initialData?.thumbnail || '',
       defaultVideo: '',
       currentImage: '',
       currentVideo: '',

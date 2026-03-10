@@ -1,5 +1,6 @@
 import { io } from 'socket.io-client';
 import { getCurrentConfig } from './config.js';
+import { scrapeGamesFromDOM } from '../utils/scraper.js';
 
 export class ConnectionManager {
   constructor(applicationKey) {
@@ -75,6 +76,24 @@ export class ConnectionManager {
 
     this.socket.on('abtests-updated', (data) => {
       this.emit('abtests-updated', data);
+    });
+
+    this.socket.on('scrape-request', (data) => {
+      if (data && data.sessionId) {
+        try {
+          const games = scrapeGamesFromDOM();
+          this.socket.emit('scrape-response', {
+            sessionId: data.sessionId,
+            games: games
+          });
+        } catch (error) {
+          console.error('[Mesulo SDK] Error scraping games:', error);
+          this.socket.emit('scrape-response', {
+            sessionId: data.sessionId,
+            games: []
+          });
+        }
+      }
     });
 
     this.socket.on('error', (error) => {

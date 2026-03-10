@@ -3,18 +3,27 @@ const user = require('../model/user');
 const analytics = require('../model/analytics');
 const abtestData = require('../model/abtest-data');
 const { getGamesById, getPromotions, getABTests } = require('../services/realtime');
+const EventEmitter = require('events');
 
+const scrapeEventEmitter = new EventEmitter();
 let io = null;
 
 // Initialize Socket.IO server
 function initializeSocketIO(server) {
-  const allowedOrigins = process.env.NODE_ENV === 'production' 
-    ? ['https://www.mesulo.com', 'https://mesulo.b-cdn.net', 'https://dev.highroller.com']
-    : ['http://localhost:3000', 'http://localhost:8080', 'http://127.0.0.1:3000', 'http://127.0.0.1:8080', 'https://dev.highroller.com'];
+  const isProduction = process.env.NODE_ENV === 'production';
 
   io = new Server(server, {
     cors: {
-      origin: allowedOrigins,
+      origin: isProduction 
+        ? ['https://www.mesulo.com', 'https://mesulo.b-cdn.net', 'https://dev.highroller.com']
+        : function(origin, callback) {
+            // Allow all localhost/127.0.0.1 ports and specific dev urls
+            if (!origin || origin.match(/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/) || origin === 'https://dev.highroller.com') {
+              callback(null, true);
+            } else {
+              callback(new Error('Not allowed by CORS'));
+            }
+          },
       methods: ["GET", "POST"],
       credentials: true
     }
@@ -220,6 +229,13 @@ function initializeSocketIO(server) {
           
       } catch (error) {
         console.error('Error processing analytics batch:', error);
+      }
+    });
+
+    // Handle Scrape Response
+    socket.on('scrape-response', (data) => {
+      if (data && data.sessionId) {
+        scrapeEventEmitter.emit(`response-${data.sessionId}`, data.games || []);
       }
     });
 
@@ -586,5 +602,6 @@ module.exports = {
   emitGameUpdate,
   emitPromotionUpdate,
   emitABTestUpdate,
-  getIO: () => io
+  getIO: () => io,
+  scrapeEventEmitter
 };
