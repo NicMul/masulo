@@ -1,0 +1,2 @@
+2026-03-15 16:23:42 [ERROR]: uncaughtException:  SQLITE_READONLY: attempt to write a readonly database
+Error: SQLITE_READONLY: attempt to write a readonly database

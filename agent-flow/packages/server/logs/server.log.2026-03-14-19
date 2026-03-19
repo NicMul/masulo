@@ -1,0 +1,152 @@
+2026-03-14 19:01:58 [INFO]: Starting Flowise...
+2026-03-14 19:01:58 [INFO]: 📦 [server]: Data Source initialized successfully
+2026-03-14 19:01:58 [INFO]: 🔄 [server]: Database migrations completed successfully
+2026-03-14 19:01:58 [INFO]: 🔐 [server]: Identity Manager initialized successfully
+2026-03-14 19:01:59 [ERROR]: ❌ [server]: Error during initDatabase with file /Users/develop/Code/mesolu/agent-flow/packages/server/node_modules/flowise-components/dist/nodes/chatmodels/ChatOpenAI/ChatOpenAI.js: No "exports" main defined in /Users/develop/Code/mesolu/agent-flow/packages/components/node_modules/https-proxy-agent/package.json
+Error [ERR_PACKAGE_PATH_NOT_EXPORTED]: No "exports" main defined in /Users/develop/Code/mesolu/agent-flow/packages/components/node_modules/https-proxy-agent/package.json
+    at exportsNotFound (node:internal/modules/esm/resolve:294:10)
+    at packageExportsResolve (node:internal/modules/esm/resolve:584:13)
+    at resolveExports (node:internal/modules/cjs/loader:591:36)
+    at Module._findPath (node:internal/modules/cjs/loader:668:31)
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1130:27)
+    at Module._load (node:internal/modules/cjs/loader:985:27)
+    at Module.require (node:internal/modules/cjs/loader:1235:19)
+    at require (node:internal/modules/helpers:176:18)
+    at Object.<anonymous> (/Users/develop/Code/mesolu/agent-flow/packages/components/dist/nodes/chatmodels/ChatOpenAI/ChatOpenAI.js:7:29)
+    at Module._compile (node:internal/modules/cjs/loader:1376:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1435:10)
+    at Module.load (node:internal/modules/cjs/loader:1207:32)
+    at Module._load (node:internal/modules/cjs/loader:1023:12)
+    at Module.require (node:internal/modules/cjs/loader:1235:19)
+    at require (node:internal/modules/helpers:176:18)
+    at /Users/develop/Code/mesolu/agent-flow/packages/server/dist/NodesPool.js:44:46
+2026-03-14 19:02:00 [INFO]: 🔧 [server]: Nodes pool initialized successfully
+2026-03-14 19:02:00 [INFO]: ⏹️ [server]: Abort controllers pool initialized successfully
+2026-03-14 19:02:00 [INFO]: 🔑 [server]: Encryption key initialized successfully
+2026-03-14 19:02:00 [INFO]: 🔐 [server]: Auth initialized successfully
+2026-03-14 19:02:00 [INFO]: 🚦 [server]: Rate limiters initialized successfully
+2026-03-14 19:02:00 [INFO]: 💾 [server]: Cache pool initialized successfully
+2026-03-14 19:02:00 [INFO]: 📊 [server]: Usage cache manager initialized successfully
+2026-03-14 19:02:00 [INFO]: 📈 [server]: Telemetry initialized successfully
+2026-03-14 19:02:00 [INFO]: 🌊 [server]: SSE Streamer initialized successfully
+2026-03-14 19:02:00 [INFO]: 🎉 [server]: All initialization steps completed successfully!
+2026-03-14 19:02:00 [INFO]: ⚡️ [server]: Flowise Server is listening at :3334
+2026-03-14 19:02:13 [INFO]: ⬆️ POST /api/v1/auth/resolve
+2026-03-14 19:02:13 [INFO]: ⬆️ POST /api/v1/auth/resolve
+2026-03-14 19:02:32 [INFO]: ⬆️ POST /api/v1/auth/login
+2026-03-14 19:02:38 [INFO]: ⬆️ POST /api/v1/auth/login
+2026-03-14 19:02:47 [INFO]: ⬆️ POST /api/v1/auth/login
+2026-03-14 19:03:51 [INFO]: ⬆️ POST /api/v1/credentials
+2026-03-14 19:04:08 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:04:08 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:04:12 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:04:12 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:05:06 [INFO]: ⬆️ POST /api/v1/chatflows
+2026-03-14 19:06:09 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:06:09 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:06:18 [INFO]: ⬆️ POST /api/v1/internal-prediction/4eb20836-6704-40c6-99aa-f15cd0453bf4
+2026-03-14 19:06:18 [ERROR]: [server]: Error executing node toolAgentflow_0: The OPENAI_API_KEY environment variable is missing or empty; either provide it, or instantiate the OpenAI client with an apiKey option, like new OpenAI({ apiKey: 'My API Key' }).
+2026-03-14 19:06:18 [ERROR]: [server]:28f94928-a25f-4dd9-8204-78076907e837/4eb20836-6704-40c6-99aa-f15cd0453bf4/97648a24-81bb-40c7-924f-571d115bc871 Error: The OPENAI_API_KEY environment variable is missing or empty; either provide it, or instantiate the OpenAI client with an apiKey option, like new OpenAI({ apiKey: 'My API Key' }).
+Error: The OPENAI_API_KEY environment variable is missing or empty; either provide it, or instantiate the OpenAI client with an apiKey option, like new OpenAI({ apiKey: 'My API Key' }).
+    at executeAgentFlow (/Users/develop/Code/mesolu/agent-flow/packages/server/dist/utils/buildAgentflow.js:1621:19)
+    at async utilBuildChatflow (/Users/develop/Code/mesolu/agent-flow/packages/server/dist/utils/buildChatflow.js:882:28)
+    at async createAndStreamInternalPrediction (/Users/develop/Code/mesolu/agent-flow/packages/server/dist/controllers/internal-predictions/index.js:49:29)
+2026-03-14 19:06:24 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:06:24 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:06:30 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:06:30 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:06:35 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:06:35 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:06:51 [INFO]: ⬆️ POST /api/v1/internal-prediction/4eb20836-6704-40c6-99aa-f15cd0453bf4
+2026-03-14 19:06:51 [ERROR]: [server]: Error executing node toolAgentflow_0: The OPENAI_API_KEY environment variable is missing or empty; either provide it, or instantiate the OpenAI client with an apiKey option, like new OpenAI({ apiKey: 'My API Key' }).
+2026-03-14 19:06:51 [ERROR]: [server]:28f94928-a25f-4dd9-8204-78076907e837/4eb20836-6704-40c6-99aa-f15cd0453bf4/ec7f18fc-0e94-4650-9716-4986d12fa8ea Error: The OPENAI_API_KEY environment variable is missing or empty; either provide it, or instantiate the OpenAI client with an apiKey option, like new OpenAI({ apiKey: 'My API Key' }).
+Error: The OPENAI_API_KEY environment variable is missing or empty; either provide it, or instantiate the OpenAI client with an apiKey option, like new OpenAI({ apiKey: 'My API Key' }).
+    at executeAgentFlow (/Users/develop/Code/mesolu/agent-flow/packages/server/dist/utils/buildAgentflow.js:1621:19)
+    at async utilBuildChatflow (/Users/develop/Code/mesolu/agent-flow/packages/server/dist/utils/buildChatflow.js:882:28)
+    at async createAndStreamInternalPrediction (/Users/develop/Code/mesolu/agent-flow/packages/server/dist/controllers/internal-predictions/index.js:49:29)
+2026-03-14 19:06:56 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:06:56 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:07:01 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:07:01 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:07:15 [INFO]: 🖊 PUT /api/v1/chatflows/4eb20836-6704-40c6-99aa-f15cd0453bf4
+2026-03-14 19:07:29 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:07:29 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:07:29 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:07:29 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:07:36 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:07:36 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:07:49 [INFO]: ⬆️ POST /api/v1/internal-prediction/4eb20836-6704-40c6-99aa-f15cd0453bf4
+2026-03-14 19:07:49 [ERROR]: [server]: Error executing node toolAgentflow_0: Error: Received tool input did not match expected schema
+2026-03-14 19:07:49 [ERROR]: [server]:28f94928-a25f-4dd9-8204-78076907e837/4eb20836-6704-40c6-99aa-f15cd0453bf4/0347fb4c-cb9f-4daa-a4f9-92b23b2c0285 Error: Error: Received tool input did not match expected schema
+Error: Error: Received tool input did not match expected schema
+    at executeAgentFlow (/Users/develop/Code/mesolu/agent-flow/packages/server/dist/utils/buildAgentflow.js:1621:19)
+    at async utilBuildChatflow (/Users/develop/Code/mesolu/agent-flow/packages/server/dist/utils/buildChatflow.js:882:28)
+    at async createAndStreamInternalPrediction (/Users/develop/Code/mesolu/agent-flow/packages/server/dist/controllers/internal-predictions/index.js:49:29)
+2026-03-14 19:07:55 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:07:55 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:08:08 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:08:08 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:08:10 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:08:10 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:08:12 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:08:12 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:10:26 [INFO]: 🖊 PUT /api/v1/chatflows/4eb20836-6704-40c6-99aa-f15cd0453bf4
+2026-03-14 19:11:16 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:11:16 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:11:16 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:11:16 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:13:03 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:13:03 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:13:12 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:13:12 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:13:28 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:13:28 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:13:57 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:13:57 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:13:57 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:13:57 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:13:57 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:13:57 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:14:14 [INFO]: ⬆️ POST /api/v1/internal-prediction/4eb20836-6704-40c6-99aa-f15cd0453bf4
+2026-03-14 19:14:32 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:14:32 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:14:54 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:14:54 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:14:54 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:14:54 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:14:54 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:14:54 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:15:12 [INFO]: ⬆️ POST /api/v1/internal-prediction/4eb20836-6704-40c6-99aa-f15cd0453bf4
+2026-03-14 19:17:09 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:17:09 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:17:09 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:17:09 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:17:09 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:17:09 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:18:05 [INFO]: ⬆️ POST /api/v1/internal-prediction/4eb20836-6704-40c6-99aa-f15cd0453bf4
+2026-03-14 19:20:13 [INFO]: 🖊 PUT /api/v1/chatflows/4eb20836-6704-40c6-99aa-f15cd0453bf4
+2026-03-14 19:29:38 [INFO]: ❌ DELETE /api/v1/chatflows/b0212576-72bc-4884-b928-3f0f8ca2859b
+2026-03-14 19:32:49 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:32:49 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:32:49 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:32:49 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:32:49 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:32:49 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:34:05 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:34:05 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:39:09 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:39:09 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:39:09 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:39:09 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:39:09 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:39:09 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:39:41 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:39:41 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:40:00 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:40:00 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:40:02 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:40:02 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:40:08 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:40:08 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-14 19:40:21 [INFO]: 🖊 PUT /api/v1/chatflows/4eb20836-6704-40c6-99aa-f15cd0453bf4
+2026-03-14 19:43:43 [INFO]: ⬆️ POST /api/v1/internal-prediction/4eb20836-6704-40c6-99aa-f15cd0453bf4

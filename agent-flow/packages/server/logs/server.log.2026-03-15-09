@@ -1,0 +1,30 @@
+2026-03-15 09:13:08 [INFO]: ⬆️ POST /api/v1/node-load-method/openAI
+2026-03-15 09:13:08 [INFO]: ⬆️ POST /api/v1/node-load-method/openAI
+2026-03-15 09:19:03 [INFO]: ⬆️ POST /api/v1/node-load-method/openAIAssistant
+2026-03-15 09:19:03 [INFO]: ⬆️ POST /api/v1/node-load-method/openAIAssistant
+2026-03-15 09:21:14 [INFO]: ⬆️ POST /api/v1/chatflows
+2026-03-15 09:21:20 [INFO]: ⬆️ POST /api/v1/internal-prediction/bfa840e8-681e-4443-946c-0aa4a0b997e0
+2026-03-15 09:21:20 [ERROR]: [server]:28f94928-a25f-4dd9-8204-78076907e837/bfa840e8-681e-4443-946c-0aa4a0b997e0/74e59310-cd93-4b7a-8758-ff5300129a92 Error: Ending node must be either a Chain or Agent or Engine
+Error: Ending node must be either a Chain or Agent or Engine
+    at getEndingNodes (/Users/develop/Code/mesolu/agent-flow/packages/server/dist/utils/index.js:284:25)
+    at executeFlow (/Users/develop/Code/mesolu/agent-flow/packages/server/dist/utils/buildChatflow.js:349:52)
+    at utilBuildChatflow (/Users/develop/Code/mesolu/agent-flow/packages/server/dist/utils/buildChatflow.js:882:58)
+    at async createInternalPrediction (/Users/develop/Code/mesolu/agent-flow/packages/server/dist/controllers/internal-predictions/index.js:26:33)
+2026-03-15 09:21:44 [INFO]: ⬆️ POST /api/v1/internal-prediction/bfa840e8-681e-4443-946c-0aa4a0b997e0
+2026-03-15 09:21:44 [ERROR]: [server]:28f94928-a25f-4dd9-8204-78076907e837/bfa840e8-681e-4443-946c-0aa4a0b997e0/bac86ccf-605e-436a-9436-a78ba04c12cc Error: Ending node must be either a Chain or Agent or Engine
+Error: Ending node must be either a Chain or Agent or Engine
+    at getEndingNodes (/Users/develop/Code/mesolu/agent-flow/packages/server/dist/utils/index.js:284:25)
+    at executeFlow (/Users/develop/Code/mesolu/agent-flow/packages/server/dist/utils/buildChatflow.js:349:52)
+    at utilBuildChatflow (/Users/develop/Code/mesolu/agent-flow/packages/server/dist/utils/buildChatflow.js:882:58)
+    at async createInternalPrediction (/Users/develop/Code/mesolu/agent-flow/packages/server/dist/controllers/internal-predictions/index.js:26:33)
+2026-03-15 09:22:14 [INFO]: ⬆️ POST /api/v1/node-load-method/openAIAssistant
+2026-03-15 09:22:14 [INFO]: ⬆️ POST /api/v1/node-load-method/openAIAssistant
+2026-03-15 09:27:38 [INFO]: ⬆️ POST /api/v1/internal-prediction/bfa840e8-681e-4443-946c-0aa4a0b997e0
+2026-03-15 09:27:38 [ERROR]: [server]:28f94928-a25f-4dd9-8204-78076907e837/bfa840e8-681e-4443-946c-0aa4a0b997e0/4877a18c-fc0f-4878-8cee-27283417777c Error: Ending node must be either a Chain or Agent or Engine
+Error: Ending node must be either a Chain or Agent or Engine
+    at getEndingNodes (/Users/develop/Code/mesolu/agent-flow/packages/server/dist/utils/index.js:284:25)
+    at executeFlow (/Users/develop/Code/mesolu/agent-flow/packages/server/dist/utils/buildChatflow.js:349:52)
+    at utilBuildChatflow (/Users/develop/Code/mesolu/agent-flow/packages/server/dist/utils/buildChatflow.js:882:58)
+    at async createInternalPrediction (/Users/develop/Code/mesolu/agent-flow/packages/server/dist/controllers/internal-predictions/index.js:26:33)
+2026-03-15 09:30:50 [INFO]: 🖊 PUT /api/v1/chatflows/bfa840e8-681e-4443-946c-0aa4a0b997e0
+2026-03-15 09:30:56 [INFO]: ⬆️ POST /api/v1/internal-prediction/bfa840e8-681e-4443-946c-0aa4a0b997e0

@@ -1,0 +1,37 @@
+2026-03-15 15:19:04 [INFO]: ⬆️ POST /api/v1/node-load-method/llmAgentflow
+2026-03-15 15:19:04 [INFO]: ⬆️ POST /api/v1/node-load-method/llmAgentflow
+2026-03-15 15:19:17 [INFO]: ⬆️ POST /api/v1/node-load-method/llmAgentflow
+2026-03-15 15:19:17 [INFO]: ⬆️ POST /api/v1/node-load-method/llmAgentflow
+2026-03-15 15:19:17 [INFO]: ⬆️ POST /api/v1/node-load-method/chatAnthropic
+2026-03-15 15:19:17 [INFO]: ⬆️ POST /api/v1/node-load-method/chatAnthropic
+2026-03-15 15:19:26 [INFO]: ⬆️ POST /api/v1/node-load-method/llmAgentflow
+2026-03-15 15:19:26 [INFO]: ⬆️ POST /api/v1/node-load-method/llmAgentflow
+2026-03-15 15:24:47 [INFO]: ⬆️ POST /api/v1/node-load-method/llmAgentflow
+2026-03-15 15:24:47 [INFO]: ⬆️ POST /api/v1/node-load-method/llmAgentflow
+2026-03-15 15:31:36 [INFO]: ⬆️ POST /api/v1/assistants/generate/instruction
+2026-03-15 15:32:05 [INFO]: 🖊 PUT /api/v1/chatflows/23fd8293-442c-4ba4-88d6-23c425083e16
+2026-03-15 15:33:15 [INFO]: ⬆️ POST /api/v1/internal-prediction/23fd8293-442c-4ba4-88d6-23c425083e16
+2026-03-15 15:33:15 [ERROR]: [server]: Error executing node llmAgentflow_0: Error in LLM node: The OPENAI_API_KEY environment variable is missing or empty; either provide it, or instantiate the OpenAI client with an apiKey option, like new OpenAI({ apiKey: 'My API Key' }).
+2026-03-15 15:33:15 [ERROR]: [server]:28f94928-a25f-4dd9-8204-78076907e837/23fd8293-442c-4ba4-88d6-23c425083e16/73c7e047-c69f-4f9a-800c-cf767cc144a5 Error: Error in LLM node: The OPENAI_API_KEY environment variable is missing or empty; either provide it, or instantiate the OpenAI client with an apiKey option, like new OpenAI({ apiKey: 'My API Key' }).
+Error: Error in LLM node: The OPENAI_API_KEY environment variable is missing or empty; either provide it, or instantiate the OpenAI client with an apiKey option, like new OpenAI({ apiKey: 'My API Key' }).
+    at executeAgentFlow (/Users/develop/Code/mesolu/agent-flow/packages/server/dist/utils/buildAgentflow.js:1621:19)
+    at async utilBuildChatflow (/Users/develop/Code/mesolu/agent-flow/packages/server/dist/utils/buildChatflow.js:882:28)
+    at async createAndStreamInternalPrediction (/Users/develop/Code/mesolu/agent-flow/packages/server/dist/controllers/internal-predictions/index.js:49:29)
+2026-03-15 15:33:20 [INFO]: ⬆️ POST /api/v1/node-load-method/llmAgentflow
+2026-03-15 15:33:20 [INFO]: ⬆️ POST /api/v1/node-load-method/llmAgentflow
+2026-03-15 15:33:37 [INFO]: 🖊 PUT /api/v1/chatflows/23fd8293-442c-4ba4-88d6-23c425083e16
+2026-03-15 15:33:41 [INFO]: ⬆️ POST /api/v1/internal-prediction/23fd8293-442c-4ba4-88d6-23c425083e16
+2026-03-15 15:33:42 [ERROR]: [server]: Error executing node llmAgentflow_0: Error in LLM node: 400 you must provide a model parameter
+2026-03-15 15:33:42 [ERROR]: [server]:28f94928-a25f-4dd9-8204-78076907e837/23fd8293-442c-4ba4-88d6-23c425083e16/73c7e047-c69f-4f9a-800c-cf767cc144a5 Error: Error in LLM node: 400 you must provide a model parameter
+Error: Error in LLM node: 400 you must provide a model parameter
+    at executeAgentFlow (/Users/develop/Code/mesolu/agent-flow/packages/server/dist/utils/buildAgentflow.js:1621:19)
+    at async utilBuildChatflow (/Users/develop/Code/mesolu/agent-flow/packages/server/dist/utils/buildChatflow.js:882:28)
+    at async createAndStreamInternalPrediction (/Users/develop/Code/mesolu/agent-flow/packages/server/dist/controllers/internal-predictions/index.js:49:29)
+2026-03-15 15:33:47 [INFO]: ⬆️ POST /api/v1/node-load-method/llmAgentflow
+2026-03-15 15:33:47 [INFO]: ⬆️ POST /api/v1/node-load-method/llmAgentflow
+2026-03-15 15:34:01 [INFO]: 🖊 PUT /api/v1/chatflows/23fd8293-442c-4ba4-88d6-23c425083e16
+2026-03-15 15:34:06 [INFO]: ⬆️ POST /api/v1/internal-prediction/23fd8293-442c-4ba4-88d6-23c425083e16
+2026-03-15 15:36:03 [INFO]: ⬆️ POST /api/v1/internal-prediction/23fd8293-442c-4ba4-88d6-23c425083e16
+2026-03-15 15:37:12 [INFO]: ⬆️ POST /api/v1/internal-prediction/23fd8293-442c-4ba4-88d6-23c425083e16
+2026-03-15 15:37:21 [INFO]: ⬆️ POST /api/v1/node-load-method/llmAgentflow
+2026-03-15 15:37:21 [INFO]: ⬆️ POST /api/v1/node-load-method/llmAgentflow

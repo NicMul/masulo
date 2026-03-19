@@ -12,4 +12,7 @@ export default defineConfig ({
 	preview: {
 		port: 3000
 	},
+	optimizeDeps: {
+		include: ['three', 'three/webgpu', 'three-spritetext', 'react-force-graph-3d'],
+	},
 });
