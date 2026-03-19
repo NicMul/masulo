@@ -8,6 +8,7 @@ const router = require('./router');
 const config = require('config');
 const log = require('./model/log');
 const mongo = require('./model/mongo');
+const neo4j = require('./model/neo4j');
 const utility = require('./helper/utility');
 const throttle = config.get('throttle');
 const limiter = require('express-rate-limit');
@@ -105,6 +106,7 @@ app.use(function(err, req, res, next){
 const server = app.listen(port, async () => {
 
   await mongo.connect();
+  await neo4j.connect();
   const welcome = () => console.log(i18n.__('global.welcome'))
   welcome('de529c70-eb80-4dfb-9540-5075db7545bf')
 

@@ -1,0 +1,60 @@
+2026-03-15 11:06:43 [INFO]: Starting Flowise...
+2026-03-15 11:06:43 [INFO]: 📦 [server]: Data Source initialized successfully
+2026-03-15 11:06:43 [INFO]: 🔄 [server]: Database migrations completed successfully
+2026-03-15 11:06:43 [INFO]: 🔐 [server]: Identity Manager initialized successfully
+2026-03-15 11:06:43 [ERROR]: ❌ [server]: Error during initDatabase with file /Users/develop/Code/mesolu/agent-flow/packages/server/node_modules/flowise-components/dist/nodes/chatmodels/ChatOpenAI/ChatOpenAI.js: No "exports" main defined in /Users/develop/Code/mesolu/agent-flow/packages/components/node_modules/https-proxy-agent/package.json
+Error [ERR_PACKAGE_PATH_NOT_EXPORTED]: No "exports" main defined in /Users/develop/Code/mesolu/agent-flow/packages/components/node_modules/https-proxy-agent/package.json
+    at exportsNotFound (node:internal/modules/esm/resolve:294:10)
+    at packageExportsResolve (node:internal/modules/esm/resolve:584:13)
+    at resolveExports (node:internal/modules/cjs/loader:591:36)
+    at Module._findPath (node:internal/modules/cjs/loader:668:31)
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1130:27)
+    at Module._load (node:internal/modules/cjs/loader:985:27)
+    at Module.require (node:internal/modules/cjs/loader:1235:19)
+    at require (node:internal/modules/helpers:176:18)
+    at Object.<anonymous> (/Users/develop/Code/mesolu/agent-flow/packages/components/dist/nodes/chatmodels/ChatOpenAI/ChatOpenAI.js:7:29)
+    at Module._compile (node:internal/modules/cjs/loader:1376:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1435:10)
+    at Module.load (node:internal/modules/cjs/loader:1207:32)
+    at Module._load (node:internal/modules/cjs/loader:1023:12)
+    at Module.require (node:internal/modules/cjs/loader:1235:19)
+    at require (node:internal/modules/helpers:176:18)
+    at /Users/develop/Code/mesolu/agent-flow/packages/server/dist/NodesPool.js:44:46
+2026-03-15 11:06:44 [INFO]: 🔧 [server]: Nodes pool initialized successfully
+2026-03-15 11:06:44 [INFO]: ⏹️ [server]: Abort controllers pool initialized successfully
+2026-03-15 11:06:44 [INFO]: 🔑 [server]: Encryption key initialized successfully
+2026-03-15 11:06:44 [INFO]: 🔐 [server]: Auth initialized successfully
+2026-03-15 11:06:44 [INFO]: 🚦 [server]: Rate limiters initialized successfully
+2026-03-15 11:06:44 [INFO]: 💾 [server]: Cache pool initialized successfully
+2026-03-15 11:06:44 [INFO]: 📊 [server]: Usage cache manager initialized successfully
+2026-03-15 11:06:44 [INFO]: 📈 [server]: Telemetry initialized successfully
+2026-03-15 11:06:44 [INFO]: 🌊 [server]: SSE Streamer initialized successfully
+2026-03-15 11:06:44 [INFO]: 🎉 [server]: All initialization steps completed successfully!
+2026-03-15 11:06:44 [INFO]: ⚡️ [server]: Flowise Server is listening at :3334
+2026-03-15 11:07:00 [INFO]: ⬆️ POST /api/v1/node-load-method/openAI
+2026-03-15 11:07:00 [INFO]: ⬆️ POST /api/v1/node-load-method/openAI
+2026-03-15 11:08:10 [INFO]: 🖊 PUT /api/v1/chatflows/bfa840e8-681e-4443-946c-0aa4a0b997e0
+2026-03-15 11:08:26 [INFO]: ⬆️ POST /api/v1/internal-prediction/bfa840e8-681e-4443-946c-0aa4a0b997e0
+2026-03-15 11:08:26 [ERROR]: [server]:28f94928-a25f-4dd9-8204-78076907e837/bfa840e8-681e-4443-946c-0aa4a0b997e0/0c1eb8b8-dde2-4de5-b062-f087dad592c7 Error: Ending node must be either a Chain or Agent or Engine
+Error: Ending node must be either a Chain or Agent or Engine
+    at getEndingNodes (/Users/develop/Code/mesolu/agent-flow/packages/server/dist/utils/index.js:284:25)
+    at executeFlow (/Users/develop/Code/mesolu/agent-flow/packages/server/dist/utils/buildChatflow.js:349:52)
+    at utilBuildChatflow (/Users/develop/Code/mesolu/agent-flow/packages/server/dist/utils/buildChatflow.js:882:58)
+    at async createInternalPrediction (/Users/develop/Code/mesolu/agent-flow/packages/server/dist/controllers/internal-predictions/index.js:26:33)
+2026-03-15 11:08:45 [INFO]: 🖊 PUT /api/v1/chatflows/bfa840e8-681e-4443-946c-0aa4a0b997e0
+2026-03-15 11:08:55 [INFO]: ⬆️ POST /api/v1/internal-prediction/bfa840e8-681e-4443-946c-0aa4a0b997e0
+2026-03-15 11:08:55 [ERROR]: [server]:28f94928-a25f-4dd9-8204-78076907e837/bfa840e8-681e-4443-946c-0aa4a0b997e0/0c1eb8b8-dde2-4de5-b062-f087dad592c7 Error: Ending node must be either a Chain or Agent or Engine
+Error: Ending node must be either a Chain or Agent or Engine
+    at getEndingNodes (/Users/develop/Code/mesolu/agent-flow/packages/server/dist/utils/index.js:284:25)
+    at executeFlow (/Users/develop/Code/mesolu/agent-flow/packages/server/dist/utils/buildChatflow.js:349:52)
+    at utilBuildChatflow (/Users/develop/Code/mesolu/agent-flow/packages/server/dist/utils/buildChatflow.js:882:58)
+    at async createInternalPrediction (/Users/develop/Code/mesolu/agent-flow/packages/server/dist/controllers/internal-predictions/index.js:26:33)
+2026-03-15 11:08:59 [INFO]: 🖊 PUT /api/v1/chatflows/bfa840e8-681e-4443-946c-0aa4a0b997e0
+2026-03-15 11:09:08 [INFO]: ⬆️ POST /api/v1/internal-prediction/bfa840e8-681e-4443-946c-0aa4a0b997e0
+2026-03-15 11:09:08 [ERROR]: [server]:28f94928-a25f-4dd9-8204-78076907e837/bfa840e8-681e-4443-946c-0aa4a0b997e0/0c1eb8b8-dde2-4de5-b062-f087dad592c7 Error: Ending node must be either a Chain or Agent or Engine
+Error: Ending node must be either a Chain or Agent or Engine
+    at getEndingNodes (/Users/develop/Code/mesolu/agent-flow/packages/server/dist/utils/index.js:284:25)
+    at executeFlow (/Users/develop/Code/mesolu/agent-flow/packages/server/dist/utils/buildChatflow.js:349:52)
+    at utilBuildChatflow (/Users/develop/Code/mesolu/agent-flow/packages/server/dist/utils/buildChatflow.js:882:58)
+    at async createInternalPrediction (/Users/develop/Code/mesolu/agent-flow/packages/server/dist/controllers/internal-predictions/index.js:26:33)
+2026-03-15 11:14:31 [INFO]: 🖊 PUT /api/v1/chatflows/bfa840e8-681e-4443-946c-0aa4a0b997e0

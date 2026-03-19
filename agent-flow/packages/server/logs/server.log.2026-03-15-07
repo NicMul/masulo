@@ -1,0 +1,129 @@
+2026-03-15 07:34:13 [INFO]: Starting Flowise...
+2026-03-15 07:34:13 [INFO]: 📦 [server]: Data Source initialized successfully
+2026-03-15 07:34:13 [INFO]: 🔄 [server]: Database migrations completed successfully
+2026-03-15 07:34:13 [INFO]: 🔐 [server]: Identity Manager initialized successfully
+2026-03-15 07:34:13 [ERROR]: ❌ [server]: Error during initDatabase with file /Users/develop/Code/mesolu/agent-flow/packages/server/node_modules/flowise-components/dist/nodes/chatmodels/ChatOpenAI/ChatOpenAI.js: No "exports" main defined in /Users/develop/Code/mesolu/agent-flow/packages/components/node_modules/https-proxy-agent/package.json
+Error [ERR_PACKAGE_PATH_NOT_EXPORTED]: No "exports" main defined in /Users/develop/Code/mesolu/agent-flow/packages/components/node_modules/https-proxy-agent/package.json
+    at exportsNotFound (node:internal/modules/esm/resolve:294:10)
+    at packageExportsResolve (node:internal/modules/esm/resolve:584:13)
+    at resolveExports (node:internal/modules/cjs/loader:591:36)
+    at Module._findPath (node:internal/modules/cjs/loader:668:31)
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1130:27)
+    at Module._load (node:internal/modules/cjs/loader:985:27)
+    at Module.require (node:internal/modules/cjs/loader:1235:19)
+    at require (node:internal/modules/helpers:176:18)
+    at Object.<anonymous> (/Users/develop/Code/mesolu/agent-flow/packages/components/dist/nodes/chatmodels/ChatOpenAI/ChatOpenAI.js:7:29)
+    at Module._compile (node:internal/modules/cjs/loader:1376:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1435:10)
+    at Module.load (node:internal/modules/cjs/loader:1207:32)
+    at Module._load (node:internal/modules/cjs/loader:1023:12)
+    at Module.require (node:internal/modules/cjs/loader:1235:19)
+    at require (node:internal/modules/helpers:176:18)
+    at /Users/develop/Code/mesolu/agent-flow/packages/server/dist/NodesPool.js:44:46
+2026-03-15 07:34:14 [INFO]: 🔧 [server]: Nodes pool initialized successfully
+2026-03-15 07:34:14 [INFO]: ⏹️ [server]: Abort controllers pool initialized successfully
+2026-03-15 07:34:14 [INFO]: 🔑 [server]: Encryption key initialized successfully
+2026-03-15 07:34:14 [INFO]: 🔐 [server]: Auth initialized successfully
+2026-03-15 07:34:14 [INFO]: 🚦 [server]: Rate limiters initialized successfully
+2026-03-15 07:34:14 [INFO]: 💾 [server]: Cache pool initialized successfully
+2026-03-15 07:34:14 [INFO]: 📊 [server]: Usage cache manager initialized successfully
+2026-03-15 07:34:14 [INFO]: 📈 [server]: Telemetry initialized successfully
+2026-03-15 07:34:14 [INFO]: 🌊 [server]: SSE Streamer initialized successfully
+2026-03-15 07:34:14 [INFO]: 🎉 [server]: All initialization steps completed successfully!
+2026-03-15 07:34:14 [INFO]: ⚡️ [server]: Flowise Server is listening at :3334
+2026-03-15 07:35:07 [INFO]: ⬆️ POST /api/v1/internal-prediction/4eb20836-6704-40c6-99aa-f15cd0453bf4
+2026-03-15 07:41:26 [INFO]: Shutting down Flowise...
+2026-03-15 07:41:59 [INFO]: Starting Flowise...
+2026-03-15 07:41:59 [INFO]: 📦 [server]: Data Source initialized successfully
+2026-03-15 07:41:59 [INFO]: 🔄 [server]: Database migrations completed successfully
+2026-03-15 07:41:59 [INFO]: 🔐 [server]: Identity Manager initialized successfully
+2026-03-15 07:42:00 [ERROR]: ❌ [server]: Error during initDatabase with file /Users/develop/Code/mesolu/agent-flow/packages/server/node_modules/flowise-components/dist/nodes/chatmodels/ChatOpenAI/ChatOpenAI.js: No "exports" main defined in /Users/develop/Code/mesolu/agent-flow/packages/components/node_modules/https-proxy-agent/package.json
+Error [ERR_PACKAGE_PATH_NOT_EXPORTED]: No "exports" main defined in /Users/develop/Code/mesolu/agent-flow/packages/components/node_modules/https-proxy-agent/package.json
+    at exportsNotFound (node:internal/modules/esm/resolve:294:10)
+    at packageExportsResolve (node:internal/modules/esm/resolve:584:13)
+    at resolveExports (node:internal/modules/cjs/loader:591:36)
+    at Module._findPath (node:internal/modules/cjs/loader:668:31)
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1130:27)
+    at Module._load (node:internal/modules/cjs/loader:985:27)
+    at Module.require (node:internal/modules/cjs/loader:1235:19)
+    at require (node:internal/modules/helpers:176:18)
+    at Object.<anonymous> (/Users/develop/Code/mesolu/agent-flow/packages/components/dist/nodes/chatmodels/ChatOpenAI/ChatOpenAI.js:7:29)
+    at Module._compile (node:internal/modules/cjs/loader:1376:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1435:10)
+    at Module.load (node:internal/modules/cjs/loader:1207:32)
+    at Module._load (node:internal/modules/cjs/loader:1023:12)
+    at Module.require (node:internal/modules/cjs/loader:1235:19)
+    at require (node:internal/modules/helpers:176:18)
+    at /Users/develop/Code/mesolu/agent-flow/packages/server/dist/NodesPool.js:44:46
+2026-03-15 07:42:00 [INFO]: 🔧 [server]: Nodes pool initialized successfully
+2026-03-15 07:42:00 [INFO]: ⏹️ [server]: Abort controllers pool initialized successfully
+2026-03-15 07:42:00 [INFO]: 🔑 [server]: Encryption key initialized successfully
+2026-03-15 07:42:00 [INFO]: 🔐 [server]: Auth initialized successfully
+2026-03-15 07:42:00 [INFO]: 🚦 [server]: Rate limiters initialized successfully
+2026-03-15 07:42:00 [INFO]: 💾 [server]: Cache pool initialized successfully
+2026-03-15 07:42:00 [INFO]: 📊 [server]: Usage cache manager initialized successfully
+2026-03-15 07:42:00 [INFO]: 📈 [server]: Telemetry initialized successfully
+2026-03-15 07:42:00 [INFO]: 🌊 [server]: SSE Streamer initialized successfully
+2026-03-15 07:42:00 [INFO]: 🎉 [server]: All initialization steps completed successfully!
+2026-03-15 07:42:00 [INFO]: ⚡️ [server]: Flowise Server is listening at :3334
+2026-03-15 07:43:28 [INFO]: ⬆️ POST /api/v1/internal-prediction/4eb20836-6704-40c6-99aa-f15cd0453bf4
+2026-03-15 07:47:53 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-15 07:47:53 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-15 07:47:53 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-15 07:47:53 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-15 07:48:57 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-15 07:48:57 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-15 07:49:04 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-15 07:49:04 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-15 07:49:04 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-15 07:49:04 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-15 07:49:28 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-15 07:49:28 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-15 07:49:57 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-15 07:49:57 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-15 07:49:57 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-15 07:49:57 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-15 07:49:59 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-15 07:49:59 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-15 07:50:01 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-15 07:50:01 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-15 07:50:39 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-15 07:50:39 [INFO]: ⬆️ POST /api/v1/node-load-method/toolAgentflow
+2026-03-15 07:51:08 [INFO]: 🖊 PUT /api/v1/chatflows/4eb20836-6704-40c6-99aa-f15cd0453bf4
+2026-03-15 07:51:16 [INFO]: ⬆️ POST /api/v1/internal-prediction/4eb20836-6704-40c6-99aa-f15cd0453bf4
+2026-03-15 07:54:45 [INFO]: Shutting down Flowise...
+2026-03-15 07:55:20 [INFO]: Starting Flowise...
+2026-03-15 07:55:20 [INFO]: 📦 [server]: Data Source initialized successfully
+2026-03-15 07:55:20 [INFO]: 🔄 [server]: Database migrations completed successfully
+2026-03-15 07:55:20 [INFO]: 🔐 [server]: Identity Manager initialized successfully
+2026-03-15 07:55:20 [ERROR]: ❌ [server]: Error during initDatabase with file /Users/develop/Code/mesolu/agent-flow/packages/server/node_modules/flowise-components/dist/nodes/chatmodels/ChatOpenAI/ChatOpenAI.js: No "exports" main defined in /Users/develop/Code/mesolu/agent-flow/packages/components/node_modules/https-proxy-agent/package.json
+Error [ERR_PACKAGE_PATH_NOT_EXPORTED]: No "exports" main defined in /Users/develop/Code/mesolu/agent-flow/packages/components/node_modules/https-proxy-agent/package.json
+    at exportsNotFound (node:internal/modules/esm/resolve:294:10)
+    at packageExportsResolve (node:internal/modules/esm/resolve:584:13)
+    at resolveExports (node:internal/modules/cjs/loader:591:36)
+    at Module._findPath (node:internal/modules/cjs/loader:668:31)
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1130:27)
+    at Module._load (node:internal/modules/cjs/loader:985:27)
+    at Module.require (node:internal/modules/cjs/loader:1235:19)
+    at require (node:internal/modules/helpers:176:18)
+    at Object.<anonymous> (/Users/develop/Code/mesolu/agent-flow/packages/components/dist/nodes/chatmodels/ChatOpenAI/ChatOpenAI.js:7:29)
+    at Module._compile (node:internal/modules/cjs/loader:1376:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1435:10)
+    at Module.load (node:internal/modules/cjs/loader:1207:32)
+    at Module._load (node:internal/modules/cjs/loader:1023:12)
+    at Module.require (node:internal/modules/cjs/loader:1235:19)
+    at require (node:internal/modules/helpers:176:18)
+    at /Users/develop/Code/mesolu/agent-flow/packages/server/dist/NodesPool.js:44:46
+2026-03-15 07:55:21 [INFO]: 🔧 [server]: Nodes pool initialized successfully
+2026-03-15 07:55:21 [INFO]: ⏹️ [server]: Abort controllers pool initialized successfully
+2026-03-15 07:55:21 [INFO]: 🔑 [server]: Encryption key initialized successfully
+2026-03-15 07:55:21 [INFO]: 🔐 [server]: Auth initialized successfully
+2026-03-15 07:55:21 [INFO]: 🚦 [server]: Rate limiters initialized successfully
+2026-03-15 07:55:21 [INFO]: 💾 [server]: Cache pool initialized successfully
+2026-03-15 07:55:21 [INFO]: 📊 [server]: Usage cache manager initialized successfully
+2026-03-15 07:55:21 [INFO]: 📈 [server]: Telemetry initialized successfully
+2026-03-15 07:55:21 [INFO]: 🌊 [server]: SSE Streamer initialized successfully
+2026-03-15 07:55:21 [INFO]: 🎉 [server]: All initialization steps completed successfully!
+2026-03-15 07:55:21 [INFO]: ⚡️ [server]: Flowise Server is listening at :3334
+2026-03-15 07:56:13 [INFO]: ⬆️ POST /api/v1/internal-prediction/4eb20836-6704-40c6-99aa-f15cd0453bf4
+2026-03-15 07:57:13 [INFO]: ⬆️ POST /api/v1/internal-prediction/4eb20836-6704-40c6-99aa-f15cd0453bf4

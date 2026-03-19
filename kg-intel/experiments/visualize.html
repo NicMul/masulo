@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mesulo Knowledge Graph</title>
+  <script src="https://unpkg.com/3d-force-graph@1"></script>
+  <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+  <script src="https://unpkg.com/three-spritetext@1"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+      background: #0a0a0f;
+      color: #c8ccd4;
+      overflow: hidden;
+    }
+
+    #graph-container { width: 100vw; height: 100vh; }
+
+    /* ── Top bar ── */
+    #top-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 48px;
+      background: rgba(14, 14, 22, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      z-index: 100;
+      gap: 16px;
+    }
+
+    #top-bar h1 {
+      font-size: 14px;
+      font-weight: 600;
+      color: #e2e5eb;
+      letter-spacing: 0.5px;
+    }
+
+    #top-bar .separator {
+      width: 1px;
+      height: 20px;
+      background: rgba(255,255,255,0.1);
+    }
+
+    #stats {
+      font-size: 11px;
+      color: #6b7280;
+      display: flex;
+      gap: 12px;
+    }
+
+    #stats span { color: #9ca3af; }
+
+    /* ── Legend panel ── */
+    #legend {
+      position: fixed;
+      top: 64px;
+      left: 16px;
+      background: rgba(14, 14, 22, 0.88);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 8px;
+      padding: 14px 16px;
+      z-index: 90;
+      min-width: 180px;
+    }
+
+    #legend h3 {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #6b7280;
+      margin-bottom: 10px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 4px 0;
+      cursor: pointer;
+      user-select: none;
+      transition: opacity 0.2s;
+    }
+
+    .legend-item.dimmed { opacity: 0.3; }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .legend-label {
+      font-size: 12px;
+      color: #d1d5db;
+      flex: 1;
+    }
+
+    .legend-count {
+      font-size: 10px;
+      color: #6b7280;
+    }
+
+    .legend-limit {
+      width: 48px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 3px;
+      color: #d1d5db;
+      font-family: inherit;
+      font-size: 10px;
+      padding: 2px 4px;
+      text-align: right;
+      outline: none;
+      flex-shrink: 0;
+    }
+
+    .legend-limit:focus { border-color: rgba(99, 102, 241, 0.5); }
+
+    .legend-limit::placeholder { color: #4b5563; }
+
+    #legend-hint {
+      font-size: 9px;
+      color: #4b5563;
+      margin-top: 8px;
+      line-height: 1.4;
+    }
+
+    /* ── Query panel ── */
+    #query-panel {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(14, 14, 22, 0.94);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      z-index: 100;
+      transition: height 0.3s ease;
+    }
+
+    #query-toggle {
+      position: absolute;
+      top: -32px;
+      right: 20px;
+      background: rgba(14, 14, 22, 0.88);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-bottom: none;
+      border-radius: 6px 6px 0 0;
+      color: #9ca3af;
+      padding: 6px 14px;
+      font-size: 11px;
+      font-family: inherit;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+    }
+
+    #query-toggle:hover { color: #e2e5eb; }
+
+    #query-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px 0;
+    }
+
+    .mode-btn {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 4px;
+      color: #6b7280;
+      padding: 5px 12px;
+      font-family: inherit;
+      font-size: 10px;
+      font-weight: 500;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      transition: all 0.2s;
+    }
+
+    .mode-btn.active {
+      background: rgba(79, 70, 229, 0.15);
+      border-color: rgba(79, 70, 229, 0.4);
+      color: #a5b4fc;
+    }
+
+    .mode-btn:hover:not(.active) { color: #9ca3af; border-color: rgba(255,255,255,0.15); }
+
+    #examples-select {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 4px;
+      color: #9ca3af;
+      font-family: inherit;
+      font-size: 11px;
+      padding: 5px 8px;
+      outline: none;
+      cursor: pointer;
+      max-width: 340px;
+    }
+
+    #examples-select option { background: #14141e; color: #c8ccd4; }
+
+    .toolbar-spacer { flex: 1; }
+
+    #generated-cypher {
+      display: none;
+      padding: 0 20px;
+      margin-top: 6px;
+    }
+
+    #generated-cypher pre {
+      background: rgba(16, 185, 129, 0.06);
+      border: 1px solid rgba(16, 185, 129, 0.15);
+      border-radius: 4px;
+      padding: 8px 12px;
+      font-size: 11px;
+      color: #6ee7b7;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      line-height: 1.5;
+    }
+
+    #generated-cypher .label {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #4b5563;
+      margin-bottom: 4px;
+    }
+
+    #query-inner {
+      display: flex;
+      gap: 12px;
+      padding: 8px 20px 14px;
+      align-items: flex-start;
+    }
+
+    #query-input {
+      flex: 1;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 6px;
+      color: #e2e5eb;
+      font-family: inherit;
+      font-size: 12px;
+      padding: 10px 14px;
+      resize: vertical;
+      min-height: 40px;
+      max-height: 200px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    #query-input:focus { border-color: rgba(99, 102, 241, 0.5); }
+
+    #query-input::placeholder { color: #4b5563; }
+
+    #run-query {
+      background: #4f46e5;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 20px;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s;
+    }
+
+    #run-query:hover { background: #4338ca; }
+    #run-query:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    #query-results {
+      max-height: 200px;
+      overflow-y: auto;
+      padding: 0 20px 14px;
+      font-size: 11px;
+      display: none;
+    }
+
+    #query-results pre {
+      background: rgba(255,255,255,0.03);
+      border-radius: 6px;
+      padding: 12px;
+      overflow-x: auto;
+      color: #9ca3af;
+      line-height: 1.6;
+    }
+
+    #query-results .error { color: #ef4444; }
+
+    /* ── Detail panel ── */
+    #detail-panel {
+      position: fixed;
+      top: 64px;
+      right: 16px;
+      width: 300px;
+      background: rgba(14, 14, 22, 0.88);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 8px;
+      padding: 16px;
+      z-index: 90;
+      display: none;
+      max-height: calc(100vh - 180px);
+      overflow-y: auto;
+    }
+
+    #detail-panel h3 {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #6b7280;
+      margin-bottom: 6px;
+    }
+
+    #detail-panel .node-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #e2e5eb;
+      margin-bottom: 12px;
+      word-break: break-word;
+    }
+
+    #detail-panel .prop-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      font-size: 11px;
+    }
+
+    #detail-panel .prop-key { color: #6b7280; }
+
+    #detail-panel .prop-val {
+      color: #d1d5db;
+      text-align: right;
+      max-width: 180px;
+      word-break: break-all;
+    }
+
+    #detail-panel .prop-image {
+      width: 100%;
+      margin: 8px 0;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    #detail-panel .prop-image-label {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #6b7280;
+      margin-bottom: 4px;
+      margin-top: 8px;
+    }
+
+    #detail-panel .prop-image video {
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      object-fit: cover;
+      display: block;
+      background: rgba(255,255,255,0.03);
+    }
+
+    #detail-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: none;
+      border: none;
+      color: #6b7280;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+
+    /* ── Loading ── */
+    #loading {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0a0a0f;
+      z-index: 200;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    #loading .spinner {
+      width: 32px;
+      height: 32px;
+      border: 2px solid rgba(255,255,255,0.1);
+      border-top-color: #4f46e5;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    #loading p { font-size: 12px; color: #6b7280; }
+  </style>
+</head>
+<body>
+
+<div id="loading">
+  <div class="spinner"></div>
+  <p>Loading graph from Neo4j...</p>
+</div>
+
+<div id="top-bar">
+  <h1>MESULO KG</h1>
+  <div class="separator"></div>
+  <div id="stats"></div>
+</div>
+
+<div id="legend">
+  <h3>Node Types</h3>
+  <div id="legend-items"></div>
+  <div id="legend-hint">Click to hide. Set max to limit nodes.</div>
+</div>
+
+<div id="detail-panel">
+  <button id="detail-close">&times;</button>
+  <h3 id="detail-label"></h3>
+  <div class="node-title" id="detail-title"></div>
+  <div id="detail-props"></div>
+</div>
+
+<div id="graph-container"></div>
+
+<div id="query-panel">
+  <button id="query-toggle">QUERY</button>
+  <div id="query-toolbar">
+    <button class="mode-btn active" data-mode="natural">Natural Language</button>
+    <button class="mode-btn" data-mode="cypher">Cypher</button>
+    <select id="examples-select">
+      <option value="">Try an example...</option>
+      <option value="Which games have A/B tests?">Which games have A/B tests?</option>
+      <option value="Which variant performed better for Tomb of Insanity?">Which variant performed better for Tomb of Insanity?</option>
+      <option value="Show me the click-through rate by device for each variant">Show me the click-through rate by device for each variant</option>
+      <option value="What are the most popular games by total events?">What are the most popular games by total events?</option>
+      <option value="Compare hover vs click events across all tests">Compare hover vs click events across all tests</option>
+      <option value="Which test has the most impressions?">Which test has the most impressions?</option>
+      <option value="Show all games and their groups">Show all games and their groups</option>
+      <option value="What percentage of events are from mobile vs desktop?">What percentage of events are from mobile vs desktop?</option>
+      <option disabled>── Analytics ──</option>
+      <option value="Which games have the most analytics events?">Which games have the most analytics events?</option>
+      <option value="Show the video engagement funnel per game">Show the video engagement funnel per game</option>
+      <option value="How many sessions does each game have?">How many sessions does each game have?</option>
+      <option value="Which games are visited together in the same session?">Which games are visited together in the same session?</option>
+      <option value="What is the impression to click conversion rate per game?">What is the impression to click conversion rate per game?</option>
+      <option value="Show the device breakdown for analytics events">Show the device breakdown for analytics events</option>
+      <option disabled>── Promotions ──</option>
+      <option value="Show all promotions and which games they include">Show all promotions and which games they include</option>
+      <option value="Which games appear in multiple promotions?">Which games appear in multiple promotions?</option>
+      <option value="Which promoted games also have A/B tests?">Which promoted games also have A/B tests?</option>
+      <option value="How much analytics engagement do promoted games have?">How much analytics engagement do promoted games have?</option>
+    </select>
+    <div class="toolbar-spacer"></div>
+  </div>
+  <div id="generated-cypher">
+    <div class="label">Generated Cypher</div>
+    <pre id="generated-cypher-text"></pre>
+  </div>
+  <div id="query-inner">
+    <textarea id="query-input" rows="1" placeholder="Ask a question about your A/B tests..."></textarea>
+    <button id="run-query">Run</button>
+  </div>
+  <div id="query-results"><pre></pre></div>
+</div>
+
+<script>
+const NODE_COLORS = {
+  Game:           '#3b82f6',
+  ABTest:         '#f59e0b',
+  Variant:        '#10b981',
+  ABTestEvent:    '#8b5cf6',
+  Promotion:      '#ef4444',
+  PromoGame:      '#fb923c',
+  AnalyticsEvent: '#06b6d4',
+  Session:        '#84cc16',
+};
+
+const NODE_SIZES = {
+  Game:           14,
+  ABTest:         11,
+  Variant:        8,
+  ABTestEvent:    3,
+  Promotion:      12,
+  PromoGame:      9,
+  AnalyticsEvent: 3,
+  Session:        6,
+};
+
+const DEFAULT_LIMITS = {
+  ABTestEvent:    100,
+  AnalyticsEvent: 100,
+  Session:        50,
+};
+
+const DEFAULT_COLOR = '#6b7280';
+const DEFAULT_SIZE = 5;
+
+let graphData = { nodes: [], links: [] };
+let graph = null;
+let hiddenLabels = new Set();
+let nodeLimits = { ...DEFAULT_LIMITS };
+
+// ── Fetch graph data ──
+
+async function loadGraph() {
+  const resp = await fetch('/api/graph');
+  graphData = await resp.json();
+  document.getElementById('loading').style.display = 'none';
+  renderGraph();
+  renderLegend();
+  renderStats();
+}
+
+// ── 3D Graph ──
+
+function renderGraph() {
+  const container = document.getElementById('graph-container');
+
+  graph = ForceGraph3D()(container)
+    .graphData(filterGraphData())
+    .backgroundColor('#0a0a0f')
+    .nodeThreeObject(node => {
+      const color = NODE_COLORS[node.label] || DEFAULT_COLOR;
+      const size = NODE_SIZES[node.label] || DEFAULT_SIZE;
+
+      const group = new THREE.Group();
+
+      const geo = new THREE.SphereGeometry(size * 0.3, 16, 16);
+      const mat = new THREE.MeshLambertMaterial({
+        color,
+        transparent: true,
+        opacity: 0.9,
+      });
+      const sphere = new THREE.Mesh(geo, mat);
+      group.add(sphere);
+
+      // Only show labels for non-event nodes
+      if (node.label !== 'ABTestEvent' && node.label !== 'Analytics') {
+        const sprite = new SpriteText(node.name, 2.5, color);
+        sprite.fontFace = 'SF Mono, Fira Code, monospace';
+        sprite.position.y = size * 0.4 + 3;
+        sprite.material.depthWrite = false;
+        group.add(sprite);
+      }
+
+      return group;
+    })
+    .linkColor(() => 'rgba(255,255,255,0.06)')
+    .linkWidth(0.3)
+    .linkDirectionalArrowLength(2.5)
+    .linkDirectionalArrowRelPos(1)
+    .linkDirectionalArrowColor(() => 'rgba(255,255,255,0.12)')
+    .onNodeClick(node => showDetail(node))
+    .onBackgroundClick(() => hideDetail())
+    .d3AlphaDecay(0.04)
+    .d3VelocityDecay(0.3)
+    .warmupTicks(80)
+    .cooldownTicks(120);
+
+  // Camera
+  setTimeout(() => graph.cameraPosition({ x: 0, y: 0, z: 400 }), 500);
+}
+
+function filterGraphData() {
+  const labelCounts = {};
+  const visibleNodes = [];
+
+  for (const n of graphData.nodes) {
+    if (hiddenLabels.has(n.label)) continue;
+    const limit = nodeLimits[n.label];
+    if (limit !== undefined) {
+      labelCounts[n.label] = (labelCounts[n.label] || 0) + 1;
+      if (labelCounts[n.label] > limit) continue;
+    }
+    visibleNodes.push(n);
+  }
+
+  const visibleIds = new Set(visibleNodes.map(n => n.id));
+  const visibleLinks = graphData.links.filter(l => {
+    const sId = typeof l.source === 'object' ? l.source.id : l.source;
+    const tId = typeof l.target === 'object' ? l.target.id : l.target;
+    return visibleIds.has(sId) && visibleIds.has(tId);
+  });
+  return { nodes: visibleNodes, links: visibleLinks };
+}
+
+// ── Legend ──
+
+function renderLegend() {
+  const counts = {};
+  graphData.nodes.forEach(n => {
+    counts[n.label] = (counts[n.label] || 0) + 1;
+  });
+
+  const container = document.getElementById('legend-items');
+  container.innerHTML = '';
+
+  Object.entries(counts)
+    .sort((a, b) => b[1] - a[1])
+    .forEach(([label, count]) => {
+      const item = document.createElement('div');
+      item.className = 'legend-item';
+
+      const dot = document.createElement('div');
+      dot.className = 'legend-dot';
+      dot.style.background = NODE_COLORS[label] || DEFAULT_COLOR;
+
+      const lbl = document.createElement('div');
+      lbl.className = 'legend-label';
+      lbl.textContent = label;
+
+      const cnt = document.createElement('div');
+      cnt.className = 'legend-count';
+      cnt.textContent = count;
+
+      const limitInput = document.createElement('input');
+      limitInput.className = 'legend-limit';
+      limitInput.type = 'number';
+      limitInput.min = '0';
+      limitInput.placeholder = 'all';
+      if (nodeLimits[label] !== undefined) {
+        limitInput.value = nodeLimits[label];
+      }
+
+      limitInput.addEventListener('change', (e) => {
+        e.stopPropagation();
+        const val = e.target.value.trim();
+        if (val === '' || val === '0') {
+          delete nodeLimits[label];
+        } else {
+          nodeLimits[label] = parseInt(val, 10);
+        }
+        graph.graphData(filterGraphData());
+        renderStats();
+      });
+      limitInput.addEventListener('click', e => e.stopPropagation());
+
+      item.appendChild(dot);
+      item.appendChild(lbl);
+      item.appendChild(cnt);
+      item.appendChild(limitInput);
+
+      item.addEventListener('click', () => toggleLabel(label, item));
+      container.appendChild(item);
+    });
+}
+
+function toggleLabel(label, item) {
+  if (hiddenLabels.has(label)) {
+    hiddenLabels.delete(label);
+    item.classList.remove('dimmed');
+  } else {
+    hiddenLabels.add(label);
+    item.classList.add('dimmed');
+  }
+  graph.graphData(filterGraphData());
+  renderStats();
+}
+
+// ── Stats bar ──
+
+function renderStats() {
+  const totalNodes = graphData.nodes.length;
+  const filtered = filterGraphData();
+  const shown = filtered.nodes.length;
+  const shownLinks = filtered.links.length;
+  const labels = [...new Set(graphData.nodes.map(n => n.label))].length;
+  const countText = shown < totalNodes
+    ? `<span>${shown}</span> / ${totalNodes} nodes`
+    : `<span>${totalNodes}</span> nodes`;
+  document.getElementById('stats').innerHTML =
+    `${countText} &nbsp;&middot;&nbsp; <span>${shownLinks}</span> relationships &nbsp;&middot;&nbsp; <span>${labels}</span> types`;
+}
+
+// ── Detail panel ──
+
+function showDetail(node) {
+  const panel = document.getElementById('detail-panel');
+  document.getElementById('detail-label').textContent = node.label;
+  document.getElementById('detail-label').style.color = NODE_COLORS[node.label] || DEFAULT_COLOR;
+  document.getElementById('detail-title').textContent = node.name;
+
+  const propsDiv = document.getElementById('detail-props');
+  propsDiv.innerHTML = '';
+
+  const VIDEO_KEYS = new Set([
+    'video', 'defaultVideo', 'currentVideo', 'themeVideo',
+    'testVideo', 'promoVideo', 'videoA', 'videoB',
+    'assetUrl',
+  ]);
+
+  const SKIP_KEYS = new Set([
+    'image', 'defaultImage', 'currentImage', 'themeImage',
+    'testImage', 'promoImage', 'imageA', 'imageB',
+  ]);
+
+  const videoEntries = [];
+  const regularEntries = [];
+
+  Object.entries(node.props || {}).forEach(([key, val]) => {
+    const strVal = String(val || '');
+    if (SKIP_KEYS.has(key)) return;
+    const isVideo = VIDEO_KEYS.has(key) && strVal.startsWith('http') && strVal.match(/\.(mp4|webm|mov|ogg)(\?|$)/i);
+    if (isVideo) {
+      videoEntries.push([key, strVal]);
+    } else {
+      regularEntries.push([key, val]);
+    }
+  });
+
+  videoEntries.forEach(([key, url]) => {
+    const label = document.createElement('div');
+    label.className = 'prop-image-label';
+    label.textContent = key;
+    propsDiv.appendChild(label);
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'prop-image';
+    const vid = document.createElement('video');
+    vid.src = url;
+    vid.autoplay = true;
+    vid.loop = true;
+    vid.muted = true;
+    vid.playsInline = true;
+    vid.onerror = () => {
+      wrapper.innerHTML = `<div style="padding:12px;font-size:10px;color:#6b7280;text-align:center;">Could not load video</div>`;
+    };
+    wrapper.appendChild(vid);
+    propsDiv.appendChild(wrapper);
+  });
+
+  // Render regular properties
+  regularEntries.forEach(([key, val]) => {
+    const row = document.createElement('div');
+    row.className = 'prop-row';
+    const displayed = typeof val === 'boolean' ? (val ? 'true' : 'false') : String(val || '—');
+    row.innerHTML = `<span class="prop-key">${key}</span><span class="prop-val">${displayed}</span>`;
+    propsDiv.appendChild(row);
+  });
+
+  panel.style.display = 'block';
+}
+
+function hideDetail() {
+  document.getElementById('detail-panel').style.display = 'none';
+}
+
+document.getElementById('detail-close').addEventListener('click', hideDetail);
+
+// ── Query panel ──
+
+let queryOpen = true;
+let queryMode = 'natural'; // 'natural' or 'cypher'
+
+document.getElementById('query-toggle').addEventListener('click', () => {
+  queryOpen = !queryOpen;
+  const panel = document.getElementById('query-panel');
+  document.getElementById('query-toolbar').style.display = queryOpen ? 'flex' : 'none';
+  document.getElementById('query-inner').style.display = queryOpen ? 'flex' : 'none';
+  document.getElementById('query-results').style.display = 'none';
+  document.getElementById('generated-cypher').style.display = 'none';
+});
+
+// Mode toggle
+document.querySelectorAll('.mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    queryMode = btn.dataset.mode;
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const input = document.getElementById('query-input');
+    const examplesSelect = document.getElementById('examples-select');
+
+    if (queryMode === 'cypher') {
+      input.placeholder = 'MATCH (n) RETURN n LIMIT 10';
+      examplesSelect.style.display = 'none';
+    } else {
+      input.placeholder = 'Ask a question about your A/B tests...';
+      examplesSelect.style.display = '';
+    }
+
+    document.getElementById('generated-cypher').style.display = 'none';
+  });
+});
+
+// Examples dropdown
+document.getElementById('examples-select').addEventListener('change', e => {
+  const val = e.target.value;
+  if (val) {
+    document.getElementById('query-input').value = val;
+    queryMode = 'natural';
+    document.querySelectorAll('.mode-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.mode === 'natural');
+    });
+  }
+});
+
+document.getElementById('run-query').addEventListener('click', runQuery);
+document.getElementById('query-input').addEventListener('keydown', e => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') runQuery();
+});
+
+async function runQuery() {
+  const input = document.getElementById('query-input');
+  const resultsDiv = document.getElementById('query-results');
+  const pre = resultsDiv.querySelector('pre');
+  const cypherDiv = document.getElementById('generated-cypher');
+  const cypherPre = document.getElementById('generated-cypher-text');
+  const runBtn = document.getElementById('run-query');
+
+  const query = input.value.trim();
+  if (!query) return;
+
+  pre.className = '';
+  cypherDiv.style.display = 'none';
+  runBtn.disabled = true;
+  runBtn.textContent = queryMode === 'natural' ? 'Thinking...' : 'Running...';
+  pre.textContent = queryMode === 'natural' ? 'Translating to Cypher...' : 'Running...';
+  resultsDiv.style.display = 'block';
+
+  try {
+    if (queryMode === 'natural') {
+      const resp = await fetch('/api/nl-query', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: query }),
+      });
+      const data = await resp.json();
+
+      if (data.cypher) {
+        cypherPre.textContent = data.cypher;
+        cypherDiv.style.display = 'block';
+      }
+
+      if (data.error) {
+        pre.className = 'error';
+        pre.textContent = data.error;
+      } else {
+        pre.textContent = JSON.stringify(data.results, null, 2);
+      }
+    } else {
+      const resp = await fetch('/api/query', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query }),
+      });
+      const data = await resp.json();
+
+      if (data.error) {
+        pre.className = 'error';
+        pre.textContent = data.error;
+      } else {
+        pre.textContent = JSON.stringify(data.results, null, 2);
+      }
+    }
+  } catch (err) {
+    pre.className = 'error';
+    pre.textContent = err.message;
+  } finally {
+    runBtn.disabled = false;
+    runBtn.textContent = 'Run';
+  }
+}
+
+// ── Init ──
+loadGraph();
+</script>
+</body>
+</html>
