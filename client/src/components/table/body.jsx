@@ -128,8 +128,8 @@ const TableBody = forwardRef(({ className, rows, show, hide, badge, translation,
         <TableRow>
           <TableCell colSpan='100%'>
 
-            <div class='flex !text-left gap-x-2 items-center'>
-              <Icon name='search'/>
+            <div className='flex !text-left gap-x-2 items-center text-slate-500 dark:text-slate-400'>
+              <Icon name='search' className='text-slate-400 dark:text-slate-500'/>
               <span>{ t('global.table.empty') }</span>
             </div>
 
