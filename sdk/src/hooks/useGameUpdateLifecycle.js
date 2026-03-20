@@ -88,8 +88,14 @@ export function useGameUpdateLifecycle() {
       return true;
     } else {
       videoEl.src = '';
+      videoEl.poster = imageUrl;
       gameVideoStore.updateVideoState(gameId, {
-        src: ''
+        src: '',
+        poster: imageUrl,
+        defaultImage: imageUrl,
+        version: newVersion,
+        published: newPublished,
+        loading: false
       });
       return false;
     }
